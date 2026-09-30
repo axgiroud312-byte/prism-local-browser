@@ -1,0 +1,9 @@
+{
+    "nativeStorageBlocker":  true,
+    "noDemoFallback":  true,
+    "originalSyntheticFilePreserved":  true,
+    "pid":  26296,
+    "driver":  "Windows UI Automation",
+    "normalClose":  true,
+    "verifiedAt":  "2026-09-30T08:33:39.7322189Z"
+}

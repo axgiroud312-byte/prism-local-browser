@@ -4,7 +4,7 @@
 
 版本：1.0 · 日期：2026-09-30
 
-本文件将 [产品需求](PRD.md) 转成实施边界、应用接口、状态与数据一致性规则。当前仓库交付 React 和 TypeScript 交互原型；T01 已提取环境应用契约与 DemoAdapter。未来桌面版使用 Go 与 Wails 提供本地服务、SQLite 保存配置，并管理已选定的 adryfish/fingerprint-chromium。下面的本地服务接口是目标契约，不代表本仓库已经具备对应 Go 实现。
+本文件将 [产品需求](PRD.md) 转成实施边界、应用接口、状态与数据一致性规则。仓库保留 React/TypeScript 原型及 T01 的应用契约与 DemoAdapter；T02 已接入 Go/Wails、SQLite 和 WailsAdapter 的本机配置底座，正在验收。已选定的 adryfish/fingerprint-chromium 仍未安装或运行。下文完整接口是分票目标，不表示已全量实现；实际范围见 [PROGRESS.md](PROGRESS.md)。
 
 ## 1 当前交付与后续实施分层
 
@@ -136,7 +136,11 @@ app-data/
 
 ## 6 本地应用接口
 
-下表为**目标本地服务契约**；T01 已实现其环境创建编辑的前端先导，见 [contract.ts](../src/application/contract.ts) 与 [demo-adapter.ts](../src/application/demo-adapter.ts)。Wails 绑定负责 UI 与本机 Go 服务通信，默认不开放未经认证的局域网或公网 HTTP 管理服务；当前仍没有 Go 实现。
+下表为**完整目标本地服务契约**；T01 环境创建编辑先导见 [contract.ts](../src/application/contract.ts) 与 [demo-adapter.ts](../src/application/demo-adapter.ts)。T02 经 [WailsAdapter](../src/application/wails-adapter.ts) 调 [Go 服务](../internal/workspace/service.go)，绑定负责 UI 与本机服务通信，不开放 HTTP 管理服务。
+
+T02 已实现的原生 RPC 为 `Workspace.Read`、`Environment.Preview`、`Preview.Regenerate/Discard`、单条 `Environment.Create`、`Environment.Update`、`Operation.Read/Cancel`（本票操作为同步已提交终态，取消不回滚完成项）。SQLite schema v1 保存环境/固定档案、内核/代理引用、revision、成功请求去重结果、终态操作与活动；这不是长任务恢复实现。请求仅接受 `mode: native`，配置按白名单转换，预览由当前服务会话管理；成功请求缓存则跨服务重开持久保存。数据库的新建/迁移在事务中提交，未知版本、缺失 schema 和坏配置不自动覆盖或重置。
+
+原生初始 `kernel-pending` 仅代表未安装、未就绪；无真实版本或可执行文件校验声明，不能启动。桌面初始无示例环境/代理，不读取或导入原型 localStorage/JSON；后续内核安装、生成器修订、真实浏览数据和批量任务按 T04/T05/T06/T13 验收。UI 投影的 schemaVersion 1 不是生产导入格式，不得据此直接复制原型对象到数据库。
 
 当前 ApplicationService 统一 `{ ok, mode, data/error, operationId? }`、预览 ID、requestId、expectedRevision 与 Operation 事件。创建返回 `status: accepted`，需查询/事件确认 `completed/cancelled/failed`；编辑仅在存储写入成功后返回 `status: completed`。只提交配置白名单，不能从草稿修改 ID、Cookie 或运行状态。UI 按操作 ID、模式、序号和终态过滤迟到事件。demo 的预览、幂等请求缓存和 Operation 在当前服务会话有效，不宣称任务重开续作；revision 用额外存储元数据持久保存，旧 v1 演示记录可显式读取且快照类型不变。其他页经 demo-only compatibility 逐步接入；native 不可使用该兼容入口。
 

@@ -33,6 +33,12 @@ ENV-002、UX-001、DOC-001 的创建/编辑/取消/刷新流程已接入 [Applic
 
 可重复证据：[契约测试](../tests/application.test.ts)、[UI 流程](../tests/ui/environment.spec.ts)、[T01 验证记录](verification/T01.md)。原型启动、代理、内核和目录仍是模拟/设计，不能由本项推导桌面能力通过。完整实时状态见 [PROGRESS.md](PROGRESS.md)。
 
+### T02 本机配置底座（本地服务 / Windows 桌面增量）
+
+ENV-002、FP-001、UX-001 的单条创建编辑由 [main.go](../main.go)、[WailsAdapter](../src/application/wails-adapter.ts) 与 [SQLite 服务](../internal/workspace/service.go) 接入。环境/初始固定 seed/分组/偏好/必要引用同事务保存；expectedRevision 和持久 requestId 拒绝过期覆盖/重复创建；真实写失败不发布成功。只接受原生预览，缺失内核明确未就绪；网页原型仍独立运行。
+
+证据入口：[Go 契约测试](../internal/workspace/service_test.go)、[adapter 测试](../tests/wails-adapter.test.ts)、[失败桥接页面边界](../tests/ui/native-boundary.spec.ts)、[真实 Windows UI Automation](../scripts/verify-desktop-ui.ps1) 与 [逐票验收](verification/T02.md)。T02 正在验收，不宣称批量任务恢复、真实浏览器目录/登录数据、完整档案生成/历史、代理认证或备份已经完成。
+
 以下关联于 2026-09-30 发布，表示计划实现范围，不能据此判断已完成。当前状态与 blocking 依赖以 GitHub 为准；完整顺序见 [开发票据索引](ISSUES.md)，共同范围见 [总规格 Issue](https://github.com/axgiroud312-byte/prism-local-browser/issues/1)。
 
 | 需求 ID  | 实现或专项验证 Issue                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | 整体验收                                                                       |

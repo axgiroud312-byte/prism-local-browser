@@ -77,6 +77,7 @@ export interface ApplicationService {
   readonly mode: ApplicationMode;
   readonly compatibility?: DemoCompatibility;
   getSnapshot(): WorkspaceView;
+  refresh?(): Promise<ApplicationResult<WorkspaceView>>;
   subscribe(listener: () => void): () => void;
   subscribeEvents(listener: (event: OperationEvent) => void): () => void;
   previewEnvironment(request: { kind: "create" | "edit"; sourceId?: string }): Promise<ApplicationResult<EnvironmentPreview>>;

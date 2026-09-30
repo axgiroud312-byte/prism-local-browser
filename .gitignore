@@ -7,6 +7,12 @@ dist/
 output/
 .playwright-cli/
 .serena/
+.tools/
+.appdata/
+build/bin/
+build/appicon.png
+build/windows/icon.ico
+package.json.md5
 .DS_Store
 Thumbs.db
 *.log

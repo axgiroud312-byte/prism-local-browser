@@ -1,0 +1,53 @@
+{
+  "processes": [
+    {
+      "pid": 32648,
+      "normalExit": true,
+      "startedAt": "2026-09-30T08:23:05.5891466Z",
+      "executable": "prism-browser.exe"
+    },
+    {
+      "pid": 38988,
+      "normalExit": true,
+      "startedAt": "2026-09-30T08:23:08.1395942Z",
+      "executable": "prism-browser.exe"
+    }
+  ],
+  "database": {
+    "schemaVersion": 1,
+    "id": "f0f903c9-221c-480f-8118-4fdc7a182fc6",
+    "name": "桌面重开验证",
+    "revision": 2,
+    "kernelId": "kernel-pending",
+    "seed": "841525068",
+    "configuration": {
+      "name": "桌面重开验证",
+      "group": "合成持久组",
+      "note": "只用于 T02 实际桌面验证",
+      "proxyId": "",
+      "coreId": "kernel-pending",
+      "seed": "841525068",
+      "language": "en-US",
+      "timezone": "America/New_York",
+      "cpu": "auto",
+      "width": 1440,
+      "height": 900,
+      "urls": "https://example.test/desktop",
+      "restoreTabs": false,
+      "fingerprintVersion": "windows-desktop-v1"
+    }
+  },
+  "checks": {
+    "narrowWindow": true,
+    "normalCloseReopen": true,
+    "noDebugEndpoint": true,
+    "nativeCreateEdit": true,
+    "missingKernelBlocked": true,
+    "UISeedMatchesSQLite": true,
+    "emptyNativeStartup": true
+  },
+  "driver": "Windows UI Automation",
+  "platform": "windows/amd64",
+  "verifiedAt": "2026-09-30T08:23:10.1805264Z",
+  "executableSha256": "6bf2ac97af5dd6c1069c871ec0e8c6ebb9f0e35ae433f5b23c95c2f2f69c0cf9"
+}
