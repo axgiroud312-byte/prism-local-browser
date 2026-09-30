@@ -1,11 +1,11 @@
 # Goal 当前执行位置
 
-更新时间：2026-09-30 18:58 Asia/Shanghai。
+更新时间：2026-09-30 19:11 Asia/Shanghai。
 
 - Goal：执行中；[规则](GOAL.md)；完成 **2/21**（验收任务计数）。
 - 当前任务：T03 / [Issue #4](https://github.com/axgiroud312-byte/prism-local-browser/issues/4)，进行中。
-- 当前步骤：54fe655的干净runner再次发现已保存快捷方式TargetPath为空；此前目录规范化没解决。已改为发布真实目标程序后由Go维护helper通过Windows COM创建链接，回读目标和永久工作目录后才集成注册；新鲜路径/Unicode/升级/占用回滚的独立PowerShell读回测试通过，相关desktopbase/vet通过（总24 Go）。只重建两个包并实际安装验收，随后推送必要修复。
-- 现场：`goal/t03-windows-installer` / `54fe655`；未提交为当前票快捷方式产品修复、回归和记录，所有改动均本Goal。#4尚OPEN，正式仍2/21。
+- 当前步骤：`bd26ff9`新包本机闭环通过，但CI新Unicode回归暴露WScript.Shell的ANSI路径处理。已用本机中文码页无法表示的🌈路径实际复现，再改Unicode IShellLinkW/IPersistFile生成并回读、Shell.Application独立验收，相关desktopbase/vet通过。另修Vite误监听测试下载文件造成EBUSY退出，只复跑相关UI；待新包相关构建/操作后再推送，不以反复CI代替本机定位。
+- 现场：`goal/t03-windows-installer` / `bd26ff9`；未提交是Unicode接口/验证、Vite生成目录监听边界和当前票记录，所有改动均本Goal。#4尚OPEN，正式仍2/21。
 
 ## 任务状态
 
@@ -71,12 +71,13 @@
 - 18:23–18:27：[run36701706414](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/36701706414) Node22/24通过，desktop安装包构建失败。已读取失败日志定位Get-FileHash模块自动加载而非产品/数据库/UI失败；增加进程内本host原生模块路径优先的6入口共享bootstrap，模拟PS7-only PSModulePath的实际WinPS5验证Get-FileHash/Authenticode/Archive/Add-Type与NSIS缓存ZIP/hash/版本全部成功。仅相关脚本验证，未重复49JS全量；仍不计T03完成。
 - 18:32–18:35：最新CI打包/前提已通过，真实安装exit0，快捷方式目标比较失败（尚未进入应用UI操作）。检查改为Windows物理DesktopDirectory（不是虚拟shell Desktop）与GetFullPath规范化，添加真实文件存在性检查及不带私人路径的错误细节；没有改产品代码或放宽预期exe检查。正在只复跑相关安装/快捷方式闭环；没有本地49JS全量回归。
 - 18:44–18:58：[run36703818884](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/36703818884) Node22/24、Go与两包构建通过，默认首次安装exit0后链接文件存在但TargetPath空。先加失败回归，再改helper在publish成功后创建并回读Windows链接，取消安装前NSIS CreateShortcut；go-ole使用已有固定依赖/许可，没有引入新版本。物理目录修正保留，错误诊断不再对空路径调用Test-Path。独立PS实际读回两链接验证首次/升级及锁占用失败仍恢复旧链接/注册，desktopbase/vet通过；最终新包真实操作尚待。
+- 19:01–19:11：bd26ff9两个干净源码包本机完整安装/快捷方式/保留重装/删除通过。[run36705800455](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/36705800455) Node22通过，Node24因Vite监听Playwright下载.crdownload的EBUSY崩溃；desktop的新Unicode链接Go回归失败，未打包。确认关键根因是WScript.Shell在非当前ANSI码页字符路径下创建/读取错误：本机增加🌈路径后同一异常可复现，因此此前TargetPath空不能证明原NSIS链接真实为空。已改产品生成与回读为明确Unicode的IShellLinkW/IPersistFile、独立PS读取为Shell.Application；Unicode/首次/升级/占用回滚模块测试/vet通过。Vite仅忽略生成的output/.tools/build/wailsjs目录，不删断言/重试隐藏问题；只跑相关UI。
 - 当前阻塞：无外部资源阻塞；仅当前票干净runner真实流程未通过，不关闭本票。
-- 下一步：提交产品修复，复用工具重建两个包并仅测实际安装闭环；推送一次必要修复CI，核对最新headSha/干净用户证据；成功后合入关闭#4，正式3/21后自动T04。无后台代理或命令。
+- 下一步：完成Unicode修复新包相关验证后推送，核对最新headSha/干净runner实际流程；成功后合入关闭#4，正式3/21后自动T04。当前唯一后台为相关`test:ui`，旧CI/安装均已结束。
 
 ## 恢复资源与 GitHub
 
 - 已有其他 Node/Chrome 进程属于用户现场，不停止。已核对 5173 为本仓库旧 Vite 服务；4173 未监听（纠正初查格式误判）。本 Goal 尚未启动服务，UI 测试用独立端口 5183 和新浏览器上下文。
 - `output/`、`.playwright-cli/`、`dist/`、`node_modules/` 为现有忽略目录；不删除旧成果。新测试输出使用 `output/goal/`，仅保留合成证据。
 - `npx playwright install chromium` 已成功安装本票测试浏览器（仅前端检查，不是 fingerprint-chromium）。测试使用 5183，由 Playwright 启停独立 Vite，首次测试已退出；旧 5173 不动。Serena 本机索引 `.serena/` 已忽略。
-- GitHub：T01/T02 已完成同步；T03 PR #25开放、#4未关闭；#1不关闭。当前无后台代理或命令需要等待。
+- GitHub：T01/T02 已完成同步；T03 PR #25开放、#4未关闭；#1不关闭。后台只等待当前安装验收与CI完成通知。

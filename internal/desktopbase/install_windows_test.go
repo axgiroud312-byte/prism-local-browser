@@ -188,8 +188,8 @@ func TestIntegrationRollbackKeepsRealRegistryAndShortcutBytes(t *testing.T) {
 func TestIntegrationBuildsShortcutsAfterPublishingTarget(t *testing.T) {
 	keyPath := `Software\PrismBrowserTests\` + uuid.NewString()
 	t.Cleanup(func() { registry.DeleteKey(registry.CURRENT_USER, keyPath) })
-	root := filepath.Join(t.TempDir(), "合成程序 with spaces")
-	shortcuts := []string{filepath.Join(t.TempDir(), "合成桌面.lnk"), filepath.Join(t.TempDir(), "合成开始菜单.lnk")}
+	root := filepath.Join(t.TempDir(), "合成程序 🌈 with spaces")
+	shortcuts := []string{filepath.Join(t.TempDir(), "合成桌面 🌈.lnk"), filepath.Join(t.TempDir(), "合成开始菜单 🌈.lnk")}
 	publish := func(version string) error {
 		source := payloadFixture(t, version)
 		// On a fresh user, neither the installed target nor a prebuilt link exists.
@@ -200,7 +200,7 @@ func TestIntegrationBuildsShortcutsAfterPublishingTarget(t *testing.T) {
 	assertShortcuts := func(version string) {
 		t.Helper()
 		for _, path := range shortcuts {
-			command := exec.Command("powershell.exe", "-NoProfile", "-NonInteractive", "-Command", `$ErrorActionPreference='Stop'; $link=(New-Object -ComObject WScript.Shell).CreateShortcut($env:PRISM_TEST_LINK); if(!$link.TargetPath -or [IO.Path]::GetFullPath($link.TargetPath) -ne $env:PRISM_TEST_TARGET -or $link.WorkingDirectory -ne [IO.Path]::GetDirectoryName($env:PRISM_TEST_TARGET)){throw 'Published shortcut has incorrect target/working directory.'}`)
+			command := exec.Command("powershell.exe", "-NoProfile", "-NonInteractive", "-Command", `$ErrorActionPreference='Stop'; $shell=New-Object -ComObject Shell.Application; $folder=$shell.NameSpace([IO.Path]::GetDirectoryName($env:PRISM_TEST_LINK)); $link=$folder.ParseName([IO.Path]::GetFileName($env:PRISM_TEST_LINK)).GetLink; if(!$link.Path -or [IO.Path]::GetFullPath($link.Path) -ne $env:PRISM_TEST_TARGET -or $link.WorkingDirectory -ne [IO.Path]::GetDirectoryName($env:PRISM_TEST_TARGET)){throw 'Published shortcut has incorrect target/working directory.'}`)
 			command.Env = append(os.Environ(), "PRISM_TEST_LINK="+path, "PRISM_TEST_TARGET="+filepath.Join(root, "versions", version, "prism-browser.exe"))
 			if output, err := command.CombinedOutput(); err != nil {
 				t.Fatalf("independent shortcut readback failed: %v %s", err, output)

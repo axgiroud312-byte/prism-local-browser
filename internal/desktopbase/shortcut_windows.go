@@ -4,14 +4,72 @@ package desktopbase
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 	"runtime"
 	"strings"
+	"syscall"
+	"unsafe"
 
 	ole "github.com/go-ole/go-ole"
-	"github.com/go-ole/go-ole/oleutil"
+	"golang.org/x/sys/windows"
 )
+
+// IShellLinkW and IPersistFile have the documented COM method order. Never use
+// WScript.Shell here: its ANSI path handling depends on the Windows code page.
+type shellLinkVtbl struct {
+	ole.IUnknownVtbl
+	GetPath, GetIDList, SetIDList, GetDescription, SetDescription        uintptr
+	GetWorkingDirectory, SetWorkingDirectory, GetArguments, SetArguments uintptr
+	GetHotkey, SetHotkey, GetShowCmd, SetShowCmd                         uintptr
+	GetIconLocation, SetIconLocation, SetRelativePath, Resolve, SetPath  uintptr
+}
+type persistFileVtbl struct {
+	ole.IUnknownVtbl
+	GetClassID, IsDirty, Load, Save, SaveCompleted, GetCurFile uintptr
+}
+
+func shellCall(action string, method uintptr, arguments ...uintptr) error {
+	hr, _, _ := syscall.SyscallN(method, arguments...)
+	if int32(hr) < 0 {
+		return fmt.Errorf("Windows %s: HRESULT 0x%08x", action, uint32(hr))
+	}
+	return nil
+}
+func newShellLink() (*ole.IUnknown, error) {
+	return ole.CreateInstance(ole.NewGUID("00021401-0000-0000-C000-000000000046"), ole.NewGUID("000214F9-0000-0000-C000-000000000046"))
+}
+func persistLink(link *ole.IUnknown, path string, load bool) error {
+	var persist *ole.IUnknown
+	if err := link.PutQueryInterface(ole.NewGUID("0000010B-0000-0000-C000-000000000046"), &persist); err != nil {
+		return err
+	}
+	defer persist.Release()
+	wide, err := windows.UTF16PtrFromString(path)
+	if err != nil {
+		return err
+	}
+	table := (*persistFileVtbl)(unsafe.Pointer(persist.RawVTable))
+	method, action, flag := table.Save, "IPersistFile.Save", uintptr(1)
+	if load {
+		method, action, flag = table.Load, "IPersistFile.Load", 0 // STGM_READ
+	}
+	err = shellCall(action, method, uintptr(unsafe.Pointer(persist)), uintptr(unsafe.Pointer(wide)), flag)
+	runtime.KeepAlive(wide)
+	return err
+}
+func linkPath(link *ole.IUnknown, workingDirectory bool) (string, error) {
+	buffer := make([]uint16, 32768)
+	table := (*shellLinkVtbl)(unsafe.Pointer(link.RawVTable))
+	var err error
+	if workingDirectory {
+		err = shellCall("IShellLinkW.GetWorkingDirectory", table.GetWorkingDirectory, uintptr(unsafe.Pointer(link)), uintptr(unsafe.Pointer(&buffer[0])), uintptr(len(buffer)))
+	} else {
+		err = shellCall("IShellLinkW.GetPath", table.GetPath, uintptr(unsafe.Pointer(link)), uintptr(unsafe.Pointer(&buffer[0])), uintptr(len(buffer)), 0, 4) // SLGP_RAWPATH, no target search
+	}
+	return windows.UTF16ToString(buffer), err
+}
 
 // Build only after the installed target exists. A link staged before a fresh
 // target can lose its path on a user whose shell namespace is not initialized.
@@ -38,49 +96,46 @@ func shortcutBytes(source, executable string) ([]byte, error) {
 		}
 	}
 	defer ole.CoUninitialize()
-	unknown, err := oleutil.CreateObject("WScript.Shell")
+	link, err := newShellLink()
 	if err != nil {
 		return nil, err
 	}
-	defer unknown.Release()
-	shell, err := unknown.QueryInterface(ole.IID_IDispatch)
-	if err != nil {
-		return nil, err
-	}
-	defer shell.Release()
-	link, err := oleutil.CallMethod(shell, "CreateShortcut", path)
-	if err != nil {
-		return nil, err
-	}
-	defer link.Clear()
-	for name, value := range map[string]string{"TargetPath": executable, "WorkingDirectory": filepath.Dir(executable), "IconLocation": executable} {
-		result, err := oleutil.PutProperty(link.ToIDispatch(), name, value)
-		if result != nil {
-			result.Clear()
+	defer link.Release()
+	table := (*shellLinkVtbl)(unsafe.Pointer(link.RawVTable))
+	for _, entry := range []struct {
+		action, value string
+		method        uintptr
+	}{{"IShellLinkW.SetPath", executable, table.SetPath}, {"IShellLinkW.SetWorkingDirectory", filepath.Dir(executable), table.SetWorkingDirectory}, {"IShellLinkW.SetIconLocation", executable, table.SetIconLocation}} {
+		wide, err := windows.UTF16PtrFromString(entry.value)
+		if err != nil {
+			return nil, err
 		}
+		err = shellCall(entry.action, entry.method, uintptr(unsafe.Pointer(link)), uintptr(unsafe.Pointer(wide)), 0)
+		runtime.KeepAlive(wide)
 		if err != nil {
 			return nil, err
 		}
 	}
-	result, err := oleutil.CallMethod(link.ToIDispatch(), "Save")
-	if result != nil {
-		result.Clear()
+	if err = persistLink(link, path, false); err != nil {
+		return nil, err
 	}
+	saved, err := newShellLink()
 	if err != nil {
 		return nil, err
 	}
-	saved, err := oleutil.CallMethod(shell, "CreateShortcut", path)
-	if err != nil {
+	defer saved.Release()
+	if err = persistLink(saved, path, true); err != nil {
 		return nil, err
 	}
-	defer saved.Clear()
-	for name, expected := range map[string]string{"TargetPath": executable, "WorkingDirectory": filepath.Dir(executable)} {
-		value, err := oleutil.GetProperty(saved.ToIDispatch(), name)
+	for _, workingDirectory := range []bool{false, true} {
+		actual, err := linkPath(saved, workingDirectory)
 		if err != nil {
 			return nil, err
 		}
-		actual := value.ToString()
-		value.Clear()
+		expected := executable
+		if workingDirectory {
+			expected = filepath.Dir(executable)
+		}
 		if actual == "" || !strings.EqualFold(filepath.Clean(actual), filepath.Clean(expected)) {
 			return nil, errors.New("快捷方式回读目标或工作目录不匹配，安装未完成")
 		}
