@@ -1,0 +1,61 @@
+name: 问题报告
+description: 提供可复现步骤、预期结果及脱敏证据。
+title: "[问题] "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        当前前端支持演示流程，真实内核和桌面服务的实现状态请看 README 与验收记录。
+        请勿上传真实 Cookie、代理密码、用户目录或含私人路径的完整日志。使用示例数据复现即可。
+        新报告默认只添加 bug 标签，问题清晰和 blocking 依赖核对后再进入领取流程。
+  - type: input
+    id: environment
+    attributes:
+      label: 版本与运行环境
+      description: 填写 commit 或版本、Windows 版本、Node/浏览器版本；不知道的部分可写“未知”。
+      placeholder: main 的提交……；Windows 11；Node 24；Chrome……
+    validations:
+      required: true
+  - type: dropdown
+    id: mode
+    attributes:
+      label: 问题发生在哪一层
+      options:
+        - 前端交互原型或演示数据
+        - 本地服务或真实桌面功能
+        - 文档、测试或构建
+        - 尚不确定
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤
+      description: 指明页面、示例输入和操作顺序；可以补充关联需求 ID。
+      placeholder: |
+        1. 打开……页面。
+        2. 使用……示例输入。
+        3. 点击……。
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 预期结果
+      placeholder: 完成操作后应当……。
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: 实际结果
+      description: 说明错误、影响范围及是否每次发生，区分界面显示与实际观察。
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 脱敏证据与补充
+      description: 可选。附示例截图、精简错误或相关 issue；不提供真实凭据与账号资料。

@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 产品范围与当前交付
+    url: https://github.com/axgiroud312-byte/prism-local-browser/blob/main/README.md
+    about: 查看原型运行方法、桌面能力边界和文档入口。
+  - name: 开发规范与任务领取
+    url: https://github.com/axgiroud312-byte/prism-local-browser/blob/main/docs/ENGINEERING.md
+    about: 查看交付层级、blocking 依赖和验收要求。

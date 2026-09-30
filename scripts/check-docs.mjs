@@ -4,6 +4,11 @@ import assert from "node:assert/strict";
 
 const docs = [
   "README.md",
+  "AGENTS.md",
+  "docs/ENGINEERING.md",
+  "docs/SPEC.md",
+  "docs/ISSUES.md",
+  ".github/pull_request_template.md",
   "docs/PRD.md",
   "docs/DEVELOPMENT.md",
   "docs/KERNEL.md",

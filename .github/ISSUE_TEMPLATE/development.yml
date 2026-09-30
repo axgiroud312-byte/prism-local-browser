@@ -1,0 +1,74 @@
+name: 开发任务
+description: 描述一个有明确范围、依赖和验收结果的实现任务。
+title: "[开发] "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        请按 [开发规范](https://github.com/axgiroud312-byte/prism-local-browser/blob/main/docs/ENGINEERING.md) 描述任务。
+        新建任务不会自动标记 ready-for-agent。该标签只表示说明清楚，领取仍需所有 blocking 依赖完成且成果可用。
+        spec 是总规范入口，请将具体实现拆成任务。请只使用示例或脱敏资料。
+  - type: input
+    id: requirements
+    attributes:
+      label: 关联需求
+      description: 填写 PRD 需求 ID；新增需求先说明对应的产品目标。
+      placeholder: ENV-003、PRX-001
+    validations:
+      required: true
+  - type: dropdown
+    id: delivery_level
+    attributes:
+      label: 本任务交付层级
+      options:
+        - 设计或文档
+        - 前端交互原型
+        - 本地服务实现
+        - 真实 Windows 桌面验证
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: 当前行为与目标
+      description: 说明现在的问题，以及完成后用户能观察到的变化。
+      placeholder: 目前……；完成后，在……情况下应当……。
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: 范围与明确不包含的工作
+      description: 列出涉及模块和本次交付范围，避免把设计、原型和真实能力混为一项。
+      placeholder: |
+        本次完成：
+        涉及模块：
+        不包含：
+    validations:
+      required: true
+  - type: textarea
+    id: blocking
+    attributes:
+      label: Blocking 依赖
+      description: 填写必须先完成的 issue 和需要使用的成果；没有则写“无”。普通参考放到下一栏。
+      placeholder: "#123：需要已可用的接口与测试；或：无。"
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: 验收条件
+      description: 写成可观察、可复核的行为，包含相关失败或恢复场景；不能仅写“代码完成”。
+      placeholder: |
+        - [ ] 在……输入下，得到……结果。
+        - [ ] ……失败时保留……，并显示……。
+        - [ ] 使用……命令或真实操作取得……证据。
+    validations:
+      required: true
+  - type: textarea
+    id: references
+    attributes:
+      label: 参考与补充
+      description: 可选。附规范、已有实现或合成截图；参考链接不自动成为 blocking 依赖。

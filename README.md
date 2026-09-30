@@ -6,6 +6,8 @@
 
 [产品需求](docs/PRD.md) · [开发方案](docs/DEVELOPMENT.md) · [内核合同](docs/KERNEL.md) · [需求追踪](docs/TRACEABILITY.md) · [验收记录](docs/ACCEPTANCE.md)
 
+开发入口：[项目开发指引](AGENTS.md) · [开发规范](docs/ENGINEERING.md) · [V1 总规格](docs/SPEC.md) · [开发 Issues 与依赖](docs/ISSUES.md)
+
 ![环境工作台](docs/screenshots/environments.png)
 
 ## 当前可以做什么

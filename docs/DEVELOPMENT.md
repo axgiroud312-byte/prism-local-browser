@@ -136,7 +136,7 @@ app-data/
 
 ## 6 本地应用接口
 
-所有接口均为**拟定契约**。Wails 绑定负责 UI 与本机 Go 服务通信，默认不开放未经认证的局域网或公网 HTTP 管理服务。原型使用相同语义的演示适配器。
+所有接口均为**拟定契约**。Wails 绑定负责 UI 与本机 Go 服务通信，默认不开放未经认证的局域网或公网 HTTP 管理服务。当前原型尚未提取独立适配器；后续先建立 DemoAdapter，使演示流程与 native adapter 遵循同一应用契约。
 
 通用成功返回为 `{ ok: true, data, operationId? }`；失败返回为 `{ ok: false, error: { code, message, retryable, field?, itemIndex?, details? }, operationId? }`。details 必须经过脱敏。修改接口接受 requestId 做幂等处理；涉及已有记录的修改接受 expectedRevision。
 
