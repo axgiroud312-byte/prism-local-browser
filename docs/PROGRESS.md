@@ -1,18 +1,18 @@
 # Goal 当前执行位置
 
-更新时间：2026-09-30 16:27 Asia/Shanghai。
+更新时间：2026-09-30 16:35 Asia/Shanghai。
 
 - Goal：执行中；[规则](GOAL.md)；完成 **1/21**（验收任务计数）。
 - 当前任务：T02 / [Issue #3](https://github.com/axgiroud312-byte/prism-local-browser/issues/3)，进行中。
-- 当前步骤：最终全检查、Windows 构建和最新 exe 实测均通过；准备提交推送与 PR/远程 CI。主实现只读评审无确认阻断，新增 UIA/许可/CI 脚本的只读复核在后台；未提前计数完成。
-- 现场：`goal/t02-native-workspace` / `6cd681b`；T01 PR #23 已合入，#2 CLOSED；#3 OPEN、依赖已重新确认；总规格 #1 保留。所有未提交内容为本 Goal 工作，无用户遗留改动。
+- 当前步骤：代码 `134dc66` 的远程 Node 22/24 与 Windows Go 检查全部通过；[PR #24](https://github.com/axgiroud312-byte/prism-local-browser/pull/24) 收尾。两轮只读评审均完成，无确认阻断；准备推送最终记录后再次检查/合入。
+- 现场：`goal/t02-native-workspace` / `134dc66`，已推送；T01 PR #23 已合入，#2 CLOSED；#3 OPEN、依赖已重新确认；总规格 #1 保留。当前未提交仅本 Goal 收尾记录，无用户遗留改动。
 
 ## 任务状态
 
 | 任务 | Issue | 状态 | 交付提交 / 验证 |
 | --- | --- | --- | --- |
 | T01 | #2 | 已完成 | 代码 `3b9b0fa`、记录 `afaeecb`、合入 `6cd681b`；[记录](verification/T01.md)；[PR #23](https://github.com/axgiroud312-byte/prism-local-browser/pull/23) |
-| T02 | #3 | 进行中 | 未提交；[记录](verification/T02.md) |
+| T02 | #3 | 验证中 | 代码 `134dc66` 已推送、CI全通过；[记录](verification/T02.md)；[PR #24](https://github.com/axgiroud312-byte/prism-local-browser/pull/24)，最终记录待检查 |
 | T03 | #4 | 待开始 | — |
 | T04 | #5 | 待开始 | — |
 | T05 | #6 | 待开始 | — |
@@ -53,9 +53,11 @@
 - 原生构建用 Vite desktop 模式，桥接损坏也不能回退 demo；本机界面明确未就绪、暂不支持批量/真实启动/代理/Cookie/备份。只读评审已完成，无确认阻断；主代理为唯一写入者。
 - 2026-09-30 15:50–16:13：首条原型 UI 冷启动超时已分析，保留时限/断言，单条及11条完整 UI 重跑均通过。go-webview2 主动屏蔽外部调试参数，改用 Windows UI Automation，不削弱产品设置；控件类型匹配和许可脚本 UTF-8 问题已修复。`npm run verify:desktop` **真实 production exe** 创建/编辑→正常关闭→重开→SQLite/UI核对→窄窗口→正常关闭通过，实际 id/seed/revision/全部偏好一致。无真实内核运行声明。
 - 2026-09-30 16:20–16:27：最终 `npm run check` 通过（49 JS、类型、生产原型构建、25 文档、11 UI），13 Go 契约/vet 通过，最新 Windows production 构建及26模块许可通过；对新 exe 再执行真实 UIA/SQLite 关闭重开验证通过。公开合成 JSON/截图已核查，实机证据无私人路径；本 Goal 启动的测试桌面均已正常退出。`git diff --check`、gofmt 检查通过，尚未推送/远程验收。
-- 未提交：T02 服务、adapter、桌面入口、脚本、测试、工具配置、许可/文档与 T01 收尾记录；无用户遗留改动。
+- 2026-09-30 16:29–16:34：代码 `134dc66` / [run 36689998979](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/36689998979) 的 Windows Node 22.12.0、24 和 Go/Wails 构建三项全通过，已核对 headSha、实际步骤与结果。另以原型格式合成文本充当损坏 app.db 开真实 exe：显示 native 安全阻断，无演示重置/示例回退，正常关闭后原文未变；证据已脱敏。
+- 第二轮只读复核完成：独立核对当前 production exe SHA-256、合成 SQLite 全字段与截图；26 个实际 Go 依赖许可和子组件声明齐全；UIA 只操作自身 PID、不注入调试参数，CI 没有以构建冒充实机。无确认阻断，不重复其未执行的测试声明。
+- 已提交推送 `134dc66`：T02 服务、adapter、桌面入口、脚本、测试、工具配置、许可/文档、合成实机证据及 T01 收尾记录。PR #24 创建成功，新增 Windows Go 构建 CI；未提交仅进度收尾文档，无用户遗留改动。
 - 当前阻塞：无。未解决失败：先前类型/冷启动/脚本问题均已关闭；等待最新最终回归及远程检查，不标为已完成。
-- 下一步：提交推送/PR，完成背景脚本复核与远程 Node 22/24/Windows Go 构建检查；全部通过后关闭 #3，自动进入 T03。
+- 下一步：处理背景复核或远程检查发现的具体问题；完成文档收尾并推送，最终检查全部通过后合入/关闭 #3，自动进入 T03。
 
 ## 恢复资源与 GitHub
 
