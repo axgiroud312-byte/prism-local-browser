@@ -94,3 +94,9 @@ PRD 与开发方案已经定义了实际内核启动、独立目录锁、代理�
 - 全新Windows用户环境仍需本票CI实际闭环确认，不把本机产品初始为空冒充全新用户。未关闭T03，未将桌面壳安装通过推导为真实内核、代理、Cookie、备份或恢复通过。
 
 ![T03 安装并升级、保留卸载后重装的实际桌面（合成数据）](screenshots/T03-installed-reopened.png)
+
+### T03 最终补验（2026-09-30 19:30；真实Windows安装通过）
+
+最终代码`62dae8e`的本机Windows11 GUI安装/两快捷方式启动/升级/默认保留重装/明确删除通过；[远程run36708551587](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/36708551587) Windows Node22/24、24Go/vet、双包构建、全新Windows Server2025 runner的实际默认用户安装与UIA/SQLite闭环均通过。具体PID、身份、seed、版本与不同包hash见 [最终双环境记录](verification/T03-release-acceptance.json)。CI不提供GUI向导截图；本机已实际核验默认未勾选删除。
+
+采用本机干净源码构建的未签名预览2作为T03交付包，hash `e1d39162a4399aee10c1d9ef194a72569c0b96d2b6d53e3c8f7d37c56dece13f`；CI产物仅作验收，源清单`sourceDirty=true`如实保留，不混称干净源码发布。仍不含内核或宣称真实代理/登录数据/备份恢复通过。上面的历史未完成状态保留当时范围，最终以本补验为准。

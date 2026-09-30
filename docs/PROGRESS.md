@@ -1,11 +1,11 @@
 # Goal 当前执行位置
 
-更新时间：2026-09-30 19:23 Asia/Shanghai。
+更新时间：2026-09-30 19:48 Asia/Shanghai。
 
-- Goal：执行中；[规则](GOAL.md)；完成 **2/21**（验收任务计数）。
-- 当前任务：T03 / [Issue #4](https://github.com/axgiroud312-byte/prism-local-browser/issues/4)，进行中。
-- 当前步骤：a8b5076的Node22/24全通过，Unicode COM不再报异常；Go测试发现Shell把TEMP的8.3短路径展开后与原字面路径不等。已本机强制GetShortPathName复现同一失败，再按实际文件/目录identity核验；独立Shell.Application读回保持同一identity断言，相关模块/vet通过。只提交这个必要相关修复，不重跑前端全量。
-- 现场：`goal/t03-windows-installer` / `a8b5076`；未提交为路径identity修复/回归与最新本机合成记录，所有改动属本Goal。#4尚OPEN，正式仍2/21。
+- Goal：执行中；[规则](GOAL.md)；完成 **3/21**（验收任务计数）。
+- 当前任务：T04 / [Issue #5](https://github.com/axgiroud312-byte/prism-local-browser/issues/5)，进行中。
+- 当前步骤：T03最终三项CI及干净Windows实际闭环通过，PR #25合入`99c6a36`，#4已勾选并关闭。T04唯一blocking #3已完成且成果可用；先实现精确归档校验/安全暂存/受控探测，再接真实内核页，只测相关项。
+- 现场：`goal/t04-exact-kernel`，基线`99c6a36`；T03收尾证据与T04开始记录一并提交，保留所有历史证据/旧空库。无用户遗留改动。
 
 ## 任务状态
 
@@ -13,8 +13,8 @@
 | --- | --- | --- | --- |
 | T01 | #2 | 已完成 | 代码 `3b9b0fa`、记录 `afaeecb`、合入 `6cd681b`；[记录](verification/T01.md)；[PR #23](https://github.com/axgiroud312-byte/prism-local-browser/pull/23) |
 | T02 | #3 | 已完成 | 代码 `134dc66`、记录 `fc4aa47`、合入 `44517c5`；[记录](verification/T02.md)；[PR #24](https://github.com/axgiroud312-byte/prism-local-browser/pull/24)，最终 CI 全通过 |
-| T03 | #4 | 进行中 | [验收清单](verification/T03.md)、[PR #25](https://github.com/axgiroud312-byte/prism-local-browser/pull/25)，本机闭环通过，干净runner快捷方式问题修复中 |
-| T04 | #5 | 待开始 | — |
+| T03 | #4 | 已完成 | 代码`62dae8e`、合入`99c6a36`；[验收](verification/T03.md)、[PR #25](https://github.com/axgiroud312-byte/prism-local-browser/pull/25)，Windows11/干净runner闭环与CI全通过 |
+| T04 | #5 | 进行中 | [验收清单](verification/T04.md)；精确安装/探测实现中 |
 | T05 | #6 | 待开始 | — |
 | T06 | #7 | 待开始 | — |
 | T07 | #8 | 待开始 | — |
@@ -72,14 +72,16 @@
 - 18:32–18:35：最新CI打包/前提已通过，真实安装exit0，快捷方式目标比较失败（尚未进入应用UI操作）。检查改为Windows物理DesktopDirectory（不是虚拟shell Desktop）与GetFullPath规范化，添加真实文件存在性检查及不带私人路径的错误细节；没有改产品代码或放宽预期exe检查。正在只复跑相关安装/快捷方式闭环；没有本地49JS全量回归。
 - 18:44–18:58：[run36703818884](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/36703818884) Node22/24、Go与两包构建通过，默认首次安装exit0后链接文件存在但TargetPath空。先加失败回归，再改helper在publish成功后创建并回读Windows链接，取消安装前NSIS CreateShortcut；go-ole使用已有固定依赖/许可，没有引入新版本。物理目录修正保留，错误诊断不再对空路径调用Test-Path。独立PS实际读回两链接验证首次/升级及锁占用失败仍恢复旧链接/注册，desktopbase/vet通过；最终新包真实操作尚待。
 - 19:01–19:11：bd26ff9两个干净源码包本机完整安装/快捷方式/保留重装/删除通过。[run36705800455](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/36705800455) Node22通过，Node24因Vite监听Playwright下载.crdownload的EBUSY崩溃；desktop的新Unicode链接Go回归失败，未打包。确认关键根因是WScript.Shell在非当前ANSI码页字符路径下创建/读取错误：本机增加🌈路径后同一异常可复现，因此此前TargetPath空不能证明原NSIS链接真实为空。已改产品生成与回读为明确Unicode的IShellLinkW/IPersistFile、独立PS读取为Shell.Application；Unicode/首次/升级/占用回滚模块测试/vet通过。Vite仅忽略生成的output/.tools/build/wailsjs目录，不删断言/重试隐藏问题；只跑相关UI。
-- 当前阻塞：无外部资源阻塞；仅当前票干净runner真实流程未通过，不关闭本票。
+- 历史T03阻塞已在最终验证关闭，详见逐票记录。
 - 19:13–19:15：a8b5076干净源码重建两个包并用最新Unicode读取驱动真实验证默认根安装→两链接打开→创建编辑/两次正常重开→升级→拒绝降级→默认向导保留卸载→重装找回→显式删除通过。最终6个app正常退出、默认安装/注册/合成数据均清除，旧空库保留备存；公开证据见T03-installer-final.json。修复已推送，最终CI等待中。
 - 19:17–19:23：[run36707306592](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/36707306592) Node22/24完整通过，Vite问题关闭；Go新链接测试回读字符串不匹配，未打包。Windows TEMP短路径与Shell展开长路径是同一对象却非同一字符串；用本机GetShortPathName强制短别名已复现相同失败。产品/独立测试改以os.SameFile核对实际目标文件/工作目录，仍拒绝空值和任何不同对象；Unicode+8.3+首次/升级/锁占用回滚模块/vet通过，未再跑49JS或11UI。
-- 下一步：提交identity修复，复用两个包相关构建/验证后推送，核对最新headSha/干净runner实际流程；成功后合入关闭#4，正式3/21后自动T04。当前无后台命令。
+- 19:25：62dae8e两个干净源码包与本机完整闭环再次通过，6个app正常退出；预览2 SHA-256 `e1d39162a4399aee10c1d9ef194a72569c0b96d2b6d53e3c8f7d37c56dece13f`、NotSigned。最新源码已推送；剩余仅干净runner检查，失败按相关实际数据定位。
+- 19:30–19:48：T03最新headSha/三项CI/下载产物与真实SQLite/6个进程正常退出均核对；PR #25合入`99c6a36`，#4显式关闭，正式3/21。只读T04接入地图完成，无并行写入。当前T04 #5全文/原生blocking核对：#3 CLOSED，基线服务/安装证据可用。重新查询官方150 Release仍404；明确选148.0.7778.215用于本票可获取构建验收，API归档摘要仍`9ef3f471…362579`，不是自动回退或生产推荐。尚未下载实算/探测。
+- 下一步：下载并实际核对148归档；实施安全安装及受控能力探测、SQLite证据与真实页面。尚无T04验收通过声明；不开始T05。
 
 ## 恢复资源与 GitHub
 
 - 已有其他 Node/Chrome 进程属于用户现场，不停止。已核对 5173 为本仓库旧 Vite 服务；4173 未监听（纠正初查格式误判）。本 Goal 尚未启动服务，UI 测试用独立端口 5183 和新浏览器上下文。
 - `output/`、`.playwright-cli/`、`dist/`、`node_modules/` 为现有忽略目录；不删除旧成果。新测试输出使用 `output/goal/`，仅保留合成证据。
 - `npx playwright install chromium` 已成功安装本票测试浏览器（仅前端检查，不是 fingerprint-chromium）。测试使用 5183，由 Playwright 启停独立 Vite，首次测试已退出；旧 5173 不动。Serena 本机索引 `.serena/` 已忽略。
-- GitHub：T01/T02 已完成同步；T03 PR #25开放、#4未关闭；#1不关闭。后台只等待当前安装验收与CI完成通知。
+- GitHub：T01–T03已完成同步，#4 CLOSED、PR #25 MERGED；#1保留。T04 #5唯一活动票，暂无PR/后台代理或命令。

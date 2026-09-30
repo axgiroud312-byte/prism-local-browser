@@ -1,0 +1,80 @@
+{
+  "headCommit": "62dae8e921a98516ee450dfad4ef7dce62c03bad",
+  "local": {
+    "verifiedAt": "2026-09-30T11:25:38.4349647Z",
+    "windows": "Windows 11 Home (Chinese)",
+    "sourceDirtyAtBuild": false,
+    "actualDefaultKnownFolders": true,
+    "environmentOverrides": false,
+    "wizardDefaultDeleteCheckboxUnchecked": true,
+    "actualDesktopAndStartMenuLaunches": true,
+    "installUpgradeRetainReinstallExplicitDelete": true,
+    "appPIDs": [68280, 67264, 44800, 26768, 62960, 33956],
+    "allAppProcessesNormalExit": true,
+    "database": { "id": "638c68fe-9ad0-4e4d-9fd8-79aa9e68a35a", "seed": "1598236949", "revision": 2, "kernelId": "kernel-pending" },
+    "installer": {
+      "name": "prism-browser-0.3.0-preview.2-windows-amd64-setup.exe",
+      "sha256": "e1d39162a4399aee10c1d9ef194a72569c0b96d2b6d53e3c8f7d37c56dece13f",
+      "bytes": 12725608,
+      "authenticode": "NotSigned",
+      "distribution": "Locally verified clean-source development preview; no kernel"
+    }
+  },
+  "cleanHostedWindows": {
+    "run": "https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/36708551587",
+    "conclusion": "success",
+    "jobs": { "check22": "success", "check24": "success", "desktop": "success" },
+    "checkoutMergeCommit": "aaeab7c1adf4ab017d64b635dab251a2fa34d11b",
+    "checkoutParents": ["44517c5db132cd302a48267721cf677296c2205a", "62dae8e921a98516ee450dfad4ef7dce62c03bad"],
+    "sourceDirtyAtBuild": true,
+    "sourceDirtyNote": "As recorded by the CI manifest, not relabeled as a clean-source release. The selected distribution is the local clean-source artifact above.",
+    "verifiedAt": "2026-09-30T11:30:24.0076570Z",
+    "windows": "Windows Server 2025 Datacenter",
+    "platform": "windows/amd64",
+    "freshDisposableWindowsRunner": true,
+    "freshProductStateAtStart": true,
+    "actualDefaultKnownFolders": true,
+    "environmentOverrides": false,
+    "driver": "Actual NSIS installation and installed shortcuts + real Windows UI Automation + SQLite comparisons",
+    "installerWizard": false,
+    "screenshots": false,
+    "checks": {
+      "firstAndSecondStart": true,
+      "upgradeIdentityAndAllPreferencesPreserved": true,
+      "downgradeRejectedExit25": true,
+      "silentDefaultUninstallRetained": true,
+      "reinstallFoundSameData": true,
+      "explicitRemoveData": true
+    },
+    "installerPIDs": [6360, 7724, 600, 7928, 6104, 8968],
+    "installerExitCodes": [0, 0, 25, 0, 0, 0],
+    "appPIDs": [7408, 1608, 3564, 4732, 5444, 9212],
+    "allAppProcessesNormalExit": true,
+    "database": {
+      "id": "c7029278-7b1b-40e3-b5c4-6349bd4e9593",
+      "seed": "775921441",
+      "revision": 2,
+      "kernelId": "kernel-pending",
+      "name": "桌面重开验证",
+      "group": "合成持久组",
+      "note": "只用于 T02 实际桌面验证",
+      "proxyId": "",
+      "language": "en-US",
+      "timezone": "America/New_York",
+      "cpu": "auto",
+      "width": 1440,
+      "height": 900,
+      "urls": "https://example.test/desktop",
+      "restoreTabs": false,
+      "fingerprintVersion": "windows-desktop-v1"
+    },
+    "installer": {
+      "sha256": "7bf9cb68b5e4ea78f01a47e895b78fa70f0beb22cf39e20da69ebe274ff883da",
+      "bytes": 12725903,
+      "authenticode": "NotSigned",
+      "downloadedSHA256IndependentlyMatches": true,
+      "artifactName": "windows-amd64-development-preview",
+      "role": "Acceptance artifact, not the selected clean-source distribution"
+    }
+  }
+}

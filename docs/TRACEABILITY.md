@@ -45,7 +45,7 @@ UX-001、DOC-001 的发布入口在 [安装器](../build/windows/installer/prism
 
 快捷方式在真实程序发布后由 [Windows COM helper](../internal/desktopbase/shortcut_windows.go) 创建，重新加载并核对目标/永久工作目录后才发布入口，不接受空目标的链接为安装成功；全新路径、Unicode、升级和占用回滚有实际Windows读回测试。
 
-实际验收入口：[安装说明](INSTALLATION.md)、[安装闭环脚本](../scripts/verify-installer.ps1)、[目录与失败测试](../internal/desktopbase/install_windows_test.go)、[逐票记录](verification/T03.md)。T03 仍在验收，不将安装壳通过推导为真实浏览器/代理/完整恢复通过；干净 Windows runner 与本机 UI 操作分别记录。
+实际验收入口：[安装说明](INSTALLATION.md)、[安装闭环脚本](../scripts/verify-installer.ps1)、[目录与失败测试](../internal/desktopbase/install_windows_test.go)、[逐票记录](verification/T03.md) 与 [最终双环境证据](verification/T03-release-acceptance.json)。T03 本机Windows11与干净Windows runner实际安装闭环、最终远程检查均通过；不将安装壳通过推导为真实浏览器/代理/完整恢复通过。不同构建的hash和源清单分别记录。
 
 以下关联于 2026-09-30 发布，表示计划实现范围，不能据此判断已完成。当前状态与 blocking 依赖以 GitHub 为准；完整顺序见 [开发票据索引](ISSUES.md)，共同范围见 [总规格 Issue](https://github.com/axgiroud312-byte/prism-local-browser/issues/1)。
 
