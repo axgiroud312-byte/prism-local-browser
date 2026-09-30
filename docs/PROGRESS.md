@@ -1,17 +1,17 @@
 # Goal 当前执行位置
 
-更新时间：2026-09-30 14:43 Asia/Shanghai。
+更新时间：2026-09-30 14:48 Asia/Shanghai。
 
 - Goal：执行中；[规则](GOAL.md)；完成 **0/21**（验收任务计数）。
 - 当前任务：T01 / [Issue #2](https://github.com/axgiroud312-byte/prism-local-browser/issues/2)，验证中。
-- 当前步骤：所有本地验收与评审修复通过，建立 T01 PR、推送并验证远程；未标完成。
+- 当前步骤：本地与远程 Windows Node 22.12/24 全通过，同步最终检查点后合入 PR #23；未开始 T02。
 - 现场：初始 `main` / `5d19fe2` 与远程一致、工作区干净；当前提交分支 `goal/t01-application-contract`。无已有 Goal、进度、Go/Wails 服务或完成票；初查 22 个 Issue 均 OPEN、无开放 PR；T01 blocking 为空。
 
 ## 任务状态
 
 | 任务 | Issue | 状态 | 交付提交 / 验证 |
 | --- | --- | --- | --- |
-| T01 | #2 | 验证中 | 未提交；[记录](verification/T01.md) |
+| T01 | #2 | 验证中 | `3b9b0fa` 已推送；[记录](verification/T01.md)；[PR #23](https://github.com/axgiroud312-byte/prism-local-browser/pull/23) |
 | T02 | #3 | 待开始 | — |
 | T03 | #4 | 待开始 | — |
 | T04 | #5 | 待开始 | — |
@@ -44,13 +44,15 @@
 - 2026-09-30 14:29 只读评审完成：创建途中恢复可破坏引用、storage getter 权限异常、revision 元数据类型异常、旧页写失败仍成功提示。已补工作区活跃任务保护/每批引用与提交验证、惰性存储端口、元数据对象校验、旧页提交结果检查与活动同次保存；新增失败回归，尚待复跑。额外保持批量名称前缀兼容和非空 Cookie 验证。
 - 2026-09-30 14:36：`npm run check` 通过（40 测试、10 UI、源码/测试类型、构建、文档）。只读复核确认 4 阻断关闭；追加停止/创建竞态保护与契约回归，需最终检查。未进入 T02。
 - 2026-09-30 14:42：最终 `npm run check` 通过（41 测试、10 UI、源码/测试类型、构建、24 文档），`git diff --check` 通过。代码版本 `5d19fe2 + T01 工作树`；评审 4 原问题和1新增竞态均已回归，无未解决功能失败。公开截图与 ACCEPTANCE 已补。
-- 未提交：Goal/进度/决策/验证文档、`.gitignore`、`src/application/`、`src/App.tsx`、`src/main.tsx`、`tests/application.test.ts`、`package.json` 与锁文件。无用户遗留改动。
-- 当前阻塞：无外部阻塞。未解决失败：无；远程 CI 尚待运行，不计验收完成。
-- 下一步：文档检查后提交 T01 至专用分支，建立 PR 并通过远程 Node 22/24；合入且关闭 #2 后进入 T02。
+- 2026-09-30 14:46：本票代码/文档提交 `3b9b0fa`，已推送任务分支并创建 PR #23。本地最终检查覆盖该代码；远程 Node 22/24 正在检查。
+- 2026-09-30 14:48：PR #23 的 [远程检查 run 36679953263](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/36679953263) 全通过，Windows Node 22.12.0 / 24 均执行 41 测试、类型、构建、文档和10条UI。当前仅补文档检查点，代码仍为 `3b9b0fa`。
+- 未提交：本次提交/推送检查点的 `docs/PROGRESS.md` 与 `docs/verification/T01.md`；其余 T01 成果已提交。无用户遗留改动。
+- 当前阻塞：无。未解决失败：无。
+- 下一步：提交推送本次纯文档检查点，确认对应 PR 检查后合入并关闭 #2；读取 T02 Issue 与前置证据并进入 T02。
 
 ## 恢复资源与 GitHub
 
 - 已有其他 Node/Chrome 进程属于用户现场，不停止。已核对 5173 为本仓库旧 Vite 服务；4173 未监听（纠正初查格式误判）。本 Goal 尚未启动服务，UI 测试用独立端口 5183 和新浏览器上下文。
 - `output/`、`.playwright-cli/`、`dist/`、`node_modules/` 为现有忽略目录；不删除旧成果。新测试输出使用 `output/goal/`，仅保留合成证据。
 - `npx playwright install chromium` 已成功安装本票测试浏览器（仅前端检查，不是 fingerprint-chromium）。测试使用 5183，由 Playwright 启停独立 Vite，首次测试已退出；旧 5173 不动。Serena 本机索引 `.serena/` 已忽略。
-- GitHub：现场查询及 [T01 开始评论](https://github.com/axgiroud312-byte/prism-local-browser/issues/2#issuecomment-5905027731) 已完成；文档待推送。关闭 #2 前必须通过本票验收与远程检查；#1 不关闭。
+- GitHub：`3b9b0fa` 已推送，[PR #23](https://github.com/axgiroud312-byte/prism-local-browser/pull/23) 已建立，T01 开始评论已同步；最新检查点待提交。关闭 #2 前必须通过本票验收与远程检查；#1 不关闭。
