@@ -188,7 +188,13 @@ func TestIntegrationRollbackKeepsRealRegistryAndShortcutBytes(t *testing.T) {
 func TestIntegrationBuildsShortcutsAfterPublishingTarget(t *testing.T) {
 	keyPath := `Software\PrismBrowserTests\` + uuid.NewString()
 	t.Cleanup(func() { registry.DeleteKey(registry.CURRENT_USER, keyPath) })
-	root := filepath.Join(t.TempDir(), "合成程序 🌈 with spaces")
+	base := t.TempDir()
+	wide, _ := windows.UTF16PtrFromString(base)
+	buffer := make([]uint16, 32768)
+	if n, err := windows.GetShortPathName(wide, &buffer[0], uint32(len(buffer))); err == nil && n < uint32(len(buffer)) {
+		base = windows.UTF16ToString(buffer)
+	}
+	root := filepath.Join(base, "合成程序 🌈 with spaces")
 	shortcuts := []string{filepath.Join(t.TempDir(), "合成桌面 🌈.lnk"), filepath.Join(t.TempDir(), "合成开始菜单 🌈.lnk")}
 	publish := func(version string) error {
 		source := payloadFixture(t, version)
@@ -200,10 +206,23 @@ func TestIntegrationBuildsShortcutsAfterPublishingTarget(t *testing.T) {
 	assertShortcuts := func(version string) {
 		t.Helper()
 		for _, path := range shortcuts {
-			command := exec.Command("powershell.exe", "-NoProfile", "-NonInteractive", "-Command", `$ErrorActionPreference='Stop'; $shell=New-Object -ComObject Shell.Application; $folder=$shell.NameSpace([IO.Path]::GetDirectoryName($env:PRISM_TEST_LINK)); $link=$folder.ParseName([IO.Path]::GetFileName($env:PRISM_TEST_LINK)).GetLink; if(!$link.Path -or [IO.Path]::GetFullPath($link.Path) -ne $env:PRISM_TEST_TARGET -or $link.WorkingDirectory -ne [IO.Path]::GetDirectoryName($env:PRISM_TEST_TARGET)){throw 'Published shortcut has incorrect target/working directory.'}`)
-			command.Env = append(os.Environ(), "PRISM_TEST_LINK="+path, "PRISM_TEST_TARGET="+filepath.Join(root, "versions", version, "prism-browser.exe"))
-			if output, err := command.CombinedOutput(); err != nil {
+			command := exec.Command("powershell.exe", "-NoProfile", "-NonInteractive", "-Command", `$ErrorActionPreference='Stop'; [Console]::OutputEncoding=[Text.UTF8Encoding]::new($false); $shell=New-Object -ComObject Shell.Application; $folder=$shell.NameSpace([IO.Path]::GetDirectoryName($env:PRISM_TEST_LINK)); $link=$folder.ParseName([IO.Path]::GetFileName($env:PRISM_TEST_LINK)).GetLink; @{target=$link.Path;workingDirectory=$link.WorkingDirectory}|ConvertTo-Json -Compress`)
+			target := filepath.Join(root, "versions", version, "prism-browser.exe")
+			command.Env = append(os.Environ(), "PRISM_TEST_LINK="+path)
+			output, err := command.CombinedOutput()
+			if err != nil {
 				t.Fatalf("independent shortcut readback failed: %v %s", err, output)
+			}
+			var readback struct{ Target, WorkingDirectory string }
+			if err = json.Unmarshal(output, &readback); err != nil {
+				t.Fatal(err)
+			}
+			for _, pair := range []struct{ actual, expected string }{{readback.Target, target}, {readback.WorkingDirectory, filepath.Dir(target)}} {
+				actualInfo, actualErr := os.Stat(pair.actual)
+				expectedInfo, expectedErr := os.Stat(pair.expected)
+				if pair.actual == "" || actualErr != nil || expectedErr != nil || !os.SameFile(actualInfo, expectedInfo) {
+					t.Fatal("independent readback points to a different file/directory")
+				}
 			}
 		}
 	}

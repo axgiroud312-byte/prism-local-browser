@@ -1,11 +1,11 @@
 # Goal 当前执行位置
 
-更新时间：2026-09-30 19:11 Asia/Shanghai。
+更新时间：2026-09-30 19:23 Asia/Shanghai。
 
 - Goal：执行中；[规则](GOAL.md)；完成 **2/21**（验收任务计数）。
 - 当前任务：T03 / [Issue #4](https://github.com/axgiroud312-byte/prism-local-browser/issues/4)，进行中。
-- 当前步骤：`bd26ff9`新包本机闭环通过，但CI新Unicode回归暴露WScript.Shell的ANSI路径处理。已用本机中文码页无法表示的🌈路径实际复现，再改Unicode IShellLinkW/IPersistFile生成并回读、Shell.Application独立验收，相关desktopbase/vet通过。另修Vite误监听测试下载文件造成EBUSY退出，只复跑相关UI；待新包相关构建/操作后再推送，不以反复CI代替本机定位。
-- 现场：`goal/t03-windows-installer` / `bd26ff9`；未提交是Unicode接口/验证、Vite生成目录监听边界和当前票记录，所有改动均本Goal。#4尚OPEN，正式仍2/21。
+- 当前步骤：a8b5076的Node22/24全通过，Unicode COM不再报异常；Go测试发现Shell把TEMP的8.3短路径展开后与原字面路径不等。已本机强制GetShortPathName复现同一失败，再按实际文件/目录identity核验；独立Shell.Application读回保持同一identity断言，相关模块/vet通过。只提交这个必要相关修复，不重跑前端全量。
+- 现场：`goal/t03-windows-installer` / `a8b5076`；未提交为路径identity修复/回归与最新本机合成记录，所有改动属本Goal。#4尚OPEN，正式仍2/21。
 
 ## 任务状态
 
@@ -73,7 +73,9 @@
 - 18:44–18:58：[run36703818884](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/36703818884) Node22/24、Go与两包构建通过，默认首次安装exit0后链接文件存在但TargetPath空。先加失败回归，再改helper在publish成功后创建并回读Windows链接，取消安装前NSIS CreateShortcut；go-ole使用已有固定依赖/许可，没有引入新版本。物理目录修正保留，错误诊断不再对空路径调用Test-Path。独立PS实际读回两链接验证首次/升级及锁占用失败仍恢复旧链接/注册，desktopbase/vet通过；最终新包真实操作尚待。
 - 19:01–19:11：bd26ff9两个干净源码包本机完整安装/快捷方式/保留重装/删除通过。[run36705800455](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/36705800455) Node22通过，Node24因Vite监听Playwright下载.crdownload的EBUSY崩溃；desktop的新Unicode链接Go回归失败，未打包。确认关键根因是WScript.Shell在非当前ANSI码页字符路径下创建/读取错误：本机增加🌈路径后同一异常可复现，因此此前TargetPath空不能证明原NSIS链接真实为空。已改产品生成与回读为明确Unicode的IShellLinkW/IPersistFile、独立PS读取为Shell.Application；Unicode/首次/升级/占用回滚模块测试/vet通过。Vite仅忽略生成的output/.tools/build/wailsjs目录，不删断言/重试隐藏问题；只跑相关UI。
 - 当前阻塞：无外部资源阻塞；仅当前票干净runner真实流程未通过，不关闭本票。
-- 下一步：完成Unicode修复新包相关验证后推送，核对最新headSha/干净runner实际流程；成功后合入关闭#4，正式3/21后自动T04。当前唯一后台为相关`test:ui`，旧CI/安装均已结束。
+- 19:13–19:15：a8b5076干净源码重建两个包并用最新Unicode读取驱动真实验证默认根安装→两链接打开→创建编辑/两次正常重开→升级→拒绝降级→默认向导保留卸载→重装找回→显式删除通过。最终6个app正常退出、默认安装/注册/合成数据均清除，旧空库保留备存；公开证据见T03-installer-final.json。修复已推送，最终CI等待中。
+- 19:17–19:23：[run36707306592](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/36707306592) Node22/24完整通过，Vite问题关闭；Go新链接测试回读字符串不匹配，未打包。Windows TEMP短路径与Shell展开长路径是同一对象却非同一字符串；用本机GetShortPathName强制短别名已复现相同失败。产品/独立测试改以os.SameFile核对实际目标文件/工作目录，仍拒绝空值和任何不同对象；Unicode+8.3+首次/升级/锁占用回滚模块/vet通过，未再跑49JS或11UI。
+- 下一步：提交identity修复，复用两个包相关构建/验证后推送，核对最新headSha/干净runner实际流程；成功后合入关闭#4，正式3/21后自动T04。当前无后台命令。
 
 ## 恢复资源与 GitHub
 

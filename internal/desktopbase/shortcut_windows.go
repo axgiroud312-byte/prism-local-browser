@@ -8,7 +8,6 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
-	"strings"
 	"syscall"
 	"unsafe"
 
@@ -136,7 +135,11 @@ func shortcutBytes(source, executable string) ([]byte, error) {
 		if workingDirectory {
 			expected = filepath.Dir(executable)
 		}
-		if actual == "" || !strings.EqualFold(filepath.Clean(actual), filepath.Clean(expected)) {
+		// The shell expands 8.3 aliases (including TEMP on hosted Windows).
+		// Verify the real file/directory identity, not only its path spelling.
+		actualInfo, actualErr := os.Stat(actual)
+		expectedInfo, expectedErr := os.Stat(expected)
+		if actual == "" || actualErr != nil || expectedErr != nil || !os.SameFile(actualInfo, expectedInfo) {
 			return nil, errors.New("快捷方式回读目标或工作目录不匹配，安装未完成")
 		}
 	}
