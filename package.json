@@ -1,0 +1,31 @@
+{
+  "name": "prism-local-browser",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Windows 本地指纹浏览器的产品规格与交互原型",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "test": "node --experimental-strip-types --test tests/domain.test.ts",
+    "check:docs": "node scripts/check-docs.mjs",
+    "check": "npm run test && npm run build && npm run check:docs"
+  },
+  "dependencies": {
+    "lucide-react": "1.49.0",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "typescript": "7.0.2",
+    "vite": "8.3.1"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}
