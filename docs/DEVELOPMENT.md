@@ -4,7 +4,7 @@
 
 版本：1.0 · 日期：2026-09-30
 
-本文件将 [产品需求](PRD.md) 转成实施边界、应用接口、状态与数据一致性规则。仓库保留 React/TypeScript 原型及 T01 的应用契约与 DemoAdapter；T02 已接入 Go/Wails、SQLite 和 WailsAdapter 的本机配置底座，正在验收。已选定的 adryfish/fingerprint-chromium 仍未安装或运行。下文完整接口是分票目标，不表示已全量实现；实际范围见 [PROGRESS.md](PROGRESS.md)。
+本文件将 [产品需求](PRD.md) 转成实施边界、应用接口、状态与数据一致性规则。仓库保留 React/TypeScript 原型及 T01 的应用契约与 DemoAdapter；T02 的 Go/Wails、SQLite 和 WailsAdapter 本机配置底座已验收，T03 用户级安装预览正在验收（见 [安装说明](INSTALLATION.md)）。已选定的 adryfish/fingerprint-chromium 仍未安装或运行。下文完整接口是分票目标，不表示已全量实现；实际范围见 [PROGRESS.md](PROGRESS.md)。
 
 ## 1 当前交付与后续实施分层
 

@@ -8,6 +8,7 @@ import "./styles.css";
 const desktop = window as unknown as { go?: { main?: { DesktopApp?: { Call?: NativeBridge } } }; runtime?: unknown };
 let application: ApplicationService;
 if (import.meta.env.MODE === "desktop" || desktop.go || desktop.runtime) {
+  document.title = `棱镜浏览器 · 开发预览 ${import.meta.env.VITE_DESKTOP_VERSION ?? "源码开发"}`;
   const native = new WailsAdapter(request => {
     const call = desktop.go?.main?.DesktopApp?.Call;
     if (!call) throw new Error("native bridge unavailable");

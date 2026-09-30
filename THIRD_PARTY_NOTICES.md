@@ -97,6 +97,14 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
+## NSIS 开发预览安装程序（T03）
+
+固定 NSIS **3.13**；官方 [便携 ZIP 发行元数据](https://sourceforge.net/projects/nsis/files/NSIS%203/3.13/) 的 SHA-256 与实际下载一致：`ba63dffc4410ee89193e1cb5a41989991bd77c61068da17e3156d136b7b0b3d8`。仅下载到 `.tools/`，不分发完整编译工具。
+
+安装/卸载 stub、System/nsDialogs 插件及 Modern UI 按 NSIS 的 **zlib/libpng** 条款使用，Copyright (C) 1999–2026 Contributors。本项目的安装脚本独立编写，不把 NSIS 引擎重新许可为 MIT。压缩显式选择 zlib；**没有链接 bzip2 或 LZMA 压缩模块**，其各自许可证不被误标为本安装器正在使用。官方 `COPYING` 全文随每个程序版本以 `NSIS-LICENSE.txt` 保留（其中包含上游其他可选压缩模块说明）；来源 [NSIS 许可](https://nsis.sourceforge.io/License)。
+
+微软 WebView2 仍为外部运行先决条件：安装器检测并提示官方 Evergreen Runtime 获取方式，不复制安装器或静默下载微软运行时，也不在卸载时删除它。fingerprint-chromium 不随本开发预览安装包分发。
+
 ## 外部浏览器内核来源
 
 产品指定使用 [adryfish/fingerprint-chromium](https://github.com/adryfish/fingerprint-chromium) 作为后续桌面内核。本仓库只保存接入合同与演示元数据，没有打包该项目的可执行文件、Chromium 程序或浏览器用户数据。
