@@ -73,9 +73,11 @@ function Assert-Installed([int]$Revision) {
   if(!(Test-Path (Installed-Exe $Revision))){throw 'Installed executable absent.'}
   if((Get-ItemProperty $registry).DisplayVersion -ne "0.3.0-preview.$Revision"){throw 'Registered version mismatch.'}
   $shell=New-Object -ComObject WScript.Shell
-  foreach($folder in @([Environment]::GetFolderPath('Desktop'),[Environment]::GetFolderPath('Programs'))) {
-    $shortcut=$shell.CreateShortcut((Join-Path $folder '棱镜浏览器 · 开发预览.lnk'))
-    if($shortcut.TargetPath -ne (Installed-Exe $Revision)){throw 'Shortcut does not point to the installed version.'}
+  foreach($folder in @((Get-PrismDesktopDirectory),[Environment]::GetFolderPath('Programs',[Environment+SpecialFolderOption]::DoNotVerify))) {
+    $path=Join-Path $folder '棱镜浏览器 · 开发预览.lnk'
+    if(!(Test-Path -LiteralPath $path)){throw 'Installed shortcut missing in the physical Windows known folder.'}
+    $shortcut=$shell.CreateShortcut($path)
+    if(!$shortcut.TargetPath -or [IO.Path]::GetFullPath($shortcut.TargetPath) -ne [IO.Path]::GetFullPath((Installed-Exe $Revision))){throw "Shortcut target mismatch; fileExists=$([bool](Test-Path -LiteralPath $shortcut.TargetPath)); targetEmpty=$([string]::IsNullOrEmpty($shortcut.TargetPath)); desktopFolder=$($folder -eq (Get-PrismDesktopDirectory))."}
     if($shortcut.WorkingDirectory -like '*ns*.tmp*'){throw 'Shortcut retains the removed installer temporary working directory.'}
   }
   $installedManifest=Get-Content (Join-Path $install "versions/0.3.0-preview.$Revision/release.json") -Raw -Encoding UTF8|ConvertFrom-Json

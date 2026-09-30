@@ -61,13 +61,13 @@ function Read-Database {
 function Open-Desktop {
   $launch=$env:PRISM_VERIFY_EXE
   if($env:PRISM_VERIFY_LAUNCH_SHORTCUTS -eq '1'){
-    $folder=if($script:processes.Count -eq 0){[Environment]::GetFolderPath('Desktop')}else{[Environment]::GetFolderPath('Programs')}
+    $folder=if($script:processes.Count -eq 0){Get-PrismDesktopDirectory}else{[Environment]::GetFolderPath('Programs',[Environment+SpecialFolderOption]::DoNotVerify)}
     $launch=Join-Path $folder '棱镜浏览器 · 开发预览.lnk'
   }
   $script:process = Start-Process -FilePath $launch -PassThru
   if($env:PRISM_VERIFY_LAUNCH_SHORTCUTS -eq '1'){
     $actual=(Get-CimInstance Win32_Process -Filter "ProcessId=$($script:process.Id)").ExecutablePath
-    if($actual -ne $env:PRISM_VERIFY_EXE){throw 'Shortcut did not launch the expected installed executable.'}
+    if(!$actual -or [IO.Path]::GetFullPath($actual) -ne [IO.Path]::GetFullPath($env:PRISM_VERIFY_EXE)){throw 'Shortcut did not launch the expected installed executable.'}
   }
   $script:processes.Add(@{pid=$script:process.Id; executable='prism-browser.exe'; startedAt=[DateTime]::UtcNow.ToString('o'); normalExit=$false})
   for ($i = 0; $i -lt 150; $i++) {

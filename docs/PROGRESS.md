@@ -1,11 +1,11 @@
 # Goal 当前执行位置
 
-更新时间：2026-09-30 18:27 Asia/Shanghai。
+更新时间：2026-09-30 18:35 Asia/Shanghai。
 
 - Goal：执行中；[规则](GOAL.md)；完成 **2/21**（验收任务计数）。
 - 当前任务：T03 / [Issue #4](https://github.com/axgiroud312-byte/prism-local-browser/issues/4)，进行中。
-- 当前步骤：[PR #25](https://github.com/axgiroud312-byte/prism-local-browser/pull/25)首次票末CI的Node22/24通过，desktop在NSIS校验前失败：PS7父进程向Windows PS5继承不兼容模块路径，Get-FileHash无法加载，尚未执行安装。仅修统一脚本host模块优先级，模拟污染模块路径下4个实际cmdlet/官方ZIP校验通过；准备推送这个必要CI修复，不重跑本地前端全量。
-- 现场：`goal/t03-windows-installer` / `e414d2a`，与origin同步；本地仅此进度检查点未提交，总规格#1保留，无用户遗留改动。#4尚OPEN，正式仍2/21。
+- 当前步骤：0731de6的[run36702629951](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/36702629951)已通过Node22/24、23Go/vet、两安装包构建和WebView2准备，修复的PowerShell问题关闭。全新runner首次安装成功后快捷方式路径核对失败；只修验收脚本的物理DesktopDirectory取值和Windows路径规范化，保留文件/目标exe/实际启动全部断言，相关本机闭环验证中。
+- 现场：`goal/t03-windows-installer` / `0731de6`，host兼容修复已提交推送；本地仅此进度检查点未提交，总规格#1保留，无用户遗留改动。#4尚OPEN，正式仍2/21。
 
 ## 任务状态
 
@@ -69,8 +69,9 @@
 - 18:08–18:12：只读复核确认四项关闭，新增唯一必要修复为尾部占用失败丢卸载重试入口；已分离最后finish-uninstall，快捷方式或数据处理失败保留卸载器/注册。仅跑相关desktopbase测试通过；新增合成真实文件占用→失败仍可重试→释放后完成用例，总Go23。快捷方式修为NoWorkingDir，并将最终真实桌面验证从直接exe改为分别从桌面/开始菜单.lnk启动、核对实际exePID。
 - 18:11–18:13：代码提交12e8286；干净树两个预览包构建通过，真实从两条.lnk分别打开预期安装exe，每版正常关闭重开，完整安装→升级→保留卸载→重装→显式删除再次通过。公开合成证据与安装包实际hash已落盘；NotSigned，不含内核。确认Go VERSIONINFO fixed0.3.0.0与可选字符串空，元数据脚本按实际fixed字段记录，helper版本资源null如实保留。
 - 18:23–18:27：[run36701706414](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/36701706414) Node22/24通过，desktop安装包构建失败。已读取失败日志定位Get-FileHash模块自动加载而非产品/数据库/UI失败；增加进程内本host原生模块路径优先的6入口共享bootstrap，模拟PS7-only PSModulePath的实际WinPS5验证Get-FileHash/Authenticode/Archive/Add-Type与NSIS缓存ZIP/hash/版本全部成功。仅相关脚本验证，未重复49JS全量；仍不计T03完成。
+- 18:32–18:35：最新CI打包/前提已通过，真实安装exit0，快捷方式目标比较失败（尚未进入应用UI操作）。检查改为Windows物理DesktopDirectory（不是虚拟shell Desktop）与GetFullPath规范化，添加真实文件存在性检查及不带私人路径的错误细节；没有改产品代码或放宽预期exe检查。正在只复跑相关安装/快捷方式闭环；没有本地49JS全量回归。
 - 当前阻塞：无已确认实施阻塞；干净用户实机方案尚待实际验证。安装/启动/升级/卸载均未验收，不关闭本票。
-- 下一步：推送host兼容修复，接收PR #25最新检查结果，核对headSha及实际干净用户UI/安装证据；成功后合入关闭#4，正式3/21后自动T04。无待完成代理或旧后台命令。
+- 下一步：接收PR #25的0731de6最新检查结果，核对headSha及实际干净用户UI/安装证据；成功后合入关闭#4，正式3/21后自动T04。无待完成代理；唯一后台为最新`gh pr checks 25 --watch`，未重复查询进度。
 
 ## 恢复资源与 GitHub
 
