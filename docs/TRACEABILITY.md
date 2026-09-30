@@ -27,6 +27,12 @@
 
 ## 已发布的桌面开发任务
 
+### T01 应用契约先导（2026-09-30；原型层级）
+
+ENV-002、UX-001、DOC-001 的创建/编辑/取消/刷新流程已接入 [ApplicationService](../src/application/contract.ts) 与 [DemoAdapter](../src/application/demo-adapter.ts)，[main.tsx](../src/main.tsx) 注入服务，页面不直接写 localStorage。保存失败保留旧记录和草稿，expectedRevision 拒绝过期写入；旧 v1 记录兼容，revision 存入额外元数据。其他页保留 demo-only 兼容接口，仍没有 Go/native 服务。
+
+可重复证据：[契约测试](../tests/application.test.ts)、[UI 流程](../tests/ui/environment.spec.ts)、[T01 验证记录](verification/T01.md)。原型启动、代理、内核和目录仍是模拟/设计，不能由本项推导桌面能力通过。完整实时状态见 [PROGRESS.md](PROGRESS.md)。
+
 以下关联于 2026-09-30 发布，表示计划实现范围，不能据此判断已完成。当前状态与 blocking 依赖以 GitHub 为准；完整顺序见 [开发票据索引](ISSUES.md)，共同范围见 [总规格 Issue](https://github.com/axgiroud312-byte/prism-local-browser/issues/1)。
 
 | 需求 ID  | 实现或专项验证 Issue                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | 整体验收                                                                       |

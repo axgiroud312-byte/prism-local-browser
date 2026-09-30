@@ -6,9 +6,9 @@
 
 ## 1 当前基础与交付层级
 
-当前仓库是 React/TypeScript 前端交互原型。领域规则在 `src/domain.ts`，页面、localStorage 与模拟任务主要在 `src/App.tsx`；现有实际入口应以源码为准。
+当前仓库是 React/TypeScript 前端交互原型。领域规则在 `src/domain.ts`，页面和旧模拟任务在 `src/App.tsx`；T01 已提取 `src/application/contract.ts` 与 `demo-adapter.ts`，创建编辑经注入应用契约，localStorage 由 DemoAdapter 管理；现有实际入口应以源码为准。
 
-DemoAdapter、WailsAdapter、Go 服务、SQLite、真实内核进程和完整目录恢复属于后续分层目标。接口文档中的方法名不代表对应实现已经存在。
+WailsAdapter、Go 服务、SQLite、真实内核进程和完整目录恢复仍属后续分层目标。接口文档中的方法名不代表对应实现已经存在；实时验收位置见 [PROGRESS.md](PROGRESS.md)。
 
 每个任务选择以下交付层级，并按其所需证据验收：
 
@@ -50,7 +50,7 @@ DemoAdapter、WailsAdapter、Go 服务、SQLite、真实内核进程和完整目
 - seed 首次保存后固定。查询、打开详情、启动、关闭和修改代理不重生成；重新生成先改预览，保存时再提交修订。克隆新建 ID/seed/空数据，恢复保留原身份。
 - 应用保存自己可控制的输入和版本；内核支持能力决定参数，不独立随机拼接互相矛盾的硬件字段。种子不同不等于所有输出都不同。
 - native 修改使用事务、外键、requestId 幂等与 expectedRevision 检查。持久提交成功后才发布成功；失败保留原数据和可定位错误。
-- 当前 localStorage 只作为演示存储。坏数据保留原文供找回；跨标签页冲突阻断旧写入。不得把这些保护宣称为数据库跨进程事务。
+- 当前 localStorage 只作为演示存储，DemoAdapter 写入成功后才发布新状态。坏数据保留原文供找回；跨标签页冲突阻断旧写入。不得把这些保护宣称为数据库跨进程事务。
 - 长任务用 operationId 区分受理、进度、取消和完成；事件使用单调序号，迟到事件不能回退终态。取消只影响对应任务，准确保留和报告已完成条目。
 - 调度器限制昂贵启动工作的同时进行数量；资源错误明确返回。调度并发不是产品允许保存或保持运行的实例配额。
 - Cookie 解析与真实写入分离，保留合法空值、session、到期时间和分区等语义；真实写入后读取核对，按实际成功/失败条目报告。

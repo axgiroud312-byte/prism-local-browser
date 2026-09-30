@@ -23,6 +23,8 @@
 - [TypeScript 许可证](https://github.com/microsoft/TypeScript/blob/main/LICENSE.txt)
 - [Vite 许可证及第三方通知](https://github.com/vitejs/vite/blob/main/LICENSE)
 
+T01 新增仅用于测试的 [Playwright Test](https://github.com/microsoft/playwright) 1.63.0（Apache-2.0；Microsoft Corporation）和 `@types/node` 26.6.3（MIT；DefinitelyTyped contributors）。Playwright 自带的测试 Chromium 由 `npx playwright install chromium` 安装到开发/CI 缓存，不进入应用分发，也不是产品指定的 fingerprint-chromium。保留 [Playwright 许可](https://github.com/microsoft/playwright/blob/main/LICENSE) 与实际包内通知，具体依赖版本以锁文件为准。
+
 ## 外部浏览器内核
 
 产品指定使用 [adryfish/fingerprint-chromium](https://github.com/adryfish/fingerprint-chromium) 作为后续桌面内核。本仓库只保存接入合同与演示元数据，没有打包该项目的可执行文件、Chromium 程序或浏览器用户数据。

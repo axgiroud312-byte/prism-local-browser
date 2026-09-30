@@ -8,9 +8,11 @@
     "dev": "vite --host 127.0.0.1",
     "build": "tsc -b && vite build",
     "preview": "vite preview --host 127.0.0.1",
-    "test": "node --experimental-strip-types --test tests/domain.test.ts",
+    "test": "node --experimental-strip-types --test tests/domain.test.ts tests/application.test.ts",
+    "typecheck": "tsc -b && tsc -p tsconfig.tests.json",
+    "test:ui": "playwright test",
     "check:docs": "node scripts/check-docs.mjs",
-    "check": "npm run test && npm run build && npm run check:docs"
+    "check": "npm run test && npm run typecheck && npm run build && npm run check:docs && npm run test:ui"
   },
   "dependencies": {
     "lucide-react": "1.49.0",
@@ -20,6 +22,8 @@
     "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "@types/node": "26.6.3",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "typescript": "7.0.2",
