@@ -6,7 +6,8 @@ export interface ApplicationError {
   message: string;
   retryable: boolean;
   field?: string;
-  itemIndex?: number;
+	itemIndex?: number;
+	details?: { reason?: string; kernelId?: string };
 }
 export type ApplicationResult<T> =
   | { ok: true; mode: ApplicationMode; data: T; operationId?: string }
@@ -28,15 +29,20 @@ export interface WorkspaceView {
   state: State;
   issue?: ApplicationError;
   damagedRecord?: string;
+  kernelRecords?: NativeKernel[];
+  kernelOperations?: Operation[];
 }
 export interface Operation {
   id: string;
-  kind: "create" | "edit";
+  kind: "create" | "edit" | "kernel-install" | "kernel-verify" | "kernel-delete";
   state: "accepted" | "running" | "completed" | "cancelled" | "failed";
   total: number;
   completedIds: string[];
   cancelRequested: boolean;
   error?: ApplicationError;
+  stage?: string;
+  kernelId?: string;
+  report?: KernelReport;
 }
 export interface OperationEvent {
   mode: ApplicationMode;
@@ -48,6 +54,12 @@ export interface OperationEvent {
 }
 export const operationIsTerminal = (operation: Operation) =>
   ["completed", "cancelled", "failed"].includes(operation.state);
+
+export function mergeOperation(previous: Operation | undefined, next: Operation): Operation {
+  if (!previous || previous.id !== next.id) return next;
+  if (operationIsTerminal(previous) || (previous.state === "running" && next.state === "accepted")) return previous;
+  return previous.cancelRequested && !next.cancelRequested ? { ...next, cancelRequested: true } : next;
+}
 
 export function newerOperationEvent(previous: OperationEvent | undefined, next: OperationEvent) {
   if (previous && previous.operationId === next.operationId &&
@@ -87,4 +99,34 @@ export interface ApplicationService {
   updateEnvironment(request: UpdateEnvironmentRequest): Promise<ApplicationResult<{ status: "completed"; environment: SavedEnvironment }>>;
   getOperation(operationId: string): Promise<ApplicationResult<Operation>>;
   cancelOperation(operationId: string): Promise<ApplicationResult<Operation>>;
+  selectKernelArchive?(): Promise<ApplicationResult<{ status: "selected" | "cancelled"; archiveToken?: string; name?: string }>>;
+  installKernel?(request: KernelInstallRequest): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
+  verifyKernel?(kernelId: string, requestId: string): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
+  deleteKernel?(kernelId: string, requestId: string): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
+}
+
+export interface KernelInstallRequest {
+  source: "official" | "local";
+  version: string;
+  expectedChecksum: string;
+  archiveToken?: string;
+  trusted: boolean;
+  requestId: string;
+}
+export interface KernelObservation {
+  seed: number; browserVersion: string; httpUserAgent: string; userAgent: string;
+  cpu: number; memory: number; language: string; timezone: string;
+  gpuVendor: string; gpuRenderer: string; pid: number; processCreatedAt: string; normalExit: boolean;
+}
+export interface KernelReport {
+  adapterVersion: string; version: string; sampledAt: string; transport: string; sandbox: boolean;
+  observations: KernelObservation[];
+  capabilities: { field: string; status: "configurable" | "seed-generated" | "unverified"; source: string; note: string }[];
+}
+export interface NativeKernel {
+  id: string; version: string; architecture: string;
+  source: { kind: "official" | "local"; location: string; tag: string; commit: string | null };
+  archiveSha256: string; executableSha256: string; executableRelativePath: string;
+  installPath: string; installedAt: string; status: "verified" | "missing"; usedBy: string[];
+  report: KernelReport;
 }

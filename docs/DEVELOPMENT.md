@@ -142,6 +142,10 @@ T02 已实现的原生 RPC 为 `Workspace.Read`、`Environment.Preview`、`Previ
 
 原生初始 `kernel-pending` 仅代表未安装、未就绪；无真实版本或可执行文件校验声明，不能启动。桌面初始无示例环境/代理，不读取或导入原型 localStorage/JSON；后续内核安装、生成器修订、真实浏览数据和批量任务按 T04/T05/T06/T13 验收。UI 投影的 schemaVersion 1 不是生产导入格式，不得据此直接复制原型对象到数据库。
 
+T04 增量接口为 `Kernel.SelectArchive`（系统文件选择器→当前会话token，不接任意路径）、`Kernel.Install`（来源/精确版本/预期摘要/token/可信确认/requestId→受理操作）、`Kernel.List`、`Kernel.Verify` 与 `Kernel.Delete`（后两者接精确kernelId/requestId→受理操作）。Windows内核维护单任务并发仅作资源/维护保护，不限制安装数量。下载/解包/真实探测在worker中运行，`Operation.Read/Cancel`可查询/取消；页面以持久服务状态为准，重开不自动重装或换版本。
+
+SQLite schema v2 事务新增 `kernel_evidence`，保存来源、tag、源码commit或null、架构、归档/主程序/完整文件清单摘要、内部相对位置及带adapter/能力版本和会话时间的真实报告。v1迁移保留既有ID/seed/配置和pending引用；同一证据不允许UPDATE。新安装采用同卷暂存/边界检查/摘要与PE/CDP验证，再分配新ID发布，登记内核与完成操作同一事务提交；失败清理本次资源，持久日志支持重开时清理已分配的未提交暂存/发布目录，不触碰无关目录。重新核验不把损坏字节重算成可信摘要；被指纹档案引用的构建不能直接移除。正常环境启动、完整修订/回滚和批量任务恢复仍分别留T05/T06/T13。
+
 当前 ApplicationService 统一 `{ ok, mode, data/error, operationId? }`、预览 ID、requestId、expectedRevision 与 Operation 事件。创建返回 `status: accepted`，需查询/事件确认 `completed/cancelled/failed`；编辑仅在存储写入成功后返回 `status: completed`。只提交配置白名单，不能从草稿修改 ID、Cookie 或运行状态。UI 按操作 ID、模式、序号和终态过滤迟到事件。demo 的预览、幂等请求缓存和 Operation 在当前服务会话有效，不宣称任务重开续作；revision 用额外存储元数据持久保存，旧 v1 演示记录可显式读取且快照类型不变。其他页经 demo-only compatibility 逐步接入；native 不可使用该兼容入口。
 
 通用成功返回为 `{ ok: true, data, operationId? }`；失败返回为 `{ ok: false, error: { code, message, retryable, field?, itemIndex?, details? }, operationId? }`。details 必须经过脱敏。修改接口接受 requestId 做幂等处理；涉及已有记录的修改接受 expectedRevision。

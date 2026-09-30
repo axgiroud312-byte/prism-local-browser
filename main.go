@@ -5,6 +5,7 @@ package main
 import (
 	"context"
 	"embed"
+	"errors"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -15,6 +16,7 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
 	"github.com/wailsapp/wails/v2/pkg/options/windows"
+	wailsruntime "github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 //go:embed all:dist
@@ -70,7 +72,13 @@ func main() {
 		desktopbase.ShowError("工作区包含目录链接或无法检查，未打开数据库。原数据未修改。")
 		return
 	}
-	service, _ := workspace.Open(root, workspace.Options{})
+	var desktopContext context.Context
+	service, _ := workspace.Open(root, workspace.Options{ChooseArchive: func() (string, error) {
+		if desktopContext == nil {
+			return "", errors.New("desktop not ready")
+		}
+		return wailsruntime.OpenFileDialog(desktopContext, wailsruntime.OpenDialogOptions{Title: "选择可信 fingerprint-chromium ZIP", Filters: []wailsruntime.FileFilter{{DisplayName: "Windows内核ZIP", Pattern: "*.zip"}}})
+	}})
 	if service != nil {
 		defer service.Close()
 	}
@@ -82,6 +90,7 @@ func main() {
 	err = wails.Run(&options.App{
 		Title: "棱镜浏览器 · 开发预览 " + applicationVersion, Width: 1440, Height: 1000, MinWidth: 720, MinHeight: 600,
 		AssetServer: &assetserver.Options{Assets: assets}, Bind: []interface{}{app},
+		OnStartup: func(ctx context.Context) { desktopContext = ctx },
 		OnShutdown: func(context.Context) {
 			if service != nil {
 				service.Close()

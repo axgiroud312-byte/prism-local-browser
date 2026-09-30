@@ -14,11 +14,13 @@
     "test:ui": "playwright test",
     "check:docs": "node scripts/check-docs.mjs",
     "check": "npm run test && npm run typecheck && npm run build && npm run check:docs && npm run test:ui",
+    "check:background": "npm run test && npm run typecheck && npm run build && npm run check:docs",
     "test:desktop": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/desktop.ps1 -Action test",
     "build:windows": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/desktop.ps1 -Action build",
     "dev:desktop": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/desktop.ps1 -Action dev",
     "doctor:desktop": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/desktop.ps1 -Action doctor",
     "verify:desktop": "node scripts/verify-desktop.mjs",
+    "verify:kernel": "node scripts/verify-kernel.mjs",
     "setup:nsis": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/setup-nsis.ps1",
     "build:installer": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-installer.ps1",
     "verify:installer": "node scripts/verify-installer.mjs"

@@ -1,13 +1,17 @@
 package workspace
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"github.com/axgiroud312-byte/prism-local-browser/internal/kernel"
+)
 
 const PendingKernelID = "kernel-pending"
 
 type Error struct {
-	Code      string `json:"code"`
-	Message   string `json:"message"`
-	Retryable bool   `json:"retryable"`
+	Code      string         `json:"code"`
+	Message   string         `json:"message"`
+	Retryable bool           `json:"retryable"`
+	Details   map[string]any `json:"details,omitempty"`
 }
 type Result struct {
 	OK          bool   `json:"ok"`
@@ -51,12 +55,17 @@ type Preview struct {
 	ExpectedRevision int64       `json:"expectedRevision,omitempty"`
 }
 type Operation struct {
-	ID              string   `json:"id"`
-	Kind            string   `json:"kind"`
-	State           string   `json:"state"`
-	Total           int      `json:"total"`
-	CompletedIDs    []string `json:"completedIds"`
-	CancelRequested bool     `json:"cancelRequested"`
+	ID              string         `json:"id"`
+	Kind            string         `json:"kind"`
+	State           string         `json:"state"`
+	Total           int            `json:"total"`
+	CompletedIDs    []string       `json:"completedIds"`
+	CancelRequested bool           `json:"cancelRequested"`
+	Stage           string         `json:"stage,omitempty"`
+	Error           *Error         `json:"error,omitempty"`
+	KernelID        string         `json:"kernelId,omitempty"`
+	ResourceKey     string         `json:"resourceKey,omitempty"`
+	Report          *kernel.Report `json:"report,omitempty"`
 }
 type Mutation struct {
 	PreviewID        string        `json:"previewId"`
@@ -89,6 +98,13 @@ type State struct {
 	Activities    []Activity    `json:"activities"`
 }
 type View struct {
-	Mode  string `json:"mode"`
-	State State  `json:"state"`
+	Mode             string       `json:"mode"`
+	State            State        `json:"state"`
+	KernelRecords    []KernelView `json:"kernelRecords"`
+	KernelOperations []Operation  `json:"kernelOperations"`
+}
+type KernelView struct {
+	kernel.Record
+	Status string   `json:"status"`
+	UsedBy []string `json:"usedBy"`
 }

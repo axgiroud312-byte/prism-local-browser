@@ -104,3 +104,40 @@ test("a committed mutation remains confirmed when the following read fails, with
   const result = await app.updateEnvironment({ previewId: "p", configuration: environment, expectedRevision: 1, requestId: "r" });
   assert.equal(result.ok, true); assert.equal(app.getSnapshot().issue?.code, "STORAGE_READ_FAILED");
 });
+
+test("kernel acceptance is not completion, progress uses the real operation and path fields are excluded", async () => {
+  let state: Operation["state"] = "accepted";
+  const task: Operation = { id: "synthetic-kernel-op", kind: "kernel-install", state, total: 1, completedIds: [], cancelRequested: false };
+  const { app, calls } = fixture(request => request.method === "Operation.Read" ? ok({ ...task, state }) : request.method === "Workspace.Read" ? ok(empty()) : ok({ status: "accepted", operation: task }));
+  const events: OperationEvent[] = []; app.subscribeEvents(event => events.push(event));
+  const request = { source: "local" as const, version: "148.0.7778.215", expectedChecksum: "a".repeat(64), archiveToken: "dialog-token", trusted: true, requestId: "synthetic-request", executablePath: "SYNTHETIC_PRIVATE_PATH", args: ["--no-sandbox"] };
+  await app.installKernel(request);
+  assert.equal(events.length, 0); assert.equal(calls.length, 1);
+  assert.equal(JSON.stringify(calls[0]).includes("SYNTHETIC_PRIVATE_PATH"), false);
+  assert.equal(JSON.stringify(calls[0]).includes("--no-sandbox"), false);
+  await app.getOperation(task.id); assert.equal(events[0].type, "OperationProgress");
+  state = "completed"; await app.getOperation(task.id); assert.equal(events[1].type, "OperationCompleted");
+  assert.ok(events[1].sequence > events[0].sequence);
+});
+
+test("kernel selection, verification and deletion only send picker tokens or exact IDs", async () => {
+  const { app, calls } = fixture(() => rejected);
+  assert.equal((await app.selectKernelArchive()).ok, false);
+  assert.equal((await app.verifyKernel("exact-kernel-id", "verify-request")).ok, false);
+  assert.equal((await app.deleteKernel("exact-kernel-id", "delete-request")).ok, false);
+  assert.deepEqual(calls.map(request => request.method), ["Kernel.SelectArchive", "Kernel.Verify", "Kernel.Delete"]);
+  assert.deepEqual(calls[1].payload, { kernelId: "exact-kernel-id", requestId: "verify-request" });
+});
+
+test("a late running cancel response cannot regress a confirmed kernel terminal state", async () => {
+  const task: Operation = { id: "synthetic-cancel-race", kind: "kernel-verify", state: "running", total: 1, completedIds: [], cancelRequested: false };
+  let finishCancel: ((result: ApplicationResult<Operation>) => void) | undefined;
+  const { app } = fixture(request => request.method === "Operation.Cancel" ? new Promise(resolve => { finishCancel = resolve; }) : ok({ ...task, state: "cancelled", cancelRequested: true }));
+  const events: OperationEvent[] = []; app.subscribeEvents(event => events.push(event));
+  const pending = app.cancelOperation(task.id);
+  await app.getOperation(task.id);
+  finishCancel!(ok({ ...task, cancelRequested: true }));
+  const late = await pending;
+  assert.ok(late.ok && late.data.state === "cancelled");
+  assert.equal(events.length, 1); assert.equal(events[0].type, "OperationCompleted");
+});

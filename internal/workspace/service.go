@@ -2,6 +2,7 @@ package workspace
 
 import (
 	"bytes"
+	"context"
 	"crypto/rand"
 	"crypto/sha256"
 	"database/sql"
@@ -20,24 +21,37 @@ import (
 	"time"
 	_ "time/tzdata"
 
+	"github.com/axgiroud312-byte/prism-local-browser/internal/kernel"
 	"modernc.org/sqlite"
 )
 
-// Options is injected only by Go test fixtures, never exposed through Wails.
-type Options struct{ BeforeCommit func() error }
+// Options is host-injected, never accepted through Wails. Hooks are test seams;
+// the desktop sets only ChooseArchive and always installs/probes real bytes.
+type Options struct {
+	BeforeCommit  func() error
+	ChooseArchive func() (string, error)
+	// Test seam only; the desktop always uses kernel.Prepare and a real probe.
+	PrepareKernel func(context.Context, string, kernel.InstallInput, string, kernel.ProbeFunc, kernel.ProgressFunc) (*kernel.Prepared, error)
+	VerifyKernel  func(context.Context, string, kernel.Record, string) (kernel.Report, error)
+}
 type draft struct {
 	Kind    string
 	Preview Preview
 }
 type Service struct {
-	mu      sync.Mutex
-	db      *sql.DB
-	drafts  map[string]draft
-	options Options
+	mu         sync.Mutex
+	db         *sql.DB
+	drafts     map[string]draft
+	options    Options
+	root       string
+	archives   map[string]string
+	kernelTask *kernelTask
+	workers    sync.WaitGroup
+	closed     bool
 }
 
 func failure(code, message string, retryable bool) Result {
-	return Result{Mode: "native", Error: &Error{code, message, retryable}}
+	return Result{Mode: "native", Error: &Error{Code: code, Message: message, Retryable: retryable}}
 }
 func success(data any, operationID string) Result {
 	return Result{OK: true, Mode: "native", Data: data, OperationID: operationID}
@@ -83,24 +97,49 @@ func Open(root string, options Options) (*Service, error) {
 		return nil, err
 	}
 	db.SetMaxOpenConns(1)
-	s := &Service{db: db, drafts: map[string]draft{}, options: options}
+	s := &Service{db: db, root: absolute, drafts: map[string]draft{}, archives: map[string]string{}, options: options}
 	if err = s.initialize(); err != nil {
+		db.Close()
+		return nil, err
+	}
+	if err = s.recoverKernelOperations(); err != nil {
 		db.Close()
 		return nil, err
 	}
 	return s, nil
 }
-func (s *Service) Close() error { s.mu.Lock(); defer s.mu.Unlock(); return s.db.Close() }
+func (s *Service) Close() error {
+	s.mu.Lock()
+	if s.closed {
+		s.mu.Unlock()
+		return nil
+	}
+	s.closed = true
+	if s.kernelTask != nil {
+		s.kernelTask.cancel()
+	}
+	s.mu.Unlock()
+	s.workers.Wait()
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.db.Close()
+}
 func (s *Service) initialize() error {
 	var version int
 	if err := s.db.QueryRow("PRAGMA user_version").Scan(&version); err != nil {
 		return err
 	}
-	if version > 1 {
+	if version > 2 {
 		return errors.New("unsupported workspace version")
 	}
-	if version == 1 {
+	if version == 2 {
 		return s.checkSchema()
+	}
+	if version == 1 {
+		if err := s.checkBaseSchema(); err != nil {
+			return err
+		}
+		return s.migrateKernels()
 	}
 	var tables int
 	if err := s.db.QueryRow("SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'").Scan(&tables); err != nil {
@@ -133,9 +172,39 @@ func (s *Service) initialize() error {
 			return err
 		}
 	}
-	return tx.Commit()
+	if err = tx.Commit(); err != nil {
+		return err
+	}
+	return s.migrateKernels()
 }
 func (s *Service) checkSchema() error {
+	if err := s.checkBaseSchema(); err != nil {
+		return err
+	}
+	rows, err := s.db.Query("SELECT kernel_id,record_json FROM kernel_evidence LIMIT 0")
+	if err != nil {
+		return err
+	}
+	return rows.Close()
+}
+func (s *Service) migrateKernels() error {
+	tx, err := s.db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	for _, statement := range []string{
+		`CREATE TABLE kernel_evidence(kernel_id TEXT PRIMARY KEY REFERENCES kernels(id),record_json TEXT NOT NULL)`,
+		`CREATE TRIGGER immutable_kernel_evidence BEFORE UPDATE ON kernel_evidence BEGIN SELECT RAISE(ABORT,'kernel evidence is immutable'); END`,
+		`PRAGMA user_version=2`,
+	} {
+		if _, err = tx.Exec(statement); err != nil {
+			return err
+		}
+	}
+	return tx.Commit()
+}
+func (s *Service) checkBaseSchema() error {
 	for _, statement := range []string{
 		"SELECT id,version,source,status FROM kernels LIMIT 0",
 		"SELECT id,credential_ref FROM proxies LIMIT 0",
@@ -173,12 +242,23 @@ func decode(payload json.RawMessage, destination any) error {
 	return nil
 }
 func (s *Service) Call(request Request) Result {
-	s.mu.Lock()
-	defer s.mu.Unlock()
 	if request.Mode != "native" {
 		return failure("CAPABILITY_UNSUPPORTED", "演示输入不能写入真实工作区；请使用桌面原生流程。", false)
 	}
+	if request.Method == "Kernel.SelectArchive" {
+		if decode(request.Payload, &struct{}{}) != nil {
+			return failure("VALIDATION_FAILED", "归档必须由桌面文件选择器选择，不接受客户端路径。", false)
+		}
+		return s.selectKernelArchive()
+	}
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if s.closed {
+		return failure("NATIVE_UNAVAILABLE", "工作区已关闭，请重新打开应用。", true)
+	}
 	switch request.Method {
+	case "Kernel.Install", "Kernel.Verify", "Kernel.Delete", "Kernel.List":
+		return s.kernelCall(request)
 	case "Workspace.Read":
 		view, err := s.view()
 		if err != nil {
@@ -237,6 +317,14 @@ func (s *Service) Call(request Request) Result {
 		if json.Unmarshal([]byte(text), &operation) != nil {
 			return failure("STORAGE_READ_FAILED", "任务记录损坏，请重新打开工作区。", true)
 		}
+		if request.Method == "Operation.Cancel" && s.kernelTask != nil && s.kernelTask.operation.ID == operation.ID {
+			s.kernelTask.cancel()
+			operation.CancelRequested = true
+			s.kernelTask.operation.CancelRequested = true
+			if err := s.storeOperation(operation); err != nil {
+				return storageFailure(err)
+			}
+		}
 		return success(operation, operation.ID)
 	default:
 		return failure("CAPABILITY_UNSUPPORTED", "此功能尚未接入真实桌面服务，未修改本地数据。", false)
@@ -263,17 +351,17 @@ func (s *Service) newSeed(exclude string) (string, error) {
 }
 func (s *Service) readEnvironment(environmentID string) (Environment, int64, string, error) {
 	var e Environment
-	var configJSON, profileID, name, kernelID, proxyID, seed string
+	var configJSON, profileID, name, kernelID, profileKernelID, proxyID, seed string
 	var revision int64
 	var code int
-	err := s.db.QueryRow(`SELECT e.id,e.code,e.created_at,e.revision,e.fingerprint_id,f.config_json,e.name,e.kernel_id,COALESCE(e.proxy_id,''),CAST(f.seed AS TEXT) FROM environments e JOIN fingerprints f ON f.id=e.fingerprint_id WHERE e.id=?`, environmentID).Scan(&e.ID, &code, &e.CreatedAt, &revision, &profileID, &configJSON, &name, &kernelID, &proxyID, &seed)
+	err := s.db.QueryRow(`SELECT e.id,e.code,e.created_at,e.revision,e.fingerprint_id,f.config_json,e.name,e.kernel_id,f.kernel_id,COALESCE(e.proxy_id,''),CAST(f.seed AS TEXT) FROM environments e JOIN fingerprints f ON f.id=e.fingerprint_id WHERE e.id=?`, environmentID).Scan(&e.ID, &code, &e.CreatedAt, &revision, &profileID, &configJSON, &name, &kernelID, &profileKernelID, &proxyID, &seed)
 	if err != nil {
 		return e, 0, "", err
 	}
 	if err = decode(json.RawMessage(configJSON), &e.Configuration); err != nil {
 		return e, 0, "", err
 	}
-	if validate(e.Configuration) != "" || e.Name != name || e.CoreID != kernelID || e.ProxyID != proxyID || e.Seed != seed {
+	if validate(e.Configuration) != "" || e.Name != name || e.CoreID != kernelID || profileKernelID != kernelID || e.ProxyID != proxyID || e.Seed != seed {
 		return e, 0, "", errors.New("inconsistent saved configuration")
 	}
 	e.Code = fmt.Sprintf("%03d", code)
@@ -398,11 +486,15 @@ func (s *Service) mutate(method string, input Mutation) Result {
 	}
 	defer tx.Rollback()
 	var count int
-	if err = tx.QueryRow("SELECT COUNT(*) FROM kernels WHERE id=?", config.CoreID).Scan(&count); err != nil {
+	var kernelStatus string
+	if err = tx.QueryRow("SELECT status FROM kernels WHERE id=?", config.CoreID).Scan(&kernelStatus); err != nil {
+		if err == sql.ErrNoRows {
+			return failure("VALIDATION_FAILED", "指定内核引用不存在，未保存。", false)
+		}
 		return storageFailure(err)
 	}
-	if count != 1 {
-		return failure("VALIDATION_FAILED", "指定内核引用不存在，未保存。", false)
+	if config.CoreID != PendingKernelID && kernelStatus != "verified" {
+		return failure("KERNEL_INTEGRITY_FAILED", "指定内核未通过核验，未保存；不会改用其他内核。", true)
 	}
 	if config.ProxyID != "" {
 		if err = tx.QueryRow("SELECT COUNT(*) FROM proxies WHERE id=?", config.ProxyID).Scan(&count); err != nil {
@@ -537,7 +629,14 @@ func (s *Service) view() (View, error) {
 			return View{}, err
 		}
 		k.Available = status == "verified"
-		k.Note = "未安装真实 fingerprint-chromium，不能启动；精确安装在 T04 验收。"
+		k.Note = "未安装真实 fingerprint-chromium，不能启动。"
+		if k.ID != PendingKernelID {
+			if k.Available {
+				k.Note = "精确构建已安装并通过隔离诊断；正常环境启停仍待T06。"
+			} else {
+				k.Note = "精确构建缺失或核验失败；不会自动切换版本。"
+			}
+		}
 		state.Kernels = append(state.Kernels, k)
 	}
 	err = rows.Err()
@@ -561,5 +660,13 @@ func (s *Service) view() (View, error) {
 	if err = rows.Err(); err != nil {
 		return View{}, err
 	}
-	return View{Mode: "native", State: state}, nil
+	installed, err := s.listKernels()
+	if err != nil {
+		return View{}, err
+	}
+	operations, err := s.listKernelOperations()
+	if err != nil {
+		return View{}, err
+	}
+	return View{Mode: "native", State: state, KernelRecords: installed, KernelOperations: operations}, nil
 }

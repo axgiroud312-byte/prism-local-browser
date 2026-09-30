@@ -1,7 +1,9 @@
 import type {
   ApplicationResult, ApplicationService, EnvironmentConfiguration, EnvironmentPreview,
   CreateBatchRequest, UpdateEnvironmentRequest, SavedEnvironment, WorkspaceView, Operation, OperationEvent,
+  KernelInstallRequest,
 } from "./contract.ts";
+import { mergeOperation } from "./contract.ts";
 
 export interface NativeRequest { mode: "native"; method: string; payload: unknown }
 export type NativeBridge = <T>(request: NativeRequest) => Promise<ApplicationResult<T>>;
@@ -13,6 +15,7 @@ const projectConfiguration = (c: EnvironmentConfiguration): EnvironmentConfigura
 export class WailsAdapter implements ApplicationService {
   readonly mode = "native" as const;
   private bridge: NativeBridge;
+  private operations = new Map<string, Operation>();
   private view: WorkspaceView = {
     mode: "native",
     state: { schemaVersion: 1, environments: [], proxies: [], kernels: [], backups: [], activities: [] },
@@ -57,10 +60,27 @@ export class WailsAdapter implements ApplicationService {
     if (response.ok) await this.refresh();
     return response;
   }
-  getOperation(operationId: string) { return this.invoke<Operation>("Operation.Read", { operationId }); }
-  cancelOperation(operationId: string) { return this.invoke<Operation>("Operation.Cancel", { operationId }); }
+  async getOperation(operationId: string) {
+    const response = await this.invoke<Operation>("Operation.Read", { operationId });
+    return this.confirmOperation(response);
+  }
+  async cancelOperation(operationId: string) { return this.confirmOperation(await this.invoke<Operation>("Operation.Cancel", { operationId })); }
+  private confirmOperation(response: ApplicationResult<Operation>): ApplicationResult<Operation> {
+    if (!response.ok || !response.data.kind.startsWith("kernel-")) return response;
+    const previous = this.operations.get(response.data.id);
+    const operation = mergeOperation(previous, response.data);
+    this.operations.set(operation.id, operation);
+    if (operation !== previous) this.emit(operation);
+    return { ...response, data: operation };
+  }
   private emit(operation: Operation) {
-    const event: OperationEvent = { mode: "native", type: "OperationCompleted", operationId: operation.id, sequence: ++this.sequence, time: new Date().toISOString(), operation };
+    const event: OperationEvent = { mode: "native", type: ["completed", "cancelled", "failed"].includes(operation.state) ? "OperationCompleted" : "OperationProgress", operationId: operation.id, sequence: ++this.sequence, time: new Date().toISOString(), operation };
     this.eventListeners.forEach(listener => listener(event));
   }
+  selectKernelArchive() { return this.invoke<{ status: "selected" | "cancelled"; archiveToken?: string; name?: string }>("Kernel.SelectArchive", {}); }
+  installKernel(request: KernelInstallRequest) {
+    return this.invoke<{ status: "accepted"; operation: Operation }>("Kernel.Install", { source: request.source, version: request.version, expectedChecksum: request.expectedChecksum, archiveToken: request.archiveToken, trusted: request.trusted, requestId: request.requestId });
+  }
+  verifyKernel(kernelId: string, requestId: string) { return this.invoke<{ status: "accepted"; operation: Operation }>("Kernel.Verify", { kernelId, requestId }); }
+  deleteKernel(kernelId: string, requestId: string) { return this.invoke<{ status: "accepted"; operation: Operation }>("Kernel.Delete", { kernelId, requestId }); }
 }
