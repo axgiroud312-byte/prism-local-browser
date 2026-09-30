@@ -18,7 +18,10 @@
     "build:windows": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/desktop.ps1 -Action build",
     "dev:desktop": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/desktop.ps1 -Action dev",
     "doctor:desktop": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/desktop.ps1 -Action doctor",
-    "verify:desktop": "node scripts/verify-desktop.mjs"
+    "verify:desktop": "node scripts/verify-desktop.mjs",
+    "setup:nsis": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/setup-nsis.ps1",
+    "build:installer": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-installer.ps1",
+    "verify:installer": "node scripts/verify-installer.mjs"
   },
   "dependencies": {
     "lucide-react": "1.49.0",

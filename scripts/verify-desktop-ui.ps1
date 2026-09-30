@@ -1,5 +1,6 @@
 # Called with explicit UTF-8 decoding by verify-desktop.mjs. Operates only its own child exe.
 $ErrorActionPreference = 'Stop'
+. (Join-Path (Split-Path $env:PRISM_VERIFY_SCRIPT -Parent) 'powershell-host.ps1')
 $ProgressPreference = 'SilentlyContinue'
 [Console]::OutputEncoding = [Text.UTF8Encoding]::new($false)
 $OutputEncoding = [Console]::OutputEncoding
@@ -51,19 +52,33 @@ function Get-Value([string]$Name) {
   return ([Windows.Automation.ValuePattern]$element.GetCurrentPattern([Windows.Automation.ValuePattern]::Pattern)).Current.Value
 }
 function Read-Database {
-  $result = & node --disable-warning=ExperimentalWarning (Join-Path $script:scriptsRoot 'verify-desktop-db.mjs') (Join-Path $env:PRISM_WORKSPACE_ROOT 'app.db')
+  $databaseRoot = $env:PRISM_VERIFY_DATABASE_ROOT
+  if (!$databaseRoot) { $databaseRoot = $env:PRISM_WORKSPACE_ROOT }
+  $result = & node --disable-warning=ExperimentalWarning (Join-Path $script:scriptsRoot 'verify-desktop-db.mjs') (Join-Path $databaseRoot 'app.db')
   if ($LASTEXITCODE) { throw 'Synthetic SQLite inspection failed.' }
   return ($result | ConvertFrom-Json)
 }
 function Open-Desktop {
-  $script:process = Start-Process -FilePath $env:PRISM_VERIFY_EXE -PassThru
+  $launch=$env:PRISM_VERIFY_EXE
+  if($env:PRISM_VERIFY_LAUNCH_SHORTCUTS -eq '1'){
+    $folder=if($script:processes.Count -eq 0){Get-PrismDesktopDirectory}else{[Environment]::GetFolderPath('Programs',[Environment+SpecialFolderOption]::DoNotVerify)}
+    $launch=Join-Path $folder '棱镜浏览器 · 开发预览.lnk'
+  }
+  $script:process = Start-Process -FilePath $launch -PassThru
+  if($env:PRISM_VERIFY_LAUNCH_SHORTCUTS -eq '1'){
+    $actual=(Get-CimInstance Win32_Process -Filter "ProcessId=$($script:process.Id)").ExecutablePath
+    if(!$actual -or [IO.Path]::GetFullPath($actual) -ne [IO.Path]::GetFullPath($env:PRISM_VERIFY_EXE)){throw 'Shortcut did not launch the expected installed executable.'}
+  }
   $script:processes.Add(@{pid=$script:process.Id; executable='prism-browser.exe'; startedAt=[DateTime]::UtcNow.ToString('o'); normalExit=$false})
   for ($i = 0; $i -lt 150; $i++) {
     $script:process.Refresh()
     if ($script:process.HasExited) { throw 'Desktop did not start.' }
     if ($script:process.MainWindowHandle -ne 0) {
       $script:window = [Windows.Automation.AutomationElement]::FromHandle($script:process.MainWindowHandle)
-      if (Find-Element '本机桌面' 'Text') { return }
+      if (Find-Element '本机桌面' 'Text') {
+        if ($env:PRISM_VERIFY_EXPECTED_VERSION -and $script:process.MainWindowTitle -notlike "*$($env:PRISM_VERIFY_EXPECTED_VERSION)*") { Start-Sleep -Milliseconds 100; continue }
+        return
+      }
     }
     Start-Sleep -Milliseconds 100
   }
@@ -78,6 +93,9 @@ function Close-Desktop {
   $script:window=$null; $script:process=$null
 }
 function Capture-Window([string]$File) {
+  # Hosted runners may have no screen framebuffer; UIA operations and SQLite
+  # assertions still run on the real installed process, without screenshot claims.
+  if($env:PRISM_VERIFY_NO_SCREENSHOT -eq '1'){return}
   [PrismTestWindow]::ShowWindow($script:process.MainWindowHandle, 9) | Out-Null
   [PrismTestWindow]::SetForegroundWindow($script:process.MainWindowHandle) | Out-Null
   # Raise only the owned test window for its screenshot, then remove topmost immediately.
@@ -94,6 +112,11 @@ function Capture-Window([string]$File) {
 }
 try {
   Open-Desktop
+  if ($env:PRISM_VERIFY_READ_ONLY -eq '1') {
+    $saved=Read-Database
+    $seed=$saved.seed
+    Wait-Element '桌面重开验证' 'Button' | Out-Null
+  } else {
   if (!(Read-Database).empty) { throw 'New native database contains demo environments.' }
   Invoke-Button '新建环境'
   Set-Value '环境名称' '桌面合成环境'
@@ -123,6 +146,7 @@ try {
   Invoke-Button '启动'
   Wait-Element '真实浏览器启动尚未接入，未安装内核时不能启动。' 'Text' | Out-Null
   Capture-Window 'native-created-edited.png'
+  }
   $before=($saved | ConvertTo-Json -Depth 10 -Compress)
   Close-Desktop
   if ((Read-Database | ConvertTo-Json -Depth 10 -Compress) -ne $before) { throw 'Normal close changed saved configuration.' }
@@ -146,7 +170,8 @@ try {
   Close-Desktop
   $after=Read-Database
   if (($after | ConvertTo-Json -Depth 10 -Compress) -ne $before) { throw 'Second normal close changed the database.' }
-  $evidence=@{verifiedAt=[DateTime]::UtcNow.ToString('o');platform='windows/amd64';driver='Windows UI Automation';processes=$script:processes.ToArray();database=$after;checks=@{emptyNativeStartup=$true;nativeCreateEdit=$true;normalCloseReopen=$true;UISeedMatchesSQLite=$true;missingKernelBlocked=$true;narrowWindow=$true;noDebugEndpoint=$true}}
+   $createdHere=$env:PRISM_VERIFY_READ_ONLY -ne '1'
+   $evidence=@{verifiedAt=[DateTime]::UtcNow.ToString('o');platform='windows/amd64';driver='Windows UI Automation';processes=$script:processes.ToArray();database=$after;checks=@{emptyNativeStartup=$createdHere;nativeCreateEdit=$createdHere;normalCloseReopen=$true;UISeedMatchesSQLite=$true;missingKernelBlocked=$createdHere;narrowWindow=$true;noDebugEndpoint=$true}}
   [IO.File]::WriteAllText((Join-Path $env:PRISM_VERIFY_EVIDENCE 'uia-verification.json'),($evidence | ConvertTo-Json -Depth 12),[Text.UTF8Encoding]::new($false))
   Write-Output 'Windows UI Automation and SQLite reopen verification completed.'
 } catch {

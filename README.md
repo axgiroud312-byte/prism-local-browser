@@ -2,7 +2,7 @@
 
 面向 Windows 本机多环境管理的桌面底座、独立前端原型及产品开发文档。
 
-**T02 已接入 Go/Wails 与 SQLite 创建编辑底座，正在验收。** 桌面从空的本机数据库开始，关闭重开保留档案；真实内核、代理、Cookie 和完整备份尚未接入，桌面不会返回模拟成功。独立网页原型仍使用演示数据与明确标记的模拟流程。实际验收状态以 [PROGRESS.md](docs/PROGRESS.md) 为准。
+**T02 的 Go/Wails 与 SQLite 创建编辑底座已验收；T03 安装开发预览正在验收。** 桌面从空的本机数据库开始，关闭重开保留档案；真实内核、代理、Cookie 和完整备份尚未接入，桌面不会返回模拟成功。独立网页原型仍使用演示数据与明确标记的模拟流程。实际验收状态以 [PROGRESS.md](docs/PROGRESS.md) 为准。
 
 [产品需求](docs/PRD.md) · [开发方案](docs/DEVELOPMENT.md) · [内核合同](docs/KERNEL.md) · [需求追踪](docs/TRACEABILITY.md) · [验收记录](docs/ACCEPTANCE.md)
 
@@ -62,7 +62,7 @@ npm run build:windows
 ./build/bin/prism-browser.exe
 ```
 
-也可 `npm run dev:desktop`。桌面 production 构建使用单独 Vite `desktop` 模式；桥接失败会显示阻断提示，不退回网页 demo。exe 旁生成 Go 运行时许可通知，分发时须一起保留；目前是未签名开发构建，**不是已验收的安装包**，安装/升级/卸载由 T03 实施。
+也可 `npm run dev:desktop`。桌面 production 构建使用单独 Vite `desktop` 模式；桥接失败会显示阻断提示，不退回网页 demo。exe 旁生成 Go 运行时许可通知，分发时须一起保留。构建反射阶段不会开启用户数据库；程序启动先检查 WebView2 与目录边界。安装预览使用 `npm run build:installer`，生成安装器、哈希与真实签名状态于 `build/releases/`；目前 **NotSigned、开发预览、不含浏览器内核**，安装/升级/卸载的实际验收见 [安装说明](docs/INSTALLATION.md) 与 [T03 记录](docs/verification/T03.md)。
 
 桌面默认数据库为 `%LOCALAPPDATA%/PrismBrowser/app.db`，桌面壳的 WebView 数据在同根 `workbench-webview/`，与网页原型 localStorage 分离。单条创建/编辑保存 ID、显式 seed、内核占位引用、分组及偏好；未安装内核时显示“未就绪”，不能启动。批量任务、真实登录数据和备份仍待对应任务。不要把原型 JSON 导入生产数据库。
 
@@ -87,7 +87,7 @@ npm run build:windows
 - 填入的代理凭据和 Cookie 是原型数据，可能以明文保存在当前浏览器。请勿输入真实账号 Cookie、真实代理密码或其他敏感资料。
 - 原型快照包含环境配置、示例 Cookie、代理及内核元数据；导出排除代理密码。它不包含 Chromium 用户目录，也不能作为真实店铺登录状态的完整备份。
 - 恢复会替换环境、代理和内核配置，保留原指纹种子；代理密码清空、检查状态重置。恢复前需停止所有模拟运行环境。
-- SQLite 配置事务、固定初始 seed、修订冲突和持久成功请求去重已接入 T02；尚未实现真实浏览器进程管理、内核安装校验、代理认证桥接与网络出口检查、CDP Cookie 写入、真实目录备份恢复及 Windows 安装包。
+- SQLite 配置事务、固定初始 seed、修订冲突和持久成功请求去重已接入 T02；Windows 用户级开发预览安装器在 T03 验收中。尚未实现真实浏览器进程管理、内核安装校验、代理认证桥接与网络出口检查、CDP Cookie 写入与真实目录备份恢复。
 - 指纹读值、浏览器功能兼容性和隔离效果需要后续真实运行验收。本项目不以隐蔽性评分或不封号承诺作为完成条件。
 
 ## 如何继续开发

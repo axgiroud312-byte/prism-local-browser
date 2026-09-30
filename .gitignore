@@ -10,6 +10,7 @@ output/
 .tools/
 .appdata/
 build/bin/
+build/releases/
 build/appicon.png
 build/windows/icon.ico
 package.json.md5

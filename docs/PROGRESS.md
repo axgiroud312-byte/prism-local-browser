@@ -1,19 +1,19 @@
 # Goal 当前执行位置
 
-更新时间：2026-09-30 16:35 Asia/Shanghai。
+更新时间：2026-09-30 19:23 Asia/Shanghai。
 
-- Goal：执行中；[规则](GOAL.md)；完成 **1/21**（验收任务计数）。
-- 当前任务：T02 / [Issue #3](https://github.com/axgiroud312-byte/prism-local-browser/issues/3)，进行中。
-- 当前步骤：代码 `134dc66` 的远程 Node 22/24 与 Windows Go 检查全部通过；[PR #24](https://github.com/axgiroud312-byte/prism-local-browser/pull/24) 收尾。两轮只读评审均完成，无确认阻断；准备推送最终记录后再次检查/合入。
-- 现场：`goal/t02-native-workspace` / `134dc66`，已推送；T01 PR #23 已合入，#2 CLOSED；#3 OPEN、依赖已重新确认；总规格 #1 保留。当前未提交仅本 Goal 收尾记录，无用户遗留改动。
+- Goal：执行中；[规则](GOAL.md)；完成 **2/21**（验收任务计数）。
+- 当前任务：T03 / [Issue #4](https://github.com/axgiroud312-byte/prism-local-browser/issues/4)，进行中。
+- 当前步骤：a8b5076的Node22/24全通过，Unicode COM不再报异常；Go测试发现Shell把TEMP的8.3短路径展开后与原字面路径不等。已本机强制GetShortPathName复现同一失败，再按实际文件/目录identity核验；独立Shell.Application读回保持同一identity断言，相关模块/vet通过。只提交这个必要相关修复，不重跑前端全量。
+- 现场：`goal/t03-windows-installer` / `a8b5076`；未提交为路径identity修复/回归与最新本机合成记录，所有改动属本Goal。#4尚OPEN，正式仍2/21。
 
 ## 任务状态
 
 | 任务 | Issue | 状态 | 交付提交 / 验证 |
 | --- | --- | --- | --- |
 | T01 | #2 | 已完成 | 代码 `3b9b0fa`、记录 `afaeecb`、合入 `6cd681b`；[记录](verification/T01.md)；[PR #23](https://github.com/axgiroud312-byte/prism-local-browser/pull/23) |
-| T02 | #3 | 验证中 | 代码 `134dc66` 已推送、CI全通过；[记录](verification/T02.md)；[PR #24](https://github.com/axgiroud312-byte/prism-local-browser/pull/24)，最终记录待检查 |
-| T03 | #4 | 待开始 | — |
+| T02 | #3 | 已完成 | 代码 `134dc66`、记录 `fc4aa47`、合入 `44517c5`；[记录](verification/T02.md)；[PR #24](https://github.com/axgiroud312-byte/prism-local-browser/pull/24)，最终 CI 全通过 |
+| T03 | #4 | 进行中 | [验收清单](verification/T03.md)、[PR #25](https://github.com/axgiroud312-byte/prism-local-browser/pull/25)，本机闭环通过，干净runner快捷方式问题修复中 |
 | T04 | #5 | 待开始 | — |
 | T05 | #6 | 待开始 | — |
 | T06 | #7 | 待开始 | — |
@@ -55,13 +55,31 @@
 - 2026-09-30 16:20–16:27：最终 `npm run check` 通过（49 JS、类型、生产原型构建、25 文档、11 UI），13 Go 契约/vet 通过，最新 Windows production 构建及26模块许可通过；对新 exe 再执行真实 UIA/SQLite 关闭重开验证通过。公开合成 JSON/截图已核查，实机证据无私人路径；本 Goal 启动的测试桌面均已正常退出。`git diff --check`、gofmt 检查通过，尚未推送/远程验收。
 - 2026-09-30 16:29–16:34：代码 `134dc66` / [run 36689998979](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/36689998979) 的 Windows Node 22.12.0、24 和 Go/Wails 构建三项全通过，已核对 headSha、实际步骤与结果。另以原型格式合成文本充当损坏 app.db 开真实 exe：显示 native 安全阻断，无演示重置/示例回退，正常关闭后原文未变；证据已脱敏。
 - 第二轮只读复核完成：独立核对当前 production exe SHA-256、合成 SQLite 全字段与截图；26 个实际 Go 依赖许可和子组件声明齐全；UIA 只操作自身 PID、不注入调试参数，CI 没有以构建冒充实机。无确认阻断，不重复其未执行的测试声明。
-- 已提交推送 `134dc66`：T02 服务、adapter、桌面入口、脚本、测试、工具配置、许可/文档、合成实机证据及 T01 收尾记录。PR #24 创建成功，新增 Windows Go 构建 CI；未提交仅进度收尾文档，无用户遗留改动。
-- 当前阻塞：无。未解决失败：先前类型/冷启动/脚本问题均已关闭；等待最新最终回归及远程检查，不标为已完成。
-- 下一步：处理背景复核或远程检查发现的具体问题；完成文档收尾并推送，最终检查全部通过后合入/关闭 #3，自动进入 T03。
+- 2026-09-30 16:44–16:48：T02 最终 `fc4aa47` / [run 36691104701](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/36691104701) 三项 Windows Node 22/24、Go/Wails检查全通过；PR #24 合入 `44517c5`、#3 四项验收已勾选并 CLOSED。T03 #4 OPEN，无承担者，blocking #3 CLOSED 且成果可用，正式开始。
+- T03 现场：Windows 11 Home x64、当前非管理员，无 Windows Sandbox，NSIS/Inno 不在 PATH。不操作未知既有 Windows 账号；先完成项目内便携编译工具和当前用户安装验收，干净 Windows 用户验收不能用改环境变量冒充，必要时交付可运行验收脚本并请求用户提供一次隔离用户环境。
+- 2026-09-30 16:56–17:12：服务重启后核对现场，无重复合入/测试副作用。官方 NSIS 3.13（2026-09-27）ZIP 下载、SHA-256 `ba63dffc4410ee89193e1cb5a41989991bd77c61068da17e3156d136b7b0b3d8` 与发行元数据一致、makensis v3.13 实际通过。TDD 首轮缺模块失败符合预期；新增运行/安装互斥、真实 junction 拒绝/外部文件保持、幂等删除及版本前检共4 Go测试通过，已有13条/vet仍通过。
+- 初版安装按用户固定程序根、同卷新版本目录切换；数据仍使用 Windows KnownFolder 默认根，测试环境覆盖不成为卸载删除输入。helper 不接受任意删除路径，链接/重解析点拒绝；程序启动和安装共享独占锁，旧T02运行也做保护。默认卸载保留数据，勾选删除需再次确认，静默删除仅显式 CONFIRMED。
+- 干净用户环境备选：本机非管理员/Home无Sandbox；将尝试 GitHub Actions 的全新 Windows runner 用户目录实际安装/UIA闭环，保留真实 Windows 11 本机验证。若 runner 缺交互桌面会准确报告，不以改环境变量冒充新用户。
+- 2026-09-30 17:12–17:22：NSIS 首轮报 UTF-8 无 BOM 输入编码错误，固定 `/INPUTCHARSET UTF8` 后直接编译初稿安装包成功（尚未运行）；Windows helper/26模块许可通过。已写默认KnownFolder的真实安装→UI创建编辑/重开→升级→拒绝降级→保留卸载→重装→显式删除测试，不允许环境重定向冒充用户隔离。
+- 安装前默认根检查发现仅 `app.db`（77824字节，15:27创建，与T02首轮构建对应），只读SQLite核对为空环境/代理。Wails生成绑定时运行 main，原T02在 wails.Run 前开数据库造成这个副作用；先隔离绑定生成的初始化并保持原文件，不把它当私人数据删除。未知现有账号未动；当前没有运行的本产品进程。
+- 2026-09-30 17:22–17:48：只读评审完成4项：卸载向导后换junction越界、启动未检内部链接、同版本缺exe仍成功、入口/注册失败忽略。主代理改为NSIS仅私有临时目录暂存；Go窄helper核验7文件哈希/固定KnownFolder、目录持有防替换、新版本发布/同版本修复、HKCU和快捷方式可逆集成与真实失败返回；卸载仅删已知文件，未知文件保留，全部必要操作成功才删注册。启动前查数据树并持有目录，binding tag不初始化用户数据。
+- 新测试首次发现 READ_ATTRIBUTES 目录handle不参与Windows删除共享校验，换成GENERIC_READ后真实rename被拒。新增5条保护加原4条，共22 Go/vet通过；typecheck通过。安装脚本本轮逻辑未重建实测，评审修复不先冒称关闭。
+- 17:49–18:01：旧空数据库及读取产生的wal/shm完整移动保留在忽略证据目录，原件hash记录，不删除；预览1/2安装包构建通过并确认binding不再新建默认数据根，实际均NotSigned。首次向导验收UIA将NSIS原生控件报告Pane而未观察到保留勾选，针对脚本改用同进程窗口ID/Win32真实按钮和BM_GETCHECK；相关闭环重跑全通过。当前默认用户产品安装和合成数据已按脚本明确删除，6个应用进程均正常退出，旧空数据库保持备存。
+- 18:01：完整回归只在本票收尾运行一次并全通过：49JS、类型、原型构建、27文档、11UI；不因接下来的文档修改再重跑全量。用户明确调整节奏为功能优先、相关验证、票末完整回归与CI，已写入GOAL；工具/环境复用、关键真实操作仍保留。
+- 18:08–18:12：只读复核确认四项关闭，新增唯一必要修复为尾部占用失败丢卸载重试入口；已分离最后finish-uninstall，快捷方式或数据处理失败保留卸载器/注册。仅跑相关desktopbase测试通过；新增合成真实文件占用→失败仍可重试→释放后完成用例，总Go23。快捷方式修为NoWorkingDir，并将最终真实桌面验证从直接exe改为分别从桌面/开始菜单.lnk启动、核对实际exePID。
+- 18:11–18:13：代码提交12e8286；干净树两个预览包构建通过，真实从两条.lnk分别打开预期安装exe，每版正常关闭重开，完整安装→升级→保留卸载→重装→显式删除再次通过。公开合成证据与安装包实际hash已落盘；NotSigned，不含内核。确认Go VERSIONINFO fixed0.3.0.0与可选字符串空，元数据脚本按实际fixed字段记录，helper版本资源null如实保留。
+- 18:23–18:27：[run36701706414](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/36701706414) Node22/24通过，desktop安装包构建失败。已读取失败日志定位Get-FileHash模块自动加载而非产品/数据库/UI失败；增加进程内本host原生模块路径优先的6入口共享bootstrap，模拟PS7-only PSModulePath的实际WinPS5验证Get-FileHash/Authenticode/Archive/Add-Type与NSIS缓存ZIP/hash/版本全部成功。仅相关脚本验证，未重复49JS全量；仍不计T03完成。
+- 18:32–18:35：最新CI打包/前提已通过，真实安装exit0，快捷方式目标比较失败（尚未进入应用UI操作）。检查改为Windows物理DesktopDirectory（不是虚拟shell Desktop）与GetFullPath规范化，添加真实文件存在性检查及不带私人路径的错误细节；没有改产品代码或放宽预期exe检查。正在只复跑相关安装/快捷方式闭环；没有本地49JS全量回归。
+- 18:44–18:58：[run36703818884](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/36703818884) Node22/24、Go与两包构建通过，默认首次安装exit0后链接文件存在但TargetPath空。先加失败回归，再改helper在publish成功后创建并回读Windows链接，取消安装前NSIS CreateShortcut；go-ole使用已有固定依赖/许可，没有引入新版本。物理目录修正保留，错误诊断不再对空路径调用Test-Path。独立PS实际读回两链接验证首次/升级及锁占用失败仍恢复旧链接/注册，desktopbase/vet通过；最终新包真实操作尚待。
+- 19:01–19:11：bd26ff9两个干净源码包本机完整安装/快捷方式/保留重装/删除通过。[run36705800455](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/36705800455) Node22通过，Node24因Vite监听Playwright下载.crdownload的EBUSY崩溃；desktop的新Unicode链接Go回归失败，未打包。确认关键根因是WScript.Shell在非当前ANSI码页字符路径下创建/读取错误：本机增加🌈路径后同一异常可复现，因此此前TargetPath空不能证明原NSIS链接真实为空。已改产品生成与回读为明确Unicode的IShellLinkW/IPersistFile、独立PS读取为Shell.Application；Unicode/首次/升级/占用回滚模块测试/vet通过。Vite仅忽略生成的output/.tools/build/wailsjs目录，不删断言/重试隐藏问题；只跑相关UI。
+- 当前阻塞：无外部资源阻塞；仅当前票干净runner真实流程未通过，不关闭本票。
+- 19:13–19:15：a8b5076干净源码重建两个包并用最新Unicode读取驱动真实验证默认根安装→两链接打开→创建编辑/两次正常重开→升级→拒绝降级→默认向导保留卸载→重装找回→显式删除通过。最终6个app正常退出、默认安装/注册/合成数据均清除，旧空库保留备存；公开证据见T03-installer-final.json。修复已推送，最终CI等待中。
+- 19:17–19:23：[run36707306592](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/36707306592) Node22/24完整通过，Vite问题关闭；Go新链接测试回读字符串不匹配，未打包。Windows TEMP短路径与Shell展开长路径是同一对象却非同一字符串；用本机GetShortPathName强制短别名已复现相同失败。产品/独立测试改以os.SameFile核对实际目标文件/工作目录，仍拒绝空值和任何不同对象；Unicode+8.3+首次/升级/锁占用回滚模块/vet通过，未再跑49JS或11UI。
+- 下一步：提交identity修复，复用两个包相关构建/验证后推送，核对最新headSha/干净runner实际流程；成功后合入关闭#4，正式3/21后自动T04。当前无后台命令。
 
 ## 恢复资源与 GitHub
 
 - 已有其他 Node/Chrome 进程属于用户现场，不停止。已核对 5173 为本仓库旧 Vite 服务；4173 未监听（纠正初查格式误判）。本 Goal 尚未启动服务，UI 测试用独立端口 5183 和新浏览器上下文。
 - `output/`、`.playwright-cli/`、`dist/`、`node_modules/` 为现有忽略目录；不删除旧成果。新测试输出使用 `output/goal/`，仅保留合成证据。
 - `npx playwright install chromium` 已成功安装本票测试浏览器（仅前端检查，不是 fingerprint-chromium）。测试使用 5183，由 Playwright 启停独立 Vite，首次测试已退出；旧 5173 不动。Serena 本机索引 `.serena/` 已忽略。
-- GitHub：T01 代码/PR/验收评论/勾选/关闭已同步；本地收尾与 T02 开始检查点待提交。T02 初查 OPEN、无承担者/评论，唯一 blocking #2 已完成；#1 不关闭。
+- GitHub：T01/T02 已完成同步；T03 PR #25开放、#4未关闭；#1不关闭。后台只等待当前安装验收与CI完成通知。

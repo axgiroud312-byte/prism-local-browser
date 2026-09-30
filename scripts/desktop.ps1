@@ -1,5 +1,6 @@
-param([ValidateSet('test','build','dev','doctor')][string]$Action = 'test')
+param([ValidateSet('test','build','dev','doctor')][string]$Action = 'test', [ValidateRange(1,65535)][int]$PreviewRevision = 1)
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'powershell-host.ps1')
 [Console]::OutputEncoding = [Text.UTF8Encoding]::new($false)
 $OutputEncoding = [Console]::OutputEncoding
 $root = Split-Path $PSScriptRoot -Parent
@@ -29,10 +30,13 @@ try {
       if ($LASTEXITCODE) { throw 'Go vet failed.' }
     }
     'build' {
-      & wails build -clean -platform windows/amd64
+      $env:VITE_DESKTOP_VERSION = "0.3.0-preview.$PreviewRevision"
+      & wails build -clean -platform windows/amd64 -webview2 error -ldflags "-X main.applicationVersion=0.3.0-preview.$PreviewRevision"
       if ($LASTEXITCODE) { throw 'Windows build failed.' }
       & (Join-Path $PSScriptRoot 'collect-go-notices.ps1') -Go $go
       Copy-Item 'LICENSE','THIRD_PARTY_NOTICES.md' -Destination 'build/bin'
+      & $go build -trimpath -ldflags '-H windowsgui' -o build/bin/prism-maintenance.exe ./cmd/prism-maintenance
+      if ($LASTEXITCODE) { throw 'Installer maintenance helper build failed.' }
     }
     'dev' { & wails dev; if ($LASTEXITCODE) { throw 'Desktop dev failed.' } }
     'doctor' { & wails doctor; if ($LASTEXITCODE) { throw 'Wails doctor failed.' } }

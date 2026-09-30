@@ -12,8 +12,8 @@
   "info": {
     "companyName": "Prism Browser contributors",
     "productName": "Prism Browser",
-    "productVersion": "0.2.0",
+    "productVersion": "0.3.0",
     "copyright": "MIT; third-party components retain their licenses",
-    "comments": "Windows local workspace"
+    "comments": "Development preview; browser kernel not included"
   }
 }

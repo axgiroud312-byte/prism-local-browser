@@ -1,0 +1,73 @@
+{
+  "verifiedAt": "2026-09-30T10:13:02.3039126Z",
+  "sourceCommit": "12e828676b11a317120e090823abc2d6f785089f",
+  "sourceDirtyAtBuild": false,
+  "platform": "windows/amd64",
+  "windows": "Windows 11 Home (Chinese)",
+  "driver": "Windows UI Automation + Win32 native installer controls + actual NSIS installation",
+  "freshProductStateAtStart": true,
+  "freshWindowsUser": false,
+  "actualDefaultKnownFolders": true,
+  "environmentOverrides": false,
+  "installerSteps": [
+    { "version": "0.3.0-preview.1", "pid": 40616, "actualExit": 0, "wizard": true },
+    { "version": "0.3.0-preview.2", "pid": 63232, "actualExit": 0, "wizard": false },
+    { "version": "0.3.0-preview.1", "pid": 67956, "actualExit": 25, "wizard": false, "operation": "downgrade rejected" },
+    { "operation": "retain uninstall", "pid": 65504, "actualExit": 0, "wizard": true },
+    { "version": "0.3.0-preview.2", "pid": 61724, "actualExit": 0, "wizard": false, "operation": "reinstall" },
+    { "operation": "explicit remove-data uninstall", "pid": 64036, "actualExit": 0, "wizard": false }
+  ],
+  "appProcesses": [
+    { "pid": 61904, "startedAt": "2026-09-30T10:12:43.1847094Z", "normalExit": true },
+    { "pid": 60884, "startedAt": "2026-09-30T10:12:46.0538704Z", "normalExit": true },
+    { "pid": 66420, "startedAt": "2026-09-30T10:12:50.6931403Z", "normalExit": true },
+    { "pid": 28028, "startedAt": "2026-09-30T10:12:51.8104491Z", "normalExit": true },
+    { "pid": 59552, "startedAt": "2026-09-30T10:12:58.0324519Z", "normalExit": true },
+    { "pid": 47828, "startedAt": "2026-09-30T10:12:59.0565816Z", "normalExit": true }
+  ],
+  "checks": {
+    "desktopAndStartMenuShortcutsLaunchedExpectedExe": true,
+    "firstAndSecondStart": true,
+    "upgradeIdentityPreserved": true,
+    "downgradeRejected": true,
+    "defaultDataCheckboxUnchecked": true,
+    "defaultUninstallRetained": true,
+    "reinstallFoundSameData": true,
+    "explicitRemoveData": true
+  },
+  "database": {
+    "schemaVersion": 1,
+    "id": "588f6176-fbcc-4503-97e0-421f34934844",
+    "revision": 2,
+    "kernelId": "kernel-pending",
+    "seed": "1267801279",
+    "configuration": {
+      "name": "桌面重开验证",
+      "group": "合成持久组",
+      "note": "只用于 T02 实际桌面验证",
+      "proxyId": "",
+      "coreId": "kernel-pending",
+      "seed": "1267801279",
+      "language": "en-US",
+      "timezone": "America/New_York",
+      "cpu": "auto",
+      "width": 1440,
+      "height": 900,
+      "urls": "https://example.test/desktop",
+      "restoreTabs": false,
+      "fingerprintVersion": "windows-desktop-v1"
+    }
+  },
+  "artifacts": {
+    "targetArchitecture": "amd64",
+    "installerStubPEArchitecture": "i386",
+    "browserFixedPEVersion": "0.3.0.0",
+    "browserOptionalFileVersionString": "",
+    "maintenancePEVersion": null,
+    "authenticode": "NotSigned",
+    "preview1InstallerSHA256": "86164fb262d9981997119c253f57e4c2cbe27648235088f5148ad43bf2e8b192",
+    "preview2InstallerSHA256": "d818059bb82c2045b77272a81f57befd79ee1b11eb35358a6f917a88df1df019",
+    "preview2BrowserSHA256": "91183bdd3fb36ff6a8254811c7b47a4a22c4aa83c50e1a437434b76eccc51e93",
+    "maintenanceSHA256": "0acd12c57b4868808004b8c8a9e97c6401b3552b158c0b579f98d1e3f070cfa1"
+  }
+}

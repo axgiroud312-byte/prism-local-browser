@@ -1,0 +1,74 @@
+{
+  "verifiedAt": "2026-09-30T11:13:53.1373506Z",
+  "sourceCommit": "a8b50768b81ca20b42f37cea77ca19ec9fc42c77",
+  "sourceDirtyAtBuild": false,
+  "platform": "windows/amd64",
+  "windows": "Windows 11 Home (Chinese)",
+  "driver": "Actual NSIS installation + Unicode Shell.Application shortcut inspection + Windows UI Automation",
+  "freshWindowsUser": false,
+  "freshProductStateAtStart": true,
+  "actualDefaultKnownFolders": true,
+  "environmentOverrides": false,
+  "installerSteps": [
+    { "operation": "install preview.1", "pid": 63916, "actualExit": 0, "wizard": true },
+    { "operation": "upgrade preview.2", "pid": 68528, "actualExit": 0 },
+    { "operation": "downgrade rejected", "pid": 66400, "actualExit": 25 },
+    { "operation": "default retain uninstall", "pid": 66780, "actualExit": 0, "wizard": true },
+    { "operation": "reinstall preview.2", "pid": 10612, "actualExit": 0 },
+    { "operation": "explicit remove-data uninstall", "pid": 50792, "actualExit": 0 }
+  ],
+  "appProcesses": [
+    { "pid": 61000, "startedAt": "2026-09-30T11:13:35.0162444Z", "normalExit": true },
+    { "pid": 51592, "startedAt": "2026-09-30T11:13:37.8173097Z", "normalExit": true },
+    { "pid": 61340, "startedAt": "2026-09-30T11:13:42.2255585Z", "normalExit": true },
+    { "pid": 26488, "startedAt": "2026-09-30T11:13:43.2558694Z", "normalExit": true },
+    { "pid": 59976, "startedAt": "2026-09-30T11:13:49.4564324Z", "normalExit": true },
+    { "pid": 2140, "startedAt": "2026-09-30T11:13:50.4931600Z", "normalExit": true }
+  ],
+  "checks": {
+    "desktopAndStartMenuShortcutsLaunchedExpectedExe": true,
+    "firstAndSecondStart": true,
+    "upgradeIdentityPreserved": true,
+    "downgradeRejected": true,
+    "defaultDataCheckboxUnchecked": true,
+    "defaultUninstallRetained": true,
+    "reinstallFoundSameData": true,
+    "explicitRemoveData": true
+  },
+  "database": {
+    "schemaVersion": 1,
+    "id": "060058e2-076a-49a3-82ca-b92cc8942444",
+    "revision": 2,
+    "kernelId": "kernel-pending",
+    "seed": "1595145480",
+    "configuration": {
+      "name": "桌面重开验证",
+      "group": "合成持久组",
+      "note": "只用于 T02 实际桌面验证",
+      "proxyId": "",
+      "coreId": "kernel-pending",
+      "seed": "1595145480",
+      "language": "en-US",
+      "timezone": "America/New_York",
+      "cpu": "auto",
+      "width": 1440,
+      "height": 900,
+      "urls": "https://example.test/desktop",
+      "restoreTabs": false,
+      "fingerprintVersion": "windows-desktop-v1"
+    }
+  },
+  "installer": {
+    "name": "prism-browser-0.3.0-preview.2-windows-amd64-setup.exe",
+    "sha256": "cd23d911cd125b3031f054316ef48883eb026fec9a340c8b0475929759807bdb",
+    "bytes": 12726072,
+    "version": "0.3.0-preview.2",
+    "windowsPEVersion": "0.3.0.2",
+    "peArchitecture": "i386",
+    "targetArchitecture": "amd64",
+    "authenticode": "NotSigned",
+    "kernelIncluded": false,
+    "browserSHA256": "5d1129bdd5d5211b9dc05ee0ca02c3abc6409022fa04dff6eabbe7c4592a841d",
+    "maintenanceSHA256": "994c92b94e1d29b48ff949a2c2326f1063c397228e0350f3c4e27ed48c91ba25"
+  }
+}

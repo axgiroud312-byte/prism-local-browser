@@ -83,3 +83,14 @@ PRD 与开发方案已经定义了实际内核启动、独立目录锁、代理�
 - 只读评审无确认阻断。未签名 exe（NotSigned）仅为开发底座，安装包由 T03 验收；真实 Chromium/独立用户目录、完整指纹能力、代理、Cookie、恢复和批量持久任务均未交付。
 
 ![T02 实际 Windows 桌面重开后](screenshots/T02-native-reopened.png)
+
+## T03 Windows 开发预览安装增量（本机通过，干净用户待CI）
+
+日期：2026-09-30 18:13 Asia/Shanghai。代码 `12e8286`；只交付安装桌面壳，不含 fingerprint-chromium。详细结果、最终远程门槛和版本见 [T03](verification/T03.md)、[合成进程/SQLite/哈希记录](verification/T03-installer.json) 与 [安装说明](INSTALLATION.md)。
+
+- Windows 11 Home x64本机默认KnownFolder实测安装1→从桌面/开始菜单快捷方式创建编辑/两次正常重开→升级2→拒绝降级→向导默认未选删除→保留卸载→重装找到同一ID/seed/配置→明确删除，更新的安装包全部通过，6个应用进程正常退出。
+- 程序/数据分离，目录替换与重解析点保护，同版本修复；入口/HKCU失败回滚，卸载尾部占用失败保持正常重试入口。23 Go保护与服务契约通过；票末完整49 JS/类型/构建/27文档/11 UI已通过，后续仅相关Go和文档检查。
+- 固定NSIS官方ZIP/工具版本，实际两个安装包版本/架构/哈希/NotSigned、26 Go模块/运行时/NSIS许可；程序amd64、NSIS stub i386分别记录。干净源代码构建清单无私有路径；旧构建产生的空库原件完整保存在忽略目录，不被误删。
+- 全新Windows用户环境仍需本票CI实际闭环确认，不把本机产品初始为空冒充全新用户。未关闭T03，未将桌面壳安装通过推导为真实内核、代理、Cookie、备份或恢复通过。
+
+![T03 安装并升级、保留卸载后重装的实际桌面（合成数据）](screenshots/T03-installed-reopened.png)
