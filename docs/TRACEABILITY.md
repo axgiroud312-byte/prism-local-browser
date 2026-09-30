@@ -51,7 +51,7 @@ UX-001、DOC-001 的发布入口在 [安装器](../build/windows/installer/prism
 
 - CORE-001：[`kernel`模块](../internal/kernel/install_windows.go)取得用户明确选择的官方tag或可信本地ZIP，校验实际归档/程序/完整清单摘要、amd64及PE/CDP真实版本；暂存和新ID发布，不允许原地覆盖。SQLite schema2记录证据、操作/失败和引用，旧pending档案不自动换内核，已引用构建受保护。原生[`内核页`](../src/components/NativeKernelManager.tsx)只读真实服务状态，区分受理与完成、可查询/取消任务。
 - FP-002：[`受控探测`](../internal/kernel/probe_windows.go)保留沙箱，CDP仅通过限定继承句柄的私有匿名pipe。148实际HTTP/网页UA与UA-CH版本、测试种子、CPU、语言和时区回读通过；报告区分observed、source-derived和not-probed。菜单语言、字体/Canvas/音频、屏幕/定位、网络泄漏等未验收项不宣称可编辑或生效。
-- 相关服务/恶意归档/真实junction/文件锁/迁移及前端测试已通过；52JS/13UI票末回归、全部Go/vet及production构建通过。官方/可信本地148真实安装、150缺失/坏hash失败、相同production exe的精确绑定/重开/真实复验/引用保护/闲置移除已记录到[真实证据](verification/T04-kernel-acceptance.json)。补充UI尝试受共享输入干扰后按用户要求stopped，不声称全通过；停止后不再自动点击，默认CI只后台检查与无头实际读值，远程门槛待结果。正常环境启停、完整指纹修订和升级回滚不是本票范围。
+- 相关服务/恶意归档/真实junction/文件锁/迁移及前端测试已通过；52JS/13UI票末回归、全部Go/vet及production构建通过。官方/可信本地148真实安装、150缺失/坏hash失败、相同production exe的精确绑定/重开/真实复验/引用保护/闲置移除已记录到[真实证据](verification/T04-kernel-acceptance.json)。补充UI尝试受共享输入干扰后按用户要求stopped，不声称全通过；停止后不再自动点击，默认CI只后台检查与无头实际读值。[CI36728637966](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/36728637966)全通过，PR26合入dc0a148，#5已关闭。正常环境启停、完整指纹修订和升级回滚不是本票范围。
 
 以下关联于 2026-09-30 发布，表示计划实现范围，不能据此判断已完成。当前状态与 blocking 依赖以 GitHub 为准；完整顺序见 [开发票据索引](ISSUES.md)，共同范围见 [总规格 Issue](https://github.com/axgiroud312-byte/prism-local-browser/issues/1)。
 

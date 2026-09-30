@@ -1,11 +1,11 @@
 # Goal 当前执行位置
 
-更新时间：2026-09-30 22:15 Asia/Shanghai。
+更新时间：2026-09-30 22:53 Asia/Shanghai。
 
-- Goal：执行中；[规则](GOAL.md)；完成 **3/21**（验收任务计数）。
-- 当前任务：T04 / [Issue #5](https://github.com/axgiroud312-byte/prism-local-browser/issues/5)，进行中。
-- 当前步骤：本机证据已脱敏落盘，四项功能验收满足；同exe已完成页面闭环、新安装实际字节和停止的补充UI尝试分别记录。用户已要求不再自动化点击，现无UI进程/点击命令；自动CI改为后台门禁与无头真实内核探测。票末回归与只读评审通过，准备提交推送和CI；尚不开始T05。
-- 现场：`goal/t04-exact-kernel`，文档提交`85a50b4`；未提交为当前票internal/kernel、workspace服务/类型及桌面文件选择接入。T03全部证据/旧空库保留，无用户遗留改动。
+- Goal：执行中；[规则](GOAL.md)；完成 **4/21**（验收任务计数）。
+- 当前任务：T05 / [Issue #6](https://github.com/axgiroud312-byte/prism-local-browser/issues/6)，进行中。
+- 当前步骤：T04已合入并关闭；T05全文与唯一依赖#5实际成果已核对。只读接入地图完成，开始固定档案/能力编译与事务历史的最小增量；不实施T06启停，不运行任何自动点击。
+- 现场：`goal/t05-fingerprint-revisions`，从合入`dc0a148`建分支；未提交仅T04收尾与T05开始记录，先文档检查/提交，再实现。T03全部证据/旧空库保留，无用户遗留改动。
 
 ## 任务状态
 
@@ -14,8 +14,8 @@
 | T01 | #2 | 已完成 | 代码 `3b9b0fa`、记录 `afaeecb`、合入 `6cd681b`；[记录](verification/T01.md)；[PR #23](https://github.com/axgiroud312-byte/prism-local-browser/pull/23) |
 | T02 | #3 | 已完成 | 代码 `134dc66`、记录 `fc4aa47`、合入 `44517c5`；[记录](verification/T02.md)；[PR #24](https://github.com/axgiroud312-byte/prism-local-browser/pull/24)，最终 CI 全通过 |
 | T03 | #4 | 已完成 | 代码`62dae8e`、合入`99c6a36`；[验收](verification/T03.md)、[PR #25](https://github.com/axgiroud312-byte/prism-local-browser/pull/25)，Windows11/干净runner闭环与CI全通过 |
-| T04 | #5 | 验证中 | [验收清单](verification/T04.md)、[真实证据](verification/T04-kernel-acceptance.json)；待提交推送/CI |
-| T05 | #6 | 待开始 | — |
+| T04 | #5 | 已完成 | 代码`89e94d7`、合入`dc0a148`、[PR #26](https://github.com/axgiroud312-byte/prism-local-browser/pull/26)；[验收](verification/T04.md)/[证据](verification/T04-kernel-acceptance.json)，CI全通过 |
+| T05 | #6 | 进行中 | [验收清单](verification/T05.md)；依赖#5已完成，接入调查完成 |
 | T06 | #7 | 待开始 | — |
 | T07 | #8 | 待开始 | — |
 | T08 | #9 | 待开始 | — |
@@ -85,10 +85,12 @@
 - 21:38：修复后的真实ZIP/PE/私有pipe诊断再次通过，PID8612/29640/65684正常退出；低/高熵HTTP品牌解析核对通过。3条native页面/迟到取消测试通过。二次只读复核指出复验遇真实junction的类型分类和“已确认损坏”被取消/清理覆盖两个P2，已补typed边界检查及独立完整性事实并相关Go/vet通过。UIA实际对话框控件ID1148/Class Edit是无Value provider的legacy Pane，驱动改用该自有HWND的WM_SETTEXT/WM_GETTEXT（不是跨进程GetWindowText）及按钮BM_CLICK，保留Unicode读回和所有原验收断言，正在从官方安装检查点续验。
 - 21:50–22:01：余下内层Probe取消归一化改errors.Join保留已确认完整性，相关测试/重建通过，只读复核最终确认无可信阻断。UIA引用环境是ListItem而非Text，修正精确类型断言；已绑定检查点不重复保存。续验全部通过，两次production桌面正常退出、所有文件实算及staging为空通过，旧夹具/JSON另存忽略目录driver-recovery。最终代码全流程UIA在新独立合成夹具执行（确保最终安装证据不是历史结果），本票完整回归已通过：52JS、13Playwright、类型/原型构建、28文档、desktopbase/kernel/workspace全部Go与vet。尚未推送本票。
 - 22:08–22:15：用户明确停止自动化点击；当前没有本产品进程，未启动后续点击。独立核对已完成闭环exe与当前最终exe同SHA-256 `7d2f9dd7…14a338`；最终安装两个76文件构建再次只读实算一致、staging为空。补充新UI尝试保持stopped（合成名受共享输入影响），不冒称成功；现有同exe闭环的重开/真实复验/引用禁删/移除结果有效，完整记录与实际时间分别公开到T04-kernel-acceptance.json。仅复制已检查无其他窗口内容的既有截图；私人路径/受遮挡失败截图不公开。默认CI所有点击步骤需显式手动opt-in，后台check与Go/vet/构建及真实无头pipe探测保留。新文档检查通过，准备提交。
+- 22:24：代码/证据/文档提交`89e94d7`并推送goal/t04-exact-kernel，创建PR #26（关联关闭#5）。当前仅官方gh checks watch后台等待结果；不启动UI/点击或不同票实现。停止后脚本只做UTF-8显式解码静态语法核对、证据只读生成/全文件实算与文档检查，全部通过。
+- 22:51–22:53：T04 CI三项已通过，真实无头探测的下载JSON/76文件/摘要/三次实际读值和正常退出核对通过，所有点击未执行。PR #26合入dc0a148，#5四项验收勾选并CLOSED，完成4/21。从origin/main建goal/t05-fingerprint-revisions；#6全文/原生blocking已重读，唯一#5成果可用。只读地图指出当前指纹表无历史、旧更新可绕过冻结、事务内单连接查询风险，T05针对根因增量解决；未实施新代码或运行新测试。
 
 ## 恢复资源与 GitHub
 
 - 已有其他 Node/Chrome 进程属于用户现场，不停止。已核对 5173 为本仓库旧 Vite 服务；4173 未监听（纠正初查格式误判）。本 Goal 尚未启动服务，UI 测试用独立端口 5183 和新浏览器上下文。
 - `output/`、`.playwright-cli/`、`dist/`、`node_modules/` 为现有忽略目录；不删除旧成果。新测试输出使用 `output/goal/`，仅保留合成证据。
 - `npx playwright install chromium` 已成功安装本票测试浏览器（仅前端检查，不是 fingerprint-chromium）。测试使用 5183，由 Playwright 启停独立 Vite，首次测试已退出；旧 5173 不动。Serena 本机索引 `.serena/` 已忽略。
-- GitHub：T01–T03已完成同步，#4 CLOSED、PR #25 MERGED；#1保留。T04 #5唯一活动票，暂无PR；只读评审全部结束，无运行中的命令/代理/UI进程。停止点击指示已记GOAL/D005，合成夹具保留，不自动重放任何界面操作。
+- GitHub：T01–T04已完成同步，#5 CLOSED、PR #26 MERGED；#1保留。T05 #6唯一活动票，无PR/承担者；只读调查已结束，无命令/代理/UI进程。停止点击指示已记GOAL/D005，合成夹具保留，不自动重放任何界面操作。

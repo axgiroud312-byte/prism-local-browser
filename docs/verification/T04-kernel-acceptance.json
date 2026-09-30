@@ -5,6 +5,27 @@
   "sourceBaseCommit": "85a50b468b7b1463a2e6319735add258e3b6e421",
   "sourceDirty": true,
   "executableSha256": "7d2f9dd72a93f448c17170c4986119a4262f8b08301bb23e49e018e0ae14a338",
+  "remoteAcceptance": {
+    "run": "https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/36728637966",
+    "headSha": "89e94d7263db85740357616ce92911e7a8b8e99a",
+    "conclusion": "success",
+    "checks": ["Node 22.12.0 background", "Node 24 background", "Windows Go/vet and two installer builds", "Real selected ZIP private-pipe probe"],
+    "uiClicks": "not-run",
+    "artifact": "windows-amd64-development-preview",
+    "artifactSha256": "e00f5d0606df14ae7163a977203e3780eb71421c73210b79cb9d5c853f3c2bbd",
+    "downloadedEvidence": "output/goal/T04/ci-real-probe.json",
+    "archiveSha256": "9ef3f471b7a6641b4224532522b29141ce3746e27d55788d88e2fd951f362579",
+    "executableSha256": "1867319e56bcabbc4681d8575c002106ce7b61b5290dc5eb34a37676805f6915",
+    "fileCount": 76,
+    "transport": "inherited-private-pipe",
+    "sandbox": true,
+    "sampledAt": "2026-09-30T14:26:12.3632128Z",
+    "observations": [
+      { "pid": 8304, "normalExit": true, "actualVersion": "148.0.7778.215", "seed": 1256789, "cpu": 10, "language": "en-US", "timezone": "America/New_York" },
+      { "pid": 8776, "normalExit": true, "actualVersion": "148.0.7778.215", "seed": 1256790, "cpu": 12, "language": "en-US", "timezone": "America/New_York" },
+      { "pid": 6580, "normalExit": true, "actualVersion": "148.0.7778.215", "seed": 1256789, "cpu": 8, "language": "de-DE", "timezone": "Europe/Berlin" }
+    ]
+  },
   "completeDesktopClosure": {
     "verifiedAt": "2026-09-30T13:57:23.2294952Z",
     "sameExecutableSha256": true,
