@@ -1,5 +1,6 @@
 param([ValidateRange(1,65535)][int]$PreviewRevision = 1)
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'powershell-host.ps1')
 [Console]::OutputEncoding = [Text.UTF8Encoding]::new($false)
 $OutputEncoding = [Console]::OutputEncoding
 $root = Split-Path $PSScriptRoot -Parent

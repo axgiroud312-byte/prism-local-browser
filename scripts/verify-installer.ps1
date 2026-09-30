@@ -6,6 +6,7 @@ $ProgressPreference = 'SilentlyContinue'
 [Console]::OutputEncoding = [Text.UTF8Encoding]::new($false)
 $OutputEncoding = [Console]::OutputEncoding
 $scriptsRoot=Split-Path $env:PRISM_INSTALLER_VERIFY -Parent
+. (Join-Path $scriptsRoot 'powershell-host.ps1')
 $root=Split-Path $scriptsRoot -Parent
 $local=[Environment]::GetFolderPath([Environment+SpecialFolder]::LocalApplicationData)
 $data=Join-Path $local 'PrismBrowser'

@@ -1,5 +1,6 @@
 # Portable, checksum-pinned compiler. No system installation or PATH change.
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'powershell-host.ps1')
 $ProgressPreference = 'SilentlyContinue'
 [Console]::OutputEncoding = [Text.UTF8Encoding]::new($false)
 $root = Split-Path $PSScriptRoot -Parent

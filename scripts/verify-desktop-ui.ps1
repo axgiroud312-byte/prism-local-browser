@@ -1,5 +1,6 @@
 # Called with explicit UTF-8 decoding by verify-desktop.mjs. Operates only its own child exe.
 $ErrorActionPreference = 'Stop'
+. (Join-Path (Split-Path $env:PRISM_VERIFY_SCRIPT -Parent) 'powershell-host.ps1')
 $ProgressPreference = 'SilentlyContinue'
 [Console]::OutputEncoding = [Text.UTF8Encoding]::new($false)
 $OutputEncoding = [Console]::OutputEncoding

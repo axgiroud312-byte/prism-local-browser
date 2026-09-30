@@ -1,5 +1,6 @@
 # Test-host provisioning only; the product installer NEVER runs this script.
 $ErrorActionPreference='Stop'
+. (Join-Path $PSScriptRoot 'powershell-host.ps1')
 if ($env:GITHUB_ACTIONS -ne 'true') { throw 'This runtime provisioning script is only for disposable GitHub Windows runners.' }
 $root=Split-Path $PSScriptRoot -Parent
 $helper=Join-Path $root 'build/bin/prism-maintenance.exe'
