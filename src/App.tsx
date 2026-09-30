@@ -233,6 +233,7 @@ function download(name: string, content: string, type = "application/json") {
 export default function App({ application }: { application: ApplicationService }) {
   const workspace = useSyncExternalStore(application.subscribe, application.getSnapshot);
   const state = workspace.state;
+  const nativeMode = application.mode === "native";
   const storageIssue = workspace.issue?.message || "";
   const current = useRef(state);
   current.current = state;
@@ -493,6 +494,7 @@ export default function App({ application }: { application: ApplicationService }
     }
   }
   async function launch(ids: string[]) {
+    if (nativeMode) { notify("真实浏览器启动尚未接入，未安装内核时不能启动。", true); return; }
     if (batchBusy.current) {
       notify("请等待当前批次完成，或先取消剩余任务。", true);
       return;
@@ -548,6 +550,7 @@ export default function App({ application }: { application: ApplicationService }
     setBatch(null);
   }
   async function stop(ids: string[]) {
+    if (nativeMode) { notify("真实浏览器进程尚未接入，没有执行模拟关闭。", true); return; }
     batchCancelled.current = true;
     for (const id of ids) {
       const e = current.current.environments.find((i) => i.id === id);
@@ -568,6 +571,7 @@ export default function App({ application }: { application: ApplicationService }
     }
   }
   async function checkProxy(ids: string[]) {
+    if (nativeMode) { notify("真实代理检查尚未接入，不会返回模拟检测结果。", true); return; }
     if (checkingBusy.current) return;
     checkingBusy.current = true;
     let checkFailed = false;
@@ -602,6 +606,7 @@ export default function App({ application }: { application: ApplicationService }
     if (!checkFailed) notify("模拟检查完成，结果不代表真实网络状态");
   }
   function newBackup() {
+    if (nativeMode) { notify("完整本地备份尚未接入，不会创建原型 JSON 冒充备份。", true); return; }
     const snapshot = createSnapshot(state);
     const name = `工作区快照 ${time(snapshot.createdAt)}`;
     if (!update((s) => ({
@@ -618,6 +623,7 @@ export default function App({ application }: { application: ApplicationService }
     notify("原型快照已保存到当前浏览器");
   }
   function confirmRestore() {
+    if (nativeMode) { notify("原型快照不能恢复到真实工作区，原数据未修改。", true); return; }
     if (dialog?.kind !== "restore") return;
     try {
       const next = restoreSnapshot(state, dialog.snapshot);
@@ -634,6 +640,7 @@ export default function App({ application }: { application: ApplicationService }
     }
   }
   function openCookies(e: Environment) {
+    if (nativeMode) { notify("真实 Cookie 写入尚未接入，不会写入示例记录。", true); return; }
     setDialog({ kind: "cookies", id: e.id });
     setCookieText("");
     setCookieResult(null);
@@ -641,6 +648,7 @@ export default function App({ application }: { application: ApplicationService }
     setMenu(null);
   }
   function openProxyImport() {
+    if (nativeMode) { notify("真实代理导入与凭据保护尚未接入，请勿填写真实凭据。", true); return; }
     setDialog({ kind: "proxy" });
     setProxyText("");
     setProxyRows([]);
@@ -768,7 +776,7 @@ export default function App({ application }: { application: ApplicationService }
           <div className="topbar-right">
             <span className="prototype-label">
               <span />
-              交互原型
+              {nativeMode ? "本机桌面" : "交互原型"}
             </span>
             <button
               className="icon-button"
@@ -881,7 +889,7 @@ export default function App({ application }: { application: ApplicationService }
                   </div>
                   <span className="stat-foot">
                     <span className="status-dot green-dot" />
-                    模拟运行状态
+                    {nativeMode ? "真实内核尚未接入" : "模拟运行状态"}
                   </span>
                 </div>
                 <div className="stat-card">
@@ -962,12 +970,14 @@ export default function App({ application }: { application: ApplicationService }
                       className="icon-button"
                       title="重新载入列表"
                       aria-label="刷新环境列表"
-                      onClick={() => {
+                      onClick={async () => {
                         setSearch("");
                         setGroup("全部分组");
                         setStatus("all");
                         setPage(1);
-                        notify("环境列表已刷新");
+                        const result = await application.refresh?.();
+                        if (result && !result.ok) notify(result.error.message, true);
+                        else notify(nativeMode ? "已重新读取本机 SQLite 档案" : "环境列表已刷新");
                       }}
                     >
                       <RefreshCw size={16} />
@@ -1195,7 +1205,7 @@ export default function App({ application }: { application: ApplicationService }
                                 ) : (
                                   <span className="status-dot" />
                                 )}
-                                {statusLabels[e.status]}
+                                {nativeMode && !state.kernels.find(k => k.id === e.coreId)?.available ? "未就绪" : statusLabels[e.status]}
                               </span>
                             </td>
                             <td>
@@ -1530,8 +1540,7 @@ export default function App({ application }: { application: ApplicationService }
                 <div>
                   <strong>固定版本，明确来源</strong>
                   <p>
-                    选用
-                    adryfish/fingerprint-chromium。原型没有下载或运行内核；正式接入需核对可执行文件版本、哈希和参数实际读值。
+                    {nativeMode ? "指定 adryfish/fingerprint-chromium。当前未安装；安装与校验尚未接入，本机档案不能启动。" : "选用 adryfish/fingerprint-chromium。原型没有下载或运行内核；正式接入需核对可执行文件版本、哈希和参数实际读值。"}
                   </p>
                 </div>
               </div>
@@ -1546,7 +1555,7 @@ export default function App({ application }: { application: ApplicationService }
                         <Box size={28} />
                       </div>
                       <Tag kind={k.available ? "blue-tag" : ""}>
-                        {k.available ? "演示基线" : "待验证"}
+                        {nativeMode ? (k.available ? "已核验" : "未安装 · 未就绪") : (k.available ? "演示基线" : "待验证")}
                       </Tag>
                     </div>
                     <h2>Chromium {k.version.split(".")[0]}</h2>
@@ -1616,6 +1625,7 @@ export default function App({ application }: { application: ApplicationService }
                   const file = e.target.files?.[0];
                   e.target.value = "";
                   if (!file) return;
+                  if (nativeMode) { notify("原型 JSON 不可导入真实工作区；完整恢复尚未接入。原数据未修改。", true); return; }
                   try {
                     if (file.size > 10 * 1024 * 1024)
                       throw new Error(
@@ -1632,10 +1642,9 @@ export default function App({ application }: { application: ApplicationService }
               <div className="info-strip amber-strip">
                 <Info size={19} />
                 <div>
-                  <strong>当前保存的是原型数据快照</strong>
+                  <strong>{nativeMode ? "完整本机备份与恢复尚未接入" : "当前保存的是原型数据快照"}</strong>
                   <p>
-                    JSON 包含页面中的环境配置与示例 Cookie，排除代理密码。真实
-                    Chromium 用户目录的备份与原子恢复在开发文档中单独定义。
+                    {nativeMode ? "本机环境保存在 SQLite。此页不会生成原型快照，也不会把原型 JSON 恢复为生产记录。" : "JSON 包含页面中的环境配置与示例 Cookie，排除代理密码。真实 Chromium 用户目录的备份与原子恢复在开发文档中单独定义。"}
                   </p>
                 </div>
               </div>
@@ -1776,7 +1785,7 @@ export default function App({ application }: { application: ApplicationService }
                 <div>
                   <h2>从产品需求，走到可实现的页面</h2>
                   <p>
-                    需求编号贯穿页面、数据模型与验收项。当前交互原型全部使用本地示例数据。
+                    {nativeMode ? "环境配置由本机 SQLite 持久保存。真实内核、代理、Cookie 和完整恢复按后续任务接入；未接入功能不会使用模拟成功。" : "需求编号贯穿页面、数据模型与验收项。当前交互原型全部使用本地示例数据。"}
                   </p>
                 </div>
                 <Tag kind="blue-tag">v1.0 交付规格</Tag>
@@ -1908,7 +1917,7 @@ export default function App({ application }: { application: ApplicationService }
             <span>
               <Monitor size={13} />
               Windows 本地版<span className="footer-separator">·</span>
-              仅供交互验收，请勿输入真实凭据
+              {nativeMode ? "SQLite 本机持久化 · 内核未安装，不能启动" : "仅供交互验收，请勿输入真实凭据"}
             </span>
             <button
               onClick={() => {
@@ -2009,7 +2018,7 @@ export default function App({ application }: { application: ApplicationService }
                     {drawer.kind === "create" && (
                       <Field
                         label="创建数量"
-                        hint="每个实例生成独立种子与数据记录"
+                        hint={nativeMode ? "目前仅接入单条创建；持久批量任务待接入，不是总数配额。" : "每个实例生成独立种子与数据记录"}
                       >
                         <input
                           aria-label="创建数量"
@@ -2075,14 +2084,13 @@ export default function App({ application }: { application: ApplicationService }
                     >
                       {state.kernels.map((k) => (
                         <option key={k.id} value={k.id}>
-                          Chromium {k.version} ·{" "}
-                          {k.available ? "演示基线" : "待验证"}
+                          {nativeMode ? `fingerprint-chromium ${k.version} · ${k.available ? "已核验" : "未就绪"}` : `Chromium ${k.version} · ${k.available ? "演示基线" : "待验证"}`}
                         </option>
                       ))}
                     </select>
                   </Field>
                   <p className="field-hint">
-                    实际内核：fingerprint-chromium。当前仅演示配置绑定，未安装浏览器内核。
+                    {nativeMode ? "指定内核：fingerprint-chromium。当前未安装；本次仅保存本机档案，不代表可以启动。安装精确版本后请显式绑定。" : "实际内核：fingerprint-chromium。当前仅演示配置绑定，未安装浏览器内核。"}
                   </p>
                 </>
               )}
@@ -2295,14 +2303,14 @@ export default function App({ application }: { application: ApplicationService }
                     <ShieldCheck size={19} />
                     <div>
                       <strong>独立数据目录</strong>
-                      <p>桌面版为此环境分配独立浏览器目录。</p>
+                      <p>{nativeMode ? "真实浏览器目录将在首次受控启动时分配；当前未接入启动。" : "桌面版为此环境分配独立浏览器目录。"}</p>
                     </div>
                   </div>
                   <div className="policy-item">
                     <LockKeyhole size={19} />
                     <div>
                       <strong>保留登录数据</strong>
-                      <p>关闭窗口和修改代理时保留原有 Cookie。</p>
+                      <p>{nativeMode ? "当前只保存环境配置；尚无真实 Cookie 或登录数据。" : "关闭窗口和修改代理时保留原有 Cookie。"}</p>
                     </div>
                   </div>
                 </>
@@ -2317,7 +2325,7 @@ export default function App({ application }: { application: ApplicationService }
             <div className="drawer-footer">
               <span>
                 <ShieldCheck size={14} />
-                仅保存在当前浏览器的演示数据
+                {nativeMode ? "保存到本机 SQLite · 提交成功才完成" : "仅保存在当前浏览器的演示数据"}
               </span>
               <div>
                 <Button disabled={generating} onClick={closeDrawer}>
@@ -3033,8 +3041,8 @@ export default function App({ application }: { application: ApplicationService }
                   </Button>
                 </>
               ) : (
-                <Button className="primary" onClick={() => location.reload()}>
-                  重新载入
+                <Button className="primary" disabled={workspace.issue?.code === "WORKSPACE_LOADING"} onClick={() => nativeMode ? void application.refresh?.() : location.reload()}>
+                  {nativeMode ? "重新读取本机工作区" : "重新载入"}
                 </Button>
               )}
             </div>

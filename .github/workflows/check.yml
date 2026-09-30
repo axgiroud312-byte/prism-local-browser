@@ -1,4 +1,4 @@
-name: Check prototype and documents
+name: Check prototype, desktop and documents
 on:
   push:
     branches: [main]
@@ -25,3 +25,30 @@ jobs:
       - run: npm ci
       - run: npx playwright install chromium
       - run: npm run check
+  desktop:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version: "24"
+          cache: npm
+      - uses: actions/setup-go@v7.0.0
+        with:
+          go-version-file: go.mod
+          cache: false
+      - run: npm ci
+      - name: Install fixed Wails CLI in the project tool directory
+        shell: pwsh
+        run: |
+          $env:GOPATH = "$PWD/.tools/gopath"
+          $env:GOCACHE = "$PWD/.tools/gocache"
+          $env:GOBIN = "$PWD/.tools/bin"
+          $env:GOTOOLCHAIN = 'local'
+          $env:CGO_ENABLED = '0'
+          go install github.com/wailsapp/wails/v2/cmd/wails@v2.16.0
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+      - run: npm run test:desktop
+      - run: npm run build:windows
+      # Real Windows UI operation is recorded separately; a build is not a reopen test.

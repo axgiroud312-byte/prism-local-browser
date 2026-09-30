@@ -6,9 +6,9 @@
 
 ## 1 当前基础与交付层级
 
-当前仓库是 React/TypeScript 前端交互原型。领域规则在 `src/domain.ts`，页面和旧模拟任务在 `src/App.tsx`；T01 已提取 `src/application/contract.ts` 与 `demo-adapter.ts`，创建编辑经注入应用契约，localStorage 由 DemoAdapter 管理；现有实际入口应以源码为准。
+当前仓库保留 React/TypeScript 独立交互原型。领域规则在 `src/domain.ts`，页面和旧模拟任务在 `src/App.tsx`；T01 已提取应用契约与 DemoAdapter，创建编辑经注入契约，localStorage 由 DemoAdapter 管理。T02 接入 WailsAdapter、Go/Wails 壳与 SQLite 配置服务，正在分项验收；现有实际入口应以源码为准。
 
-WailsAdapter、Go 服务、SQLite、真实内核进程和完整目录恢复仍属后续分层目标。接口文档中的方法名不代表对应实现已经存在；实时验收位置见 [PROGRESS.md](PROGRESS.md)。
+T02 仅包含本机配置创建编辑和重开，真实内核进程及完整目录恢复仍属后续目标。接口文档中的方法名不代表对应实现已经存在；实时验收位置见 [PROGRESS.md](PROGRESS.md)。
 
 每个任务选择以下交付层级，并按其所需证据验收：
 

@@ -1,14 +1,14 @@
 # 棱镜浏览器 · Prism Browser
 
-面向 Windows 本机多环境管理的前端交互原型，以及后续桌面应用的产品与开发文档。
+面向 Windows 本机多环境管理的桌面底座、独立前端原型及产品开发文档。
 
-**当前交付可以操作页面和保存演示配置，但尚未接入真实浏览器内核或桌面后端。** 点击启动、停止和代理检查会执行明确标记的模拟流程；不会启动 Chromium 进程，也不会连接所填代理。请使用示例代理和示例 Cookie。
+**T02 已接入 Go/Wails 与 SQLite 创建编辑底座，正在验收。** 桌面从空的本机数据库开始，关闭重开保留档案；真实内核、代理、Cookie 和完整备份尚未接入，桌面不会返回模拟成功。独立网页原型仍使用演示数据与明确标记的模拟流程。实际验收状态以 [PROGRESS.md](docs/PROGRESS.md) 为准。
 
 [产品需求](docs/PRD.md) · [开发方案](docs/DEVELOPMENT.md) · [内核合同](docs/KERNEL.md) · [需求追踪](docs/TRACEABILITY.md) · [验收记录](docs/ACCEPTANCE.md)
 
 开发入口：[项目开发指引](AGENTS.md) · [开发规范](docs/ENGINEERING.md) · [V1 总规格](docs/SPEC.md) · [开发 Issues 与依赖](docs/ISSUES.md)
 
-持续实施：[Goal 执行规则](docs/GOAL.md) · [当前执行位置](docs/PROGRESS.md)。T01 已建立创建/编辑应用契约与 DemoAdapter；真实桌面能力按后续票验收，不能以模拟成功替代。
+持续实施：[Goal 执行规则](docs/GOAL.md) · [当前执行位置](docs/PROGRESS.md)。T01 应用契约与 DemoAdapter 已验收；T02 的 WailsAdapter 使用相同页面连接本地服务，各项能力分票验收，不以模拟成功替代。
 
 ![环境工作台](docs/screenshots/environments.png)
 
@@ -27,12 +27,12 @@
 
 本软件的目标是无需云账号、鉴权服务或套餐即可使用的本机工作区，不设置产品级实例数量配额。实际数量与并发能力受电脑资源影响；当前原型的表现不能作为真实浏览器容量测试结果。
 
-## 在本机运行
+## 运行独立网页原型
 
 需要 **Node.js 22.12 或更高版本**，以及随 Node.js 安装的 npm。在项目目录执行：
 
 ```sh
-npm install
+npm ci
 npm run dev
 ```
 
@@ -46,7 +46,27 @@ npm run build
 npm run preview
 ```
 
-首次执行页面测试先运行 `npx playwright install chromium`。`check` 依次运行领域/应用契约测试、源码及测试类型检查、TypeScript/Vite 构建、文档检查和 10 条可重复 UI 流程；也可单独 `npm run test:ui`。页面测试自动用独立 5183 端口启动/关闭 Vite，测试报告在 `output/goal/T01/report/`。命令存在不代表已通过，实际结果见 [验收记录](docs/ACCEPTANCE.md)。`preview` 仍不会启动真实内核。
+首次执行页面测试先运行 `npx playwright install chromium`。`check` 依次运行领域/应用契约/adapter 测试、源码及测试类型检查、TypeScript/Vite 构建、文档检查和可重复 UI 流程；也可单独 `npm run test:ui`。页面测试自动用独立 5183 端口启动/关闭 Vite，测试报告在 `output/goal/T01/report/`。命令存在不代表已通过，实际结果见 [验收记录](docs/ACCEPTANCE.md)。`preview` 仍不会启动真实内核。
+
+## 从源码运行 Windows 桌面底座
+
+需要 Windows x64、Go **1.27.1**、Wails CLI **v2.16.0**、Node.js 22.12+ 和已安装的 WebView2 Runtime。Go 可安装到系统或项目忽略的 `.tools/go/`；项目脚本仅修改自己的工具环境，不改系统 PATH。安装固定 CLI：
+
+```powershell
+npm ci
+$env:GOBIN = Join-Path (Get-Location) '.tools/bin'
+go install github.com/wailsapp/wails/v2/cmd/wails@v2.16.0
+npm run doctor:desktop
+npm run test:desktop
+npm run build:windows
+./build/bin/prism-browser.exe
+```
+
+也可 `npm run dev:desktop`。桌面 production 构建使用单独 Vite `desktop` 模式；桥接失败会显示阻断提示，不退回网页 demo。exe 旁生成 Go 运行时许可通知，分发时须一起保留；目前是未签名开发构建，**不是已验收的安装包**，安装/升级/卸载由 T03 实施。
+
+桌面默认数据库为 `%LOCALAPPDATA%/PrismBrowser/app.db`，桌面壳的 WebView 数据在同根 `workbench-webview/`，与网页原型 localStorage 分离。单条创建/编辑保存 ID、显式 seed、内核占位引用、分组及偏好；未安装内核时显示“未就绪”，不能启动。批量任务、真实登录数据和备份仍待对应任务。不要把原型 JSON 导入生产数据库。
+
+真实桌面复核使用 **Node.js 24**，运行 `npm run verify:desktop`：脚本创建专用合成测试根，以 Windows UI Automation 操作实际 exe，正常关窗、重开，再读取实际 SQLite；只清理自己启动的测试进程，不开启调试端口。它会将测试窗口置前，请不要在验证时操作该窗口。截图/脱敏记录在 `output/goal/T02/`，测试数据库在 `.appdata/verification/`，均不提交。不能用该测试推导真实 Chromium 已启动。
 
 ## 建议的体验顺序
 
@@ -67,7 +87,7 @@ npm run preview
 - 填入的代理凭据和 Cookie 是原型数据，可能以明文保存在当前浏览器。请勿输入真实账号 Cookie、真实代理密码或其他敏感资料。
 - 原型快照包含环境配置、示例 Cookie、代理及内核元数据；导出排除代理密码。它不包含 Chromium 用户目录，也不能作为真实店铺登录状态的完整备份。
 - 恢复会替换环境、代理和内核配置，保留原指纹种子；代理密码清空、检查状态重置。恢复前需停止所有模拟运行环境。
-- 当前未实现桌面进程管理、SQLite 配置事务、真实内核安装校验、代理认证桥接与网络出口检查、CDP Cookie 写入、真实目录备份恢复及 Windows 安装包。
+- SQLite 配置事务、固定初始 seed、修订冲突和持久成功请求去重已接入 T02；尚未实现真实浏览器进程管理、内核安装校验、代理认证桥接与网络出口检查、CDP Cookie 写入、真实目录备份恢复及 Windows 安装包。
 - 指纹读值、浏览器功能兼容性和隔离效果需要后续真实运行验收。本项目不以隐蔽性评分或不封号承诺作为完成条件。
 
 ## 如何继续开发

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "Prism Browser",
+  "outputfilename": "prism-browser",
+  "frontend:dir": ".",
+  "frontend:install": "npm ci",
+  "frontend:build": "npm run build:desktop",
+  "frontend:dev:watcher": "npm run dev",
+  "frontend:dev:serverUrl": "auto",
+  "wailsjsdir": "output/wails",
+  "author": { "name": "Prism Browser contributors" },
+  "info": {
+    "companyName": "Prism Browser contributors",
+    "productName": "Prism Browser",
+    "productVersion": "0.2.0",
+    "copyright": "MIT; third-party components retain their licenses",
+    "comments": "Windows local workspace"
+  }
+}

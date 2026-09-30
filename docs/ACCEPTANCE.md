@@ -70,3 +70,16 @@ PRD 与开发方案已经定义了实际内核启动、独立目录锁、代理�
 - 桌面能力仍未交付；demo 的请求缓存和长任务只在当前服务会话有效，不宣称持久任务恢复、真实浏览数据、代理网络或 SQLite 事务完成。
 
 ![T01 创建编辑后真实原型页面（合成数据）](screenshots/T01-created-edited.png)
+
+## T02 Go/Wails 与 SQLite 增量验收
+
+日期：2026-09-30 16:13 Asia/Shanghai；交付层级为本地配置服务与真实 Windows 桌面验证。保留以上历史原型/T01 记录，不把它们改写成新版本全量桌面通过。详细排错、实际结果和最终版本见 [T02 记录](verification/T02.md) 与 [当前进度](PROGRESS.md)。
+
+- Windows x64、Go 1.27.1、Wails v2.16.0、modernc SQLite v1.60.1、已安装的 WebView2 154.0.4258.37；仅合成记录，无账号/云服务依赖。
+- 最终 49 JS 测试、源码/测试类型、原型构建、25份文档检查、13 Go 测试/vet 与11条原型/边界 UI 全通过；最新 Windows production exe 和26模块许可构建成功，更新产物的真实关闭重开再次通过。提交与远程检查以逐票记录为准。
+- 实际 `npm run verify:desktop` 用 **Windows UI Automation** 操作 exe：创建/编辑 ID/seed/分组/偏好，正常关窗、重开，从 UI 和实际 SQLite 读回核对；两次退出后同一记录/修订仍一致，窄窗口主操作可达，缺失内核不能启动。没有开放调试端口，不用模拟 bridge 或截图冒充数据库/退出证据。
+- SQLite 真正 `SQLITE_FULL`、query_only 写失败、事务提交前失败均不发布部分环境/档案/成功活动；失败预览和请求可重试。外键覆盖连接替换，expectedRevision 冲突/持久 requestId 去重、未知版本/损坏配置保护、原型输入拒绝均有服务契约回归。
+- native 不读写原型 localStorage，不返回示例环境或模拟启动/网络/Cookie/备份成功；原型独立保持可运行。服务桥接丢失保持 native 阻断，不回退 demo。
+- 只读评审无确认阻断。未签名 exe（NotSigned）仅为开发底座，安装包由 T03 验收；真实 Chromium/独立用户目录、完整指纹能力、代理、Cookie、恢复和批量持久任务均未交付。
+
+![T02 实际 Windows 桌面重开后](screenshots/T02-native-reopened.png)
