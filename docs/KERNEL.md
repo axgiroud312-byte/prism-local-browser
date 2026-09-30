@@ -2,7 +2,7 @@
 
 本项目选择 [fingerprint-chromium](https://github.com/adryfish/fingerprint-chromium/blob/main/README-ZH.md) 作为 Windows 桌面版的内核方向。本文定义配置生成、内核管理、独立环境启动和代理接入的实现边界，供后续桌面后端开发使用。
 
-**当前交付是需求与前端交互原型。**尚未下载、安装或运行该内核；原型里的 GPU、指纹摘要、连接结果和启动状态均是演示数据，不能标成内核探测结果。本文中的启动合同与验收项属于待实现能力。
+**网页原型与 native 能力分别记录。**T04 已下载实算148 Windows x64 ZIP并受控运行探测，精确安装、校验和原生页面正在验收；正常环境启停仍待T06。原型里的 GPU、指纹摘要、连接结果和启动状态均是演示数据，不能标成内核探测结果。本合同中代理、正常进程和完整恢复的未交付项不因内核诊断通过而自动完成，实时结果见 [T04记录](verification/T04.md) 与 [当前进度](PROGRESS.md)。
 
 核实日期：2026-09-30。Ant-Browser 仅作为架构参考，本项目不复制其源码；旧比特浏览器材料仅用于理解交互与字段关系，不作为本项目内核、算法或资源池来源。
 
@@ -24,9 +24,9 @@
 | -------------------------- | --------------------------------------------------------------- | -------------------------------------------------- |
 | README 中的 150.0.7871.186 | 已列出 Windows ZIP 与安装包链接，注明源码随 151 发布            | 只是上游说明，不能显示“已安装”或“可用”             |
 | 150 的 Windows ZIP         | 仅请求 HTTP HEAD，返回 404；Release API 与 tag API 同样返回 404 | 本轮不能作为可获取构建，不自动回退后假报成功       |
-| 148.0.7778.215             | Release API 可见 Windows x64 ZIP，公开 tag 存在                 | 可作为源码审查基线；生产首选版本仍待评估与真机验收 |
+| 148.0.7778.215             | Release API 可见 Windows x64 ZIP；T04 实算归档与PE/私有pipe真实探测通过 | 本票明确选定的实测候选；生产首选仍待兼容性等评估 |
 
-148 的公开 tag 指向 `13b89eae304123f0710f2d33fd0816a2f61d7ffc`。发行页中 Windows ZIP 资产名为 `ungoogled-chromium_148.0.7778.215-1.1_windows_x64.zip`，GitHub API 声明其 SHA-256 为 `9ef3f471b7a6641b4224532522b29141ce3746e27d55788d88e2fd951f362579`。这是**上游资产元数据**，本项目尚未下载计算校验，也没有浏览器可执行文件的哈希或实测版本。核实入口：[148 发行元数据](https://api.github.com/repos/adryfish/fingerprint-chromium/releases/tags/148.0.7778.215)、[148 源码](https://github.com/adryfish/fingerprint-chromium/tree/148.0.7778.215)、[150 发行查询](https://api.github.com/repos/adryfish/fingerprint-chromium/releases/tags/150.0.7871.186)、[README 所列 150 ZIP](https://github.com/adryfish/fingerprint-chromium/releases/download/150.0.7871.186/ungoogled-chromium_150.0.7871.186-1.1_windows_x64.zip)。
+148 的公开 tag 指向 `13b89eae304123f0710f2d33fd0816a2f61d7ffc`。发行页中 Windows ZIP 资产名为 `ungoogled-chromium_148.0.7778.215-1.1_windows_x64.zip`，GitHub API 声明其 SHA-256 为 `9ef3f471b7a6641b4224532522b29141ce3746e27d55788d88e2fd951f362579`。T04 已实际下载并核对同一归档摘要；主程序摘要为 `1867319e56bcabbc4681d8575c002106ce7b61b5290dc5eb34a37676805f6915`，PE文件版本与CDP实际版本均为148.0.7778.215，HTTP/网页UA与高熵UA-CH按本合同核对。详细采样、会话及后续页面验收见 [T04](verification/T04.md)，不把上游摘要或静态源码当实测。核实入口：[148 发行元数据](https://api.github.com/repos/adryfish/fingerprint-chromium/releases/tags/148.0.7778.215)、[148 源码](https://github.com/adryfish/fingerprint-chromium/tree/148.0.7778.215)、[150 发行查询](https://api.github.com/repos/adryfish/fingerprint-chromium/releases/tags/150.0.7871.186)、[README 所列 150 ZIP](https://github.com/adryfish/fingerprint-chromium/releases/download/150.0.7871.186/ungoogled-chromium_150.0.7871.186-1.1_windows_x64.zip)。
 
 后续安装流程须重新核实资产可获取性、更新时效、目标网站兼容性与该版本能力。以“可审源码”直接推导“适合生产”不成立。上游采用延迟公开源码策略，`main` 不是完整源码目录；每个可用构建建立独立能力记录，不能把 148 的结果自动套到 150。[上游源码发布说明](https://github.com/adryfish/fingerprint-chromium/blob/main/README-ZH.md#从源码构建)
 
@@ -126,7 +126,7 @@ CDP 默认不开启。需要身份探测或本机自动化时，优先采用本�
 
 ## 请求与返回合同
 
-以下均是**面向 UI 的外部应用接口示例**，以 [DEVELOPMENT.md 的本地应用接口](DEVELOPMENT.md#6-本地应用接口) 为统一契约，当前原型没有真实实现。成功返回 `{ ok: true, data, operationId? }`，失败返回 `{ ok: false, error: { code, message, retryable, details? }, operationId? }`。ID 均为虚构示例；应用后端按 ID 解析内核、数据目录与凭据，前端不得提交任意可执行文件路径。
+以下均是**面向 UI 的目标外部应用接口示例**，以 [DEVELOPMENT.md 的本地应用接口](DEVELOPMENT.md#6-本地应用接口) 为统一契约；其中生成预览/正常启动尚未完整实现，T04实际已接接口以该文档的增量说明及源码为准。成功返回 `{ ok: true, data, operationId? }`，失败返回 `{ ok: false, error: { code, message, retryable, details? }, operationId? }`。ID 均为虚构示例；应用后端按 ID 解析内核、数据目录与凭据，前端不得提交任意可执行文件路径。
 
 生成预览请求；该调用不保存环境：
 

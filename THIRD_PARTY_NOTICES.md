@@ -107,9 +107,43 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ## 外部浏览器内核来源
 
-产品指定使用 [adryfish/fingerprint-chromium](https://github.com/adryfish/fingerprint-chromium) 作为后续桌面内核。本仓库只保存接入合同与演示元数据，没有打包该项目的可执行文件、Chromium 程序或浏览器用户数据。
+产品指定使用 [adryfish/fingerprint-chromium](https://github.com/adryfish/fingerprint-chromium)。T04已实际下载并受控探测148.0.7778.215 Windows x64构建，归档SHA-256为`9ef3f471b7a6641b4224532522b29141ce3746e27d55788d88e2fd951f362579`。原生安装按用户明确选定的官方发行ZIP或可信本地ZIP获取完整包，保留其中资源和组件；内核二进制/真实用户数据不提交仓库，也不随T03桌面壳安装包再分发。
 
 如后续下载、修改或再分发内核，应检查所选具体版本的来源、许可证、Chromium 组件及第三方通知，并随分发材料保留要求的声明。不得以本仓库使用 MIT 为由认定整个内核、所有组件或相关品牌也适用 MIT。内核版本与许可审查应和构建产物一起记录。
+
+148 tag的[上游LICENSE](https://github.com/adryfish/fingerprint-chromium/blob/148.0.7778.215/LICENSE)为BSD-3-Clause，归属The ungoogled-chromium Authors；全文保留如下。它仅覆盖该项目适用的代码，**不覆盖全部Chromium组件**。Chromium本体及各组件另见[Chromium许可](https://chromium.googlesource.com/chromium/src/+/148.0.7778.215/LICENSE)与选定浏览器内置`chrome://credits`。若将来重新分发内核，应提取并随附该具体包的完整组件通知；本票没有声称一份BSD文本可替代这些通知，也没有把第三方品牌许可包含其中。本地归档來源不明时必须用户明确确认可信，不能由文件名推导已获再分发授权。
+
+```text
+BSD 3-Clause License
+
+Copyright (c) 2015-2026, The ungoogled-chromium Authors
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+
+3. Neither the name of the copyright holder nor the names of its
+   contributors may be used to endorse or promote products derived from
+   this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+```
 
 ## 交互参考与原创边界
 

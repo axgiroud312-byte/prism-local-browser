@@ -1,0 +1,947 @@
+{
+  "recordedAt": "2026-09-30T14:15:05.905Z",
+  "platform": "windows/amd64",
+  "data": "synthetic-only",
+  "sourceBaseCommit": "85a50b468b7b1463a2e6319735add258e3b6e421",
+  "sourceDirty": true,
+  "executableSha256": "7d2f9dd72a93f448c17170c4986119a4262f8b08301bb23e49e018e0ae14a338",
+  "completeDesktopClosure": {
+    "verifiedAt": "2026-09-30T13:57:23.2294952Z",
+    "sameExecutableSha256": true,
+    "processes": [
+      {
+        "pid": 65200,
+        "normalExit": true,
+        "startedAt": "2026-09-30T13:57:08.8632027Z",
+        "executable": "prism-browser.exe"
+      },
+      {
+        "pid": 55700,
+        "normalExit": true,
+        "startedAt": "2026-09-30T13:57:11.5380299Z",
+        "executable": "prism-browser.exe"
+      }
+    ],
+    "checks": {
+      "explicitEnvironmentReference": true,
+      "exactUnavailableTagNoFallback": true,
+      "normalCloseReopenKeepsIdentity": true,
+      "badArchiveHashKeepsOldKernel": true,
+      "referencedKernelRemovalDisabled": true,
+      "localPickerAndTrustConfirmation": true,
+      "officialSourceTagCommitAndRealVersion": true,
+      "separateImmutableIDs": true,
+      "realReverify": true,
+      "allInstalledFilesAndStagingIndependentlyChecked": true,
+      "noDebugTCPOrSandboxDisable": true,
+      "unusedKernelRemovalIsolated": true
+    },
+    "remainingKernelId": "d0e387b0-a7d9-4de2-ab37-428d3276eeee",
+    "removedKernelId": "d1eddfbd-4100-4f9a-9f37-4efae252b251",
+    "environment": {
+      "id": "8d2e17de-9abf-406d-a4f5-c03cb4c716fe",
+      "kernelId": "d0e387b0-a7d9-4de2-ab37-428d3276eeee",
+      "revision": 2,
+      "seed": "1604739445",
+      "configuration": {
+        "name": "精确内核合成环境",
+        "group": "日常运营",
+        "note": "",
+        "proxyId": "",
+        "coreId": "d0e387b0-a7d9-4de2-ab37-428d3276eeee",
+        "seed": "1604739445",
+        "language": "en-US",
+        "timezone": "America/New_York",
+        "cpu": "auto",
+        "width": 1280,
+        "height": 800,
+        "urls": "",
+        "restoreTabs": true,
+        "fingerprintVersion": "windows-desktop-v1"
+      }
+    },
+    "reverify": {
+      "operationId": "ff77dba0-ec00-47d2-a85d-0ee220950b50",
+      "kernelId": "d0e387b0-a7d9-4de2-ab37-428d3276eeee",
+      "report": {
+        "adapterVersion": "windows-kernel-v1",
+        "version": "fingerprint-capabilities-v1",
+        "sampledAt": "2026-09-30T13:57:15.0242443Z",
+        "transport": "inherited-private-pipe",
+        "sandbox": true,
+        "observations": [
+          {
+            "seed": 1256789,
+            "browserVersion": "148.0.7778.215",
+            "httpUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+            "httpClientHints": {
+              "accept-language": "en-US,en;q=0.9",
+              "sec-ch-ua": "\"Chromium\";v=\"148\", \"Google Chrome\";v=\"148\", \"Not/A)Brand\";v=\"99\"",
+              "sec-ch-ua-full-version-list": "\"Chromium\";v=\"148.0.7778.215\", \"Google Chrome\";v=\"148.0.7778.215\", \"Not/A)Brand\";v=\"99.0.0.0\"",
+              "sec-ch-ua-platform": "\"Windows\"",
+              "sec-ch-ua-platform-version": "\"15.0.0\"",
+              "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36"
+            },
+            "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+            "platform": "Windows",
+            "brands": [
+              {
+                "brand": "Chromium",
+                "version": "148"
+              },
+              {
+                "brand": "Google Chrome",
+                "version": "148"
+              },
+              {
+                "brand": "Not/A)Brand",
+                "version": "99"
+              }
+            ],
+            "fullVersionList": [
+              {
+                "brand": "Chromium",
+                "version": "148.0.7778.215"
+              },
+              {
+                "brand": "Google Chrome",
+                "version": "148.0.7778.215"
+              },
+              {
+                "brand": "Not/A)Brand",
+                "version": "99.0.0.0"
+              }
+            ],
+            "platformVersion": "15.0.0",
+            "language": "en-US",
+            "languages": [
+              "en-US",
+              "en"
+            ],
+            "acceptLanguage": "en-US,en;q=0.9",
+            "timezone": "America/New_York",
+            "cpu": 10,
+            "memory": 32,
+            "gpuVendor": "Google Inc. (Intel)",
+            "gpuRenderer": "ANGLE (Intel, Intel(R) Iris(R) Xe Graphics (0x000046A6) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+            "pid": 59144,
+            "processCreatedAt": "2026-09-30T13:57:15.2174354Z",
+            "normalExit": true
+          },
+          {
+            "seed": 1256790,
+            "browserVersion": "148.0.7778.215",
+            "httpUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+            "httpClientHints": {
+              "accept-language": "en-US,en;q=0.9",
+              "sec-ch-ua": "\"Chromium\";v=\"148\", \"Google Chrome\";v=\"148\", \"Not/A)Brand\";v=\"99\"",
+              "sec-ch-ua-full-version-list": "\"Chromium\";v=\"148.0.7778.215\", \"Google Chrome\";v=\"148.0.7778.215\", \"Not/A)Brand\";v=\"99.0.0.0\"",
+              "sec-ch-ua-platform": "\"Windows\"",
+              "sec-ch-ua-platform-version": "\"15.0.0\"",
+              "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36"
+            },
+            "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+            "platform": "Windows",
+            "brands": [
+              {
+                "brand": "Chromium",
+                "version": "148"
+              },
+              {
+                "brand": "Google Chrome",
+                "version": "148"
+              },
+              {
+                "brand": "Not/A)Brand",
+                "version": "99"
+              }
+            ],
+            "fullVersionList": [
+              {
+                "brand": "Chromium",
+                "version": "148.0.7778.215"
+              },
+              {
+                "brand": "Google Chrome",
+                "version": "148.0.7778.215"
+              },
+              {
+                "brand": "Not/A)Brand",
+                "version": "99.0.0.0"
+              }
+            ],
+            "platformVersion": "15.0.0",
+            "language": "en-US",
+            "languages": [
+              "en-US",
+              "en"
+            ],
+            "acceptLanguage": "en-US,en;q=0.9",
+            "timezone": "America/New_York",
+            "cpu": 12,
+            "memory": 8,
+            "gpuVendor": "Google Inc. (NVIDIA)",
+            "gpuRenderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 Laptop GPU (0x00002560) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+            "pid": 49300,
+            "processCreatedAt": "2026-09-30T13:57:17.4466742Z",
+            "normalExit": true
+          },
+          {
+            "seed": 1256789,
+            "browserVersion": "148.0.7778.215",
+            "httpUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+            "httpClientHints": {
+              "accept-language": "de-DE,de;q=0.9,en;q=0.8",
+              "sec-ch-ua": "\"Chromium\";v=\"148\", \"Google Chrome\";v=\"148\", \"Not/A)Brand\";v=\"99\"",
+              "sec-ch-ua-full-version-list": "\"Chromium\";v=\"148.0.7778.215\", \"Google Chrome\";v=\"148.0.7778.215\", \"Not/A)Brand\";v=\"99.0.0.0\"",
+              "sec-ch-ua-platform": "\"Windows\"",
+              "sec-ch-ua-platform-version": "\"15.0.0\"",
+              "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36"
+            },
+            "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+            "platform": "Windows",
+            "brands": [
+              {
+                "brand": "Chromium",
+                "version": "148"
+              },
+              {
+                "brand": "Google Chrome",
+                "version": "148"
+              },
+              {
+                "brand": "Not/A)Brand",
+                "version": "99"
+              }
+            ],
+            "fullVersionList": [
+              {
+                "brand": "Chromium",
+                "version": "148.0.7778.215"
+              },
+              {
+                "brand": "Google Chrome",
+                "version": "148.0.7778.215"
+              },
+              {
+                "brand": "Not/A)Brand",
+                "version": "99.0.0.0"
+              }
+            ],
+            "platformVersion": "15.0.0",
+            "language": "de-DE",
+            "languages": [
+              "de-DE",
+              "en"
+            ],
+            "acceptLanguage": "de-DE,de;q=0.9,en;q=0.8",
+            "timezone": "Europe/Berlin",
+            "cpu": 8,
+            "memory": 32,
+            "gpuVendor": "Google Inc. (Intel)",
+            "gpuRenderer": "ANGLE (Intel, Intel(R) Iris(R) Xe Graphics (0x000046A6) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+            "pid": 49364,
+            "processCreatedAt": "2026-09-30T13:57:18.5233087Z",
+            "normalExit": true
+          }
+        ],
+        "capabilities": [
+          {
+            "field": "identity",
+            "status": "configurable",
+            "source": "observed",
+            "note": "Windows/Chrome品牌与实际PE/CDP版本、HTTP UA、网页UA及UA-CH已核对；允许UA reduction/GREASE。"
+          },
+          {
+            "field": "seed",
+            "status": "seed-generated",
+            "source": "observed",
+            "note": "两份固定测试种子使用隔离目录，自动CPU输出不同；只证明该诊断条件下入口生效。"
+          },
+          {
+            "field": "cpu",
+            "status": "configurable",
+            "source": "observed",
+            "note": "显式8核心参数在独立诊断网页回读为8；自动值由固定内核和seed决定。"
+          },
+          {
+            "field": "acceptLanguages",
+            "status": "configurable",
+            "source": "observed",
+            "note": "en-US和de-DE测试下网页语言及HTTP Accept-Language核对。"
+          },
+          {
+            "field": "timezone",
+            "status": "configurable",
+            "source": "observed",
+            "note": "New_York/Berlin测试下IANA时区回读；跟随代理未实现。"
+          },
+          {
+            "field": "uiLanguage",
+            "status": "unverified",
+            "source": "not-probed",
+            "note": "无头诊断不证明浏览器菜单界面语言生效。"
+          },
+          {
+            "field": "memory",
+            "status": "seed-generated",
+            "source": "source-derived",
+            "note": "148的021内存补丁按seed从8/16/32生成；具体观测列在本次诊断记录中，不开放任意内存设置。"
+          },
+          {
+            "field": "gpu",
+            "status": "seed-generated",
+            "source": "source-derived",
+            "note": "148的011 GPU补丁按seed选配置池；具体WebGL读值另列，不推导跨机器一致性，不开放手填GPU。"
+          },
+          {
+            "field": "font/canvas/audio/clientrects",
+            "status": "unverified",
+            "source": "not-probed",
+            "note": "本票未执行这些输出/兼容开关验收，不标成可编辑或已验证。"
+          },
+          {
+            "field": "screen/location/webgpu/tls/mac",
+            "status": "unverified",
+            "source": "not-probed",
+            "note": "未核验或不支持，不下发伪有效字段。"
+          },
+          {
+            "field": "proxy/webrtc",
+            "status": "unverified",
+            "source": "not-probed",
+            "note": "本票诊断未验证代理或网络泄漏保护，留后续票。"
+          }
+        ]
+      }
+    }
+  },
+  "freshFinalInstallation": {
+    "schemaVersion": 2,
+    "allInstalledFilesIndependentlyVerified": true,
+    "stagingEmpty": true,
+    "records": [
+      {
+        "id": "351f837d-3733-47c7-9b5e-58cf473d43b1",
+        "version": "148.0.7778.215",
+        "architecture": "amd64",
+        "source": {
+          "kind": "local",
+          "location": "ungoogled-chromium_148.0.7778.215-1.1_windows_x64.zip",
+          "tag": "148.0.7778.215",
+          "commit": null
+        },
+        "archiveSha256": "9ef3f471b7a6641b4224532522b29141ce3746e27d55788d88e2fd951f362579",
+        "executableSha256": "1867319e56bcabbc4681d8575c002106ce7b61b5290dc5eb34a37676805f6915",
+        "executableRelativePath": "ungoogled-chromium_148.0.7778.215-1.1_windows_x64/chrome.exe",
+        "installPath": "kernels/351f837d-3733-47c7-9b5e-58cf473d43b1",
+        "report": {
+          "adapterVersion": "windows-kernel-v1",
+          "version": "fingerprint-capabilities-v1",
+          "sampledAt": "2026-09-30T13:59:14.7766433Z",
+          "transport": "inherited-private-pipe",
+          "sandbox": true,
+          "observations": [
+            {
+              "seed": 1256789,
+              "browserVersion": "148.0.7778.215",
+              "httpUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+              "httpClientHints": {
+                "accept-language": "en-US,en;q=0.9",
+                "sec-ch-ua": "\"Chromium\";v=\"148\", \"Google Chrome\";v=\"148\", \"Not/A)Brand\";v=\"99\"",
+                "sec-ch-ua-full-version-list": "\"Chromium\";v=\"148.0.7778.215\", \"Google Chrome\";v=\"148.0.7778.215\", \"Not/A)Brand\";v=\"99.0.0.0\"",
+                "sec-ch-ua-platform": "\"Windows\"",
+                "sec-ch-ua-platform-version": "\"15.0.0\"",
+                "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36"
+              },
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+              "platform": "Windows",
+              "brands": [
+                {
+                  "brand": "Chromium",
+                  "version": "148"
+                },
+                {
+                  "brand": "Google Chrome",
+                  "version": "148"
+                },
+                {
+                  "brand": "Not/A)Brand",
+                  "version": "99"
+                }
+              ],
+              "fullVersionList": [
+                {
+                  "brand": "Chromium",
+                  "version": "148.0.7778.215"
+                },
+                {
+                  "brand": "Google Chrome",
+                  "version": "148.0.7778.215"
+                },
+                {
+                  "brand": "Not/A)Brand",
+                  "version": "99.0.0.0"
+                }
+              ],
+              "platformVersion": "15.0.0",
+              "language": "en-US",
+              "languages": [
+                "en-US",
+                "en"
+              ],
+              "acceptLanguage": "en-US,en;q=0.9",
+              "timezone": "America/New_York",
+              "cpu": 10,
+              "memory": 32,
+              "gpuVendor": "Google Inc. (Intel)",
+              "gpuRenderer": "ANGLE (Intel, Intel(R) Iris(R) Xe Graphics (0x000046A6) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+              "pid": 14892,
+              "processCreatedAt": "2026-09-30T13:59:14.934009Z",
+              "normalExit": true
+            },
+            {
+              "seed": 1256790,
+              "browserVersion": "148.0.7778.215",
+              "httpUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+              "httpClientHints": {
+                "accept-language": "en-US,en;q=0.9",
+                "sec-ch-ua": "\"Chromium\";v=\"148\", \"Google Chrome\";v=\"148\", \"Not/A)Brand\";v=\"99\"",
+                "sec-ch-ua-full-version-list": "\"Chromium\";v=\"148.0.7778.215\", \"Google Chrome\";v=\"148.0.7778.215\", \"Not/A)Brand\";v=\"99.0.0.0\"",
+                "sec-ch-ua-platform": "\"Windows\"",
+                "sec-ch-ua-platform-version": "\"15.0.0\"",
+                "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36"
+              },
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+              "platform": "Windows",
+              "brands": [
+                {
+                  "brand": "Chromium",
+                  "version": "148"
+                },
+                {
+                  "brand": "Google Chrome",
+                  "version": "148"
+                },
+                {
+                  "brand": "Not/A)Brand",
+                  "version": "99"
+                }
+              ],
+              "fullVersionList": [
+                {
+                  "brand": "Chromium",
+                  "version": "148.0.7778.215"
+                },
+                {
+                  "brand": "Google Chrome",
+                  "version": "148.0.7778.215"
+                },
+                {
+                  "brand": "Not/A)Brand",
+                  "version": "99.0.0.0"
+                }
+              ],
+              "platformVersion": "15.0.0",
+              "language": "en-US",
+              "languages": [
+                "en-US",
+                "en"
+              ],
+              "acceptLanguage": "en-US,en;q=0.9",
+              "timezone": "America/New_York",
+              "cpu": 12,
+              "memory": 8,
+              "gpuVendor": "Google Inc. (NVIDIA)",
+              "gpuRenderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 Laptop GPU (0x00002560) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+              "pid": 39576,
+              "processCreatedAt": "2026-09-30T13:59:16.9272486Z",
+              "normalExit": true
+            },
+            {
+              "seed": 1256789,
+              "browserVersion": "148.0.7778.215",
+              "httpUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+              "httpClientHints": {
+                "accept-language": "de-DE,de;q=0.9,en;q=0.8",
+                "sec-ch-ua": "\"Chromium\";v=\"148\", \"Google Chrome\";v=\"148\", \"Not/A)Brand\";v=\"99\"",
+                "sec-ch-ua-full-version-list": "\"Chromium\";v=\"148.0.7778.215\", \"Google Chrome\";v=\"148.0.7778.215\", \"Not/A)Brand\";v=\"99.0.0.0\"",
+                "sec-ch-ua-platform": "\"Windows\"",
+                "sec-ch-ua-platform-version": "\"15.0.0\"",
+                "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36"
+              },
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+              "platform": "Windows",
+              "brands": [
+                {
+                  "brand": "Chromium",
+                  "version": "148"
+                },
+                {
+                  "brand": "Google Chrome",
+                  "version": "148"
+                },
+                {
+                  "brand": "Not/A)Brand",
+                  "version": "99"
+                }
+              ],
+              "fullVersionList": [
+                {
+                  "brand": "Chromium",
+                  "version": "148.0.7778.215"
+                },
+                {
+                  "brand": "Google Chrome",
+                  "version": "148.0.7778.215"
+                },
+                {
+                  "brand": "Not/A)Brand",
+                  "version": "99.0.0.0"
+                }
+              ],
+              "platformVersion": "15.0.0",
+              "language": "de-DE",
+              "languages": [
+                "de-DE",
+                "en"
+              ],
+              "acceptLanguage": "de-DE,de;q=0.9,en;q=0.8",
+              "timezone": "Europe/Berlin",
+              "cpu": 8,
+              "memory": 32,
+              "gpuVendor": "Google Inc. (Intel)",
+              "gpuRenderer": "ANGLE (Intel, Intel(R) Iris(R) Xe Graphics (0x000046A6) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+              "pid": 38744,
+              "processCreatedAt": "2026-09-30T13:59:17.9000128Z",
+              "normalExit": true
+            }
+          ],
+          "capabilities": [
+            {
+              "field": "identity",
+              "status": "configurable",
+              "source": "observed",
+              "note": "Windows/Chrome品牌与实际PE/CDP版本、HTTP UA、网页UA及UA-CH已核对；允许UA reduction/GREASE。"
+            },
+            {
+              "field": "seed",
+              "status": "seed-generated",
+              "source": "observed",
+              "note": "两份固定测试种子使用隔离目录，自动CPU输出不同；只证明该诊断条件下入口生效。"
+            },
+            {
+              "field": "cpu",
+              "status": "configurable",
+              "source": "observed",
+              "note": "显式8核心参数在独立诊断网页回读为8；自动值由固定内核和seed决定。"
+            },
+            {
+              "field": "acceptLanguages",
+              "status": "configurable",
+              "source": "observed",
+              "note": "en-US和de-DE测试下网页语言及HTTP Accept-Language核对。"
+            },
+            {
+              "field": "timezone",
+              "status": "configurable",
+              "source": "observed",
+              "note": "New_York/Berlin测试下IANA时区回读；跟随代理未实现。"
+            },
+            {
+              "field": "uiLanguage",
+              "status": "unverified",
+              "source": "not-probed",
+              "note": "无头诊断不证明浏览器菜单界面语言生效。"
+            },
+            {
+              "field": "memory",
+              "status": "seed-generated",
+              "source": "source-derived",
+              "note": "148的021内存补丁按seed从8/16/32生成；具体观测列在本次诊断记录中，不开放任意内存设置。"
+            },
+            {
+              "field": "gpu",
+              "status": "seed-generated",
+              "source": "source-derived",
+              "note": "148的011 GPU补丁按seed选配置池；具体WebGL读值另列，不推导跨机器一致性，不开放手填GPU。"
+            },
+            {
+              "field": "font/canvas/audio/clientrects",
+              "status": "unverified",
+              "source": "not-probed",
+              "note": "本票未执行这些输出/兼容开关验收，不标成可编辑或已验证。"
+            },
+            {
+              "field": "screen/location/webgpu/tls/mac",
+              "status": "unverified",
+              "source": "not-probed",
+              "note": "未核验或不支持，不下发伪有效字段。"
+            },
+            {
+              "field": "proxy/webrtc",
+              "status": "unverified",
+              "source": "not-probed",
+              "note": "本票诊断未验证代理或网络泄漏保护，留后续票。"
+            }
+          ]
+        },
+        "installedAt": "2026-09-30T13:59:19.1015474Z",
+        "status": "verified",
+        "fileCount": 76,
+        "filesManifestSha256": "0a77ff5c8cbfd1c4f886cad29fd7c21ca6bee870eca85d10536765a9be381b88"
+      },
+      {
+        "id": "7591a144-f8e6-46ca-82b6-0f3563f8d01e",
+        "version": "148.0.7778.215",
+        "architecture": "amd64",
+        "source": {
+          "kind": "official",
+          "location": "https://github.com/adryfish/fingerprint-chromium/releases/download/148.0.7778.215/ungoogled-chromium_148.0.7778.215-1.1_windows_x64.zip",
+          "tag": "148.0.7778.215",
+          "commit": "13b89eae304123f0710f2d33fd0816a2f61d7ffc"
+        },
+        "archiveSha256": "9ef3f471b7a6641b4224532522b29141ce3746e27d55788d88e2fd951f362579",
+        "executableSha256": "1867319e56bcabbc4681d8575c002106ce7b61b5290dc5eb34a37676805f6915",
+        "executableRelativePath": "ungoogled-chromium_148.0.7778.215-1.1_windows_x64/chrome.exe",
+        "installPath": "kernels/7591a144-f8e6-46ca-82b6-0f3563f8d01e",
+        "report": {
+          "adapterVersion": "windows-kernel-v1",
+          "version": "fingerprint-capabilities-v1",
+          "sampledAt": "2026-09-30T13:58:58.9336944Z",
+          "transport": "inherited-private-pipe",
+          "sandbox": true,
+          "observations": [
+            {
+              "seed": 1256789,
+              "browserVersion": "148.0.7778.215",
+              "httpUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+              "httpClientHints": {
+                "accept-language": "en-US,en;q=0.9",
+                "sec-ch-ua": "\"Chromium\";v=\"148\", \"Google Chrome\";v=\"148\", \"Not/A)Brand\";v=\"99\"",
+                "sec-ch-ua-full-version-list": "\"Chromium\";v=\"148.0.7778.215\", \"Google Chrome\";v=\"148.0.7778.215\", \"Not/A)Brand\";v=\"99.0.0.0\"",
+                "sec-ch-ua-platform": "\"Windows\"",
+                "sec-ch-ua-platform-version": "\"15.0.0\"",
+                "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36"
+              },
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+              "platform": "Windows",
+              "brands": [
+                {
+                  "brand": "Chromium",
+                  "version": "148"
+                },
+                {
+                  "brand": "Google Chrome",
+                  "version": "148"
+                },
+                {
+                  "brand": "Not/A)Brand",
+                  "version": "99"
+                }
+              ],
+              "fullVersionList": [
+                {
+                  "brand": "Chromium",
+                  "version": "148.0.7778.215"
+                },
+                {
+                  "brand": "Google Chrome",
+                  "version": "148.0.7778.215"
+                },
+                {
+                  "brand": "Not/A)Brand",
+                  "version": "99.0.0.0"
+                }
+              ],
+              "platformVersion": "15.0.0",
+              "language": "en-US",
+              "languages": [
+                "en-US",
+                "en"
+              ],
+              "acceptLanguage": "en-US,en;q=0.9",
+              "timezone": "America/New_York",
+              "cpu": 10,
+              "memory": 32,
+              "gpuVendor": "Google Inc. (Intel)",
+              "gpuRenderer": "ANGLE (Intel, Intel(R) Iris(R) Xe Graphics (0x000046A6) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+              "pid": 44168,
+              "processCreatedAt": "2026-09-30T13:58:59.1076799Z",
+              "normalExit": true
+            },
+            {
+              "seed": 1256790,
+              "browserVersion": "148.0.7778.215",
+              "httpUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+              "httpClientHints": {
+                "accept-language": "en-US,en;q=0.9",
+                "sec-ch-ua": "\"Chromium\";v=\"148\", \"Google Chrome\";v=\"148\", \"Not/A)Brand\";v=\"99\"",
+                "sec-ch-ua-full-version-list": "\"Chromium\";v=\"148.0.7778.215\", \"Google Chrome\";v=\"148.0.7778.215\", \"Not/A)Brand\";v=\"99.0.0.0\"",
+                "sec-ch-ua-platform": "\"Windows\"",
+                "sec-ch-ua-platform-version": "\"15.0.0\"",
+                "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36"
+              },
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+              "platform": "Windows",
+              "brands": [
+                {
+                  "brand": "Chromium",
+                  "version": "148"
+                },
+                {
+                  "brand": "Google Chrome",
+                  "version": "148"
+                },
+                {
+                  "brand": "Not/A)Brand",
+                  "version": "99"
+                }
+              ],
+              "fullVersionList": [
+                {
+                  "brand": "Chromium",
+                  "version": "148.0.7778.215"
+                },
+                {
+                  "brand": "Google Chrome",
+                  "version": "148.0.7778.215"
+                },
+                {
+                  "brand": "Not/A)Brand",
+                  "version": "99.0.0.0"
+                }
+              ],
+              "platformVersion": "15.0.0",
+              "language": "en-US",
+              "languages": [
+                "en-US",
+                "en"
+              ],
+              "acceptLanguage": "en-US,en;q=0.9",
+              "timezone": "America/New_York",
+              "cpu": 12,
+              "memory": 8,
+              "gpuVendor": "Google Inc. (NVIDIA)",
+              "gpuRenderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 Laptop GPU (0x00002560) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+              "pid": 55340,
+              "processCreatedAt": "2026-09-30T13:59:02.919203Z",
+              "normalExit": true
+            },
+            {
+              "seed": 1256789,
+              "browserVersion": "148.0.7778.215",
+              "httpUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+              "httpClientHints": {
+                "accept-language": "de-DE,de;q=0.9,en;q=0.8",
+                "sec-ch-ua": "\"Chromium\";v=\"148\", \"Google Chrome\";v=\"148\", \"Not/A)Brand\";v=\"99\"",
+                "sec-ch-ua-full-version-list": "\"Chromium\";v=\"148.0.7778.215\", \"Google Chrome\";v=\"148.0.7778.215\", \"Not/A)Brand\";v=\"99.0.0.0\"",
+                "sec-ch-ua-platform": "\"Windows\"",
+                "sec-ch-ua-platform-version": "\"15.0.0\"",
+                "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36"
+              },
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+              "platform": "Windows",
+              "brands": [
+                {
+                  "brand": "Chromium",
+                  "version": "148"
+                },
+                {
+                  "brand": "Google Chrome",
+                  "version": "148"
+                },
+                {
+                  "brand": "Not/A)Brand",
+                  "version": "99"
+                }
+              ],
+              "fullVersionList": [
+                {
+                  "brand": "Chromium",
+                  "version": "148.0.7778.215"
+                },
+                {
+                  "brand": "Google Chrome",
+                  "version": "148.0.7778.215"
+                },
+                {
+                  "brand": "Not/A)Brand",
+                  "version": "99.0.0.0"
+                }
+              ],
+              "platformVersion": "15.0.0",
+              "language": "de-DE",
+              "languages": [
+                "de-DE",
+                "en"
+              ],
+              "acceptLanguage": "de-DE,de;q=0.9,en;q=0.8",
+              "timezone": "Europe/Berlin",
+              "cpu": 8,
+              "memory": 32,
+              "gpuVendor": "Google Inc. (Intel)",
+              "gpuRenderer": "ANGLE (Intel, Intel(R) Iris(R) Xe Graphics (0x000046A6) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+              "pid": 36000,
+              "processCreatedAt": "2026-09-30T13:59:04.0840024Z",
+              "normalExit": true
+            }
+          ],
+          "capabilities": [
+            {
+              "field": "identity",
+              "status": "configurable",
+              "source": "observed",
+              "note": "Windows/Chrome品牌与实际PE/CDP版本、HTTP UA、网页UA及UA-CH已核对；允许UA reduction/GREASE。"
+            },
+            {
+              "field": "seed",
+              "status": "seed-generated",
+              "source": "observed",
+              "note": "两份固定测试种子使用隔离目录，自动CPU输出不同；只证明该诊断条件下入口生效。"
+            },
+            {
+              "field": "cpu",
+              "status": "configurable",
+              "source": "observed",
+              "note": "显式8核心参数在独立诊断网页回读为8；自动值由固定内核和seed决定。"
+            },
+            {
+              "field": "acceptLanguages",
+              "status": "configurable",
+              "source": "observed",
+              "note": "en-US和de-DE测试下网页语言及HTTP Accept-Language核对。"
+            },
+            {
+              "field": "timezone",
+              "status": "configurable",
+              "source": "observed",
+              "note": "New_York/Berlin测试下IANA时区回读；跟随代理未实现。"
+            },
+            {
+              "field": "uiLanguage",
+              "status": "unverified",
+              "source": "not-probed",
+              "note": "无头诊断不证明浏览器菜单界面语言生效。"
+            },
+            {
+              "field": "memory",
+              "status": "seed-generated",
+              "source": "source-derived",
+              "note": "148的021内存补丁按seed从8/16/32生成；具体观测列在本次诊断记录中，不开放任意内存设置。"
+            },
+            {
+              "field": "gpu",
+              "status": "seed-generated",
+              "source": "source-derived",
+              "note": "148的011 GPU补丁按seed选配置池；具体WebGL读值另列，不推导跨机器一致性，不开放手填GPU。"
+            },
+            {
+              "field": "font/canvas/audio/clientrects",
+              "status": "unverified",
+              "source": "not-probed",
+              "note": "本票未执行这些输出/兼容开关验收，不标成可编辑或已验证。"
+            },
+            {
+              "field": "screen/location/webgpu/tls/mac",
+              "status": "unverified",
+              "source": "not-probed",
+              "note": "未核验或不支持，不下发伪有效字段。"
+            },
+            {
+              "field": "proxy/webrtc",
+              "status": "unverified",
+              "source": "not-probed",
+              "note": "本票诊断未验证代理或网络泄漏保护，留后续票。"
+            }
+          ]
+        },
+        "installedAt": "2026-09-30T13:59:05.5650529Z",
+        "status": "verified",
+        "fileCount": 76,
+        "filesManifestSha256": "0a77ff5c8cbfd1c4f886cad29fd7c21ca6bee870eca85d10536765a9be381b88"
+      }
+    ],
+    "environment": {
+      "id": "97c395b7-2b42-4c19-bb43-54380425ac29",
+      "kernelId": "7591a144-f8e6-46ca-82b6-0f3563f8d01e",
+      "revision": 1,
+      "seed": "1588061674",
+      "configuration": {
+        "name": "精确内核合成环境a",
+        "group": "日常运营",
+        "note": "",
+        "proxyId": "",
+        "coreId": "7591a144-f8e6-46ca-82b6-0f3563f8d01e",
+        "seed": "1588061674",
+        "language": "en-US",
+        "timezone": "America/New_York",
+        "cpu": "auto",
+        "width": 1280,
+        "height": 800,
+        "urls": "",
+        "restoreTabs": true,
+        "fingerprintVersion": "windows-desktop-v1"
+      }
+    },
+    "operations": [
+      {
+        "id": "0cf3ca4a-bd79-473a-a56a-11f6cf126286",
+        "kind": "kernel-install",
+        "state": "completed",
+        "kernelId": "351f837d-3733-47c7-9b5e-58cf473d43b1",
+        "completedIds": [
+          "351f837d-3733-47c7-9b5e-58cf473d43b1"
+        ]
+      },
+      {
+        "id": "69922923-fdc3-429e-8dba-a88af21f4042",
+        "kind": "kernel-install",
+        "state": "failed",
+        "completedIds": [],
+        "error": {
+          "code": "KERNEL_INTEGRITY_FAILED",
+          "message": "实际ZIP的SHA-256与预期不符，未解包或执行。",
+          "retryable": true,
+          "details": {
+            "reason": "hash-mismatch"
+          }
+        }
+      },
+      {
+        "id": "a4b5909c-556f-480a-aeb0-059e964867b8",
+        "kind": "kernel-install",
+        "state": "completed",
+        "kernelId": "7591a144-f8e6-46ca-82b6-0f3563f8d01e",
+        "completedIds": [
+          "7591a144-f8e6-46ca-82b6-0f3563f8d01e"
+        ]
+      },
+      {
+        "id": "ddea2799-352d-4bdf-8dd2-f06e31f5648f",
+        "kind": "kernel-install",
+        "state": "failed",
+        "completedIds": [],
+        "error": {
+          "code": "KERNEL_MISSING",
+          "message": "所选官方发行资产不可获取，未安装；不会自动换版本。",
+          "retryable": true,
+          "details": {
+            "reason": "asset-unavailable"
+          }
+        }
+      }
+    ]
+  },
+  "supplementaryFreshUIFlow": {
+    "state": "stopped",
+    "reason": "Shared-desktop input affected the synthetic name check. User requested no further automated clicks; no retry or success claim for this supplementary flow.",
+    "completeClosureEvidence": "Use the independently recorded same-executable closure above, not the stopped attempt."
+  },
+  "remainingBoundaries": [
+    "Normal environment launch and browser-data isolation are T06, not diagnostic sessions.",
+    "148 is an explicitly selected test candidate, not a production recommendation.",
+    "Menu language, font/canvas/audio/compatibility and proxy/leak protection are not verified by this ticket.",
+    "Automatic CI does not perform UI clicking; earlier UI evidence retains its actual date and scope."
+  ]
+}

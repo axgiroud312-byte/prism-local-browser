@@ -29,8 +29,8 @@ function Find-Element([string]$Name, [string]$Type = '') {
   foreach ($item in $items) { if (!$Type -or ($Type -split '\|' | Where-Object { $item.Current.ControlType.ProgrammaticName -eq "ControlType.$_" })) { return $item } }
   return $null
 }
-function Wait-Element([string]$Name, [string]$Type = '') {
-  for ($i = 0; $i -lt 150; $i++) {
+function Wait-Element([string]$Name, [string]$Type = '', [int]$TimeoutSeconds = 15) {
+  for ($i = 0; $i -lt ($TimeoutSeconds * 10); $i++) {
     $element = Find-Element $Name $Type
     if ($element) { return $element }
     if ($script:process.HasExited) { throw 'Desktop exited before the UI step completed.' }
@@ -109,6 +109,10 @@ function Capture-Window([string]$File) {
     try { $graphics.CopyFromScreen([int]$r.X+10,[int]$r.Y+2,0,0,$image.Size); $image.Save((Join-Path $env:PRISM_VERIFY_EVIDENCE $File)) }
     finally { $graphics.Dispose(); $image.Dispose() }
   } finally { [PrismTestWindow]::SetWindowPos($script:process.MainWindowHandle, [IntPtr](-2),0,0,0,0,0x0003) | Out-Null }
+}
+if ($env:PRISM_VERIFY_KERNEL_MODE -eq '1') {
+  . ([scriptblock]::Create([IO.File]::ReadAllText((Join-Path $script:scriptsRoot 'verify-kernel-ui.ps1'))))
+  return
 }
 try {
   Open-Desktop

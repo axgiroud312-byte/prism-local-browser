@@ -3,6 +3,12 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
+    inputs:
+      run_ui_clicks:
+        description: "Explicitly opt in to automated UI clicking on the disposable CI host"
+        type: boolean
+        default: false
 permissions:
   contents: read
 concurrency:
@@ -24,7 +30,10 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install chromium
-      - run: npm run check
+        if: github.event_name == 'workflow_dispatch' && inputs.run_ui_clicks
+      - run: npm run check:background
+      - run: npm run test:ui
+        if: github.event_name == 'workflow_dispatch' && inputs.run_ui_clicks
   desktop:
     runs-on: windows-latest
     timeout-minutes: 30
@@ -55,7 +64,27 @@ jobs:
       - name: Provision WebView2 on the disposable test host if missing
         run: powershell -NoProfile -ExecutionPolicy Bypass -File scripts/ensure-ci-webview.ps1
       - name: Real install, UI create/reopen, upgrade, retain-uninstall, reinstall and explicit removal
+        if: github.event_name == 'workflow_dispatch' && inputs.run_ui_clicks
         run: npm run verify:installer -- --silent-wizard
+        env:
+          PRISM_VERIFY_NO_SCREENSHOT: "1"
+      - name: Obtain and hash the explicitly selected real fingerprint-chromium ZIP test fixture
+        run: powershell -NoProfile -ExecutionPolicy Bypass -File scripts/setup-kernel-fixture.ps1
+      - name: Real selected kernel private-pipe probe without UI clicking
+        shell: pwsh
+        run: |
+          $env:GOPATH = "$PWD/.tools/gopath"
+          $env:GOCACHE = "$PWD/.tools/gocache"
+          $env:GOTOOLCHAIN = 'local'
+          $env:CGO_ENABLED = '0'
+          $env:PRISM_KERNEL_ARCHIVE = "$PWD/.tools/fingerprint-chromium/148.0.7778.215/ungoogled-chromium_148.0.7778.215-1.1_windows_x64.zip"
+          $env:PRISM_KERNEL_EVIDENCE = "$PWD/output/goal/T04/ci-real-probe.json"
+          New-Item -ItemType Directory -Force -Path "$PWD/output/goal/T04" | Out-Null
+          go test ./internal/kernel -run TestRealFingerprintChromiumArchive -count=1 -v
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+      - name: Explicitly requested real kernel desktop UI flow
+        if: github.event_name == 'workflow_dispatch' && inputs.run_ui_clicks
+        run: npm run verify:kernel
         env:
           PRISM_VERIFY_NO_SCREENSHOT: "1"
       - name: Retain actual installer artifacts and synthetic installation evidence
@@ -68,4 +97,8 @@ jobs:
             output/goal/T03/installer-verification.json
             output/goal/T03/preview-*/uia-verification.json
             output/goal/T03/preview-*/failed-controls.txt
+            output/goal/T04/kernel-desktop-verification.json
+            output/goal/T04/kernel-uia-verification.json
+            output/goal/T04/kernel-failed-controls.txt
+            output/goal/T04/ci-real-probe.json
           if-no-files-found: error

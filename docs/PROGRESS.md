@@ -1,11 +1,11 @@
 # Goal 当前执行位置
 
-更新时间：2026-09-30 19:48 Asia/Shanghai。
+更新时间：2026-09-30 22:15 Asia/Shanghai。
 
 - Goal：执行中；[规则](GOAL.md)；完成 **3/21**（验收任务计数）。
 - 当前任务：T04 / [Issue #5](https://github.com/axgiroud312-byte/prism-local-browser/issues/5)，进行中。
-- 当前步骤：T03最终三项CI及干净Windows实际闭环通过，PR #25合入`99c6a36`，#4已勾选并关闭。T04唯一blocking #3已完成且成果可用；先实现精确归档校验/安全暂存/受控探测，再接真实内核页，只测相关项。
-- 现场：`goal/t04-exact-kernel`，基线`99c6a36`；T03收尾证据与T04开始记录一并提交，保留所有历史证据/旧空库。无用户遗留改动。
+- 当前步骤：本机证据已脱敏落盘，四项功能验收满足；同exe已完成页面闭环、新安装实际字节和停止的补充UI尝试分别记录。用户已要求不再自动化点击，现无UI进程/点击命令；自动CI改为后台门禁与无头真实内核探测。票末回归与只读评审通过，准备提交推送和CI；尚不开始T05。
+- 现场：`goal/t04-exact-kernel`，文档提交`85a50b4`；未提交为当前票internal/kernel、workspace服务/类型及桌面文件选择接入。T03全部证据/旧空库保留，无用户遗留改动。
 
 ## 任务状态
 
@@ -14,7 +14,7 @@
 | T01 | #2 | 已完成 | 代码 `3b9b0fa`、记录 `afaeecb`、合入 `6cd681b`；[记录](verification/T01.md)；[PR #23](https://github.com/axgiroud312-byte/prism-local-browser/pull/23) |
 | T02 | #3 | 已完成 | 代码 `134dc66`、记录 `fc4aa47`、合入 `44517c5`；[记录](verification/T02.md)；[PR #24](https://github.com/axgiroud312-byte/prism-local-browser/pull/24)，最终 CI 全通过 |
 | T03 | #4 | 已完成 | 代码`62dae8e`、合入`99c6a36`；[验收](verification/T03.md)、[PR #25](https://github.com/axgiroud312-byte/prism-local-browser/pull/25)，Windows11/干净runner闭环与CI全通过 |
-| T04 | #5 | 进行中 | [验收清单](verification/T04.md)；精确安装/探测实现中 |
+| T04 | #5 | 验证中 | [验收清单](verification/T04.md)、[真实证据](verification/T04-kernel-acceptance.json)；待提交推送/CI |
 | T05 | #6 | 待开始 | — |
 | T06 | #7 | 待开始 | — |
 | T07 | #8 | 待开始 | — |
@@ -77,11 +77,18 @@
 - 19:17–19:23：[run36707306592](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/36707306592) Node22/24完整通过，Vite问题关闭；Go新链接测试回读字符串不匹配，未打包。Windows TEMP短路径与Shell展开长路径是同一对象却非同一字符串；用本机GetShortPathName强制短别名已复现相同失败。产品/独立测试改以os.SameFile核对实际目标文件/工作目录，仍拒绝空值和任何不同对象；Unicode+8.3+首次/升级/锁占用回滚模块/vet通过，未再跑49JS或11UI。
 - 19:25：62dae8e两个干净源码包与本机完整闭环再次通过，6个app正常退出；预览2 SHA-256 `e1d39162a4399aee10c1d9ef194a72569c0b96d2b6d53e3c8f7d37c56dece13f`、NotSigned。最新源码已推送；剩余仅干净runner检查，失败按相关实际数据定位。
 - 19:30–19:48：T03最新headSha/三项CI/下载产物与真实SQLite/6个进程正常退出均核对；PR #25合入`99c6a36`，#4显式关闭，正式3/21。只读T04接入地图完成，无并行写入。当前T04 #5全文/原生blocking核对：#3 CLOSED，基线服务/安装证据可用。重新查询官方150 Release仍404；明确选148.0.7778.215用于本票可获取构建验收，API归档摘要仍`9ef3f471…362579`，不是自动回退或生产推荐。尚未下载实算/探测。
-- 下一步：下载并实际核对148归档；实施安全安装及受控能力探测、SQLite证据与真实页面。尚无T04验收通过声明；不开始T05。
+- 20:07：官方ZIP实际SHA-256与API一致；第一次真实隔离诊断通过，chrome.exe SHA-256 `1867319e56bcabbc4681d8575c002106ce7b61b5290dc5eb34a37676805f6915`、实际PE/CDP148.0.7778.215、HTTP及网页UA reduction148.0.0.0/Full UA-CH148.0.7778.215一致。seed1256789→CPU10、1256790→CPU12；显式CPU8/de-DE/Berlin回读一致。PID63348/41620/62572均正常退出；CDP只通过显式继承的匿名pipe，未开调试TCP或关闭沙箱。测试临时目录自动清理，完整脱敏记录在output/goal/T04/first-probe.json，待最终代码复验后公开。
+- 20:21：内核ZIP越界/ADS/设备名/大小写冲突/多exe/链接/取消与文件摘要测试通过。SQLite相关旧用例发现恢复版本夹具仍硬编码v1；产品新增schema2不可直接降标记，正在更新该夹具并增加真实v1迁移保留测试，未删除断言。还未运行T04全量回归/CI。
+- 下一步：完成原生任务/迁移失败恢复测试与内核页面，再做真实桌面安装/引用闭环；仅测相关项，票末完整回归。尚不开始T05。
+- 20:54：相关Go/kernel与workspace测试/vet、10条Wails桥接测试、typecheck、两条native页面Playwright通过；junction实际恶意夹具/文件写锁测试通过。生产Wails构建成功，正在复用T02 UIA驱动补T04完整实际操作脚本；只读复核代理运行（无文件写入）。完整回归/CI尚未开始。
+- 21:23：只读复核完成，2个P1/4个P2全部按根因修复；新相关Go测试/vet、11条桥接测试、typecheck通过。执行前ZIP/解包文件替换、真实PE无版本、HTTP错品牌/低版本、回滚目录占用后重开清理、取消/未完成复验保护健康构建均有回归。UIA的Chromium原生select ValuePattern确认不改选择，已改为针对本程序WebView HWND的正常按键，实际本地文件对话框已打开；其1148是容器，需要取内层Edit provider，正在补验。官方安装夹具保持，无重复下载/安装，无后台写代理；仅UI测试在执行。未全量回归/未推送本票。
+- 21:38：修复后的真实ZIP/PE/私有pipe诊断再次通过，PID8612/29640/65684正常退出；低/高熵HTTP品牌解析核对通过。3条native页面/迟到取消测试通过。二次只读复核指出复验遇真实junction的类型分类和“已确认损坏”被取消/清理覆盖两个P2，已补typed边界检查及独立完整性事实并相关Go/vet通过。UIA实际对话框控件ID1148/Class Edit是无Value provider的legacy Pane，驱动改用该自有HWND的WM_SETTEXT/WM_GETTEXT（不是跨进程GetWindowText）及按钮BM_CLICK，保留Unicode读回和所有原验收断言，正在从官方安装检查点续验。
+- 21:50–22:01：余下内层Probe取消归一化改errors.Join保留已确认完整性，相关测试/重建通过，只读复核最终确认无可信阻断。UIA引用环境是ListItem而非Text，修正精确类型断言；已绑定检查点不重复保存。续验全部通过，两次production桌面正常退出、所有文件实算及staging为空通过，旧夹具/JSON另存忽略目录driver-recovery。最终代码全流程UIA在新独立合成夹具执行（确保最终安装证据不是历史结果），本票完整回归已通过：52JS、13Playwright、类型/原型构建、28文档、desktopbase/kernel/workspace全部Go与vet。尚未推送本票。
+- 22:08–22:15：用户明确停止自动化点击；当前没有本产品进程，未启动后续点击。独立核对已完成闭环exe与当前最终exe同SHA-256 `7d2f9dd7…14a338`；最终安装两个76文件构建再次只读实算一致、staging为空。补充新UI尝试保持stopped（合成名受共享输入影响），不冒称成功；现有同exe闭环的重开/真实复验/引用禁删/移除结果有效，完整记录与实际时间分别公开到T04-kernel-acceptance.json。仅复制已检查无其他窗口内容的既有截图；私人路径/受遮挡失败截图不公开。默认CI所有点击步骤需显式手动opt-in，后台check与Go/vet/构建及真实无头pipe探测保留。新文档检查通过，准备提交。
 
 ## 恢复资源与 GitHub
 
 - 已有其他 Node/Chrome 进程属于用户现场，不停止。已核对 5173 为本仓库旧 Vite 服务；4173 未监听（纠正初查格式误判）。本 Goal 尚未启动服务，UI 测试用独立端口 5183 和新浏览器上下文。
 - `output/`、`.playwright-cli/`、`dist/`、`node_modules/` 为现有忽略目录；不删除旧成果。新测试输出使用 `output/goal/`，仅保留合成证据。
 - `npx playwright install chromium` 已成功安装本票测试浏览器（仅前端检查，不是 fingerprint-chromium）。测试使用 5183，由 Playwright 启停独立 Vite，首次测试已退出；旧 5173 不动。Serena 本机索引 `.serena/` 已忽略。
-- GitHub：T01–T03已完成同步，#4 CLOSED、PR #25 MERGED；#1保留。T04 #5唯一活动票，暂无PR/后台代理或命令。
+- GitHub：T01–T03已完成同步，#4 CLOSED、PR #25 MERGED；#1保留。T04 #5唯一活动票，暂无PR；只读评审全部结束，无运行中的命令/代理/UI进程。停止点击指示已记GOAL/D005，合成夹具保留，不自动重放任何界面操作。

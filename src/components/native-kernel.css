@@ -1,0 +1,35 @@
+.native-kernel-install { padding: 24px; margin-bottom: 22px; }
+.native-kernel-install h2 { font-size: 17px; margin: 0 0 18px; }
+.native-kernel-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.native-kernel-install label { display: grid; gap: 8px; font-size: 13px; color: #4c6586; }
+.native-kernel-install input:not([type="checkbox"]), .native-kernel-install select { width: 100%; min-width: 0; padding: 11px 12px; border: 1px solid #dde5f1; border-radius: 6px; color: #4c6586; background: white; }
+.native-kernel-install input:focus-visible, .native-kernel-install select:focus-visible { outline: 2px solid #91aff0; outline-offset: 2px; }
+.native-kernel-digest { margin-top: 18px; }
+.native-kernel-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+.native-kernel-local { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 16px; }
+.native-kernel-install .native-kernel-trust { display: flex; align-items: flex-start; width: 100%; line-height: 1.7; }
+.native-kernel-trust input { margin-top: 5px; }
+.native-kernel-operation { padding: 14px; margin-top: 18px; background: #f3f7fd; border-radius: 6px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; font-size: 13px; }
+.native-kernel-operation .mono { overflow-wrap: anywhere; }
+.native-kernel-message { margin-top: 14px; line-height: 1.8; color: #4c6586; overflow-wrap: anywhere; }
+.native-kernel-evidence { display: grid; gap: 7px; margin: 18px 0; font-size: 12px; }
+.native-kernel-evidence dt { color: #8999ae; }
+.native-kernel-evidence dd { margin: 0 0 7px; color: #4c6586; overflow-wrap: anywhere; }
+.native-kernel-evidence ul { padding-left: 18px; }
+.native-kernel-report summary, .native-kernel-history summary { cursor: pointer; font-size: 13px; font-weight: 600; color: #457bd8; padding: 10px 0; }
+.native-kernel-report p { font-size: 12px; color: #7c8fa8; line-height: 1.7; }
+.native-kernel-capability { display: grid; gap: 6px; padding: 14px 0; border-top: 1px solid #edf1f7; }
+.native-kernel-capability strong { font-size: 13px; }
+.native-kernel-capability span { font-size: 12px; color: #4c6586; }
+.native-kernel-capability small { color: #8999ae; }
+.native-kernel-capability p { margin: 0; }
+.native-kernel-report table { min-width: 650px; }
+.native-kernel-confirm { margin-top: 16px; padding: 12px; border: 1px solid #f2d3c9; border-radius: 6px; }
+.native-kernel-confirm p { color: #9f604f; font-size: 12px; line-height: 1.7; }
+.native-kernel-confirm .button { margin: 0 8px 5px 0; }
+.native-kernel-history { padding: 18px 24px; margin-top: 22px; }
+.native-kernel-history p { color: #7c8fa8; font-size: 12px; overflow-wrap: anywhere; line-height: 1.8; }
+@media (max-width: 850px) {
+  .native-kernel-fields { grid-template-columns: 1fr; }
+  .native-kernel-install { padding: 18px; }
+}

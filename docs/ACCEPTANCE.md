@@ -100,3 +100,17 @@ PRD 与开发方案已经定义了实际内核启动、独立目录锁、代理�
 最终代码`62dae8e`的本机Windows11 GUI安装/两快捷方式启动/升级/默认保留重装/明确删除通过；[远程run36708551587](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/36708551587) Windows Node22/24、24Go/vet、双包构建、全新Windows Server2025 runner的实际默认用户安装与UIA/SQLite闭环均通过。具体PID、身份、seed、版本与不同包hash见 [最终双环境记录](verification/T03-release-acceptance.json)。CI不提供GUI向导截图；本机已实际核验默认未勾选删除。
 
 采用本机干净源码构建的未签名预览2作为T03交付包，hash `e1d39162a4399aee10c1d9ef194a72569c0b96d2b6d53e3c8f7d37c56dece13f`；CI产物仅作验收，源清单`sourceDirty=true`如实保留，不混称干净源码发布。仍不含内核或宣称真实代理/登录数据/备份恢复通过。上面的历史未完成状态保留当时范围，最终以本补验为准。
+
+### T04 本机精确内核验收（2026-09-30 22:15；远程门槛待结果）
+
+Windows production 内核页已实际安装并诊断官方与用户确认可信的本地148.0.7778.215，保存来源/tag/commit或null/架构/摘要/实际版本；150资产缺失和坏hash分别失败，不回退或改旧构建。精确kernelId绑定、普通编辑不换seed、正常关闭重开、真实复验、被引用禁删及仅移除闲置构建已通过，全部安装文件独立实算一致、staging为空。证据见 [T04](verification/T04.md) 与 [脱敏JSON](verification/T04-kernel-acceptance.json)。
+
+已执行`npm run check`：52JS、类型/原型构建/文档、13UI通过；全部Go/vet和production构建通过。只读评审确认安全检查间隙、取消/清理与完整性隔离、终态迟到等阻断全部闭合。真实能力来自私有pipe/PE/HTTP和网页读值，不是截图或模拟。
+
+22:08用户停止自动化点击；已有完整闭环exe与最终exe同摘要，旧闭环与最终新安装证据分别记录时间。补充UI全流程重跑在合成名受键盘干扰后停止，未算全通过；停止后无新的自动点击。默认CI仅后台检查/构建及无头实际内核探测，不把未运行的UI步骤写成远程通过。下面仅引用既有已检查的本产品合成截图，未再截取用户屏幕。
+
+![T04 官方精确内核已实际安装（合成数据）](screenshots/T04-official-installed.png)
+
+![T04 同版本不同精确 ID，原生本机记录（合成数据）](screenshots/T04-exact-builds.png)
+
+正常环境启停和独立浏览数据、完整修订、代理/泄漏、Cookie、备份/恢复仍按后续票验证；148是实测候选，不宣称生产适用或“不封号”。

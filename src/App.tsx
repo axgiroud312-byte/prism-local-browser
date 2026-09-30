@@ -85,6 +85,7 @@ import developmentText from "../docs/DEVELOPMENT.md?raw";
 import kernelText from "../docs/KERNEL.md?raw";
 const Markdown = lazy(() => import("react-markdown"));
 import remarkGfm from "remark-gfm";
+import { NativeKernelManager } from "./components/NativeKernelManager";
 
 type Route =
   "environments" | "proxies" | "kernels" | "backups" | "activity" | "guide";
@@ -889,7 +890,7 @@ export default function App({ application }: { application: ApplicationService }
                   </div>
                   <span className="stat-foot">
                     <span className="status-dot green-dot" />
-                    {nativeMode ? "真实内核尚未接入" : "模拟运行状态"}
+                    {nativeMode ? "环境真实启停尚未接入" : "模拟运行状态"}
                   </span>
                 </div>
                 <div className="stat-card">
@@ -1533,7 +1534,8 @@ export default function App({ application }: { application: ApplicationService }
               </section>
             </>
           )}
-          {route === "kernels" && (
+          {route === "kernels" && nativeMode && <NativeKernelManager application={application} workspace={workspace} />}
+          {route === "kernels" && !nativeMode && (
             <>
               <div className="info-strip">
                 <ShieldCheck size={19} />
@@ -1917,7 +1919,7 @@ export default function App({ application }: { application: ApplicationService }
             <span>
               <Monitor size={13} />
               Windows 本地版<span className="footer-separator">·</span>
-              {nativeMode ? "SQLite 本机持久化 · 内核未安装，不能启动" : "仅供交互验收，请勿输入真实凭据"}
+              {nativeMode ? "SQLite 本机持久化 · 精确内核可核验，环境启停待接入" : "仅供交互验收，请勿输入真实凭据"}
             </span>
             <button
               onClick={() => {
@@ -2084,13 +2086,13 @@ export default function App({ application }: { application: ApplicationService }
                     >
                       {state.kernels.map((k) => (
                         <option key={k.id} value={k.id}>
-                          {nativeMode ? `fingerprint-chromium ${k.version} · ${k.available ? "已核验" : "未就绪"}` : `Chromium ${k.version} · ${k.available ? "演示基线" : "待验证"}`}
+                          {nativeMode ? `fingerprint-chromium ${k.version} · ${k.available ? "已核验" : "未就绪"} · ${k.id.slice(0, 8)}` : `Chromium ${k.version} · ${k.available ? "演示基线" : "待验证"}`}
                         </option>
                       ))}
                     </select>
                   </Field>
                   <p className="field-hint">
-                    {nativeMode ? "指定内核：fingerprint-chromium。当前未安装；本次仅保存本机档案，不代表可以启动。安装精确版本后请显式绑定。" : "实际内核：fingerprint-chromium。当前仅演示配置绑定，未安装浏览器内核。"}
+                    {nativeMode ? "先在内核页安装并核验 fingerprint-chromium，再显式选择精确构建。旧档案不会自动重绑定；保存引用不代表环境已可启动。" : "实际内核：fingerprint-chromium。当前仅演示配置绑定，未安装浏览器内核。"}
                   </p>
                 </>
               )}
