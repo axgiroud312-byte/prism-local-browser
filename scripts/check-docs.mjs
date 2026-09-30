@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import assert from "node:assert/strict";
 
-const docs = [
+const docs = [...new Set([
   "README.md",
   "AGENTS.md",
   "docs/ENGINEERING.md",
@@ -15,7 +15,8 @@ const docs = [
   "docs/TRACEABILITY.md",
   "docs/ACCEPTANCE.md",
   "THIRD_PARTY_NOTICES.md",
-];
+  ...fs.readdirSync("docs", { recursive: true }).filter(file => file.endsWith(".md")).map(file => path.join("docs", file)),
+])];
 const ids = [
   "ENV-001",
   "ENV-002",

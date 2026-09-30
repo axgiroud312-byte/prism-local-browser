@@ -4,6 +4,7 @@ import {
   useState,
   lazy,
   Suspense,
+  useSyncExternalStore,
   type ReactNode,
 } from "react";
 import {
@@ -56,7 +57,6 @@ import {
   X,
 } from "lucide-react";
 import {
-  STORAGE_KEY,
   createSnapshot,
   launchError,
   mergeCookies,
@@ -66,16 +66,20 @@ import {
   parseSnapshot,
   regions,
   restoreSnapshot,
-  seedState,
   uid,
-  uniqueSeed,
-  validateEnvironment,
   type Environment,
+  type Activity,
   type Kernel,
   type ProxyNode,
   type Snapshot,
   type State,
 } from "./domain";
+import {
+  newerOperationEvent,
+  operationIsTerminal,
+  type ApplicationService,
+  type OperationEvent,
+} from "./application/contract";
 import prdText from "../docs/PRD.md?raw";
 import developmentText from "../docs/DEVELOPMENT.md?raw";
 import kernelText from "../docs/KERNEL.md?raw";
@@ -88,6 +92,9 @@ type Drawer = {
   kind: "create" | "edit";
   environment: Environment;
   tab: "basic" | "fingerprint" | "preferences";
+  previewId: string;
+  requestId: string;
+  expectedRevision?: number;
 };
 type Dialog =
   | { kind: "delete"; ids: string[] }
@@ -223,52 +230,10 @@ function download(name: string, content: string, type = "application/json") {
   setTimeout(() => URL.revokeObjectURL(url), 1500);
 }
 
-export default function App() {
-  const damagedStorage = useRef<string | null>(null);
-  const savedValue = useRef<string | null>(null);
-  const [storageIssue, setStorageIssue] = useState("");
-  const [state, setState] = useState<State>(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      savedValue.current = raw;
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        parseSnapshot(JSON.stringify({ ...parsed, format: "prism-prototype" }));
-        if (!Array.isArray(parsed.backups) || !Array.isArray(parsed.activities))
-          throw new Error("存储格式损坏");
-        for (const b of parsed.backups) {
-          parseSnapshot(JSON.stringify(b.snapshot));
-          if (
-            typeof b.name !== "string" ||
-            typeof b.id !== "string" ||
-            !Number.isFinite(Date.parse(b.createdAt))
-          )
-            throw new Error("备份记录损坏");
-        }
-        for (const a of parsed.activities)
-          if (
-            !a ||
-            !["id", "action", "target", "detail"].every(
-              (k) => typeof a[k] === "string",
-            ) ||
-            !Number.isFinite(Date.parse(a.time))
-          )
-            throw new Error("活动记录损坏");
-        return {
-          ...parsed,
-          environments: parsed.environments.map((e: Environment) => ({
-            ...e,
-            status: ["starting", "stopping"].includes(e.status)
-              ? "ready"
-              : e.status,
-          })),
-        };
-      }
-    } catch {
-      damagedStorage.current = savedValue.current || "";
-    }
-    return seedState();
-  });
+export default function App({ application }: { application: ApplicationService }) {
+  const workspace = useSyncExternalStore(application.subscribe, application.getSnapshot);
+  const state = workspace.state;
+  const storageIssue = workspace.issue?.message || "";
   const current = useRef(state);
   current.current = state;
   const [route, setRoute] = useState<Route>(() => {
@@ -309,6 +274,9 @@ export default function App() {
   } | null>(null);
   const batchCancelled = useRef(false);
   const batchBusy = useRef(false);
+  const saving = useRef(false);
+  const creationOperation = useRef<string | null>(null);
+  const latestOperationEvent = useRef<OperationEvent | undefined>(undefined);
   const checkingBusy = useRef(false);
   const initialDraft = useRef("");
   const backupFile = useRef<HTMLInputElement>(null);
@@ -321,54 +289,32 @@ export default function App() {
     if (toastTimer.current) clearTimeout(toastTimer.current);
     toastTimer.current = setTimeout(() => setToast(null), 4200);
   };
-  const update = (fn: (s: State) => State) => setState((s) => fn(s));
-  const event = (
+  const update = (fn: (s: State) => State, activity?: Pick<Activity, "action" | "target" | "detail" | "result">) => {
+    const result = application.compatibility?.update((s) => {
+      const next = fn(s);
+      return activity ? { ...next, activities: [{ ...activity, id: uid("log"), time: now() }, ...next.activities] } : next;
+    });
+    if (!result) notify("此演示操作尚未接入桌面服务。", true);
+    else if (!result.ok) notify(result.error.message, true);
+    return Boolean(result?.ok);
+  };
+  const log = (
     action: string,
     target: string,
     detail: string,
     result: "success" | "error" | "info" = "success",
-  ) =>
-    update((s) => ({
-      ...s,
-      activities: [
-        { id: uid("log"), time: now(), action, target, detail, result },
-        ...s.activities,
-      ],
-    }));
+  ) => ({ action, target, detail, result });
   useEffect(() => {
-    if (damagedStorage.current !== null) {
-      setStorageIssue(
-        "本地演示记录损坏，原始内容已保留。可先导出原始记录，再重置示例工作区。",
-      );
-      return;
-    }
-    try {
-      if (localStorage.getItem(STORAGE_KEY) !== savedValue.current) {
-        setStorageIssue(
-          "另一个页面已更新工作区。请重新载入最新记录，避免覆盖其他页面的修改。",
-        );
-        return;
-      }
-      const serialized = JSON.stringify(state);
-      localStorage.setItem(STORAGE_KEY, serialized);
-      savedValue.current = serialized;
-    } catch {
-      setToast({
-        text: "浏览器存储空间不足，当前修改尚未持久保存，请导出快照。",
-        error: true,
-      });
-    }
-  }, [state]);
-  useEffect(() => {
-    const changed = (e: StorageEvent) => {
-      if (e.key === STORAGE_KEY && e.newValue !== savedValue.current)
-        setStorageIssue(
-          "另一个页面已更新工作区。请重新载入最新记录，避免覆盖其他页面的修改。",
-        );
-    };
+    const changed = (e: StorageEvent) => application.compatibility?.handleStorageChange(e);
     window.addEventListener("storage", changed);
     return () => window.removeEventListener("storage", changed);
-  }, []);
+  }, [application]);
+  useEffect(() => application.subscribeEvents((next) => {
+    if (next.mode !== application.mode || next.operationId !== creationOperation.current) return;
+    const event = newerOperationEvent(latestOperationEvent.current, next);
+    latestOperationEvent.current = event;
+    if (event) setBatch({ label: "创建环境", done: event.operation.completedIds.length, total: event.operation.total });
+  }), [application]);
   useEffect(() => {
     const change = () => {
       const r = location.hash.replace("#/", "") as Route;
@@ -389,6 +335,7 @@ export default function App() {
       !window.confirm("配置尚未保存。确定放弃本次编辑吗？")
     )
       return;
+    if (drawer) void application.discardPreview(drawer.previewId);
     setDrawer(null);
   };
   useEffect(() => {
@@ -475,43 +422,22 @@ export default function App() {
       d ? { ...d, environment: { ...d.environment, ...value } } : d,
     );
   };
-  function openCreate(template?: Environment) {
-    const date = now();
-    const e: Environment = {
-      id: uid("env"),
-      code: "",
-      name: template ? `${template.name} 副本` : "",
-      group: template?.group || "日常运营",
-      note: "",
-      proxyId: "",
-      coreId: template?.coreId || "core-148",
-      seed: uniqueSeed(state.environments.map((e) => e.seed)),
-      language: template?.language || "en-US",
-      timezone: template?.timezone || "America/New_York",
-      cpu: template?.cpu || "auto",
-      width: template?.width || 1280,
-      height: template?.height || 800,
-      urls: template?.urls || "",
-      restoreTabs: true,
-      status: "ready",
-      cookies: [],
-      createdAt: date,
-      fingerprintVersion: "windows-desktop-v1",
-    };
-    if (template) e.proxyId = template.proxyId;
-    initialDraft.current = JSON.stringify(e);
-    setDrawer({ kind: "create", environment: e, tab: "basic" });
+  async function openCreate(template?: Environment) {
+    const result = await application.previewEnvironment({ kind: "create", sourceId: template?.id });
+    if (!result.ok) { notify(result.error.message, true); return; }
+    const preview = result.data;
+    initialDraft.current = JSON.stringify(preview.environment);
+    setDrawer({ kind: "create", ...preview, requestId: uid("request"), tab: "basic" });
     setFormError("");
     setQuantity(1);
     setMenu(null);
   }
-  function openEdit(e: Environment) {
-    if (["running", "starting", "stopping"].includes(e.status)) {
-      notify("请先关闭该环境，再修改配置。", true);
-      return;
-    }
-    initialDraft.current = JSON.stringify(e);
-    setDrawer({ kind: "edit", environment: structuredClone(e), tab: "basic" });
+  async function openEdit(e: Environment) {
+    const result = await application.previewEnvironment({ kind: "edit", sourceId: e.id });
+    if (!result.ok) { notify(result.error.message, true); return; }
+    const preview = result.data;
+    initialDraft.current = JSON.stringify(preview.environment);
+    setDrawer({ kind: "edit", ...preview, requestId: uid("request"), tab: "basic" });
     setQuantity(1);
     setFormError("");
     setMenu(null);
@@ -520,110 +446,51 @@ export default function App() {
     if (!drawer) return;
     setGenerating(true);
     await sleep(500);
-    patchDraft({
-      seed: uniqueSeed([
-        ...state.environments.map((e) => e.seed),
-        drawer.environment.seed,
-      ]),
-    });
+    const result = await application.regeneratePreview(drawer.previewId);
+    if (result.ok) patchDraft({ seed: result.data.environment.seed });
+    else setFormError(result.error.message);
     setGenerating(false);
-    notify("新的指纹种子已生成，保存后生效；浏览器数据不变。");
+    if (result.ok) notify("新的指纹种子已生成，保存后生效；浏览器数据不变。");
   }
   async function saveEnvironment() {
-    if (batchBusy.current) return;
-    if (!drawer) return;
-    const e = drawer.environment;
-    const error = validateEnvironment(e, state);
-    if (error) {
-      setFormError(error);
-      return;
-    }
-    if (!Number.isSafeInteger(quantity) || quantity < 1) {
-      setFormError("创建数量应为正整数。");
-      return;
-    }
-    const usedNames = new Set(
-      state.environments.filter((i) => i.id !== e.id).map((i) => i.name),
-    );
-    if (quantity === 1 && usedNames.has(e.name.trim())) {
-      setFormError("已有同名环境，请换一个名称。");
-      return;
-    }
-    if (drawer.kind === "edit") {
-      update((s) => ({
-        ...s,
-        environments: s.environments.map((i) =>
-          i.id === e.id
-            ? { ...e, name: e.name.trim(), status: "ready", error: undefined }
-            : i,
-        ),
-      }));
-      event(
-        "修改环境",
-        e.name,
-        "配置已保存；原指纹种子和 Cookie 保持，除非主动修改。",
-      );
-      notify("环境配置已保存");
-    } else {
-      const base = state.environments.reduce(
-        (n, i) => Math.max(n, Number(i.code) || 0),
-        0,
-      );
-      const seeds = state.environments.map((i) => i.seed);
-      batchBusy.current = true;
-      batchCancelled.current = false;
-      setDrawer(null);
-      let completed = 0;
-      let conflict = "";
-      for (
-        let offset = 0;
-        offset < quantity && !batchCancelled.current;
-        offset += 25
-      ) {
-        const added: Environment[] = [];
-        for (let i = offset; i < Math.min(offset + 25, quantity); i++) {
-          const name =
-            quantity === 1
-              ? e.name.trim()
-              : `${e.name.trim()} ${String(i + 1).padStart(2, "0")}`;
-          if (usedNames.has(name)) {
-            conflict = `名称“${name}”已存在，已停止后续创建。`;
-            batchCancelled.current = true;
-            break;
-          }
-          const seed =
-            i === 0 && !seeds.includes(e.seed) ? e.seed : uniqueSeed(seeds);
-          seeds.push(seed);
-          usedNames.add(name);
-          added.push({
-            ...e,
-            cookies: [],
-            id: uid("env"),
-            code: String(base + i + 1).padStart(3, "0"),
-            name,
-            seed,
-            createdAt: now(),
-          });
-        }
-        completed += added.length;
-        update((s) => ({ ...s, environments: [...added, ...s.environments] }));
-        setBatch({ label: "创建环境", done: completed, total: quantity });
-        await sleep(40);
+    if (batchBusy.current || saving.current || !drawer) return;
+    saving.current = true;
+    try {
+      const request = { previewId: drawer.previewId, configuration: drawer.environment, requestId: drawer.requestId };
+      if (drawer.kind === "edit") {
+        const result = await application.updateEnvironment({ ...request, expectedRevision: drawer.expectedRevision! });
+        if (!result.ok) { setFormError(result.error.message); return; }
+        notify("环境配置已保存");
+        setDrawer(null);
+        return;
       }
-      batchBusy.current = false;
-      setBatch(null);
-      event(
-        "创建环境",
-        `${completed} 个环境`,
-        `请求 ${quantity} 个，已完成 ${completed} 个。${conflict || (batchCancelled.current ? "用户已取消余下任务。" : "固定种子已保存。")}`,
-      );
-      notify(`${conflict}已创建 ${completed} 个环境`, Boolean(conflict));
-      setGroup("全部分组");
-      setStatus("all");
-      setSearch("");
-      setPage(1);
+      const accepted = await application.createBatch({ ...request, count: quantity });
+      if (!accepted.ok) { setFormError(accepted.error.message); return; }
+      batchBusy.current = true;
+      creationOperation.current = accepted.data.operation.id;
+      latestOperationEvent.current = undefined;
+      setDrawer(null);
+      let inspected = await application.getOperation(creationOperation.current);
+      while (inspected.ok && !operationIsTerminal(inspected.data)) {
+        setBatch({ label: "创建环境", done: inspected.data.completedIds.length, total: inspected.data.total });
+        await sleep(30);
+        inspected = await application.getOperation(creationOperation.current);
+      }
+      if (!inspected.ok) notify(inspected.error.message, true);
+      else {
+        const operation = inspected.data;
+        const prefix = operation.state === "cancelled" ? "已取消余下任务；" : "";
+        notify(`${operation.error?.message || prefix}已创建 ${operation.completedIds.length} 个环境`, operation.state === "failed");
+      }
+      setGroup("全部分组"); setStatus("all"); setSearch(""); setPage(1);
+    } finally {
+      saving.current = false;
+      if (creationOperation.current) {
+        batchBusy.current = false;
+        creationOperation.current = null;
+        setBatch(null);
+      }
     }
-    setDrawer(null);
   }
   async function launch(ids: string[]) {
     if (batchBusy.current) {
@@ -642,40 +509,38 @@ export default function App() {
       setBatch({ label: "启动环境", done, total: ids.length });
       const failure = launchError(e, current.current);
       if (failure) {
-        update((s) => ({
+        if (!update((s) => ({
           ...s,
           environments: s.environments.map((i) =>
             i.id === id ? { ...i, status: "error", error: failure } : i,
           ),
-        }));
-        event("启动被阻止", e.name, failure, "error");
+        }), log("启动被阻止", e.name, failure, "error"))) break;
         notify(failure, true);
         continue;
       }
-      update((s) => ({
+      if (!update((s) => ({
         ...s,
         environments: s.environments.map((i) =>
           i.id === id ? { ...i, status: "starting", error: undefined } : i,
         ),
-      }));
+      }))) break;
       await sleep(650);
       if (
         current.current.environments.find((i) => i.id === id)?.status ===
         "starting"
       ) {
-        update((s) => ({
+        if (!update((s) => ({
           ...s,
           environments: s.environments.map((i) =>
             i.id === id && i.status === "starting"
               ? { ...i, status: "running", lastOpened: now() }
               : i,
           ),
-        }));
-        event(
+        }), log(
           "模拟启动",
           e.name,
           "演示状态已变为运行中；未启动真实浏览器进程。",
-        );
+        ))) break;
       }
       done++;
     }
@@ -687,32 +552,32 @@ export default function App() {
     for (const id of ids) {
       const e = current.current.environments.find((i) => i.id === id);
       if (!e || !["running", "starting"].includes(e.status)) continue;
-      update((s) => ({
+      if (!update((s) => ({
         ...s,
         environments: s.environments.map((i) =>
           i.id === id ? { ...i, status: "stopping" } : i,
         ),
-      }));
+      }))) return;
       await sleep(350);
-      update((s) => ({
+      if (!update((s) => ({
         ...s,
         environments: s.environments.map((i) =>
           i.id === id ? { ...i, status: "ready" } : i,
         ),
-      }));
-      event("模拟关闭", e.name, "固定指纹和示例 Cookie 已保留。");
+      }), log("模拟关闭", e.name, "固定指纹和示例 Cookie 已保留。"))) return;
     }
   }
   async function checkProxy(ids: string[]) {
     if (checkingBusy.current) return;
     checkingBusy.current = true;
+    let checkFailed = false;
     setChecking(ids);
     for (const id of ids) {
       await sleep(350);
       const p = current.current.proxies.find((p) => p.id === id);
       if (!p) continue;
       const failed = Boolean(p.simulateFailure);
-      update((s) => ({
+      if (!update((s) => ({
         ...s,
         proxies: s.proxies.map((i) =>
           i.id === id
@@ -723,47 +588,44 @@ export default function App() {
               }
             : i,
         ),
-      }));
-      event(
+      }), log(
         "模拟代理检查",
         p.name,
         failed
           ? "预设失败场景；没有发起实际网络请求。"
           : "预设成功场景；真实出口与可用性待桌面服务检测。",
         failed ? "error" : "info",
-      );
+      ))) { checkFailed = true; break; }
     }
     checkingBusy.current = false;
     setChecking([]);
-    notify("模拟检查完成，结果不代表真实网络状态");
+    if (!checkFailed) notify("模拟检查完成，结果不代表真实网络状态");
   }
   function newBackup() {
     const snapshot = createSnapshot(state);
     const name = `工作区快照 ${time(snapshot.createdAt)}`;
-    update((s) => ({
+    if (!update((s) => ({
       ...s,
       backups: [
         { id: uid("backup"), name, createdAt: snapshot.createdAt, snapshot },
         ...s.backups,
       ],
-    }));
-    event(
+    }), log(
       "创建原型快照",
       name,
       "仅包含原型配置和示例 Cookie，排除代理密码，不包含 Chromium 用户目录。",
-    );
+    ))) return;
     notify("原型快照已保存到当前浏览器");
   }
   function confirmRestore() {
     if (dialog?.kind !== "restore") return;
     try {
       const next = restoreSnapshot(state, dialog.snapshot);
-      update(() => next);
-      event(
+      if (!update(() => next, log(
         "恢复原型快照",
         dialog.name,
         "配置已恢复；代理凭据需重新填写，所有代理需重新检查。",
-      );
+      ))) return;
       setSelected([]);
       setDialog(null);
       notify("快照已恢复，代理需要重新检查");
@@ -796,17 +658,16 @@ export default function App() {
       setFormError("所选环境仍在运行，请先关闭。");
       return;
     }
-    update((s) => ({
+    if (!update((s) => ({
       ...s,
       environments: s.environments.filter((e) => !dialog.ids.includes(e.id)),
-    }));
-    event(
+    }), log(
       "删除环境",
       `${dialog.ids.length} 个环境`,
       deleteData
         ? "原型记录及模拟数据已移除；无真实文件操作。"
         : "移除原型记录；桌面版应保留孤立数据目录并提供找回入口。",
-    );
+    ))) return;
     setDialog(null);
     setSelected([]);
     notify("环境已从工作区移除");
@@ -1627,17 +1488,16 @@ export default function App() {
                                     );
                                     return;
                                   }
-                                  update((s) => ({
+                                  if (!update((s) => ({
                                     ...s,
                                     proxies: s.proxies.filter(
                                       (i) => i.id !== p.id,
                                     ),
-                                  }));
-                                  event(
+                                  }), log(
                                     "删除代理",
                                     p.name,
                                     "未被引用的代理配置已删除。",
-                                  );
+                                  ))) return;
                                 }}
                               >
                                 <Trash2 size={16} />
@@ -2983,7 +2843,7 @@ export default function App() {
                       setFormError("请填写有效的名称、地址和端口。");
                       return;
                     }
-                    update((s) => ({
+                    if (!update((s) => ({
                       ...s,
                       proxies: s.proxies.map((i) =>
                         i.id === p.id
@@ -2995,8 +2855,7 @@ export default function App() {
                             }
                           : i,
                       ),
-                    }));
-                    event("修改代理", p.name, "配置已保存，等待重新检查。");
+                    }), log("修改代理", p.name, "配置已保存，等待重新检查。"))) return;
                     setDialog(null);
                     notify("代理已保存，请重新检查");
                   }}
@@ -3012,15 +2871,14 @@ export default function App() {
                     const nodes = proxyRows.flatMap((r) =>
                       r.node ? [r.node] : [],
                     );
-                    update((s) => ({
+                    if (!update((s) => ({
                       ...s,
                       proxies: [...s.proxies, ...nodes],
-                    }));
-                    event(
+                    }), log(
                       "导入代理",
                       `${nodes.length} 条`,
                       "有效行已导入，无效行未保存；等待连接检查。",
-                    );
+                    ))) return;
                     setDialog(null);
                     notify(`已导入 ${nodes.length} 条代理，待检查`);
                   }}
@@ -3038,7 +2896,7 @@ export default function App() {
                   }
                   onClick={() => {
                     if (!cookieResult) return;
-                    update((s) => ({
+                    if (!update((s) => ({
                       ...s,
                       environments: s.environments.map((e) =>
                         e.id === dialog.id
@@ -3051,13 +2909,12 @@ export default function App() {
                             }
                           : e,
                       ),
-                    }));
-                    event(
+                    }), log(
                       "导入示例 Cookie",
                       state.environments.find((e) => e.id === dialog.id)
                         ?.name || "",
                       `已将 ${cookieResult.cookies.length} 条 Cookie 保真写入原型记录；未写真实浏览器。`,
-                    );
+                    ))) return;
                     setDialog(null);
                     notify(
                       `已导入 ${cookieResult.cookies.length} 条示例 Cookie`,
@@ -3094,19 +2951,18 @@ export default function App() {
                   className="primary"
                   disabled={!selected.length || !groupName.trim()}
                   onClick={() => {
-                    update((s) => ({
+                    if (!update((s) => ({
                       ...s,
                       environments: s.environments.map((e) =>
                         selected.includes(e.id)
                           ? { ...e, group: groupName.trim() }
                           : e,
                       ),
-                    }));
-                    event(
+                    }), log(
                       "调整分组",
                       `${selected.length} 个环境`,
                       `已归入分组 ${groupName.trim()}。`,
-                    );
+                    ))) return;
                     setDialog(null);
                     notify("分组已更新");
                   }}
@@ -3125,8 +2981,11 @@ export default function App() {
             {batch.label} · {batch.done} / {batch.total}
           </span>
           <Button
-            onClick={() => {
-              batchCancelled.current = true;
+            onClick={async () => {
+              if (creationOperation.current) {
+                const result = await application.cancelOperation(creationOperation.current);
+                if (!result.ok) { notify(result.error.message, true); return; }
+              } else batchCancelled.current = true;
               notify("已请求取消，当前项目结束后停止余下任务。");
             }}
           >
@@ -3149,13 +3008,13 @@ export default function App() {
               <p>{storageIssue}</p>
             </div>
             <div className="modal-footer">
-              {damagedStorage.current !== null ? (
+              {workspace.damagedRecord !== undefined ? (
                 <>
                   <Button
                     onClick={() =>
                       download(
                         "prism-original-record.txt",
-                        damagedStorage.current || "",
+                        workspace.damagedRecord || "",
                         "text/plain",
                       )
                     }
@@ -3164,9 +3023,10 @@ export default function App() {
                   </Button>
                   <Button
                     className="primary"
-                    onClick={() => {
-                      localStorage.removeItem(STORAGE_KEY);
-                      location.reload();
+                    onClick={async () => {
+                      const result = await application.compatibility?.resetDamagedWorkspace();
+                      if (result?.ok) location.reload();
+                      else if (result) notify(result.error.message, true);
                     }}
                   >
                     重置演示工作区

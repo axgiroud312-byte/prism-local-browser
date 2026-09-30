@@ -8,6 +8,8 @@
 
 开发入口：[项目开发指引](AGENTS.md) · [开发规范](docs/ENGINEERING.md) · [V1 总规格](docs/SPEC.md) · [开发 Issues 与依赖](docs/ISSUES.md)
 
+持续实施：[Goal 执行规则](docs/GOAL.md) · [当前执行位置](docs/PROGRESS.md)。T01 已建立创建/编辑应用契约与 DemoAdapter；真实桌面能力按后续票验收，不能以模拟成功替代。
+
 ![环境工作台](docs/screenshots/environments.png)
 
 ## 当前可以做什么
@@ -44,7 +46,7 @@ npm run build
 npm run preview
 ```
 
-`check` 依次运行领域逻辑测试、TypeScript/Vite 构建及文档检查。命令可执行不等于检查已经通过：已执行的项目、结果及未验证项以 [验收记录](docs/ACCEPTANCE.md) 为准。`preview` 预览构建后的前端，也不会启动真实内核。
+首次执行页面测试先运行 `npx playwright install chromium`。`check` 依次运行领域/应用契约测试、源码及测试类型检查、TypeScript/Vite 构建、文档检查和 10 条可重复 UI 流程；也可单独 `npm run test:ui`。页面测试自动用独立 5183 端口启动/关闭 Vite，测试报告在 `output/goal/T01/report/`。命令存在不代表已通过，实际结果见 [验收记录](docs/ACCEPTANCE.md)。`preview` 仍不会启动真实内核。
 
 ## 建议的体验顺序
 

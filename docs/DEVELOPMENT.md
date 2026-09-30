@@ -4,7 +4,7 @@
 
 版本：1.0 · 日期：2026-09-30
 
-本文件将 [产品需求](PRD.md) 转成实施边界、应用接口、状态与数据一致性规则。当前仓库交付 React 和 TypeScript 交互原型；未来桌面版使用 Go 与 Wails 提供本地服务、SQLite 保存配置，并管理已选定的 adryfish/fingerprint-chromium。下面的本地服务接口是目标契约，不代表本仓库已经具备对应 Go 实现。
+本文件将 [产品需求](PRD.md) 转成实施边界、应用接口、状态与数据一致性规则。当前仓库交付 React 和 TypeScript 交互原型；T01 已提取环境应用契约与 DemoAdapter。未来桌面版使用 Go 与 Wails 提供本地服务、SQLite 保存配置，并管理已选定的 adryfish/fingerprint-chromium。下面的本地服务接口是目标契约，不代表本仓库已经具备对应 Go 实现。
 
 ## 1 当前交付与后续实施分层
 
@@ -28,7 +28,7 @@
 
 创建批次每 25 条让出 UI，取消余下任务后保留并记录已创建数量。启动批次可以取消尚未开始的队列；批量关闭会取消待启动任务。代理可编辑演示参数及“模拟连接失败”开关，保存后检查状态重置，关闭失败开关并重检可演示恢复。JSON 和 Netscape Cookie 均支持解析；预览标注已过期记录，保存保留原时间，不把样例强制续期。
 
-演示状态在 React 更新后写入 localStorage；空间不足有提示，但不是“持久化事务成功后再发布 UI 成功”的生产模型。损坏记录保留原文并以阻断界面提供原始记录导出和显式重置；写入前及 storage 事件检测到跨标签页更新时阻断并要求重载，避免旧页面覆盖新数据。不要将这些保护等同于下面的 SQLite 事务、journal、原子替换、回收区及真实运行监督器。
+演示状态由 DemoAdapter 集中写入 localStorage；写入失败不发布新状态，创建编辑保留可重试草稿，不提示保存成功。损坏记录保留原文并以阻断界面提供原始记录导出和显式重置；写入前及 storage 事件（含 clear）检测到跨标签页更新时阻断并要求重载，避免旧页面覆盖新数据。不要将这些保护等同于下面的 SQLite 事务、journal、原子替换、回收区及真实运行监督器。
 
 ## 2 建议模块边界
 
@@ -136,7 +136,9 @@ app-data/
 
 ## 6 本地应用接口
 
-所有接口均为**拟定契约**。Wails 绑定负责 UI 与本机 Go 服务通信，默认不开放未经认证的局域网或公网 HTTP 管理服务。当前原型尚未提取独立适配器；后续先建立 DemoAdapter，使演示流程与 native adapter 遵循同一应用契约。
+下表为**目标本地服务契约**；T01 已实现其环境创建编辑的前端先导，见 [contract.ts](../src/application/contract.ts) 与 [demo-adapter.ts](../src/application/demo-adapter.ts)。Wails 绑定负责 UI 与本机 Go 服务通信，默认不开放未经认证的局域网或公网 HTTP 管理服务；当前仍没有 Go 实现。
+
+当前 ApplicationService 统一 `{ ok, mode, data/error, operationId? }`、预览 ID、requestId、expectedRevision 与 Operation 事件。创建返回 `status: accepted`，需查询/事件确认 `completed/cancelled/failed`；编辑仅在存储写入成功后返回 `status: completed`。只提交配置白名单，不能从草稿修改 ID、Cookie 或运行状态。UI 按操作 ID、模式、序号和终态过滤迟到事件。demo 的预览、幂等请求缓存和 Operation 在当前服务会话有效，不宣称任务重开续作；revision 用额外存储元数据持久保存，旧 v1 演示记录可显式读取且快照类型不变。其他页经 demo-only compatibility 逐步接入；native 不可使用该兼容入口。
 
 通用成功返回为 `{ ok: true, data, operationId? }`；失败返回为 `{ ok: false, error: { code, message, retryable, field?, itemIndex?, details? }, operationId? }`。details 必须经过脱敏。修改接口接受 requestId 做幂等处理；涉及已有记录的修改接受 expectedRevision。
 
@@ -216,7 +218,7 @@ app-data/
 
 parseSnapshot 校验 format、schemaVersion、主要记录字段、Cookie 数组、引用和重复 ID，再进入恢复确认。restoreSnapshot 拒绝在模拟运行/启动/停止状态下恢复；成功后替换环境、代理和内核数组，保留当前备份历史及活动容器。环境重置为 ready，代理密码清空、状态重置为 unchecked、延迟清空，seed 保持不变。
 
-当前更新内存后由 React effect 写入 localStorage，空间不足提示未持久保存，不能声称导入具有 SQLite 级事务保证。后续桌面版须先完成持久事务再发布成功；其完整记录/引用/摘要校验以以下真实备份要求为准。
+当前快照等旧页经 DemoAdapter compatibility 更新，localStorage 写入成功后才发布新状态；写入失败保留旧状态，仍不能声称具有 SQLite 级事务保证。后续桌面版须完成持久事务和目录一致性后发布成功；其完整记录/引用/摘要校验以以下真实备份要求为准。
 
 原型还保存上一次已读取/写入的存储文本用于检测跨标签页更新。存储已被其他页面改动时停止覆盖并要求重载。初始化遇到损坏原文时保留该文本，阻止自动写回，用户可导出诊断副本或明确重置；此原文导出不是可直接恢复的有效快照，不能更改其格式标识来绕过校验。
 
@@ -305,7 +307,7 @@ parseSnapshot 校验 format、schemaVersion、主要记录字段、Cookie 数组
 
 另外验证同名拒绝、about:blank 网址拒绝、运行中编辑拒绝、未保存抽屉关闭确认、无效 JSON/错误 schema 拒绝。批次验证覆盖每 25 条让出 UI、取消后保留实际创建数量、启动队列取消以及批量关闭不被旧队列重新启动。按模板复制检查原代理仍绑定、新 seed 不重复、示例 Cookie 为空；代理模拟失败开关关闭后可重检恢复；过期 Cookie 的时间不得被改成未来。
 
-存储验证覆盖损坏原文不被覆盖、阻断界面可导出原始记录及显式重置，以及跨标签页更新后旧页被阻断并要求重载。存储写入失败检查“尚未持久保存”反馈；当前内存与持久数据可能不同，不能按原型测试结果宣称生产级回滚已通过。生成器/档案历史回滚、批量复制、批量代理分配、选定环境备份和回收区仅在对应桌面阶段验收。
+存储验证覆盖损坏原文不被覆盖、阻断界面可导出原始记录及显式重置，以及跨标签页更新后旧页被阻断并要求重载。存储写入失败检查“本次修改未保存”反馈及旧状态不变，不能按原型测试结果宣称生产级回滚已通过。生成器/档案历史回滚、批量复制、批量代理分配、选定环境备份和回收区仅在对应桌面阶段验收。
 
 ## 13 公开仓库与资料引用
 
