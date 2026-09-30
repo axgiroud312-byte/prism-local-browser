@@ -1,11 +1,11 @@
 # Goal 当前执行位置
 
-更新时间：2026-09-30 18:35 Asia/Shanghai。
+更新时间：2026-09-30 18:58 Asia/Shanghai。
 
 - Goal：执行中；[规则](GOAL.md)；完成 **2/21**（验收任务计数）。
 - 当前任务：T03 / [Issue #4](https://github.com/axgiroud312-byte/prism-local-browser/issues/4)，进行中。
-- 当前步骤：0731de6的[run36702629951](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/36702629951)已通过Node22/24、23Go/vet、两安装包构建和WebView2准备，修复的PowerShell问题关闭。全新runner首次安装成功后快捷方式路径核对失败；只修验收脚本的物理DesktopDirectory取值和Windows路径规范化，保留文件/目标exe/实际启动全部断言，相关本机闭环验证中。
-- 现场：`goal/t03-windows-installer` / `0731de6`，host兼容修复已提交推送；本地仅此进度检查点未提交，总规格#1保留，无用户遗留改动。#4尚OPEN，正式仍2/21。
+- 当前步骤：54fe655的干净runner再次发现已保存快捷方式TargetPath为空；此前目录规范化没解决。已改为发布真实目标程序后由Go维护helper通过Windows COM创建链接，回读目标和永久工作目录后才集成注册；新鲜路径/Unicode/升级/占用回滚的独立PowerShell读回测试通过，相关desktopbase/vet通过（总24 Go）。只重建两个包并实际安装验收，随后推送必要修复。
+- 现场：`goal/t03-windows-installer` / `54fe655`；未提交为当前票快捷方式产品修复、回归和记录，所有改动均本Goal。#4尚OPEN，正式仍2/21。
 
 ## 任务状态
 
@@ -13,7 +13,7 @@
 | --- | --- | --- | --- |
 | T01 | #2 | 已完成 | 代码 `3b9b0fa`、记录 `afaeecb`、合入 `6cd681b`；[记录](verification/T01.md)；[PR #23](https://github.com/axgiroud312-byte/prism-local-browser/pull/23) |
 | T02 | #3 | 已完成 | 代码 `134dc66`、记录 `fc4aa47`、合入 `44517c5`；[记录](verification/T02.md)；[PR #24](https://github.com/axgiroud312-byte/prism-local-browser/pull/24)，最终 CI 全通过 |
-| T03 | #4 | 进行中 | [验收清单](verification/T03.md)，尚无安装包或安装验收 |
+| T03 | #4 | 进行中 | [验收清单](verification/T03.md)、[PR #25](https://github.com/axgiroud312-byte/prism-local-browser/pull/25)，本机闭环通过，干净runner快捷方式问题修复中 |
 | T04 | #5 | 待开始 | — |
 | T05 | #6 | 待开始 | — |
 | T06 | #7 | 待开始 | — |
@@ -70,12 +70,13 @@
 - 18:11–18:13：代码提交12e8286；干净树两个预览包构建通过，真实从两条.lnk分别打开预期安装exe，每版正常关闭重开，完整安装→升级→保留卸载→重装→显式删除再次通过。公开合成证据与安装包实际hash已落盘；NotSigned，不含内核。确认Go VERSIONINFO fixed0.3.0.0与可选字符串空，元数据脚本按实际fixed字段记录，helper版本资源null如实保留。
 - 18:23–18:27：[run36701706414](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/36701706414) Node22/24通过，desktop安装包构建失败。已读取失败日志定位Get-FileHash模块自动加载而非产品/数据库/UI失败；增加进程内本host原生模块路径优先的6入口共享bootstrap，模拟PS7-only PSModulePath的实际WinPS5验证Get-FileHash/Authenticode/Archive/Add-Type与NSIS缓存ZIP/hash/版本全部成功。仅相关脚本验证，未重复49JS全量；仍不计T03完成。
 - 18:32–18:35：最新CI打包/前提已通过，真实安装exit0，快捷方式目标比较失败（尚未进入应用UI操作）。检查改为Windows物理DesktopDirectory（不是虚拟shell Desktop）与GetFullPath规范化，添加真实文件存在性检查及不带私人路径的错误细节；没有改产品代码或放宽预期exe检查。正在只复跑相关安装/快捷方式闭环；没有本地49JS全量回归。
-- 当前阻塞：无已确认实施阻塞；干净用户实机方案尚待实际验证。安装/启动/升级/卸载均未验收，不关闭本票。
-- 下一步：接收PR #25的0731de6最新检查结果，核对headSha及实际干净用户UI/安装证据；成功后合入关闭#4，正式3/21后自动T04。无待完成代理；唯一后台为最新`gh pr checks 25 --watch`，未重复查询进度。
+- 18:44–18:58：[run36703818884](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/36703818884) Node22/24、Go与两包构建通过，默认首次安装exit0后链接文件存在但TargetPath空。先加失败回归，再改helper在publish成功后创建并回读Windows链接，取消安装前NSIS CreateShortcut；go-ole使用已有固定依赖/许可，没有引入新版本。物理目录修正保留，错误诊断不再对空路径调用Test-Path。独立PS实际读回两链接验证首次/升级及锁占用失败仍恢复旧链接/注册，desktopbase/vet通过；最终新包真实操作尚待。
+- 当前阻塞：无外部资源阻塞；仅当前票干净runner真实流程未通过，不关闭本票。
+- 下一步：提交产品修复，复用工具重建两个包并仅测实际安装闭环；推送一次必要修复CI，核对最新headSha/干净用户证据；成功后合入关闭#4，正式3/21后自动T04。无后台代理或命令。
 
 ## 恢复资源与 GitHub
 
 - 已有其他 Node/Chrome 进程属于用户现场，不停止。已核对 5173 为本仓库旧 Vite 服务；4173 未监听（纠正初查格式误判）。本 Goal 尚未启动服务，UI 测试用独立端口 5183 和新浏览器上下文。
 - `output/`、`.playwright-cli/`、`dist/`、`node_modules/` 为现有忽略目录；不删除旧成果。新测试输出使用 `output/goal/`，仅保留合成证据。
 - `npx playwright install chromium` 已成功安装本票测试浏览器（仅前端检查，不是 fingerprint-chromium）。测试使用 5183，由 Playwright 启停独立 Vite，首次测试已退出；旧 5173 不动。Serena 本机索引 `.serena/` 已忽略。
-- GitHub：T01/T02 代码、PR、验收评论/勾选/关闭均已同步。T03 开始记录待提交；#1 不关闭。当前无后台代理或命令需要等待。
+- GitHub：T01/T02 已完成同步；T03 PR #25开放、#4未关闭；#1不关闭。当前无后台代理或命令需要等待。

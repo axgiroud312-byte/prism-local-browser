@@ -195,27 +195,23 @@ func publishIntegration(source, root, version string, shortcuts []string, keyPat
 			result = errors.Join(failures...)
 		}
 	}()
-	newFiles := [][]byte{}
-	for _, name := range []string{"desktop.lnk", "startmenu.lnk"} {
-		bytes, err := os.ReadFile(filepath.Join(source, name))
-		if err != nil {
-			return err
-		}
-		newFiles = append(newFiles, bytes)
-	}
-	if len(shortcuts) != len(newFiles) {
+	if len(shortcuts) != 2 {
 		return errors.New("快捷方式清单无效")
 	}
 	started = true
 	if err = publish(); err != nil {
 		return err
 	}
-	for i, path := range shortcuts {
-		if err = replaceFile(path, newFiles[i]); err != nil {
+	executable := filepath.Join(root, "versions", version, "prism-browser.exe")
+	newLink, err := shortcutBytes(source, executable)
+	if err != nil {
+		return err
+	}
+	for _, path := range shortcuts {
+		if err = replaceFile(path, newLink); err != nil {
 			return err
 		}
 	}
-	executable := filepath.Join(root, "versions", version, "prism-browser.exe")
 	values := map[string]string{"DisplayName": "棱镜浏览器 · 开发预览", "DisplayVersion": version, "NumericVersion": "0.3.0." + strings.TrimPrefix(version, "0.3.0-preview."), "InstallLocation": root, "DisplayIcon": executable, "UninstallString": fmt.Sprintf(`"%s"`, filepath.Join(root, "uninstall.exe")), "QuietUninstallString": fmt.Sprintf(`"%s" /S`, filepath.Join(root, "uninstall.exe"))}
 	for _, name := range stringValues {
 		if err = key.SetStringValue(name, values[name]); err != nil {

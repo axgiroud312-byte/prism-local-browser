@@ -184,3 +184,55 @@ func TestIntegrationRollbackKeepsRealRegistryAndShortcutBytes(t *testing.T) {
 	}
 	assertFile(t, uninstaller, "old uninstaller")
 }
+
+func TestIntegrationBuildsShortcutsAfterPublishingTarget(t *testing.T) {
+	keyPath := `Software\PrismBrowserTests\` + uuid.NewString()
+	t.Cleanup(func() { registry.DeleteKey(registry.CURRENT_USER, keyPath) })
+	root := filepath.Join(t.TempDir(), "合成程序 with spaces")
+	shortcuts := []string{filepath.Join(t.TempDir(), "合成桌面.lnk"), filepath.Join(t.TempDir(), "合成开始菜单.lnk")}
+	publish := func(version string) error {
+		source := payloadFixture(t, version)
+		// On a fresh user, neither the installed target nor a prebuilt link exists.
+		os.Remove(filepath.Join(source, "desktop.lnk"))
+		os.Remove(filepath.Join(source, "startmenu.lnk"))
+		return publishIntegration(source, root, version, shortcuts, keyPath, func() error { return publishProgram(source, root) })
+	}
+	assertShortcuts := func(version string) {
+		t.Helper()
+		for _, path := range shortcuts {
+			command := exec.Command("powershell.exe", "-NoProfile", "-NonInteractive", "-Command", `$ErrorActionPreference='Stop'; $link=(New-Object -ComObject WScript.Shell).CreateShortcut($env:PRISM_TEST_LINK); if(!$link.TargetPath -or [IO.Path]::GetFullPath($link.TargetPath) -ne $env:PRISM_TEST_TARGET -or $link.WorkingDirectory -ne [IO.Path]::GetDirectoryName($env:PRISM_TEST_TARGET)){throw 'Published shortcut has incorrect target/working directory.'}`)
+			command.Env = append(os.Environ(), "PRISM_TEST_LINK="+path, "PRISM_TEST_TARGET="+filepath.Join(root, "versions", version, "prism-browser.exe"))
+			if output, err := command.CombinedOutput(); err != nil {
+				t.Fatalf("independent shortcut readback failed: %v %s", err, output)
+			}
+		}
+	}
+	if err := publish("0.3.0-preview.1"); err != nil {
+		t.Fatal(err)
+	}
+	assertShortcuts("0.3.0-preview.1")
+	p, _ := windows.UTF16PtrFromString(shortcuts[1])
+	h, err := windows.CreateFile(p, windows.GENERIC_READ, windows.FILE_SHARE_READ, nil, windows.OPEN_EXISTING, 0, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = publish("0.3.0-preview.2")
+	windows.CloseHandle(h)
+	if err == nil {
+		t.Fatal("locked shortcut installation reported success")
+	}
+	assertShortcuts("0.3.0-preview.1")
+	key, err := registry.OpenKey(registry.CURRENT_USER, keyPath, registry.QUERY_VALUE)
+	if err != nil {
+		t.Fatal(err)
+	}
+	version, _, err := key.GetStringValue("DisplayVersion")
+	key.Close()
+	if err != nil || version != "0.3.0-preview.1" {
+		t.Fatal("failed upgrade did not restore registered version")
+	}
+	if err = publish("0.3.0-preview.2"); err != nil {
+		t.Fatal(err)
+	}
+	assertShortcuts("0.3.0-preview.2")
+}

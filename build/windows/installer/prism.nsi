@@ -38,7 +38,6 @@ UninstPage custom un.DataPage un.DataPageLeave
 Var MaintenanceLock
 Var RemoveData
 Var RemoveCheckbox
-Var VersionDirectory
 
 !macro Fail CODE TEXT
   MessageBox MB_OK|MB_ICONSTOP "${TEXT}" /SD IDOK
@@ -97,7 +96,6 @@ FunctionEnd
 Section "Install"
   ; Stage only in the installer's private temporary directory. The narrow Go helper
   ; pins real known-folder paths, verifies every payload hash and publishes integration.
-  StrCpy $VersionDirectory "$INSTDIR\versions\${RELEASE_VERSION}"
   SetOutPath "$PLUGINSDIR"
   ClearErrors
   File "${PAYLOAD_DIR}\prism-browser.exe"
@@ -113,8 +111,6 @@ Section "Install"
   ${EndIf}
   ClearErrors
   WriteUninstaller "$PLUGINSDIR\uninstall.exe"
-  CreateShortcut /NoWorkingDir "$PLUGINSDIR\desktop.lnk" "$VersionDirectory\prism-browser.exe"
-  CreateShortcut /NoWorkingDir "$PLUGINSDIR\startmenu.lnk" "$VersionDirectory\prism-browser.exe"
   ${If} ${Errors}
     !insertmacro Fail 26 "安装入口暂存失败，安装未完成。旧版本、快捷方式与用户数据未修改。"
   ${EndIf}
