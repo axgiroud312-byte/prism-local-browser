@@ -153,6 +153,10 @@ export interface ApplicationService {
   selectBackupDestination?(): Promise<ApplicationResult<{ status: "selected" | "cancelled"; destinationToken?: string; name?: string }>>;
   exportBackup?(request: NativeBackupExportRequest): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
   getPendingBackupExport?(): NativeBackupPending | undefined;
+  selectRestoreSource?(): Promise<ApplicationResult<{ status: "selected" | "cancelled"; sourceToken?: string; name?: string }>>;
+  previewRestore?(sourceToken: string): Promise<ApplicationResult<NativeRestorePreview>>;
+  readRestorePage?(request: { previewId: string; offset: number; pageSize: number }): Promise<ApplicationResult<NativeRestorePage>>;
+  discardRestore?(previewId: string, sourceToken: string): Promise<ApplicationResult<{ status: "discarded" }>>;
   commitBatch?(request: { planId: string; requestId: string }): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
   retryBatch?(request: { operationId: string; requestId: string }): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
   queryEnvironments?(request: NativeEnvironmentQuery): Promise<ApplicationResult<WorkspaceView>>;
@@ -160,6 +164,18 @@ export interface ApplicationService {
 
 export interface NativeBackupExportRequest {
   scope: "all" | "selected"; environmentIds: string[]; destinationToken: string; stopRunning: boolean; requestId: string;
+}
+export interface NativeRestorePreview {
+  mode: "native"; previewId: string; format: "prism-local-backup"; name: string;
+  archiveSha256: string; manifestSha256: string; scope: "all" | "selected"; createdAt: string; expiresAt: string;
+  environmentCount: number; addCount: number; overwriteCount: number; conflictCount: number; missingKernelCount: number; credentialReentryCount: number;
+  bytes: number; canRestore: boolean;
+  kernels: { id: string; version: string; archiveSha256: string; executableSha256: string; localId: string; state: "pending" | "missing" | "unavailable" | "verified-bytes"; required: boolean }[];
+  credentials: { proxyId: string; state: "none" | "available-current-user" | "reentry-required" }[];
+}
+export interface NativeRestorePage {
+  mode: "native"; previewId: string; offset: number; total: number;
+  items: { id: string; name: string; seed: string; action: "add" | "overwrite"; currentRevision: number; backupRevision: number; dataState: "present" | "never-initialized"; busy: boolean; conflicts: string[] }[];
 }
 export interface NativeBackupReport {
   requestId: string;

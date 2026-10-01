@@ -111,6 +111,12 @@ UX-001、DOC-001 的发布入口在 [安装器](../build/windows/installer/prism
 - ENV-001、UX-001：[`服务端列表分页`](../internal/workspace/environment_query.go)与[`native批次对话框`](../src/components/NativeBatchDialog.tsx)，统计/筛选来自实际服务、档案/ref/session随一页加载；[`旧尝试明细`](../internal/workspace/batch_history.go)只用原事件和此前完成项，不混后来成功。按plan/op/offset/选择代次处理迟到结果、终态后读最终页、modal键盘保护；跨页启动每个明确ID重新读真实策略/修订，缺失不作直连。
 - 16服务/3目录/6adapter回归源码仅编写未执行，Go测试包未编译；真实规模/目录/取消重开/分页/新UI尚未验收，源码与静态核对不代表通过，[清单](verification/T13.md)。
 
+### T16 恢复只读预检（源码已完成，未执行验收）
+
+- BKP-001：[`严格包读取`](../internal/backup/read.go)、[`配置校验`](../internal/workspace/restore_configuration.go)与[`预览`](../internal/workspace/restore_preview.go)；独立分发避免待写日志flush，固定选包/完整摘要/可信schema与记录闭包，当前数据库及浏览目录只读。
+- CORE-001、FP-001、PRX-001：原ID/seed与历史、冲突/覆盖影响、同精确hash内核映射与只读文件核对、当前用户凭据可用性；不生成新身份、不运行内核或网络。
+- UX-001：[`NativeRestoreManager`](../src/components/NativeRestoreManager.tsx)专用预检与分页、取消、摘要/过期/凭据和内核提示；demo/native分离；正式恢复接续T17。[检查与待验收](verification/T16.md)。
+
 ### T15 完整本机导出（本地已实现待验收）
 
 - BKP-001、DATA-001：[`受理/正常停止/worker`](../internal/workspace/backup_worker.go)，范围来自all全库或所选明确ID，owner预约阻重新Start，不把正常Stop受理当完成，不升级强制结束。schema7发布journal、取消/存储pending和重开不重复副作用；已有proxy启动门禁不变。

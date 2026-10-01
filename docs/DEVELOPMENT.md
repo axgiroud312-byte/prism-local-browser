@@ -343,6 +343,14 @@ parseSnapshot 校验 format、schemaVersion、主要记录字段、Cookie 数组
 
 ### 原子替换与崩溃恢复
 
+#### T16只读预检增量（源码已完成，未运行验收）
+
+`Backup.SelectRestoreSource`经host选择器返回短期token；`Backup.PreviewRestore({sourceToken})`只读验证原生包，返回短期previewId/包与清单摘要/安全统计/精确内核及凭据范围。`Backup.ReadRestorePage({previewId,offset,pageSize})`最多100条影响，`Backup.DiscardRestore({previewId,sourceToken})`取消指定读取/丢弃预览。它们在所有持久任务flush之前分发，不调用Workspace.Read或Kernel.Verify，不停止会话。私有暂存仅配置副本，当前app.db及浏览数据不写入。
+
+native v1/schema7未知字段、重复/大小写JSON键、缺少必需字段/null及不支持版本严格拒绝；ZIP逐字节流式核对CRC/SHA/长度和清单闭包，路径/链接/父子冲突拒绝。清单32MiB、配置256MiB、元数据50万项上限是解析资源边界，超限准确拒绝，非环境保存配额。可信schema在独立内存库生成比对，不执行包提供的DDL；全部当前/历史档案与密文引用校验。完整影响绑定当前配置基线，提交前必须重验，详见[T16](verification/T16.md)。
+
+原ID/seed/参数保留；同版本、架构、archive/executable/full file hashes及能力相符的本机精确内核可映射内部ID，pending不补造证据。只读文件/PE核对不是实际新会话探测。代理原ref+DPAPI解密仅短期内存，不可用报告重输，不称跨Windows用户/机器登录便携。
+
 文件目录替换与 SQLite 事务不能组成一个天然的整体原子操作，使用维护锁、同卷目录切换和持久操作日志实现可恢复一致性：
 
 | 阶段          | 持久记录                             | 操作                                                               | 失败后处理                                         |

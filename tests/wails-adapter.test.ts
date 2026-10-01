@@ -9,7 +9,7 @@ import { currentCookieOperation } from "../src/application/cookie-import.ts";
 import { mergeBatchPage, validBatchPage, validBatchReport } from "../src/application/batch-model.ts";
 import { readRuntimeStartPlan } from "../src/application/runtime-start-plan.ts";
 import { confirmsBackupRequest, validBackupReport } from "../src/application/backup-model.ts";
-import type { NativeBackupReport, NativeBackupExportRequest } from "../src/application/contract.ts";
+import type { NativeBackupReport, NativeBackupExportRequest, NativeRestorePreview } from "../src/application/contract.ts";
 
 const empty = (): WorkspaceView => ({ mode: "native", state: { schemaVersion: 1, environments: [], proxies: [], kernels: [], backups: [], activities: [] } });
 const ok = <T>(data: T): ApplicationResult<T> => ({ ok: true, mode: "native", data });
@@ -28,6 +28,27 @@ const operation: Operation = { id: "synthetic-operation", kind: "create", state:
 
 const syntheticBatchReport = (): NativeBatchReport => ({ mode: "native", planId: "synthetic-batch-plan", kind: "create", total: 3, completedCount: 1, failedCount: 0, notExecutedCount: 2, attemptCompletedCount: 1, sharedProxyAssignments: 0, directAssignments: 3, sequence: 4 });
 const syntheticBackupReport = (): NativeBackupReport => ({ requestId: "synthetic-backup-request", mode: "native", format: "prism-local-backup", schemaVersion: 1, scope: "selected", environmentCount: 2, copiedEnvironmentCount: 0, fileCount: 0, byteCount: 0, sequence: 1, published: false, name: "synthetic.prismbackup", credentials: "windows-current-user-dpapi", browserData: "sensitive-same-user-not-portable", kernelBinariesIncluded: false });
+
+const restorePreview = (): NativeRestorePreview => ({ mode: "native", previewId: "synthetic-preview", format: "prism-local-backup", name: "synthetic.prismbackup", archiveSha256: "a".repeat(64), manifestSha256: "b".repeat(64), scope: "selected", createdAt: "2026-10-01T00:00:00Z", expiresAt: "2026-10-01T00:30:00Z", environmentCount: 1, addCount: 1, overwriteCount: 0, conflictCount: 0, missingKernelCount: 0, credentialReentryCount: 0, bytes: 100, canRestore: true, kernels: [], credentials: [] });
+
+test("restore preflight never refreshes/flushed workspace and sends only host source token", async () => {
+  const { app, calls } = fixture(() => ok(restorePreview()));
+  const result = await app.previewRestore("synthetic-source-token");
+  assert.equal(result.ok, true);
+  assert.deepEqual(calls, [{ mode: "native", method: "Backup.PreviewRestore", payload: { sourceToken: "synthetic-source-token" } }]);
+});
+test("restore refuses demo previews and inconsistent eligibility without claiming restore success", async () => {
+  for (const preview of [{ ...restorePreview(), mode: "demo" }, { ...restorePreview(), archiveSha256: "" }, { ...restorePreview(), conflictCount: 1 }, { ...restorePreview(), overwriteCount: 2 }]) {
+    const { app } = fixture(() => ok(preview));
+    assert.equal((await app.previewRestore("synthetic-token")).ok, false);
+  }
+});
+test("restore page projects pagination and rejects another preview identity", async () => {
+  const { app, calls } = fixture(() => ok({ mode: "native", previewId: "wrong-preview", offset: 0, total: 0, items: [] }));
+  const result = await app.readRestorePage({ previewId: "synthetic-preview", offset: 0, pageSize: 25, path: "C:/SYNTHETIC_PRIVATE" } as unknown as Parameters<WailsAdapter["readRestorePage"]>[0]);
+  assert.equal(result.ok, false);
+  assert.deepEqual(calls[0].payload, { previewId: "synthetic-preview", offset: 0, pageSize: 25 });
+});
 
 test("backup export only projects frozen IDs and host token, never paths or Cookie bytes", async () => {
   const { app, calls } = fixture(request => request.method === "Workspace.Read" ? ok(empty()) : rejected);

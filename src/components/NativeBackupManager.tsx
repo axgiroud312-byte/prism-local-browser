@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { LoaderCircle } from "lucide-react";
 import { mergeOperation, operationIsTerminal, type ApplicationService, type NativeBackupExportRequest, type Operation, type WorkspaceView } from "../application/contract";
 import { confirmsBackupRequest } from "../application/backup-model";
+import { NativeRestoreManager } from "./NativeRestoreManager";
 import "./native-proxy.css";
 
 const stages: Record<string, string> = { accepted: "等待调度", "stopping-environments": "正常关闭所选会话", "configuration-snapshot": "生成一致配置快照", "copying-browser-data": "复制真实浏览数据", "verifying-package": "完整读回核对文件摘要", publishing: "发布已核对备份", completed: "已发布完整备份", interrupted: "应用退出中断，未自动重做", "storage-pending": "观测待保存，不重复复制", "acceptance-pending": "受理结果待核实，不重复导出" };
@@ -109,6 +110,6 @@ export function NativeBackupManager({ application, workspace, selectedIds }: { a
     {(workspace.nativeBackups ?? []).map(record => <p key={record.id}>{record.name} · {record.environmentCount} 个环境 · {record.createdAt}<button className="button" disabled={busy || inFlight.current} onClick={() => { void read(record.operationId); }}>读取该任务</button></p>)}
     <h3>导出任务（包括取消和失败）</h3>
     {records.map(record => <p key={record.id}>{record.backupReport?.name} · {record.state}<button className="button" disabled={busy || inFlight.current} onClick={() => { void read(record.id); }}>查看保存结果</button></p>)}
-    <p>恢复预检与正式恢复仍待后续任务；此页不会接收原型 JSON 或覆盖现有工作区。</p>
+    <NativeRestoreManager application={application} />
   </section>;
 }

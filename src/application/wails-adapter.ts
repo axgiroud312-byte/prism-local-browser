@@ -5,7 +5,7 @@ import type {
   GenerateFingerprintRequest, CommitFingerprintRequest, ProfileRevision, RuntimeSession,
   ProxyConfiguration, ProxyImportPreview, ProxyUpdateRequest, ProxyTargetRequest, NativeProxy,
   CookieCommitRequest, CookieImportPreview, RuntimeStartRequest,
-  NativeBatchPreviewRequest, NativeBatchPage, NativeEnvironmentQuery, NativeBackupExportRequest, NativeBackupPending,
+  NativeBatchPreviewRequest, NativeBatchPage, NativeEnvironmentQuery, NativeBackupExportRequest, NativeBackupPending, NativeRestorePreview, NativeRestorePage,
 } from "./contract.ts";
 import { mergeOperation, operationIsTerminal } from "./contract.ts";
 import { validBatchPage, validBatchReport } from "./batch-model.ts";
@@ -225,6 +225,21 @@ export class WailsAdapter implements ApplicationService {
   commitBatch(request: { planId: string; requestId: string }) { return this.batchMutation("Batch.Commit", { planId: request.planId, requestId: request.requestId }, request.planId); }
   retryBatch(request: { operationId: string; requestId: string }) { return this.batchMutation("Batch.Retry", { operationId: request.operationId, requestId: request.requestId }); }
   selectBackupDestination() { return this.invoke<{ status: "selected" | "cancelled"; destinationToken?: string; name?: string }>("Backup.SelectDestination", {}); }
+  selectRestoreSource() { return this.invoke<{ status: "selected" | "cancelled"; sourceToken?: string; name?: string }>("Backup.SelectRestoreSource", {}); }
+  discardRestore(previewId: string, sourceToken: string) { return this.invoke<{ status: "discarded" }>("Backup.DiscardRestore", { previewId, sourceToken }); }
+  async previewRestore(sourceToken: string): Promise<ApplicationResult<NativeRestorePreview>> {
+    const result = await this.invoke<NativeRestorePreview>("Backup.PreviewRestore", { sourceToken });
+    if (result.ok) {
+      const p = result.data, hash = /^[0-9a-f]{64}$/;
+      if (p.mode !== "native" || p.format !== "prism-local-backup" || !p.previewId || !hash.test(p.archiveSha256) || !hash.test(p.manifestSha256) || ![p.environmentCount, p.addCount, p.overwriteCount, p.conflictCount, p.missingKernelCount, p.credentialReentryCount, p.bytes].every(n => Number.isSafeInteger(n) && n >= 0) || p.addCount + p.overwriteCount !== p.environmentCount || p.canRestore !== (p.conflictCount === 0 && p.missingKernelCount === 0) || !Array.isArray(p.kernels) || !Array.isArray(p.credentials)) return { ok: false, mode: "native", error: { code: "BACKUP_INVALID", message: "恢复预览格式或统计无法核对；没有接入演示数据。", retryable: false } };
+    }
+    return result; // No refresh: read-only preflight must not flush pending writes.
+  }
+  async readRestorePage(request: { previewId: string; offset: number; pageSize: number }): Promise<ApplicationResult<NativeRestorePage>> {
+    const result = await this.invoke<NativeRestorePage>("Backup.ReadRestorePage", { previewId: request.previewId, offset: request.offset, pageSize: request.pageSize });
+    if (result.ok && (result.data.mode !== "native" || result.data.previewId !== request.previewId || result.data.offset !== request.offset || !Number.isSafeInteger(result.data.total) || result.data.total < 0 || !Array.isArray(result.data.items) || result.data.items.length > request.pageSize || result.data.offset + result.data.items.length > result.data.total)) return { ok: false, mode: "native", error: { code: "BACKUP_INVALID", message: "分页结果不属于当前恢复预览，已拒绝使用。", retryable: false } };
+    return result;
+  }
   getPendingBackupExport(): NativeBackupPending | undefined { return this.pendingBackup ? { ...this.pendingBackup, request: { ...this.pendingBackup.request, environmentIds: [...this.pendingBackup.request.environmentIds] } } : undefined; }
   private confirmPendingBackup(operation: Operation) {
     if (confirmsBackupRequest(operation, this.pendingBackup?.request)) this.pendingBackup = undefined;

@@ -45,6 +45,7 @@ type Options struct {
 	OpenProxyChannel        func(proxy.Configuration, *proxy.Credentials, proxy.BridgeOptions) (RuntimeProxyChannel, error)
 	PrepareBatchDirectory   func(BatchDirectoryInput) (BatchDirectoryLease, error)
 	ChooseBackupDestination func() (string, error)
+	ChooseBackupSource      func() (string, error)
 	AppVersion              string
 }
 type draft struct {
@@ -90,6 +91,10 @@ type Service struct {
 	backupTasks        map[string]*backupTask
 	backupUses         map[string]*backupTask
 	backupGate         chan struct{}
+	restoreSources     map[string]restoreSource
+	restorePreview     *restoreDraft
+	restorePreflight   *restorePreflight
+	restoreScratch     string
 }
 
 func failure(code, message string, retryable bool) Result {
@@ -145,6 +150,7 @@ func Open(root string, options Options) (*Service, error) {
 	s.batchTasks, s.batchUses, s.batchGate = map[string]*batchTask{}, map[string]*batchTask{}, make(chan struct{}, 1)
 	s.batchAcceptances = map[string]*batchAcceptance{}
 	s.backupDestinations, s.backupTasks, s.backupUses, s.backupGate = map[string]backupDestination{}, map[string]*backupTask{}, map[string]*backupTask{}, make(chan struct{}, 1)
+	s.restoreSources = map[string]restoreSource{}
 	if err = s.initialize(); err != nil {
 		db.Close()
 		return nil, err
@@ -199,6 +205,10 @@ func (s *Service) CloseContext(ctx context.Context) error {
 func (s *Service) beginShutdown() {
 	s.mu.Lock()
 	s.closed = true
+	if s.restorePreflight != nil {
+		s.restorePreflight.cancel()
+	}
+	s.restorePreview = nil
 	if s.kernelTask != nil {
 		s.kernelTask.cancel()
 	}
@@ -456,6 +466,10 @@ func (s *Service) Call(request Request) Result {
 			return failure("VALIDATION_FAILED", "归档必须由桌面文件选择器选择，不接受客户端路径。", false)
 		}
 		return s.selectKernelArchive()
+	}
+	// Read-only preflight must bypass all recovery/persistence flush dispatch.
+	if request.Method == "Backup.SelectRestoreSource" || request.Method == "Backup.PreviewRestore" || request.Method == "Backup.ReadRestorePage" || request.Method == "Backup.DiscardRestore" {
+		return s.restorePreviewCall(request)
 	}
 	if request.Method == "Cookie.ParseImport" {
 		return s.parseCookieImport(request.Payload)

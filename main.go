@@ -78,6 +78,11 @@ func main() {
 			return "", errors.New("desktop not ready")
 		}
 		return wailsruntime.OpenFileDialog(desktopContext, wailsruntime.OpenDialogOptions{Title: "选择可信 fingerprint-chromium ZIP", Filters: []wailsruntime.FileFilter{{DisplayName: "Windows内核ZIP", Pattern: "*.zip"}}})
+	}, ChooseBackupSource: func() (string, error) {
+		if desktopContext == nil {
+			return "", errors.New("desktop not ready")
+		}
+		return wailsruntime.OpenFileDialog(desktopContext, wailsruntime.OpenDialogOptions{Title: "选择完整本机备份（先只读预检）", Filters: []wailsruntime.FileFilter{{DisplayName: "完整本机备份", Pattern: "*.prismbackup"}}})
 	}, ChooseBackupDestination: func() (string, error) {
 		if desktopContext == nil {
 			return "", errors.New("desktop not ready")
