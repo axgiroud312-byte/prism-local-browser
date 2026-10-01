@@ -8,6 +8,8 @@ import { proxyResolutionLabel, proxyStageLabel } from "../src/application/proxy-
 import { currentCookieOperation } from "../src/application/cookie-import.ts";
 import { mergeBatchPage, validBatchPage, validBatchReport } from "../src/application/batch-model.ts";
 import { readRuntimeStartPlan } from "../src/application/runtime-start-plan.ts";
+import { confirmsBackupRequest, validBackupReport } from "../src/application/backup-model.ts";
+import type { NativeBackupReport, NativeBackupExportRequest } from "../src/application/contract.ts";
 
 const empty = (): WorkspaceView => ({ mode: "native", state: { schemaVersion: 1, environments: [], proxies: [], kernels: [], backups: [], activities: [] } });
 const ok = <T>(data: T): ApplicationResult<T> => ({ ok: true, mode: "native", data });
@@ -25,6 +27,111 @@ const environment: Environment = {
 const operation: Operation = { id: "synthetic-operation", kind: "create", state: "completed", total: 1, completedIds: [environment.id], cancelRequested: false };
 
 const syntheticBatchReport = (): NativeBatchReport => ({ mode: "native", planId: "synthetic-batch-plan", kind: "create", total: 3, completedCount: 1, failedCount: 0, notExecutedCount: 2, attemptCompletedCount: 1, sharedProxyAssignments: 0, directAssignments: 3, sequence: 4 });
+const syntheticBackupReport = (): NativeBackupReport => ({ requestId: "synthetic-backup-request", mode: "native", format: "prism-local-backup", schemaVersion: 1, scope: "selected", environmentCount: 2, copiedEnvironmentCount: 0, fileCount: 0, byteCount: 0, sequence: 1, published: false, name: "synthetic.prismbackup", credentials: "windows-current-user-dpapi", browserData: "sensitive-same-user-not-portable", kernelBinariesIncluded: false });
+
+test("backup export only projects frozen IDs and host token, never paths or Cookie bytes", async () => {
+  const { app, calls } = fixture(request => request.method === "Workspace.Read" ? ok(empty()) : rejected);
+  await app.exportBackup({ scope: "selected", environmentIds: ["selected-A", "selected-B"], destinationToken: "synthetic-host-token", requestId: "synthetic-backup-request", stopRunning: true, path: "C:/SYNTHETIC_PRIVATE", cookies: [{ value: "SYNTHETIC_BACKUP_SECRET" }] } as unknown as NativeBackupExportRequest);
+  const payload = calls.find(request => request.method === "Backup.Export")?.payload;
+  assert.deepEqual(payload, { scope: "selected", environmentIds: ["selected-A", "selected-B"], destinationToken: "synthetic-host-token", requestId: "synthetic-backup-request", stopRunning: true });
+  assert.equal(JSON.stringify(payload).includes("SYNTHETIC_BACKUP_SECRET"), false);
+});
+
+test("backup operation cannot declare completed without confirmed publication and exact hashes", async () => {
+  const report = syntheticBackupReport();
+  assert.equal(validBackupReport({ ...report, published: true }), false);
+  assert.equal(validBackupReport({ ...report, name: "C:/synthetic.prismbackup" }), false);
+  const { app } = fixture(() => ok({ ...operation, id: "synthetic-backup", kind: "backup-export", total: 2, backupReport: report }));
+  assert.equal((await app.getOperation("synthetic-backup")).ok, false);
+});
+
+test("backup refresh and late cancellation keep monotonic progress and original published result", async () => {
+  const report = { ...syntheticBackupReport(), sequence: 9, copiedEnvironmentCount: 2, published: true, archiveSha256: "a".repeat(64), manifestSha256: "b".repeat(64) };
+  const completed: Operation = { ...operation, id: "synthetic-backup", kind: "backup-export", total: 2, completedIds: [], backupReport: report };
+  const stale: Operation = { ...completed, state: "running", backupReport: { ...syntheticBackupReport(), sequence: 5 } };
+  const { app } = fixture(request => request.method === "Workspace.Read" ? ok({ ...empty(), backupOperations: [completed] }) : ok(stale));
+  await app.refresh();
+  const response = await app.cancelOperation(completed.id);
+  assert.equal(response.ok && response.data.state, "completed");
+  assert.equal(response.ok && response.data.backupReport?.published, true);
+  assert.equal(mergeOperation(completed, stale), completed);
+});
+
+test("uncertain backup request survives unrelated history reads and exposes immutable retry input", async () => {
+  const request: NativeBackupExportRequest = { scope: "selected", environmentIds: ["selected-A"], destinationToken: "synthetic-token", stopRunning: true, requestId: "synthetic-original-request" };
+  const other: Operation = { ...operation, id: "synthetic-history", kind: "backup-export", state: "failed", total: 2, backupReport: syntheticBackupReport() };
+  const { app, calls } = fixture(call => call.method === "Workspace.Read" ? ok(empty()) : call.method === "Operation.Read" ? ok(other) : rejected);
+  await app.exportBackup(request);
+  const recovered = app.getPendingBackupExport();
+  assert.deepEqual(recovered?.request, request);
+  recovered?.request.environmentIds.push("mutated-ui-copy");
+  assert.deepEqual(app.getPendingBackupExport()?.request.environmentIds, ["selected-A"]);
+  await app.getOperation(other.id);
+  assert.equal(app.getPendingBackupExport()?.request.requestId, request.requestId);
+  const before = calls.filter(call => call.method === "Backup.Export").length;
+  assert.equal((await app.exportBackup({ ...request, requestId: "new-request" })).ok, false);
+  assert.equal(calls.filter(call => call.method === "Backup.Export").length, before);
+});
+
+test("backup accepted-but-unverified response retains original request and known operation ID", async () => {
+  const request: NativeBackupExportRequest = { scope: "selected", environmentIds: ["selected-A"], destinationToken: "synthetic-token", stopRunning: true, requestId: "synthetic-backup-request" };
+  const invalid: Operation = { ...operation, id: "synthetic-known-backup", kind: "backup-export", state: "accepted", total: 2, backupReport: { ...syntheticBackupReport(), format: "prism-prototype" } as unknown as NativeBackupReport };
+  const { app } = fixture(call => call.method === "Workspace.Read" ? ok(empty()) : ok({ status: "accepted", operation: invalid }));
+  const result = await app.exportBackup(request);
+  assert.equal(result.ok, false);
+  assert.equal(result.operationId, invalid.id);
+  assert.equal(app.getPendingBackupExport()?.operationId, invalid.id);
+  assert.equal(app.getPendingBackupExport()?.request.requestId, request.requestId);
+});
+
+test("backup refresh can recover actual original acceptance after a lost IPC response", async () => {
+  const request: NativeBackupExportRequest = { scope: "selected", environmentIds: ["selected-A"], destinationToken: "synthetic-token", stopRunning: true, requestId: "synthetic-backup-request" };
+  const actual: Operation = { ...operation, id: "synthetic-confirmed-backup", kind: "backup-export", state: "running", total: 2, backupReport: syntheticBackupReport() };
+  const { app } = fixture(call => call.method === "Workspace.Read" ? ok({ ...empty(), backupOperations: [actual] }) : rejected);
+  const result = await app.exportBackup(request);
+  assert.equal(result.ok && result.data.operation.id, actual.id);
+  assert.equal(app.getPendingBackupExport(), undefined);
+});
+test("late accepted and refused replies for an older export never edit the newer pending request", async () => {
+  const a: NativeBackupExportRequest = { scope: "selected", environmentIds: ["A1", "A2"], destinationToken: "token-A", stopRunning: true, requestId: "request-A" };
+  const b: NativeBackupExportRequest = { ...a, environmentIds: ["B1", "B2"], destinationToken: "token-B", requestId: "request-B" };
+  const accepted: Operation = { ...operation, id: "operation-A", kind: "backup-export", state: "accepted", total: 2, backupReport: { ...syntheticBackupReport(), requestId: a.requestId } };
+  const replies: ((response: ApplicationResult<unknown>) => void)[] = [];
+  const { app } = fixture(call => call.method === "Backup.Export" ? new Promise(resolve => replies.push(resolve)) : call.method === "Operation.Read" ? ok(accepted) : ok(empty()));
+  const old = app.exportBackup(a), retry = app.exportBackup(a);
+  await app.getOperation(accepted.id);
+  const next = app.exportBackup(b);
+  replies[0](ok({ status: "accepted", operation: accepted })); await old;
+  assert.deepEqual(app.getPendingBackupExport()?.request, b);
+  assert.equal(app.getPendingBackupExport()?.operationId, undefined);
+  replies[1]({ ok: false, mode: "native", error: { code: "PROFILE_BUSY", message: "合成旧拒绝", retryable: true } }); await retry;
+  assert.deepEqual(app.getPendingBackupExport()?.request, b);
+  replies[2](rejected); await next;
+  assert.equal(app.getPendingBackupExport()?.request.requestId, b.requestId);
+});
+
+test("a mode-invalid export is unknown, and a native refresh can still confirm its actual acceptance", async () => {
+  const request: NativeBackupExportRequest = { scope: "selected", environmentIds: ["A1", "A2"], destinationToken: "synthetic-token", stopRunning: true, requestId: "synthetic-backup-request" };
+  const actual: Operation = { ...operation, id: "operation-native", kind: "backup-export", state: "running", total: 2, backupReport: syntheticBackupReport() };
+  let known = false;
+  const { app } = fixture(call => call.method === "Workspace.Read" ? ok(known ? { ...empty(), backupOperations: [actual] } : empty()) : { ok: true, mode: "demo", data: { status: "accepted", operation: actual } });
+  const unknown = await app.exportBackup(request);
+  assert.ok(!unknown.ok && unknown.error.code === "BACKUP_RESULT_UNCONFIRMED");
+  assert.deepEqual(app.getPendingBackupExport()?.request, request);
+  known = true;
+  const confirmed = await app.exportBackup(request);
+  assert.equal(confirmed.ok && confirmed.data.operation.id, actual.id);
+  assert.equal(app.getPendingBackupExport(), undefined);
+});
+
+test("only an exact verified backup request observation consumes its old output authorization", () => {
+  const request: NativeBackupExportRequest = { scope: "selected", environmentIds: ["A1", "A2"], destinationToken: "synthetic-token", stopRunning: true, requestId: "synthetic-backup-request" };
+  const observed: Operation = { ...operation, id: "operation-native", kind: "backup-export", state: "running", total: 2, backupReport: syntheticBackupReport() };
+  assert.equal(confirmsBackupRequest(observed, request), true);
+  assert.equal(confirmsBackupRequest({ ...observed, persistencePending: true }, request), false);
+  assert.equal(confirmsBackupRequest({ ...observed, backupReport: { ...syntheticBackupReport(), requestId: "unrelated-history" } }, request), false);
+  assert.equal(confirmsBackupRequest(undefined, request), false);
+});
 test("native batch projections exclude identity/credentials and keep an explicit full mapping", async () => {
   const { app, calls } = fixture(request => request.method === "Workspace.Read" ? ok(empty()) : rejected);
   await app.previewBatch({ kind: "create", create: { previewId: "synthetic-draft", count: 1000003, requestId: "synthetic-preview-request", configuration: { ...environment, cookies: [{ name: "synthetic-login", value: "SYNTHETIC_BATCH_SECRET" }], parameters: ["--foreign"], userDataRef: "foreign/profile" } } } as NativeBatchPreviewRequest);

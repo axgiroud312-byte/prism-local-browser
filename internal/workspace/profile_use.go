@@ -2,7 +2,7 @@ package workspace
 
 // Runtime/Cookie release cannot discard a later or independent batch owner.
 func (s *Service) releaseProfileUse(environmentID string) {
-	if s.batchUses[environmentID] == nil {
+	if s.batchUses[environmentID] == nil && s.backupUses[environmentID] == nil {
 		delete(s.profileUses, environmentID)
 	}
 }
@@ -19,7 +19,7 @@ func (s *Service) releaseBatchProfileUse(task *batchTask, environmentID string) 
 		return
 	}
 	delete(s.batchUses, environmentID)
-	if !s.runtimeOwnsProfileUse(environmentID) && s.cookieTasks[environmentID] == nil {
+	if !s.runtimeOwnsProfileUse(environmentID) && s.cookieTasks[environmentID] == nil && s.backupUses[environmentID] == nil {
 		delete(s.profileUses, environmentID)
 	}
 }

@@ -323,6 +323,13 @@ func (s *Service) launchRuntime(ctx context.Context, slot *runtimeSlot, input Ru
 	if launcher == nil {
 		launcher = launchManagedRuntime
 	}
+	if err := s.claimRuntimeData(ctx, slot); err != nil {
+		if network != nil {
+			_ = network.Close()
+		}
+		s.finishRuntimeStart(slot, nil, network, err)
+		return
+	}
 	startup, cancel := context.WithTimeout(ctx, 45*time.Second)
 	process, err := launcher(startup, input)
 	if network != nil {

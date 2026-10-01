@@ -146,7 +146,7 @@ func kernelProblemExitUnconfirmed() error {
 }
 
 func (s *Service) reconcileRuntime(input runtimeRequest) Result {
-	if s.batchUses[input.EnvironmentID] != nil || s.profileUses[input.EnvironmentID] && !s.runtimeOwnsProfileUse(input.EnvironmentID) {
+	if s.batchUses[input.EnvironmentID] != nil || s.backupUses[input.EnvironmentID] != nil || s.profileUses[input.EnvironmentID] && !s.runtimeOwnsProfileUse(input.EnvironmentID) {
 		return failure("PROFILE_BUSY", "当前有独立维护/批次租约，旧会话核对不能接管或释放它的保护。", true)
 	}
 	if s.cookieTasks[input.EnvironmentID] != nil {

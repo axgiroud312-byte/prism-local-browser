@@ -111,6 +111,15 @@ UX-001、DOC-001 的发布入口在 [安装器](../build/windows/installer/prism
 - ENV-001、UX-001：[`服务端列表分页`](../internal/workspace/environment_query.go)与[`native批次对话框`](../src/components/NativeBatchDialog.tsx)，统计/筛选来自实际服务、档案/ref/session随一页加载；[`旧尝试明细`](../internal/workspace/batch_history.go)只用原事件和此前完成项，不混后来成功。按plan/op/offset/选择代次处理迟到结果、终态后读最终页、modal键盘保护；跨页启动每个明确ID重新读真实策略/修订，缺失不作直连。
 - 16服务/3目录/6adapter回归源码仅编写未执行，Go测试包未编译；真实规模/目录/取消重开/分页/新UI尚未验收，源码与静态核对不代表通过，[清单](verification/T13.md)。
 
+### T15 完整本机导出（本地已实现待验收）
+
+- BKP-001、DATA-001：[`受理/正常停止/worker`](../internal/workspace/backup_worker.go)，范围来自all全库或所选明确ID，owner预约阻重新Start，不把正常Stop受理当完成，不升级强制结束。schema7发布journal、取消/存储pending和重开不重复副作用；已有proxy启动门禁不变。
+- BKP-001、FP-001、PRX-001：[`独立一致SQLite快照`](../internal/workspace/backup_snapshot.go)实际WAL/read事务/online Backup API，范围闭包/离线VACUUM、档案当前及全历史原seed/ref/准确kernel hash，凭据原ref+DPAPI密文不解密。操作/会话/活动/混合batch/其他备份/去重key明确不恢复。
+- BKP-001、DATA-001：[`只读数据固定`](../internal/backup/profile_windows.go)、[`独立ZIP/全量读回`](../internal/backup/format.go)与[`原句柄发布`](../internal/backup/output_windows.go)，拒links/hardlinks/变化、保空目录，manifest逐文件摘要；临时文件非成功包，不覆盖工作区或已有目标，不称同SID恶意writer强隔离。
+- UX-001、BKP-001：[`NativeBackupManager`](../src/components/NativeBackupManager.tsx)正常停止确认/全量与明确选定/只返回host token和安全名称/取消与历史读回/实际published摘要；浏览数据敏感和同Windows用户限制可见，不携带内核、不承诺登录便携。旧原型JSON不进入native，不标恢复已实现。
+- 独立[`初始化事实`](../internal/workspace/data_initialization.go)同事务保存、单调不重置；启动受理/最新失败不当未初始化证明，迁移旧环境保持未知、正常停止后只重读原冻结ID，worker锁外不碰mutable observation。Adapter旧响应须仍有原pending归属，错误模式/报告不推未受理，页面读取核实原受理统一消费旧输出授权。
+- 7文件/包+19服务+9adapter回归仅编写未执行，Go测试包未编译；17:44生产static/源码测试TS通过、17:47文档/格式通过，首轮2 P1+8 P2及第二轮5 P2源码闭环，文件/后端/UI最终只读均无剩余可信P1/P2。四项真实验收未执行，[清单](verification/T15.md)。
+
 以下关联于 2026-09-30 发布，表示计划实现范围，不能据此判断已完成。当前状态与 blocking 依赖以 GitHub 为准；完整顺序见 [开发票据索引](ISSUES.md)，共同范围见 [总规格 Issue](https://github.com/axgiroud312-byte/prism-local-browser/issues/1)。
 
 | 需求 ID  | 实现或专项验证 Issue                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | 整体验收                                                                       |

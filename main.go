@@ -73,11 +73,16 @@ func main() {
 		return
 	}
 	var desktopContext context.Context
-	service, _ := workspace.Open(root, workspace.Options{ChooseArchive: func() (string, error) {
+	service, _ := workspace.Open(root, workspace.Options{AppVersion: applicationVersion, ChooseArchive: func() (string, error) {
 		if desktopContext == nil {
 			return "", errors.New("desktop not ready")
 		}
 		return wailsruntime.OpenFileDialog(desktopContext, wailsruntime.OpenDialogOptions{Title: "选择可信 fingerprint-chromium ZIP", Filters: []wailsruntime.FileFilter{{DisplayName: "Windows内核ZIP", Pattern: "*.zip"}}})
+	}, ChooseBackupDestination: func() (string, error) {
+		if desktopContext == nil {
+			return "", errors.New("desktop not ready")
+		}
+		return wailsruntime.SaveFileDialog(desktopContext, wailsruntime.SaveDialogOptions{Title: "导出完整本机备份（请选择新文件，不覆盖）", DefaultFilename: "prism-local-backup.prismbackup", Filters: []wailsruntime.FileFilter{{DisplayName: "完整本机备份", Pattern: "*.prismbackup"}}})
 	}})
 	if service != nil {
 		defer service.Close()

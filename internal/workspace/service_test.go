@@ -277,7 +277,7 @@ func TestSchemaVersionAndCorruptFilesAreNotOverwritten(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, err = db.Exec("PRAGMA user_version=6"); err != nil {
+	if _, err = db.Exec("PRAGMA user_version=7"); err != nil {
 		t.Fatal(err)
 	}
 	db.Close()

@@ -156,6 +156,9 @@ func (s *Service) cookieCall(request Request) Result {
 		}
 		return prior
 	}
+	if s.backupUses[input.EnvironmentID] != nil {
+		return failure("PROFILE_BUSY", "此环境已预约完整备份；备份期间不接受新的Cookie写入或清空。", true)
+	}
 	draft := s.cookieImport
 	if draft == nil || draft.preview.PreviewID != input.PreviewID || !time.Now().Before(draft.expires) {
 		return failure("PREVIEW_EXPIRED", "Cookie预览已失效；请重新读取原文件/输入，不重放浏览器写入。", true)

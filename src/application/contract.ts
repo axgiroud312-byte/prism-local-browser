@@ -40,11 +40,13 @@ export interface WorkspaceView {
   proxyOperations?: Operation[];
   cookieOperations?: Operation[];
   batchOperations?: Operation[];
+  backupOperations?: Operation[];
+  nativeBackups?: NativeBackup[];
   environmentPage?: NativeEnvironmentPage;
 }
 export interface Operation {
   id: string;
-  kind: "create" | "edit" | "kernel-install" | "kernel-verify" | "kernel-delete" | "runtime-start" | "runtime-stop" | "runtime-force-stop" | "runtime-reconcile" | "proxy-check" | "cookie-import" | "batch-create" | "batch-clone" | "batch-assign";
+  kind: "create" | "edit" | "kernel-install" | "kernel-verify" | "kernel-delete" | "runtime-start" | "runtime-stop" | "runtime-force-stop" | "runtime-reconcile" | "proxy-check" | "cookie-import" | "batch-create" | "batch-clone" | "batch-assign" | "backup-export";
   state: "accepted" | "running" | "completed" | "cancelled" | "failed";
   total: number;
   completedIds: string[];
@@ -60,6 +62,7 @@ export interface Operation {
   proxyReport?: ProxyCheckReport;
   cookieReport?: CookieImportReport;
   batchReport?: NativeBatchReport;
+  backupReport?: NativeBackupReport;
 }
 export interface OperationEvent {
   mode: ApplicationMode;
@@ -75,6 +78,8 @@ export const operationIsTerminal = (operation: Operation) =>
 export function mergeOperation(previous: Operation | undefined, next: Operation): Operation {
   if (previous?.batchReport && next.batchReport && previous.batchReport.planId === next.batchReport.planId && next.batchReport.sequence < previous.batchReport.sequence) return previous;
   if (!previous || previous.id !== next.id) return next;
+  if (previous.backupReport && next.backupReport && next.backupReport.sequence < previous.backupReport.sequence) return previous;
+  if (previous.kind === "backup-export" && previous.stage === "acceptance-pending" && previous.persistencePending && !next.persistencePending) return next;
   if (previous.batchReport && next.batchReport && next.batchReport.sequence < previous.batchReport.sequence) return previous;
   if (operationIsTerminal(previous) || (previous.state === "running" && next.state === "accepted")) return previous;
   if (previous.persistencePending && !next.persistencePending && !["completed", "cancelled", "failed"].includes(next.state)) return previous;
@@ -145,9 +150,28 @@ export interface ApplicationService {
   commitCookieImport?(request: CookieCommitRequest): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
   previewBatch?(request: NativeBatchPreviewRequest): Promise<ApplicationResult<NativeBatchPage>>;
   readBatchPage?(request: { planId: string; operationId?: string; offset: number; pageSize: number }): Promise<ApplicationResult<NativeBatchPage>>;
+  selectBackupDestination?(): Promise<ApplicationResult<{ status: "selected" | "cancelled"; destinationToken?: string; name?: string }>>;
+  exportBackup?(request: NativeBackupExportRequest): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
+  getPendingBackupExport?(): NativeBackupPending | undefined;
   commitBatch?(request: { planId: string; requestId: string }): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
   retryBatch?(request: { operationId: string; requestId: string }): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
   queryEnvironments?(request: NativeEnvironmentQuery): Promise<ApplicationResult<WorkspaceView>>;
+}
+
+export interface NativeBackupExportRequest {
+  scope: "all" | "selected"; environmentIds: string[]; destinationToken: string; stopRunning: boolean; requestId: string;
+}
+export interface NativeBackupReport {
+  requestId: string;
+  mode: "native"; format: "prism-local-backup"; schemaVersion: 1; scope: "all" | "selected";
+  environmentCount: number; copiedEnvironmentCount: number; fileCount: number; byteCount: number; sequence: number;
+  published: boolean; name: string; archiveSha256?: string; manifestSha256?: string;
+  credentials: "windows-current-user-dpapi"; browserData: "sensitive-same-user-not-portable"; kernelBinariesIncluded: false;
+}
+export interface NativeBackupPending { request: NativeBackupExportRequest; operationId?: string }
+export interface NativeBackup {
+  id: string; operationId: string; name: string; createdAt: string; scope: "all" | "selected";
+  environmentCount: number; archiveSha256: string; manifestSha256: string;
 }
 
 export type NativeBatchKind = "create" | "clone" | "assign";

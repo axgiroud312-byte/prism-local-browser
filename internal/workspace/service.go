@@ -39,11 +39,13 @@ type Options struct {
 	LaunchRuntime  func(context.Context, RuntimeLaunch) (RuntimeProcess, error)
 	InspectRuntime func(RuntimeSession) (kernel.ManagedRecovery, error)
 	// Host-only seams. The desktop always uses Windows user DPAPI and TLS checks.
-	ProtectProxySecret    func(string, []byte) ([]byte, error)
-	UnprotectProxySecret  func(string, []byte) ([]byte, error)
-	CheckProxy            func(context.Context, proxy.Configuration, *proxy.Credentials, func(proxy.Step)) proxy.Report
-	OpenProxyChannel      func(proxy.Configuration, *proxy.Credentials, proxy.BridgeOptions) (RuntimeProxyChannel, error)
-	PrepareBatchDirectory func(BatchDirectoryInput) (BatchDirectoryLease, error)
+	ProtectProxySecret      func(string, []byte) ([]byte, error)
+	UnprotectProxySecret    func(string, []byte) ([]byte, error)
+	CheckProxy              func(context.Context, proxy.Configuration, *proxy.Credentials, func(proxy.Step)) proxy.Report
+	OpenProxyChannel        func(proxy.Configuration, *proxy.Credentials, proxy.BridgeOptions) (RuntimeProxyChannel, error)
+	PrepareBatchDirectory   func(BatchDirectoryInput) (BatchDirectoryLease, error)
+	ChooseBackupDestination func() (string, error)
+	AppVersion              string
 }
 type draft struct {
 	Kind        string
@@ -51,39 +53,43 @@ type draft struct {
 	BaseProfile *DeviceProfile
 }
 type Service struct {
-	mu               sync.Mutex
-	db               *sql.DB
-	drafts           map[string]draft
-	options          Options
-	root             string
-	archives         map[string]string
-	kernelTask       *kernelTask
-	workers          sync.WaitGroup
-	closed           bool
-	profileUses      map[string]bool
-	runtimeSlots     map[string]*runtimeSlot
-	startGate        chan struct{}
-	closeDone        chan struct{}
-	closeError       error
-	closeOnce        sync.Once
-	closeRequested   atomic.Bool
-	runtimePending   map[string]*runtimePendingWrite
-	runtimeResults   map[string]Operation
-	proxyImport      *proxyImportDraft
-	proxyRequestKey  []byte
-	proxyChecks      map[string]*proxyCheckTask
-	proxyResults     map[string]Operation
-	proxyPending     map[string]*proxyCheckWrite
-	proxyCheckGate   chan struct{}
-	cookieImport     *cookieImportDraft
-	cookieGeneration uint64
-	cookieTasks      map[string]*cookieImportTask
-	cookieResults    map[string]Operation
-	cookiePending    map[string]Operation
-	batchTasks       map[string]*batchTask
-	batchUses        map[string]*batchTask
-	batchAcceptances map[string]*batchAcceptance
-	batchGate        chan struct{}
+	mu                 sync.Mutex
+	db                 *sql.DB
+	drafts             map[string]draft
+	options            Options
+	root               string
+	archives           map[string]string
+	kernelTask         *kernelTask
+	workers            sync.WaitGroup
+	closed             bool
+	profileUses        map[string]bool
+	runtimeSlots       map[string]*runtimeSlot
+	startGate          chan struct{}
+	closeDone          chan struct{}
+	closeError         error
+	closeOnce          sync.Once
+	closeRequested     atomic.Bool
+	runtimePending     map[string]*runtimePendingWrite
+	runtimeResults     map[string]Operation
+	proxyImport        *proxyImportDraft
+	proxyRequestKey    []byte
+	proxyChecks        map[string]*proxyCheckTask
+	proxyResults       map[string]Operation
+	proxyPending       map[string]*proxyCheckWrite
+	proxyCheckGate     chan struct{}
+	cookieImport       *cookieImportDraft
+	cookieGeneration   uint64
+	cookieTasks        map[string]*cookieImportTask
+	cookieResults      map[string]Operation
+	cookiePending      map[string]Operation
+	batchTasks         map[string]*batchTask
+	batchUses          map[string]*batchTask
+	batchAcceptances   map[string]*batchAcceptance
+	batchGate          chan struct{}
+	backupDestinations map[string]backupDestination
+	backupTasks        map[string]*backupTask
+	backupUses         map[string]*backupTask
+	backupGate         chan struct{}
 }
 
 func failure(code, message string, retryable bool) Result {
@@ -138,6 +144,7 @@ func Open(root string, options Options) (*Service, error) {
 	s.cookieTasks, s.cookieResults, s.cookiePending = map[string]*cookieImportTask{}, map[string]Operation{}, map[string]Operation{}
 	s.batchTasks, s.batchUses, s.batchGate = map[string]*batchTask{}, map[string]*batchTask{}, make(chan struct{}, 1)
 	s.batchAcceptances = map[string]*batchAcceptance{}
+	s.backupDestinations, s.backupTasks, s.backupUses, s.backupGate = map[string]backupDestination{}, map[string]*backupTask{}, map[string]*backupTask{}, make(chan struct{}, 1)
 	if err = s.initialize(); err != nil {
 		db.Close()
 		return nil, err
@@ -159,6 +166,10 @@ func Open(root string, options Options) (*Service, error) {
 		return nil, err
 	}
 	if err = s.recoverBatchTasks(); err != nil {
+		db.Close()
+		return nil, err
+	}
+	if err = s.recoverBackupExports(); err != nil {
 		db.Close()
 		return nil, err
 	}
@@ -201,6 +212,11 @@ func (s *Service) beginShutdown() {
 			task.cancel()
 		}
 	}
+	for _, task := range s.backupTasks {
+		if task.cancel != nil {
+			task.cancel()
+		}
+	}
 	for _, task := range s.proxyChecks {
 		task.cancel()
 	}
@@ -236,6 +252,7 @@ func (s *Service) closeResources(processes []RuntimeProcess, finished chan struc
 	s.flushProxyPersistence()
 	s.flushCookiePersistence()
 	s.flushBatchPersistence()
+	s.flushBackupPersistence()
 	proxy.Wipe(s.proxyRequestKey)
 	s.proxyRequestKey = nil
 	s.closeError = s.db.Close()
@@ -250,6 +267,9 @@ func (s *Service) closeResources(processes []RuntimeProcess, finished chan struc
 	}
 	if len(s.batchTasks) != 0 || len(s.batchAcceptances) != 0 {
 		s.closeError = errors.Join(s.closeError, errors.New("batch journal observations could not all be persisted"))
+	}
+	if len(s.backupTasks) != 0 {
+		s.closeError = errors.Join(s.closeError, errors.New("backup observations could not all be persisted"))
 	}
 	close(finished)
 }
@@ -272,7 +292,10 @@ func (s *Service) initialize() error {
 	if err := s.initializeProxies(); err != nil {
 		return err
 	}
-	return s.initializeBatches()
+	if err := s.initializeBatches(); err != nil {
+		return err
+	}
+	return s.initializeBackups()
 }
 
 func (s *Service) initializeProfiles() error {
@@ -280,7 +303,7 @@ func (s *Service) initializeProfiles() error {
 	if err := s.db.QueryRow("PRAGMA user_version").Scan(&version); err != nil {
 		return err
 	}
-	if version > 6 {
+	if version > 7 {
 		return errors.New("unsupported workspace version")
 	}
 	if version >= 3 {
@@ -437,6 +460,12 @@ func (s *Service) Call(request Request) Result {
 	if request.Method == "Cookie.ParseImport" {
 		return s.parseCookieImport(request.Payload)
 	}
+	if request.Method == "Backup.SelectDestination" {
+		if decode(request.Payload, &struct{}{}) != nil {
+			return failure("VALIDATION_FAILED", "备份输出只由桌面保存对话框选择，不接受路径。", false)
+		}
+		return s.selectBackupDestination()
+	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	if s.closed || s.closeRequested.Load() {
@@ -462,6 +491,16 @@ func (s *Service) Call(request Request) Result {
 	}
 	if strings.HasPrefix(request.Method, "Batch.") {
 		return s.batchCall(request)
+	}
+	if request.Method == "Workspace.Read" || strings.HasPrefix(request.Method, "Operation.") || strings.HasPrefix(request.Method, "Backup.") {
+		s.flushBackupPersistence()
+	}
+	if request.Method == "Backup.Export" {
+		var input BackupExportRequest
+		if decode(request.Payload, &input) != nil {
+			return failure("VALIDATION_FAILED", "备份请求含未知/无效字段，不接受路径、凭据或原型快照。", false)
+		}
+		return s.acceptBackup(input)
 	}
 	switch request.Method {
 	case "Runtime.Start", "Runtime.Stop", "Runtime.Inspect", "Runtime.ForceStop", "Runtime.Reconcile":
@@ -550,6 +589,12 @@ func (s *Service) Call(request Request) Result {
 		}
 		if decode(request.Payload, &input) != nil {
 			return failure("VALIDATION_FAILED", "任务请求无效。", false)
+		}
+		if task := s.backupTasks[input.OperationID]; task != nil {
+			if request.Method == "Operation.Cancel" {
+				return s.cancelBackupOperation(task)
+			}
+			return success(*s.pendingBackupOperation(input.OperationID), input.OperationID)
 		}
 		if pending, exists := s.proxyResults[input.OperationID]; exists {
 			if request.Method == "Operation.Cancel" {
@@ -882,6 +927,9 @@ func (s *Service) mutate(method string, input Mutation) Result {
 			return storageFailure(referenceErr)
 		}
 		_, err = tx.Exec(`INSERT INTO environments(id,code,name,kernel_id,proxy_id,fingerprint_id,revision,created_at,user_data_ref) VALUES(?,?,?,?,?,?,?,?,?)`, e.ID, code, config.Name, config.CoreID, nullable(config.ProxyID), profileID, revision, e.CreatedAt, ref)
+		if err == nil {
+			err = insertDataState(tx, e.ID, dataNeverInitialized)
+		}
 	} else {
 		_, err = tx.Exec(`UPDATE fingerprints SET seed=?,kernel_id=?,config_json=? WHERE id=?`, config.Seed, config.CoreID, string(configJSON), profileID)
 		if err != nil {
@@ -1006,8 +1054,8 @@ func (s *Service) viewPage(query EnvironmentQuery) (View, error) {
 	rows, err = s.db.Query(`SELECT a.id,a.created_at,a.action,a.target,a.detail,
 		COALESCE(r.environment_id,CASE WHEN json_extract(o.result_json,'$.kind')='cookie-import' THEN json_extract(o.result_json,'$.environmentId') END,''),
 		COALESCE(r.session_id,CASE WHEN json_extract(o.result_json,'$.kind')='cookie-import' THEN json_extract(o.result_json,'$.sessionId') END,''),
-		COALESCE(r.error_code,CASE WHEN json_extract(o.result_json,'$.kind')='proxy-check' THEN json_extract(o.result_json,'$.error.code') WHEN json_extract(o.result_json,'$.kind')='cookie-import' AND json_extract(o.result_json,'$.state') IN ('failed','cancelled') THEN COALESCE(json_extract(o.result_json,'$.error.code'),'OPERATION_CANCELLED') WHEN json_extract(o.result_json,'$.kind') LIKE 'batch-%' AND json_extract(o.result_json,'$.state') IN ('failed','cancelled') THEN COALESCE(json_extract(o.result_json,'$.error.code'),'BATCH_PARTIAL_FAILED') END,''),
-		COALESCE(r.next_action,CASE WHEN json_extract(o.result_json,'$.kind')='proxy-check' AND json_extract(o.result_json,'$.state') IN ('failed','cancelled') THEN '修正代理或凭据后重新检查；前检不代表浏览器通道或断线保护。' WHEN json_extract(o.result_json,'$.kind')='cookie-import' AND json_extract(o.result_json,'$.state') IN ('failed','cancelled') THEN '查看逐条结果；重新预览后先核对同键再合并重试，不自动清空。' WHEN json_extract(o.result_json,'$.kind') LIKE 'batch-%' AND json_extract(o.result_json,'$.state') IN ('failed','cancelled') THEN '按任务ID查看该次逐项结果；明确继续未完成项，修订冲突需重新预览，已完成项不重做。' END,'')
+		COALESCE(r.error_code,CASE WHEN json_extract(o.result_json,'$.kind')='proxy-check' THEN json_extract(o.result_json,'$.error.code') WHEN json_extract(o.result_json,'$.kind')='cookie-import' AND json_extract(o.result_json,'$.state') IN ('failed','cancelled') THEN COALESCE(json_extract(o.result_json,'$.error.code'),'OPERATION_CANCELLED') WHEN json_extract(o.result_json,'$.kind') LIKE 'batch-%' AND json_extract(o.result_json,'$.state') IN ('failed','cancelled') THEN COALESCE(json_extract(o.result_json,'$.error.code'),'BATCH_PARTIAL_FAILED') WHEN json_extract(o.result_json,'$.kind')='backup-export' AND json_extract(o.result_json,'$.state') IN ('failed','cancelled') THEN COALESCE(json_extract(o.result_json,'$.error.code'),'BACKUP_EXPORT_FAILED') END,''),
+		COALESCE(r.next_action,CASE WHEN json_extract(o.result_json,'$.kind')='proxy-check' AND json_extract(o.result_json,'$.state') IN ('failed','cancelled') THEN '修正代理或凭据后重新检查；前检不代表浏览器通道或断线保护。' WHEN json_extract(o.result_json,'$.kind')='cookie-import' AND json_extract(o.result_json,'$.state') IN ('failed','cancelled') THEN '查看逐条结果；重新预览后先核对同键再合并重试，不自动清空。' WHEN json_extract(o.result_json,'$.kind') LIKE 'batch-%' AND json_extract(o.result_json,'$.state') IN ('failed','cancelled') THEN '按任务ID查看该次逐项结果；明确继续未完成项，修订冲突需重新预览，已完成项不重做。' WHEN json_extract(o.result_json,'$.kind')='backup-export' AND json_extract(o.result_json,'$.state') IN ('failed','cancelled') THEN '读取此导出任务；临时包不是成功备份，先核对停止/权限/空间与原发布摘要，不自动重做或覆盖。' END,'')
 		FROM activities a LEFT JOIN runtime_events r ON r.activity_id=a.id LEFT JOIN operations o ON o.id=a.id ORDER BY a.rowid DESC LIMIT 100`)
 	if err != nil {
 		return View{}, err
@@ -1073,5 +1121,9 @@ func (s *Service) viewPage(query EnvironmentQuery) (View, error) {
 	if err != nil {
 		return View{}, err
 	}
-	return View{Mode: "native", State: state, KernelRecords: installed, KernelOperations: operations, Fingerprints: profiles, DataReferences: references, RuntimeSessions: sessions, NativeProxyRecords: proxyRecords, ProxyOperations: proxyOperations, CookieOperations: cookieOperations, BatchOperations: batchOperations, EnvironmentPage: &page}, nil
+	backupOperations, backups, err := s.listBackupOperations()
+	if err != nil {
+		return View{}, err
+	}
+	return View{Mode: "native", State: state, KernelRecords: installed, KernelOperations: operations, Fingerprints: profiles, DataReferences: references, RuntimeSessions: sessions, NativeProxyRecords: proxyRecords, ProxyOperations: proxyOperations, CookieOperations: cookieOperations, BatchOperations: batchOperations, BackupOperations: backupOperations, NativeBackups: backups, EnvironmentPage: &page}, nil
 }

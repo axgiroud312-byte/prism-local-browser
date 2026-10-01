@@ -322,6 +322,17 @@ parseSnapshot 校验 format、schemaVersion、主要记录字段、Cookie 数组
 
 ### 桌面备份
 
+#### T15 原生完整导出（本地已实现待验收）
+
+- `Backup.SelectDestination({})`调用host保存对话框，返回30分钟token/文件basename；取消不受理。`Backup.Export({scope:all|selected,environmentIds,destinationToken,stopRunning,requestId})`只接受明确范围/ID和token；all须空ID数组，由数据库确定全范围而非当前页，selected缺失ID阻断。明确允许正常停止时调用原`Runtime.Stop`，不按PID杀进程/不自动ForceStop，待核对/维护/Cookie任务先处理；备份owner预约保护范围，停止中不能重启。
+- `backup_exports`新增schema7，私有destination/temporary/targets/publishing日志关联操作；普通report只含native独立格式/安全requestId/统计/sequence/发布事实/摘要。请求和受理同事务，未知COMMIT将原请求、操作、发布日志的身份/范围/输出同时核对才调度一次；临时观测重读只保存、不重做浏览目录或输出副作用。操作状态与文件发布分开，只有完整核对并正式rename才published。重开先完成全部可失败同步恢复和map初始化，再在锁内启动只读摘要核对worker。worker锁外只使用锁内冻结的`backupExecution`，不读取被取消整体替换的operation。
+- 一致配置通过[`snapshot`](../internal/workspace/backup_snapshot.go)的独立只读WAL连接、显式读事务、SQLite online Backup API每64页检查取消；服务唯一连接可继续取消。离线副本保全schema/索引/触发器，过滤明确环境，selected取绑定代理及当前/历史档案的精确内核闭包，凭据原ref+DPAPI字节不解密、不换引用。VACUUM清未选记录freelist、integrity/外键/非FK凭据引用/当前及历史档案核对。全量保未使用代理/内核元数据；两种范围均不恢复会话、任务/活动、混合批次、备份历史、请求去重key，只保配置及档案修订。
+- `.prismbackup`为`prism-local-backup`/schemaVersion1 ZIP，内含`configuration.sqlite`与规范引用下真实user-data-dir和空目录；manifest带workspaceSchema7/appVersion、原ID/seed/配置与档案修订/hash/模板/生成器、环境/代理/内核关系、精确版本/archive/executable hash与每文件长度SHA256。不携带内核本体，pending明确未绑定无捏造hash。不是prism-prototype JSON，不包含任何恢复执行授权。
+- [`CaptureProfile`](../internal/backup/profile_windows.go)只读已有目录/锁，父到子固定路径对象，每个源文件READ/shareREAD至最终集合/对象复核；拒reparse/硬链接/变化，正常停止且持久成功后才复制。未初始化目录不为备份创建，有使用/准备证据却丢失目录失败。浏览数据可能含敏感Cookie/网站信息；DPAPI保护代理不等于整包加密，恢复仅原Windows用户及密钥上下文，不承诺重装/跨机器登录。
+- [`初始化事实`](../internal/workspace/data_initialization.go)独立`environment_data_state`：新建/批次与环境事务分别保存never-initialized/directory-prepared；运行通过代理门禁/通道准备后、launcher之前提交runtime-claimed，含不明COMMIT时不调用launcher，失败不降级。schema6旧环境迁移legacy-unconfirmed，不依赖最新session或缺history宣称从未初始化。单调触发器禁止重置；备份停止后按冻结ID重读并与一致副本事实核对。仅never允许源目录不存在，directory-prepared允许没有运行锁，其余缺目录/锁保持失败；正常备份不会创建源目录掩盖未知。后票T17复制真实present数据时须将恢复事实至少变成directory-prepared。
+- 输出需工作区外本机新文件，不覆盖已有目标；[`Output`](../internal/backup/output_windows.go)同目录`.partial`、关闭ZIP/Sync/原句柄逐项读回与SHA核对、持久publishing/hash后按原文件句柄不覆盖rename。最终短临界区核对cancel；发布后迟到cancel不得回退真实结果，DB失败保published事实/只保存观测；重开不重复制/rename，只核对发布日志对应正式文件原hash。
+- [`NativeBackupManager`](../src/components/NativeBackupManager.tsx)全量与环境表明确选定入口、正常停止确认、host文件选择/取消/历史/摘要；viewId/响应式读取代次确保取消前目标匹配且同ID重读不失去轮询。Wails保存会话内未决原请求，跨页面/查看无关历史不丢弃；仅原requestId的已核实报告或服务明确未受理才释放，报告/模式校验失败保已知ID与原请求，真实刷新可恢复原受理。异步迟到响应须仍持有原pending对象，不能修改新请求；页面read/poll/refresh核实原受理时统一消费旧输出授权，只消费一次，无关历史不清掉新输出。demo旧JSON保持独立，预检/正式恢复仍T16/T17。7文件/包+19服务+9adapter回归仅编写未执行，Go测试包未编译；17:44生产static/源码测试TS通过，17:47文档/格式通过，文件、后端、UI最终只读均无剩余可信P1/P2，不等同运行证据，[D015](DECISIONS.md#d015--一致本机备份范围闭包与先核对再发布2026-10-01)、[验收清单](verification/T15.md)。
+
 1. 计算范围并取得维护任务锁，阻止相关环境在备份期间重新启动。
 2. 正常停止环境，等待所有受控进程退出及目录锁释放。失败时结束任务，不输出完整成功包。
 3. 使用 SQLite 一致性备份方式取得数据库快照；不要在 WAL 活跃时只复制 app.db。
@@ -367,6 +378,9 @@ parseSnapshot 校验 format、schemaVersion、主要记录字段、Cookie 数组
 | COOKIE_WRITE_PARTIAL                         | 部分条目未实际写入               | 查看条目原因，保留成功明细并重试失败项   |
 | SNAPSHOT_INVALID                             | 演示快照损坏或格式不匹配         | 保留现有数据，选择正确文件               |
 | BACKUP_INVALID / BACKUP_VERSION_UNSUPPORTED  | 真实包校验失败或版本不支持       | 不修改现状，选择兼容完整备份             |
+| BACKUP_OUTPUT_UNAVAILABLE / BACKUP_EXPORT_FAILED | 输出选择或完整导出未全部成功 | 核对正常停止、原数据目录、权限及空间；临时包不是完成包 |
+| BACKUP_ACCEPTANCE_UNCONFIRMED / BACKUP_RESULT_UNCONFIRMED | 导出受理或响应尚未核实 | 只核实原请求或已知任务ID，不另建导出、不冒称未受理 |
+| BACKUP_PUBLICATION_UNCONFIRMED | 退出后的正式文件未按原摘要确认 | 保留原工作区与现有文件，查看原任务；不自动再次发布 |
 | RESTORE_INCOMPLETE                           | 恢复必要组件未完成               | 回滚或完成修复后解锁                     |
 | RESOURCE_EXHAUSTED / DISK_FULL               | 内存、端口、磁盘等实际资源不足   | 降低同时处理量或释放资源，保留已完成项目 |
 | STORAGE_WRITE_FAILED                         | 原型或桌面持久化失败             | 重试或导出当前可用数据，不能提示保存成功 |

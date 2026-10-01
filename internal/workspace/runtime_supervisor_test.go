@@ -243,7 +243,7 @@ func TestRuntimeV3MigrationPreservesAllFixedProfiles(t *testing.T) {
 	}
 	defer reopened.Close()
 	var version int
-	if err := reopened.db.QueryRow("PRAGMA user_version").Scan(&version); err != nil || version != 6 {
+	if err := reopened.db.QueryRow("PRAGMA user_version").Scan(&version); err != nil || version != 7 {
 		t.Fatal("runtime schema migration did not complete")
 	}
 	if !reflect.DeepEqual(before.Fingerprints[environment.ID], view(t, reopened).Fingerprints[environment.ID]) {

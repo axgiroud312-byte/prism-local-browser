@@ -367,6 +367,9 @@ func insertBatchEnvironment(tx *sql.Tx, item batchStoredItem, lease BatchDirecto
 	if _, err = tx.Exec(`INSERT INTO environments(id,code,name,kernel_id,proxy_id,fingerprint_id,revision,created_at,user_data_ref) VALUES(?,?,?,?,?,?,1,?,?)`, identity.EnvironmentID, code, config.Name, config.CoreID, nullable(config.ProxyID), identity.FingerprintID, identity.CreatedAt, ref); err != nil {
 		return nil, err
 	}
+	if err = insertDataState(tx, identity.EnvironmentID, dataDirectoryPrepared); err != nil {
+		return nil, err
+	}
 	if err = appendProfile(tx, identity.FingerprintID, identity.Profile, "batch-new-identity", 0); err != nil {
 		return nil, err
 	}

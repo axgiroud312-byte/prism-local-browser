@@ -2,7 +2,7 @@
 
 面向 Windows 本机多环境管理的桌面底座、独立前端原型及产品开发文档。
 
-**T01–T04已验收；T05–T10已本地实现待验收，T12 Cookie源码已编写。** 固定档案、正常会话/独立目录、异常监督和受保护代理已接；HTTP/HTTPS/SOCKS5共用独立认证通道及同通道启动前检查，参数无上游密码，SOCKS5目标域名由代理解析。Cookie新增指定环境预览、私有pipe写后逐条核对/安全结果，尚无固定二进制或新UI验收。API准入、真实DNS/网络/浏览数据仍待验收，T11全路径保护与完整备份未完成，不返回模拟成功。网页原型仍为demo。当前先开发、不运行CI/完整回归；实际状态见 [PROGRESS.md](docs/PROGRESS.md)。
+**T01–T04已验收；T05–T10、T12–T13及T15完整备份导出本地已实现待验收。** 固定档案、正常会话/独立目录、异常监督、受保护代理、指定会话Cookie读回及持久批量流程已接。完整导出支持全量/明确选定、正常停止、一致SQLite副本和真实浏览数据、逐文件摘要及临时文件发布；尚未运行新页面、Windows数据或恢复验收。T11全路径网络保护仍缺失，绑定代理的真实启动继续安全拒绝，不自动直连；备份预检与正式恢复仍待T16/T17。网页原型仍为demo。当前先开发，不运行测试、CI或自动点击；实际状态见 [PROGRESS.md](docs/PROGRESS.md)。
 
 **当前源码的真实代理浏览器启动被安全门禁阻止。** T11仅有故障监督和拒绝启动的部分实现，完整系统隔离/DNS委托/崩溃保护尚未解决；独立代理检查仍可进行，不是启动许可。用户允许未来隔离组件管理员安装，并选择先推进不依赖它的其他功能；不现在提权或修改系统，不宣称T11完成。
 
@@ -70,7 +70,7 @@ npm run build:windows
 
 也可 `npm run dev:desktop`。桌面 production 构建使用单独 Vite `desktop` 模式；桥接失败会显示阻断提示，不退回网页 demo。exe 旁生成 Go 运行时许可通知，分发时须一起保留。构建反射阶段不会开启用户数据库；程序启动先检查 WebView2 与目录边界。安装预览使用 `npm run build:installer`，生成安装器、哈希与真实签名状态于 `build/releases/`；目前 **NotSigned、开发预览、不含浏览器内核**，安装/升级/卸载的实际验收见 [安装说明](docs/INSTALLATION.md) 与 [T03 记录](docs/verification/T03.md)。
 
-桌面默认数据库为 `%LOCALAPPDATA%/PrismBrowser/app.db`，桌面壳的 WebView 数据在同根 `workbench-webview/`，与网页原型 localStorage 分离。单条创建/编辑保存 ID、显式 seed、精确内核引用、分组及偏好；旧档案的 `kernel-pending` 不自动重绑定。内核诊断不等于环境可运行；批量任务、真实登录数据和备份仍待对应任务。不要把原型 JSON 导入生产数据库。
+桌面默认数据库为 `%LOCALAPPDATA%/PrismBrowser/app.db`，桌面壳的 WebView 数据在同根 `workbench-webview/`，与网页原型 localStorage 分离。保存 ID、显式 seed、精确内核引用、分组及偏好；旧档案的 `kernel-pending` 不自动重绑定。持久批量流程与完整导出源码存在但未验收，内核诊断不等于环境可运行。native `.prismbackup` 不携带内核本体，不承诺跨用户/重装/跨机器恢复登录；预检及正式恢复仍未实现。不要把原型 JSON 导入生产数据库。
 
 桌面内核页选择精确四段发行版本和预期 ZIP SHA-256；官方来源会核对所选 tag 的 Windows x64 ZIP 与官方摘要，本地来源需通过系统文件选择器并明确确认可信。验证通过后登记新的不可替换 ID，被引用构建不能直接移除。148.0.7778.215 是实测候选，不是生产推荐；资产缺失不会自动换版本。既有点击验证入口 `npm run verify:kernel` 保留，但当前不再执行；无点击真实探测入口见 [T04 记录](docs/verification/T04.md)。
 
@@ -95,7 +95,7 @@ npm run build:windows
 - 填入的代理凭据和 Cookie 是原型数据，可能以明文保存在当前浏览器。请勿输入真实账号 Cookie、真实代理密码或其他敏感资料。
 - 原型快照包含环境配置、示例 Cookie、代理及内核元数据；导出排除代理密码。它不包含 Chromium 用户目录，也不能作为真实店铺登录状态的完整备份。
 - 恢复会替换环境、代理和内核配置，保留原指纹种子；代理密码清空、检查状态重置。恢复前需停止所有模拟运行环境。
-- T01–T04已验收，T05–T10本地实现待验收。DPAPI不可直接跨Windows用户/机器恢复，HTTP/SOCKS5到代理不加密认证，HTTPS才TLS到代理；HTTP只接Basic。术语见 [GLOSSARY.md](GLOSSARY.md)。通道仅接受内部前检/准确Job进程，普通用户/沙箱未实测；SOCKS5远端目标解析不含代理host自身DNS，更不能证明全路径保护；CDP Cookie及真实目录备份恢复待后续。
+- T01–T04已验收，其后源码实现不当真实验收。DPAPI不可直接跨Windows用户/机器恢复，HTTP/SOCKS5到代理不加密认证，HTTPS才TLS到代理；HTTP只接Basic。术语见 [GLOSSARY.md](GLOSSARY.md)。通道仅接受内部前检/准确Job进程，普通用户/沙箱未实测；SOCKS5远端目标解析不含代理host自身DNS，更不能证明全路径保护；CDP Cookie、真实目录备份和新UI仍待验收，恢复待后票。
 - 指纹读值、浏览器功能兼容性和隔离效果需要后续真实运行验收。本项目不以隐蔽性评分或不封号承诺作为完成条件。
 
 ## 如何继续开发
@@ -110,7 +110,7 @@ npm run build:windows
 | [TRACEABILITY](docs/TRACEABILITY.md) | 12 项需求与路由、源码入口、建议验收的对应关系。        |
 | [ACCEPTANCE](docs/ACCEPTANCE.md)     | 本次真正执行过的检查、截图证据和待完成事项。           |
 
-核心前端位于 [`src/App.tsx`](src/App.tsx)，配置、解析和快照逻辑位于 [`src/domain.ts`](src/domain.ts)，领域测试位于 [`tests/domain.test.ts`](tests/domain.test.ts)。先完成单个真实环境的创建、启动、关闭、重开，再接入批量任务与完整备份；详细阶段门槛见开发方案。
+核心前端位于 [`src/App.tsx`](src/App.tsx)，演示配置/解析/快照位于 [`src/domain.ts`](src/domain.ts)，本机服务位于 [`internal/workspace/`](internal/workspace/)，原生包与文件边界位于 [`internal/backup/`](internal/backup/)。先按用户授权逐票完成源码，再补暂停的单环境、批次/备份与真实恢复验收；详细阶段门槛见开发方案。
 
 ## 许可与来源
 

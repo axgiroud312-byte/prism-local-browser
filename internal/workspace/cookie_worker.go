@@ -20,7 +20,7 @@ func (s *Service) cookieTaskReady(task *cookieImportTask) bool {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	slot := task.slot
-	if s.closed || s.closeRequested.Load() || s.runtimeSlots[task.operation.EnvironmentID] != slot || slot.process == nil || slot.session.SessionID != task.operation.SessionID || slot.session.State != "running" || slot.session.PersistencePending || slot.session.NeedsReconcile || slot.session.NetworkFault != nil || runtimeStopPending(slot) {
+	if s.closed || s.closeRequested.Load() || s.backupUses[task.operation.EnvironmentID] != nil || s.runtimeSlots[task.operation.EnvironmentID] != slot || slot.process == nil || slot.session.SessionID != task.operation.SessionID || slot.session.State != "running" || slot.session.PersistencePending || slot.session.NeedsReconcile || slot.session.NetworkFault != nil || runtimeStopPending(slot) {
 		return false
 	}
 	_, revision, _, err := s.readEnvironment(task.operation.EnvironmentID)

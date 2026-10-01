@@ -189,6 +189,14 @@ HTTP经目标流写origin-form，HTTPS经同本机CONNECT透传TLS；SOCKS5本�
 
 明确Cookie启动用途仍在原Runtime.Start链，仅本次不恢复标签和URLs，保保存修订/seed/精确内核/数据引用。T11真实proxy门禁不能因Cookie解锁。清空必须用户明确选择，只作用当前default context且确认空集合；失败重试合并、不重清或恢复其他数据。实际固定二进制写后读取、分区与A-B隔离仍待验收，源码不是证据。
 
+### T15 完整导出的实际目录边界（源码已编写，未运行验收）
+
+备份先取得原冻结环境ID的独立维护owner，阻重新启动/新Cookie写入；只用原正常Stop等待准确全树及持久观测，不按PID操作或升级ForceStop。独立[`初始化事实`](../internal/workspace/data_initialization.go)区分受理与launcher获得建立数据许可，旧记录迁移未知不推断空环境；停止后重读原ID，只有明确never允许缺目录，备份不通过创建空目录消除异常。
+
+[`CaptureProfile`](../internal/backup/profile_windows.go)父到子固定实际路径对象、独占已有runtime.lock、固定每个文件READ/shareREAD至复制、集合/对象复核和发布；拒reparse/可见hardlink/变化，保留空目录，不截断或删除源文件，不调用会EnsureDirectory的运行检查来读取未初始化状态。文件固定/空集合并不保证排除任意恶意同SID新增子条目，不能宣称强隔离。
+
+真实浏览数据和一致SQLite副本进入独立native包，逐文件SHA全量读回/Sync成功后以原输出文件句柄同目录不覆盖rename；不携带内核程序，清单保存精确版本/archive/executable hash，pending无捏造hash。DPAPI原ref/密文保存不称登录便携，浏览数据仍敏感。后续实际恢复须同用户上下文/准确内核与实际重开证据；T15静态和源码评审不证明这些已通过，[清单](verification/T15.md)、[D015](DECISIONS.md#d015--一致本机备份范围闭包与先核对再发布2026-10-01)。
+
 以下均是**面向 UI 的目标外部应用接口示例**，以 [DEVELOPMENT.md 的本地应用接口](DEVELOPMENT.md#6-本地应用接口) 为统一契约；T04/T05/T06实际已接接口以该文档的增量说明及源码为准，T06尚未运行验收。成功返回 `{ ok: true, data, operationId? }`，失败返回 `{ ok: false, error: { code, message, retryable, details? }, operationId? }`。ID 均为虚构示例；应用后端按 ID 解析内核、数据目录与凭据，前端不得提交任意可执行文件路径。
 
 生成预览请求；该调用不保存环境：

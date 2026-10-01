@@ -95,6 +95,7 @@ import { NativeRuntimeNetwork } from "./components/NativeRuntimeNetwork";
 import { NativeCookieImport } from "./components/NativeCookieImport";
 import { NativeBatchDialog, type NativeBatchDialogInput } from "./components/NativeBatchDialog";
 import { readRuntimeStartPlan } from "./application/runtime-start-plan";
+import { NativeBackupManager } from "./components/NativeBackupManager";
 import { FingerprintRevisionPanel } from "./components/FingerprintRevisionPanel";
 
 type Route =
@@ -272,6 +273,7 @@ export default function App({ application }: { application: ApplicationService }
   const [nativeProxyImportOpen, setNativeProxyImportOpen] = useState(false);
   const [nativeCookieEnvironment, setNativeCookieEnvironment] = useState<Environment | null>(null);
   const [nativeBatchInput, setNativeBatchInput] = useState<NativeBatchDialogInput | null>(null);
+  const [nativeBackupSelection, setNativeBackupSelection] = useState<string[]>([]);
   const [environmentQueryBusy, setEnvironmentQueryBusy] = useState(false);
   const [formError, setFormError] = useState("");
   const [generating, setGenerating] = useState(false);
@@ -1010,7 +1012,7 @@ export default function App({ application }: { application: ApplicationService }
                   添加代理
                 </Button>
               ) : route === "backups" ? (
-                <>
+                nativeMode ? <span className="subtle-text">原生完整包 · 恢复仍待后续开发</span> : <>
                   <Button onClick={() => backupFile.current?.click()}>
                     <ArrowUpFromLine size={16} />
                     导入快照
@@ -1225,7 +1227,7 @@ export default function App({ application }: { application: ApplicationService }
                       <Square size={13} />
                       批量关闭
                     </Button>
-                    {nativeMode && <><Button onClick={() => setNativeBatchInput({ kind: "clone", sourceIds: [...selected] })}><Copy size={14} />复制配置（新身份）</Button><Button onClick={() => setNativeBatchInput({ kind: "assign", sourceIds: [...selected] })}><Network size={14} />明确分配代理</Button></>}
+                    {nativeMode && <><Button onClick={() => setNativeBatchInput({ kind: "clone", sourceIds: [...selected] })}><Copy size={14} />复制配置（新身份）</Button><Button onClick={() => setNativeBatchInput({ kind: "assign", sourceIds: [...selected] })}><Network size={14} />明确分配代理</Button><Button onClick={() => { setNativeBackupSelection([...selected]); navigate("backups"); }}><HardDrive size={14} />完整备份所选</Button></>}
                     <Button
                       onClick={() => {
                         setDialog({ kind: "delete", ids: selected });
@@ -1807,7 +1809,7 @@ export default function App({ application }: { application: ApplicationService }
             </>
           )}
           {route === "backups" && (
-            <>
+            nativeMode ? <NativeBackupManager key={nativeBackupSelection.join(",")} application={application} workspace={workspace} selectedIds={nativeBackupSelection} /> : <>
               <input
                 ref={backupFile}
                 type="file"
