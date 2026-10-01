@@ -14,6 +14,8 @@ import (
 // path that is later bound to the browser's exact Job. A fresh host-only token
 // and TCP caller guard admit the probe; loopback alone is never authorization.
 func (b *Bridge) Preflight(ctx context.Context, progress func(Step)) Report {
+	ctx, cancel := context.WithTimeout(ctx, 25*time.Second)
+	defer cancel()
 	secret := make([]byte, 32)
 	if _, err := rand.Read(secret); err != nil {
 		return Report{Mode: "native", AdapterVersion: BridgeVersion, ChannelID: b.ID(), StartedAt: time.Now().UTC().Format(time.RFC3339Nano), FinishedAt: time.Now().UTC().Format(time.RFC3339Nano), Steps: []Step{}, Error: &CheckError{Code: "PROXY_BRIDGE_UNAVAILABLE", Message: "无法生成本次安全前检标识，未发起请求。", Retryable: true}}
@@ -66,9 +68,24 @@ func (b *Bridge) Preflight(ctx context.Context, progress func(Step)) Report {
 	report.Steps = append([]Step(nil), steps...)
 	mu.Unlock()
 	report.ChannelID, report.AdapterVersion = b.ID(), BridgeVersion
-	if observed != nil && (report.Error == nil || report.Error.Code != "OPERATION_CANCELLED" && report.Error.Code != "PROXY_CHECK_TIMEOUT") {
+	if b.config.Type == "socks5" {
+		report.ResolutionPolicy = SOCKS5ResolutionPolicy
+	}
+	if ctx.Err() != nil {
+		report.Error = &CheckError{Code: "OPERATION_CANCELLED", Message: "本次同通道前检已取消，未修改身份或改为直连。", Retryable: true}
+		if ctx.Err() == context.DeadlineExceeded {
+			report.Error.Code, report.Error.Message = "PROXY_CHECK_TIMEOUT", "本次同通道前检超过时限，未报告启动就绪或改为直连。"
+		}
+	} else if observed != nil && (report.Error == nil || report.Error.Code != "OPERATION_CANCELLED" && report.Error.Code != "PROXY_CHECK_TIMEOUT") {
 		copy := *observed
 		report.Error = &copy
+	}
+	if report.Error != nil {
+		for index := range report.Steps {
+			if report.Steps[index].Stage == "result" {
+				report.Steps[index].Status, report.Steps[index].Message = "failed", report.Error.Message
+			}
+		}
 	}
 	return report
 }

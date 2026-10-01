@@ -124,7 +124,7 @@ T05实际增量以 [应用接口](DEVELOPMENT.md#t05-固定档案增量已实现
 
 上游 `--proxy-server` 明确不支持密码验证，因此本地桥接是本项目需要开发并验证的部分，不能宣称选定内核已经解决认证。每个环境有独立桥接生命周期；桥接崩溃、上游断线和认证过期进入阻断状态，停止或隔离浏览器网络并提示恢复。
 
-T08已编写原生代理配置/DPAPI引用和[`独立前检`](../internal/proxy/check.go)，不跳验证、407不回退直连，SOCKS5检查未支持。T09随后接[`每会话桥接`](../internal/proxy/bridge.go)，正常启动重新经同监听instance前检，不拿T08历史成功代替；上游认证不进参数或普通响应。**两票均未实际验收，T11全路径运行期断线保护不因此通过。** HTTP认证链路不加密，HTTPS才提供TLS到代理；[T08](verification/T08.md)、[T09](verification/T09.md)。
+T08编写配置/DPAPI与独立HTTP/HTTPS前检，T09接[`每会话桥接`](../internal/proxy/bridge.go)，T10接SOCKS5并使独立检查也走Bridge链；环境仍自己的新instance同通道重检，不凭历史成功。认证不进参数/普通响应。**T08–T10均未实际验收，不算T11全路径保护通过。** HTTP/SOCKS5不加密认证，HTTPS才TLS到代理；[T08](verification/T08.md)、[T09](verification/T09.md)、[T10](verification/T10.md)。
 
 **断线不直连是待验收要求。**单个代理参数、启动前测试或前端状态变化都不证明断线保护已实现。正式验收必须覆盖代理进程退出、上游断网、DNS、IPv6、WebRTC、UDP/QUIC、WebSocket 与重连；观察实际出口，确认不会切换到本机直连。若某网络路径无法满足该要求，应在后端关闭该路径或阻止环境运行，并准确报告限制。
 
@@ -153,6 +153,14 @@ CDP 默认不开启。需要身份探测或本机自动化时，优先采用本�
 正常启动固定 `--proxy-server=http://127.0.0.1:<private-port>`、`--proxy-bypass-list=<-loopback>`，没有上游凭据/token或DIRECT备选；QUIC和非代理WebRTC UDP受限，但不能以参数替代T11实际泄漏验证。标准HTTP、CONNECT、HTTPS到代理TLS分别处理，明文HTTP Upgrade拒绝；同桥前检持久成功后才创建/报告进程就绪。
 
 创建成功而首次时间读取失败也返回准确Job所有者和资源，不能只关原Job句柄就释放锁。记录实际PID及明确空时间异常；未确认全树退出仍busy。重开空时间不打开/控制barePID，只在Job空、实际锁空闲且原session元数据对应时证明旧树已退。当前均源码结论，[T09待验收](verification/T09.md)，没有实际API/普通用户/网络/浏览器证据。
+
+### T10 SOCKS5与DNS边界
+
+[`SOCKS5`](../internal/proxy/socks5.go)在T09准入/生命周期内仅协商保存单一方法，不降级。CONNECT域名以IDNA DOMAINNAME交上游，IPv4/IPv6按字节；只拨保存代理，代理host自身本机解析与目标DNS分开。完整BND帧不当出口IP，IPv6支持以实际回复为准。[D011](DECISIONS.md#d011--socks5目标域名固定远端解析且认证不降级2026-10-01)。
+
+HTTP经目标流写origin-form，HTTPS经同本机CONNECT透传TLS；SOCKS5本身不加密认证。独立检查临时Bridge，环境自己的新桥同通道前检；只有安全策略/ID/修订/阶段进报告，RPC不能覆写DNS或直连。UDP ASSOCIATE/BIND未支持，明文HTTP Upgrade仍阻断。
+
+无真实SOCKS5/DNS/Windows浏览器或新页面证据，[T10清单](verification/T10.md)。远端目标解析不证明后台DNS、UDP/QUIC、WebRTC或WebSocket/重连无泄漏；T11须后端关闭不满足路径/阻止运行并补实际证据，不能只凭参数/前检。
 
 ## 请求与返回合同
 

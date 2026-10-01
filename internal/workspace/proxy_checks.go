@@ -6,6 +6,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/axgiroud312-byte/prism-local-browser/internal/kernel"
 	"github.com/axgiroud312-byte/prism-local-browser/internal/proxy"
 )
 
@@ -110,7 +111,17 @@ func (s *Service) runProxyCheck(ctx context.Context, task *proxyCheckTask, recor
 	check := s.options.CheckProxy
 	if check == nil {
 		check = func(ctx context.Context, config proxy.Configuration, credentials *proxy.Credentials, progress func(proxy.Step)) proxy.Report {
-			return proxy.Check(ctx, config, credentials, proxy.CheckOptions{}, progress)
+			channel, err := proxy.OpenBridge(config, credentials, proxy.BridgeOptions{ChannelID: id(), AuthorizeProbe: kernel.AuthorizeProxyProbe})
+			if err != nil {
+				observed := &proxy.CheckError{Code: "PROXY_BRIDGE_UNAVAILABLE", Message: "独立前检通道无法建立，没有直连请求。", Retryable: true}
+				var problem *proxy.CheckError
+				if errors.As(err, &problem) {
+					observed = problem
+				}
+				return proxy.Report{Mode: "native", AdapterVersion: proxy.BridgeVersion, StartedAt: timestamp(), FinishedAt: timestamp(), Steps: []proxy.Step{}, Error: observed}
+			}
+			defer channel.Close()
+			return channel.Preflight(ctx, progress)
 		}
 	}
 	report := check(ctx, record.Configuration, credentials, progress)

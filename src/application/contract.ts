@@ -154,6 +154,7 @@ export interface ProxyImportPreview {
 }
 export interface ProxyCheckReport {
 	channelId?: string;
+  resolutionPolicy?: "remote-target-dns";
   mode: "native"; adapterVersion: string; proxyId: string; revision: number;
   startedAt: string; finishedAt: string; durationMs: number; targetOrigin: string;
   steps: { stage: string; status: "running" | "passed" | "failed" | "unsupported"; time: string; message: string }[];

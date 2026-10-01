@@ -1,11 +1,11 @@
 # Goal 当前执行位置
 
-更新时间：2026-10-01 13:49 Asia/Shanghai。
+更新时间：2026-10-01 14:05 Asia/Shanghai。
 
 - Goal：执行中；[规则](GOAL.md)；完成 **4/21**（验收任务计数）。
-- 当前任务：T09 / [Issue #10](https://github.com/axgiroud312-byte/prism-local-browser/issues/10)，已实现待验收，准备本地提交后继续T10。
-- 当前步骤：每会话认证桥、同通道前检与启动、Windows准确Job/TCP caller准入、NativeRuntimeNetwork已接。共5 P2源码闭环，最后聚焦无剩余可信P1/P2；13:42最终生产proxy/kernel/workspace静态编译，13:49最后前端TS类型/33份文档/格式通过。6+3+8+2回归仅编写，T11全路径保护未实现验收，不运行测试/网络/浏览器/点击/CI或完整构建。
-- 现场：`goal/t09-authenticated-proxy-channels`，基于T08 `f020076`；未提交为proxy桥/前检、kernel准入/参数/资源责任与workspace启停接入、前端安全策略/报告、新回归和文档。旧证据/安装包/内核保留，无用户遗留改动，不因C盘空间恢复重跑完整构建。
+- 当前任务：T10 / [Issue #11](https://github.com/axgiroud312-byte/prism-local-browser/issues/11)，已实现待验收，准备本地提交；T05–T09待验收。
+- 当前步骤：SOCKS5指定无认证/用户名密码方法、远端IDNA域名/IPv4/IPv6、同桥检查/浏览器链已接，native两页共享阶段/策略。1 P2（协议切换keep错误误分类）已源码闭环，无剩余可信P1/P2。14:00生产proxy/kernel/workspace静态编译、源码/测试TS类型/格式通过；7+6+2回归仅编写，不运行测试/网络/浏览器/点击/CI或完整构建。
+- 现场：`goal/t10-socks5-remote-dns`，基于T09 `f6ebca1`；未提交为SOCKS协议/Bridge/协议凭据校验、检查/启动增量、native阶段/策略/字节限额、新回归与文档。旧证据/安装包/内核保留，无用户遗留改动。
 
 ## 任务状态
 
@@ -19,8 +19,8 @@
 | T06 | #7 | 已实现待验收 | 本地 `ead0bc6`；[验收清单](verification/T06.md)，无推送/PR，原blocking状态保留 |
 | T07 | #8 | 已实现待验收 | 本地 `e4e427f`；[验收清单](verification/T07.md)，原blocking #7仍OPEN，无PR/推送 |
 | T08 | #9 | 已实现待验收 | 本地 `f020076`；[验收清单](verification/T08.md)，blocking #3 CLOSED，无PR/推送 |
-| T09 | #10 | 已实现待验收 | [验收清单](verification/T09.md)；准备本地提交，原blocking #7/#9仍OPEN，无PR/推送 |
-| T10 | #11 | 待开始 | — |
+| T09 | #10 | 已实现待验收 | 本地 `f6ebca1`；[验收清单](verification/T09.md)，原blocking #7/#9仍OPEN，无PR/推送 |
+| T10 | #11 | 已实现待验收 | [验收清单](verification/T10.md)；准备本地提交，唯一blocking #10仍OPEN |
 | T11 | #12 | 待开始 | — |
 | T12 | #13 | 待开始 | — |
 | T13 | #14 | 待开始 | — |
@@ -109,6 +109,9 @@
 - 13:24–13:42：T09接每会话独立认证桥接和同instance前检，HTTP/HTTPS上游、CONNECT与TLS分开；Windows反向TCP tuple/PID句柄/准确Job及二次新鲜查询准入，创建前QUERY副本绑定，同生命周期关闭。运行服务锁外网络/解密、前检报告持久成功后才启动；策略严格匹配绑定，不降direct。新UI显示同通道启动前修订/时刻/IP，不冒充持续网页采样。首轮4 P2为临时HTTP响应、SSE缓冲、DPAPI全局锁、创建成功后time失败提前释放锁；已修循环最终响应/逐块刷新、锁内只读密文锁外解密+代际ctx核对、资源立即转移给准确Job监督器并保留unknown-time特例到全树确认。13:42修复版生产包静态编译/源码测试TS类型/格式通过；6+3+8+2条回归未执行，复核中，无网络/程序/点击/CI。
 - 13:46：33份文档/本地链接/需求/路由/嵌入文档检查通过。二轮只读确认原4 P2闭环，新发现needsReconcile的历史PID被UI标当前通道；已不按PID判断，在历史详情明确当前未接管或重建桥接，最后聚焦复核中。
 - 最后聚焦确认历史报告P2已源码关闭，无剩余可信P1/P2；不等于实际验收。只读预读T10 #11全文、四项验收及blocking #10 OPEN，后续按D007消费本地T09成果；本票提交前不写T10。
+- 13:50：T09本地提交f6ebca1，工作树干净后切T10分支，无推送/PR；继续SOCKS5与远端DNS策略。既有未验收票保持OPEN，验收仍4/21，无CI/网络/浏览器/点击/测试。
+- 13:50–14:00：T10接RFC1928/1929单一方法不降级、IDNA DOMAINNAME远端目标DNS/IPv4/IPv6及完整BND，HTTP origin-form/HTTPS隧道共用T09Bridge。独立检查临时Bridge、normalStart自己的新桥重检，协议凭据校验/keep不读取改写，SOCKS用户名冒号不误用HTTP规则；native共享stage/安全策略、UTF8字节限额/计数，代理host DNS自身仍本机。首轮1 P2为切HTTP并keep后误报bridge/process，已统一PROXY_AUTH_INVALID，最后只读闭环无剩余可信P1/P2。14:00必要生产静态/TS类型/格式通过，7+6+2回归未执行、Go测试包未编译，无DNS/网络/程序/点击/CI或安装构建。
+- 14:05：最后34份文档/本地链接/需求/路由/嵌入文档及格式通过。只读预读T11 #12全文、四项验收及唯一blocking #11 OPEN，无承担者/该预定分支PR；本票提交前不写T11，后续按D007消费本地T10。
 - 13:19–13:21：二轮确认首3项关闭，剩3 P2：原ctx固定拨号丢连接trace阶段、body/排队取消与期限误归因、超大文件未废旧preview。已实际Dial明确发阶段、真实ctx区分取消/超时/响应错误、非空文件先Discard再校验，补body受控回归与连接阶段断言。既有x/net IDNA标direct（不升版本/sum不变），许可注記补齐。13:21最后生产包静态编译、源码/测试TS类型与格式通过；最后聚焦只读复核无剩余可信P1/P2，仅源码结论。7+7+3新增回归未执行，准备本地T08提交，无网络/程序/UI/CI。
 
 ## 恢复资源与 GitHub

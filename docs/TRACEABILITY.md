@@ -84,6 +84,12 @@ UX-001、DOC-001 的发布入口在 [安装器](../build/windows/installer/prism
 - PRX-001、DATA-001：[`Windows调用进程核对`](../internal/kernel/proxy_guard_windows.go)和创建前QUERY副本绑定；仅当前host+token前检或准确Job客户端，其他进程拒绝。创建后身份读取失败仍保留准确Job/目录资源直到全树确认，锁外解密不阻塞其他查询/停止；重开只核对不复活桥。
 - UX-001、ENV-003：[`NativeRuntimeNetwork`](../src/components/NativeRuntimeNetwork.tsx)和App固定direct/proxy策略、未绑定确认直连；安全报告与会话channel/修订错配拒绝。6条桥接/3条内核/8条服务/2条adapter回归仅编写未执行，实际Windows/普通用户沙箱/API/网络/新页面未验证；[清单](verification/T09.md)，T11不因参数或前检通过。
 
+### T10 SOCKS5与远端目标解析（已实现，未运行验收）
+
+- PRX-001、ENV-003：[`SOCKS5`](../internal/proxy/socks5.go)、Bridge及服务，RFC1928/1929指定方法不降级、IDNA DOMAINNAME远端目标DNS/IPv4/IPv6字节，HTTP origin-form/HTTPS隧道不漏认证、只拨上游；BND不当出口IP，错误有准确类型。
+- PRX-001：导入/replace协议校验，存储解码中性，keep不解密/改写；切协议不兼容建桥前PROXY_AUTH_INVALID。独立检查临时Bridge，normalStart自己的新桥同通道重检；schema5表不变，安全resolutionPolicy可选，RPC不能覆盖DNS/降级。
+- UX-001、ENV-003：[`共享阶段`](../src/application/proxy-network.ts)及native两页显示策略/字节范围/计数、不加密链路及代理host/目标DNS区分。7条代理库/6条服务/2条adapter回归仅编写未执行，[清单](verification/T10.md)，无真实DNS/Windows浏览器/页面，T11未通过。
+
 以下关联于 2026-09-30 发布，表示计划实现范围，不能据此判断已完成。当前状态与 blocking 依赖以 GitHub 为准；完整顺序见 [开发票据索引](ISSUES.md)，共同范围见 [总规格 Issue](https://github.com/axgiroud312-byte/prism-local-browser/issues/1)。
 
 | 需求 ID  | 实现或专项验证 Issue                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | 整体验收                                                                       |

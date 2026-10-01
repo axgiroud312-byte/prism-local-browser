@@ -37,16 +37,17 @@ type Step struct {
 	Message string `json:"message"`
 }
 type Report struct {
-	ChannelID      string      `json:"channelId,omitempty"`
-	Mode           string      `json:"mode"`
-	AdapterVersion string      `json:"adapterVersion"`
-	ProxyID        string      `json:"proxyId"`
-	Revision       int64       `json:"revision"`
-	StartedAt      string      `json:"startedAt"`
-	FinishedAt     string      `json:"finishedAt"`
-	DurationMS     int64       `json:"durationMs"`
-	TargetOrigin   string      `json:"targetOrigin"`
-	Steps          []Step      `json:"steps"`
-	ExitIP         string      `json:"exitIp,omitempty"`
-	Error          *CheckError `json:"error,omitempty"`
+	ChannelID        string      `json:"channelId,omitempty"`
+	ResolutionPolicy string      `json:"resolutionPolicy,omitempty"`
+	Mode             string      `json:"mode"`
+	AdapterVersion   string      `json:"adapterVersion"`
+	ProxyID          string      `json:"proxyId"`
+	Revision         int64       `json:"revision"`
+	StartedAt        string      `json:"startedAt"`
+	FinishedAt       string      `json:"finishedAt"`
+	DurationMS       int64       `json:"durationMs"`
+	TargetOrigin     string      `json:"targetOrigin"`
+	Steps            []Step      `json:"steps"`
+	ExitIP           string      `json:"exitIp,omitempty"`
+	Error            *CheckError `json:"error,omitempty"`
 }

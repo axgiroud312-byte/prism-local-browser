@@ -4,6 +4,7 @@ import { WailsAdapter, type NativeBridge, type NativeRequest } from "../src/appl
 import type { ApplicationResult, Operation, OperationEvent, RuntimeSession, WorkspaceView, ProxyUpdateRequest, ProxyTargetRequest } from "../src/application/contract.ts";
 import type { Environment } from "../src/domain.ts";
 import { applyFingerprint, demoFingerprint, demoProfile, fingerprintMatchesConfiguration } from "../src/application/fingerprint-model.ts";
+import { proxyResolutionLabel, proxyStageLabel } from "../src/application/proxy-network.ts";
 
 const empty = (): WorkspaceView => ({ mode: "native", state: { schemaVersion: 1, environments: [], proxies: [], kernels: [], backups: [], activities: [] } });
 const ok = <T>(data: T): ApplicationResult<T> => ({ ok: true, mode: "native", data });
@@ -19,6 +20,24 @@ const environment: Environment = {
   fingerprintVersion: "windows-desktop-v1", status: "ready", cookies: [], createdAt: "2026-09-30T00:00:00Z",
 };
 const operation: Operation = { id: "synthetic-operation", kind: "create", state: "completed", total: 1, completedIds: [environment.id], cancelRequested: false };
+
+test("SOCKS5 library checks and runtime starts cannot send local-DNS/auth-downgrade overrides", async () => {
+  const { app, calls } = fixture(request => request.method === "Workspace.Read" ? ok(empty()) : rejected);
+  await app.checkProxy({ proxyId: "synthetic-socks", expectedRevision: 2, requestId: "synthetic-check", resolutionPolicy: "local", resolveLocally: true, fallback: "no-auth" } as ProxyTargetRequest);
+  await app.startRuntime({ environmentId: "synthetic-environment", requestId: "synthetic-start", networkPolicy: "proxy", resolutionPolicy: "local", fallback: "DIRECT" } as Parameters<WailsAdapter["startRuntime"]>[0]);
+  assert.deepEqual(calls.find(call => call.method === "Proxy.Check")?.payload, { proxyId: "synthetic-socks", expectedRevision: 2, requestId: "synthetic-check" });
+  assert.deepEqual(calls.find(call => call.method === "Runtime.Start")?.payload, { environmentId: "synthetic-environment", requestId: "synthetic-start", networkPolicy: "proxy" });
+  assert.ok(!JSON.stringify(calls).includes("resolveLocally")); assert.ok(!JSON.stringify(calls).includes("fallback"));
+});
+
+test("SOCKS5 safe reports keep fixed remote-DNS policy and share stage vocabulary", async () => {
+  const report = { mode: "native" as const, adapterVersion: "synthetic-host-only", proxyId: "synthetic-socks", revision: 2, channelId: "synthetic-check-channel", resolutionPolicy: "remote-target-dns" as const, startedAt: "2026-10-01T00:00:00Z", finishedAt: "2026-10-01T00:00:01Z", durationMs: 1000, targetOrigin: "https://synthetic.invalid", steps: [{ stage: "socks-negotiation", status: "passed", time: "2026-10-01T00:00:00Z", message: "仅合成报告，不是网络验收。" }], exitIp: "203.0.113.101" };
+  const workspace = { ...empty(), nativeProxyRecords: [{ id: report.proxyId, name: "合成SOCKS5", type: "socks5" as const, host: "127.0.0.1", port: 1080, country: "", revision: 2, hasAuthentication: false, status: "connected" as const, usedBy: [], checkReport: report }] };
+  const { app } = fixture(() => ok(workspace)); assert.ok((await app.refresh()).ok);
+  assert.equal(app.getSnapshot().nativeProxyRecords?.[0].checkReport?.resolutionPolicy, "remote-target-dns");
+  assert.equal(proxyStageLabel("socks-negotiation"), "SOCKS5方法协商"); assert.equal(proxyStageLabel("ipv6-target"), "IPv6目标连接"); assert.equal(proxyStageLabel("future-stage"), "future-stage");
+  assert.match(proxyResolutionLabel(report.resolutionPolicy), /上游解析/); assert.equal(proxyResolutionLabel(undefined), "未记录目标解析策略");
+});
 
 test("native starts empty/loading, has no demo compatibility and only publishes native reads", async () => {
   const workspace = empty();

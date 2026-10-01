@@ -166,9 +166,6 @@ func (s *Service) runtimeCall(request Request) Result {
 		if err != nil {
 			return failure("PROXY_UNAVAILABLE", "已绑定代理配置不存在或无法读取，未启动或改为直连。", true)
 		}
-		if record.Type != "http" && record.Type != "https" {
-			return failure("PROXY_UNSUPPORTED", "该代理协议的浏览器通道未支持，未启动或改为直连。", false)
-		}
 		if s.proxyChecks[record.ID] != nil && s.proxyPending[s.proxyChecks[record.ID].operation.ID] != nil {
 			return failure("STORAGE_WRITE_FAILED", "该代理前一个观测结果尚未保存，未启动；请先修复存储。", true)
 		}

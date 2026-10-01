@@ -64,8 +64,17 @@ func Normalize(config Configuration) (Configuration, error) {
 }
 
 func ValidateCredentials(credentials Credentials) error {
-	if !safeText(credentials.Username, 4096) || !safeText(credentials.Password, 4096) || strings.Contains(credentials.Username, ":") || credentials.Username == "" && credentials.Password == "" {
+	if ValidateStoredCredentials(credentials) != nil || strings.Contains(credentials.Username, ":") {
 		return errors.New("认证字段无效；用户名不能含冒号或控制字符，空凭据请明确选择清除认证。")
+	}
+	return nil
+}
+
+// The encrypted envelope is protocol-neutral. Validate delimiter and wire
+// length rules only when the chosen protocol reads/saves that envelope.
+func ValidateStoredCredentials(credentials Credentials) error {
+	if !safeText(credentials.Username, 4096) || !safeText(credentials.Password, 4096) || credentials.Username == "" && credentials.Password == "" {
+		return errors.New("受保护认证字段无效。")
 	}
 	return nil
 }
@@ -109,7 +118,7 @@ func ParseLine(raw string) (Configuration, *Credentials, error) {
 	if u.User != nil {
 		password, _ := u.User.Password()
 		value := Credentials{Username: u.User.Username(), Password: password}
-		if err := ValidateCredentials(value); err != nil {
+		if err := ValidateProtocolCredentials(config.Type, value); err != nil {
 			return config, nil, err
 		}
 		credentials = &value

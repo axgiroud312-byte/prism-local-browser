@@ -215,11 +215,18 @@ func (s *Service) updateProxy(input ProxyUpdate, signature string) Result {
 	var credentials *proxy.Credentials
 	if change.Action == "replace" {
 		value := proxy.Credentials{Username: change.Username, Password: change.Password}
-		if proxy.ValidateCredentials(value) != nil {
+		if err := proxy.ValidateProtocolCredentials(config.Type, value); err != nil {
+			var protocolError *proxy.CheckError
+			if errors.As(err, &protocolError) {
+				return failure(protocolError.Code, protocolError.Message, protocolError.Retryable)
+			}
 			return failure("PROXY_INVALID", "新认证字段无效；没有保存。", false)
 		}
 		credentials = &value
 	}
+	// keep never reads or rewrites a secret (including metadata-only edits).
+	// If a protocol change makes old credentials incompatible, the protected
+	// check/start path rejects them before dialing. Never silently clear them.
 	record, oldRef, err := s.savedProxy(input.ProxyID)
 	if errors.Is(err, sql.ErrNoRows) {
 		return failure("NOT_FOUND", "代理已不存在，请刷新。", true)

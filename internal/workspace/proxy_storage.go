@@ -260,7 +260,7 @@ func (s *Service) decodeProtectedProxyCredentials(ref string, protected []byte) 
 	}
 	defer proxy.Wipe(plain)
 	var credentials proxy.Credentials
-	if json.Unmarshal(plain, &credentials) != nil || proxy.ValidateCredentials(credentials) != nil {
+	if json.Unmarshal(plain, &credentials) != nil || proxy.ValidateStoredCredentials(credentials) != nil {
 		return nil, errors.New("protected proxy credentials invalid")
 	}
 	return &credentials, nil

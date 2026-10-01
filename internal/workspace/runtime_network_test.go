@@ -170,7 +170,6 @@ func TestRuntimeProxyCallerCannotOverridePolicyEndpointTLSOrAuthentication(t *te
 	record := importProxyFixture(t, s, "socks5://localhost:1080")
 	bindRuntimeProxyFixture(t, s, environment, record)
 	wantError(t, call(s, "Runtime.Start", runtimeRequest{EnvironmentID: environment.ID, RequestID: id(), NetworkPolicy: "direct"}), "PROXY_POLICY_MISMATCH")
-	wantError(t, call(s, "Runtime.Start", runtimeRequest{EnvironmentID: environment.ID, RequestID: id(), NetworkPolicy: "proxy"}), "PROXY_UNSUPPORTED")
 	wantError(t, call(s, "Runtime.Start", map[string]any{"environmentId": environment.ID, "requestId": id(), "networkPolicy": "proxy", "endpoint": "http://127.0.0.1:8080", "skipTlsVerify": true, "password": "SYNTHETIC_CLIENT_SECRET"}), "VALIDATION_FAILED")
 }
 func TestSavedProxySessionRecoversWithoutRecreatingChannelOrNetwork(t *testing.T) {

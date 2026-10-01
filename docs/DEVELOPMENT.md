@@ -148,10 +148,18 @@ app-data/
 
 - [`Bridge`](../internal/proxy/bridge.go)为每次运行session建独立TCP4 loopback监听，仅向固定HTTP/HTTPS上游拨号。标准HTTP转发与CONNECT分开；HTTPS上游先校验TLS，不跳验证，认证只给上游。临时响应继续读最终状态、流式正文刷新；明文HTTP Upgrade明确阻断，TLS隧道字节透传。
 - [`准入`](../internal/kernel/proxy_guard_windows.go)将loopback与身份核对分离：前检需hostTCP caller和私有token；正常浏览器需准确Job成员进程句柄、反向TCP tuple和二次新鲜查询。QUERY副本创建前绑定、与本次channel/进程同生命周期，不按裸PID/进程名放行；边界[D010](DECISIONS.md#d010--每会话代理通道只接纳其受控调用进程2026-10-01)，普通用户/沙箱兼容性未实测。
-- `Runtime.Start`的networkPolicy允许direct/proxy，必须匹配已保存绑定；proxy不能降direct，SOCKS5不支持。受理并预留busy后，锁内只读受保护密文、锁外解密/建桥；同监听instance前检与安全报告事务保存成功后才启动真实浏览器。网络端点/token/上游秘密不进入RPC/日志/进程参数；只返回安全ChannelID/配置修订及阶段。
+- `Runtime.Start`策略direct/proxy必须匹配保存绑定，proxy不能降direct；T09提交时SOCKS5未接，后续T10接入。预留busy后锁内读密文、锁外解密/建桥；同监听前检及报告事务提交后才启动。endpoint/token/上游秘密不进入RPC/日志/参数，只返回安全ChannelID/修订/阶段。
 - schema5表不变，runtime session JSON增加代理ID/修订/channelID/安全报告。取消/失败/Job全树退出/应用关闭收敛对应通道；Done含桥接和进程资源，存储重试不重复网络，重开仅核对不恢复桥。创建后时间观测失败仍保留原始句柄/Job并观察全树退出，空时间特殊记录不猜PID；恢复同时核对精确Job、实际锁和原session元数据。
 - 前端[`NativeRuntimeNetwork`](../src/components/NativeRuntimeNetwork.tsx)显示启动前的同通道阶段与本次/历史IP，不把它叫持续网页出口；待核对原PID只能展示历史报告，明确当前未接管/重建旧桥。未绑定环境仍显式确认直连，已绑定按proxy策略；Wails拒绝演示报告与channel/配置修订错配。
 - 所有新增回归仅编写，没有实际Windows/API准入/公共网络/真实浏览器或新页面验收，[清单](verification/T09.md)。代理参数及QUIC/WebRTC UDP限制不是全路径无泄漏证据，T11运行期故障/隔离与恢复仍待实现验收。
+
+### T10 SOCKS5与远端目标解析（已实现，未运行验收）
+
+- [`SOCKS5`](../internal/proxy/socks5.go)共用Bridge/会话生命周期，RFC1928 CONNECT及RFC1929无认证/用户名密码单一方法，不降级。认证各1–255个UTF-8字节，SOCKS用户名冒号合法，HTTP Basic不合法；存储解码中性，keep不读取/改写，切协议不兼容建桥前PROXY_AUTH_INVALID。
+- IDNA DOMAINNAME交上游解析，IPv4/IPv6按字节；只Dial保存代理，不本机解析目标或直连，代理host自身仍可本机DNS。完整BND帧不当出口IP，地址不支持/不可达准确报告。[D011](DECISIONS.md#d011--socks5目标域名固定远端解析且认证不降级2026-10-01)。
+- HTTP经SOCKS流写origin-form，HTTPS目标CONNECT后透传，认证不进目标/RPC。独立Proxy.Check也走临时Bridge；环境仍自己的新桥同通道重检。底层proxy.Check只是桥内HTTP入口原语，不是SOCKS公开服务路径。
+- 报告JSON增可选安全resolutionPolicy，schema5表不变；取消/超时优先、result与最终错误一致。两native页面用[`共享阶段`](../src/application/proxy-network.ts)显示策略/认证字节范围/不加密边界，RPC不得覆盖DNS/目标/认证或DIRECT回退。
+- 7条代理库/6条服务/2条adapter回归仅编写未执行，无真实DNS/API/Windows浏览器或新页面证据，[清单](verification/T10.md)。远端目标解析不是全路径DNS保证，SOCKS UDP/BIND未支持，T11关闭/隔离/故障恢复待后续。
 
 ## 6 本地应用接口
 
