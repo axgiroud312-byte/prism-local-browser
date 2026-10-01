@@ -53,6 +53,9 @@ type Bridge struct {
 	serveDone      chan struct{}
 	done           chan struct{}
 	closeOnce      sync.Once
+	faultOnce      sync.Once
+	failed         chan struct{}
+	monitors       sync.WaitGroup
 }
 type bridgeClientKey struct{}
 
@@ -71,7 +74,7 @@ func OpenBridge(config Configuration, credentials *Credentials, options BridgeOp
 		return nil, &CheckError{Code: "PROXY_BRIDGE_UNAVAILABLE", Message: "本次环境的独立本机通道无法建立，未启动。", Retryable: true}
 	}
 	ctx, cancel := context.WithCancel(context.Background())
-	b := &Bridge{config: config, opts: options, listener: listener, ctx: ctx, cancel: cancel, probes: map[string]*bridgeProbe{}, connections: map[net.Conn]bool{}, forwardGate: make(chan struct{}, 64), serveDone: make(chan struct{}), done: make(chan struct{})}
+	b := &Bridge{config: config, opts: options, listener: listener, ctx: ctx, cancel: cancel, probes: map[string]*bridgeProbe{}, connections: map[net.Conn]bool{}, forwardGate: make(chan struct{}, 64), serveDone: make(chan struct{}), done: make(chan struct{}), failed: make(chan struct{})}
 	if credentials != nil {
 		copy := *credentials
 		b.authentication = &copy
@@ -93,11 +96,12 @@ func OpenBridge(config Configuration, credentials *Credentials, options BridgeOp
 		},
 	}
 	go func() {
-		err := b.server.Serve(listener)
+		_ = b.server.Serve(listener)
 		b.mu.Lock()
 		unexpected := !b.closing
-		if unexpected && err != nil {
+		if unexpected && b.fatal == nil {
 			b.fatal = &CheckError{Code: "PROXY_BRIDGE_UNAVAILABLE", Message: "本次本机代理监听已中断，没有切换直连；请先关闭本次环境。", Retryable: true}
+			b.faultOnce.Do(func() { close(b.failed) })
 		}
 		b.mu.Unlock()
 		close(b.serveDone)
@@ -109,9 +113,10 @@ func OpenBridge(config Configuration, credentials *Credentials, options BridgeOp
 }
 
 // Endpoint is private launch material. The UI only receives ChannelID.
-func (b *Bridge) Endpoint() string      { return "http://" + b.listener.Addr().String() }
-func (b *Bridge) ID() string            { return b.opts.ChannelID }
-func (b *Bridge) Done() <-chan struct{} { return b.done }
+func (b *Bridge) Endpoint() string        { return "http://" + b.listener.Addr().String() }
+func (b *Bridge) ID() string              { return b.opts.ChannelID }
+func (b *Bridge) Done() <-chan struct{}   { return b.done }
+func (b *Bridge) Failed() <-chan struct{} { return b.failed }
 func (b *Bridge) Fault() *CheckError {
 	b.mu.Lock()
 	defer b.mu.Unlock()
@@ -128,6 +133,8 @@ func (b *Bridge) BindBrowser(guard func(net.Conn) bool) error {
 		return &CheckError{Code: "PROXY_BRIDGE_UNAVAILABLE", Message: "本次代理通道已关闭或会话绑定不匹配，未报告浏览器就绪。", Retryable: true}
 	}
 	b.browserGuard = guard
+	b.monitors.Add(1)
+	go b.watchNetwork()
 	return nil
 }
 func (b *Bridge) track(conn net.Conn) bool {
@@ -158,6 +165,7 @@ func (b *Bridge) Close() error {
 		}
 		<-b.serveDone
 		b.workers.Wait()
+		b.monitors.Wait()
 		b.mu.Lock()
 		b.upstreamAuth = ""
 		if b.authentication != nil {
@@ -215,7 +223,14 @@ func (b *Bridge) event(probe *bridgeProbe, stage, status, message string) {
 		callback(Step{Stage: stage, Status: status, Time: time.Now().UTC().Format(time.RFC3339Nano), Message: message})
 	}
 }
-func (b *Bridge) reject(w http.ResponseWriter, probe *bridgeProbe, err *CheckError) {
+func (b *Bridge) reject(w http.ResponseWriter, ctx context.Context, probe *bridgeProbe, err *CheckError) {
+	err = requestContextFailure(ctx, err)
+	if probe == nil {
+		switch err.Code {
+		case "PROXY_UNREACHABLE", "PROXY_AUTH_FAILED", "PROXY_TLS_FAILED", "PROXY_SOCKS_NEGOTIATION_FAILED":
+			b.failNetwork(err)
+		}
+	}
 	if probe != nil {
 		b.mu.Lock()
 		probe.err = err
@@ -248,7 +263,7 @@ func (b *Bridge) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	case b.forwardGate <- struct{}{}:
 		defer func() { <-b.forwardGate }()
 	default:
-		b.reject(w, probe, &CheckError{Code: "PROXY_BRIDGE_BUSY", Message: "本次通道并发连接繁忙，未回退直连。", Retryable: true})
+		b.reject(w, r.Context(), probe, &CheckError{Code: "PROXY_BRIDGE_BUSY", Message: "本次通道并发连接繁忙，未回退直连。", Retryable: true})
 		return
 	}
 	if r.Method == http.MethodConnect {
@@ -258,7 +273,8 @@ func (b *Bridge) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	b.forwardHTTP(w, r, probe)
 }
 
-func (b *Bridge) dial(ctx context.Context, probe *bridgeProbe) (net.Conn, *CheckError) {
+func (b *Bridge) dial(ctx context.Context, probe *bridgeProbe) (_ net.Conn, failure *CheckError) {
+	defer func() { failure = requestContextFailure(ctx, failure) }()
 	startup, cancel := context.WithTimeout(ctx, 12*time.Second)
 	defer cancel()
 	b.event(probe, "upstream-connection", "running", "本机通道正在连接该环境绑定的上游代理。")
@@ -367,12 +383,12 @@ func cleanProxyHeaders(header http.Header) {
 func (b *Bridge) connect(w http.ResponseWriter, r *http.Request, probe *bridgeProbe) {
 	target, err := proxyDestination(r.Host)
 	if err != nil || r.ContentLength > 0 || len(r.TransferEncoding) != 0 {
-		b.reject(w, probe, &CheckError{Code: "PROXY_TARGET_FAILED", Message: "本次CONNECT目标或请求格式无效，未直连解析目标。", Retryable: false})
+		b.reject(w, r.Context(), probe, &CheckError{Code: "PROXY_TARGET_FAILED", Message: "本次CONNECT目标或请求格式无效，未直连解析目标。", Retryable: false})
 		return
 	}
 	upstream, failure := b.dial(r.Context(), probe)
 	if failure != nil {
-		b.reject(w, probe, failure)
+		b.reject(w, r.Context(), probe, failure)
 		return
 	}
 	defer func() { _ = upstream.Close(); b.untrack(upstream) }()
@@ -382,7 +398,7 @@ func (b *Bridge) connect(w http.ResponseWriter, r *http.Request, probe *bridgePr
 	var buffered io.Reader = upstream
 	if b.config.Type == "socks5" {
 		if failure := b.socksConnect(r.Context(), upstream, target, probe); failure != nil {
-			b.reject(w, probe, failure)
+			b.reject(w, r.Context(), probe, failure)
 			return
 		}
 	} else {
@@ -391,16 +407,16 @@ func (b *Bridge) connect(w http.ResponseWriter, r *http.Request, probe *bridgePr
 			request.Header.Set("Proxy-Authorization", b.upstreamAuth)
 		}
 		if err := request.Write(upstream); err != nil {
-			b.reject(w, probe, &CheckError{Code: "PROXY_UNREACHABLE", Message: "发送上游隧道请求失败，未使用直接目标连接。", Retryable: true})
+			b.reject(w, r.Context(), probe, &CheckError{Code: "PROXY_UNREACHABLE", Message: "发送上游隧道请求失败，未使用直接目标连接。", Retryable: true})
 			return
 		}
 		response, reader, err := readProxyResponse(upstream, request)
 		if err != nil {
-			b.reject(w, probe, &CheckError{Code: "PROXY_TARGET_FAILED", Message: "上游隧道响应无效或超过时限，不回显响应正文。", Retryable: true})
+			b.reject(w, r.Context(), probe, &CheckError{Code: "PROXY_TARGET_FAILED", Message: "上游隧道响应无效或超过时限，不回显响应正文。", Retryable: true})
 			return
 		}
 		if response.StatusCode != http.StatusOK {
-			b.reject(w, probe, upstreamStatus(response.StatusCode))
+			b.reject(w, r.Context(), probe, upstreamStatus(response.StatusCode))
 			return
 		}
 		b.event(probe, "upstream-authentication", "passed", "绑定上游接受本次隧道及保存的认证策略；凭据不传给目标。")
@@ -433,7 +449,7 @@ func (b *Bridge) connect(w http.ResponseWriter, r *http.Request, probe *bridgePr
 
 func (b *Bridge) forwardHTTP(w http.ResponseWriter, r *http.Request, probe *bridgeProbe) {
 	if r.URL == nil || r.URL.Scheme != "http" || r.URL.Hostname() == "" || r.URL.User != nil || r.URL.Fragment != "" || r.Header.Get("Upgrade") != "" {
-		b.reject(w, probe, &CheckError{Code: "PROXY_TARGET_FAILED", Message: "本机通道仅转发标准HTTP和CONNECT；非法目标或升级请求被阻断。", Retryable: false})
+		b.reject(w, r.Context(), probe, &CheckError{Code: "PROXY_TARGET_FAILED", Message: "本机通道仅转发标准HTTP和CONNECT；非法目标或升级请求被阻断。", Retryable: false})
 		return
 	}
 	port := r.URL.Port()
@@ -442,12 +458,12 @@ func (b *Bridge) forwardHTTP(w http.ResponseWriter, r *http.Request, probe *brid
 	}
 	target, err := proxyDestination(net.JoinHostPort(r.URL.Hostname(), port))
 	if err != nil {
-		b.reject(w, probe, &CheckError{Code: "PROXY_TARGET_FAILED", Message: "HTTP目标格式无效，未建立目标直连。", Retryable: false})
+		b.reject(w, r.Context(), probe, &CheckError{Code: "PROXY_TARGET_FAILED", Message: "HTTP目标格式无效，未建立目标直连。", Retryable: false})
 		return
 	}
 	upstream, failure := b.dial(r.Context(), probe)
 	if failure != nil {
-		b.reject(w, probe, failure)
+		b.reject(w, r.Context(), probe, failure)
 		return
 	}
 	defer func() { _ = upstream.Close(); b.untrack(upstream) }()
@@ -456,7 +472,7 @@ func (b *Bridge) forwardHTTP(w http.ResponseWriter, r *http.Request, probe *brid
 	_ = upstream.SetDeadline(time.Now().Add(25 * time.Second))
 	if b.config.Type == "socks5" {
 		if failure := b.socksConnect(r.Context(), upstream, target, probe); failure != nil {
-			b.reject(w, probe, failure)
+			b.reject(w, r.Context(), probe, failure)
 			return
 		}
 	}
@@ -467,6 +483,11 @@ func (b *Bridge) forwardHTTP(w http.ResponseWriter, r *http.Request, probe *brid
 	cleanProxyHeaders(request.Header)
 	cleanProxyHeaders(request.Trailer)
 	request.Close = true
+	var body *proxyRequestBody
+	if request.Body != nil && request.Body != http.NoBody {
+		body = &proxyRequestBody{ReadCloser: request.Body, expected: request.ContentLength}
+		request.Body = body
+	}
 	if b.upstreamAuth != "" {
 		request.Header.Set("Proxy-Authorization", b.upstreamAuth)
 	}
@@ -476,17 +497,25 @@ func (b *Bridge) forwardHTTP(w http.ResponseWriter, r *http.Request, probe *brid
 		err = request.WriteProxy(upstream)
 	}
 	if err != nil {
-		b.reject(w, probe, &CheckError{Code: "PROXY_UNREACHABLE", Message: "发送绑定上游的HTTP请求失败，未直接连接目标。", Retryable: true})
+		failure := &CheckError{Code: "PROXY_UNREACHABLE", Message: "发送绑定上游的HTTP请求失败，未直接连接目标。", Retryable: true}
+		if body != nil && body.sourceFailed() {
+			failure.Code, failure.Message = "PROXY_REQUEST_FAILED", "本次客户端上传正文中断，仅关闭本次连接，未判定整个代理失效。"
+		} else if b.config.Type == "socks5" {
+			// After SOCKS CONNECT, writes go to the target, not the proxy
+			// protocol. A rejected upload is not an upstream auth failure.
+			failure.Code, failure.Message = "PROXY_TARGET_FAILED", "本次目标HTTP请求未能发送，仅关闭本次连接，没有直连或替换代理。"
+		}
+		b.reject(w, r.Context(), probe, failure)
 		return
 	}
 	response, _, err := readProxyResponse(upstream, request)
 	if err != nil {
-		b.reject(w, probe, &CheckError{Code: "PROXY_TARGET_FAILED", Message: "上游HTTP响应无效或超过时限，未回退直连。", Retryable: true})
+		b.reject(w, r.Context(), probe, &CheckError{Code: "PROXY_TARGET_FAILED", Message: "上游HTTP响应无效或超过时限，未回退直连。", Retryable: true})
 		return
 	}
 	defer response.Body.Close()
 	if b.config.Type != "socks5" && response.StatusCode == http.StatusProxyAuthRequired {
-		b.reject(w, probe, upstreamStatus(response.StatusCode))
+		b.reject(w, r.Context(), probe, upstreamStatus(response.StatusCode))
 		return
 	}
 	_ = upstream.SetDeadline(time.Time{})

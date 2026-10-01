@@ -118,6 +118,7 @@ T05实际增量以 [应用接口](DEVELOPMENT.md#t05-固定档案增量已实现
 1. **锁定环境。**核对已保存配置的修订号，取得以环境 ID 为键的独占文件锁，记录 PID、进程创建时间与会话 ID。重复启动返回现有任务或会话信息；环境忙返回 `PROFILE_BUSY`，实际目录被占用返回 `DATA_DIR_LOCKED`。仅有 PID 不足以判断陈旧锁，不能凭锁文件年龄直接删除。
 2. **核验内核与目录。**检查实际版本、文件哈希、能力验收状态。为每个环境分配独立 `user-data-dir`，解析后的绝对路径须处于应用数据根目录内，并拒绝通过路径穿越或重解析点指向其他环境。Chromium 的 `Default` 是用户数据目录内部子目录，不能仅靠共享数据根下的不同窗口形成隔离。[Chromium 用户数据目录说明](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/user_data_dir.md)
 3. **启动独立代理桥接。**HTTP、HTTPS 上游代理与 SOCKS5 统一由桥接层处理认证，浏览器只连接当前环境的 loopback 端口。HTTPS 表示到代理本身的 TLS 连接时须由桥接层明确支持，不能与“访问 HTTPS 网站的 CONNECT”混同。凭据经本地受保护存储按引用读取，不进入网页、命令行、普通日志或公开导出。
+   **当前T11安全门禁：**真实代理Start在凭据/建桥前、kernel在创建进程前分别要求系统级出网边界，缺失则NETWORK_PROTECTION_UNAVAILABLE。下述同桥检查/启动链仅是保护边界就绪后的目标流程；当前独立检查不解锁浏览器，门禁不会自动改直连。
 4. **完成代理前检。**经同一个桥接实例检查连通、认证、出口 IP；按需解析并核对时区。代理不可用、认证失败、配置冲突或桥接异常均阻止启动。UI 中选了“必须代理”的环境不自动改为直连。
 5. **启动浏览器并验证。**用参数数组调用已核验可执行文件，不经 shell 拼接；保留浏览器沙箱。确认进程、环境目录和身份配置；进程创建成功本身不等于环境就绪。
 6. **发布会话就绪。**代理前检和启动检查均完成才发布 `EnvironmentStateChanged` 的 `running` 状态及操作完成事件。失败要关闭本次产生的进程树与桥接、释放已取得的锁，并保留已有环境数据。
@@ -161,6 +162,14 @@ CDP 默认不开启。需要身份探测或本机自动化时，优先采用本�
 HTTP经目标流写origin-form，HTTPS经同本机CONNECT透传TLS；SOCKS5本身不加密认证。独立检查临时Bridge，环境自己的新桥同通道前检；只有安全策略/ID/修订/阶段进报告，RPC不能覆写DNS或直连。UDP ASSOCIATE/BIND未支持，明文HTTP Upgrade仍阻断。
 
 无真实SOCKS5/DNS/Windows浏览器或新页面证据，[T10清单](verification/T10.md)。远端目标解析不证明后台DNS、UDP/QUIC、WebRTC或WebSocket/重连无泄漏；T11须后端关闭不满足路径/阻止运行并补实际证据，不能只凭参数/前检。
+
+### T11 部分实现与系统隔离缺口
+
+[`每桥故障监视`](../internal/proxy/bridge_watch.go)闭锁第一个故障，Failed事件交准确Job持有者独立安全结束本树，不等DB；单个请求取消或客户端上传异常只关闭该请求。30s同bridge巡检并非全路径隔离；确认桥/全树gone才收敛完整Done。停止失败保持pins/目录与准确会话，未终结Stop不释放后来Start的预留。
+
+[`networkFault`](../internal/workspace/runtime_network_fault.go)保存network_error/安全根因/时刻/清理阶段。启动期间（包括无返回process）也记录已闭锁桥的故障，不与普通前检错误混同；失败清理、强制结束及重开不抹根因、不重建旧端口。当前[`门禁`](../internal/kernel/network_protection.go)固定拒绝真实代理浏览器，不能凭参数/前检/API存在/用户管理员授权解除。
+
+用户允许未来组件管理员安装，未现在提权/改系统。WFP独立程序路径可研究socket隔离，但ALE_ORIGINAL_APP_ID只定义连接重定向，不保证DNS Client委托查询，dynamic过滤生命周期也不保证host崩溃的拒绝边界；不能全局封DNS影响其他环境。[D012](DECISIONS.md#d012--安全边界缺失先阻止代理启动并允许隔离组件管理员安装2026-10-01)、[待完成清单](verification/T11.md)。完整组件/真实出口和故障验收均未实现通过，用户已选择先保存部分继续不依赖它的其他票。
 
 ## 请求与返回合同
 

@@ -90,6 +90,12 @@ UX-001、DOC-001 的发布入口在 [安装器](../build/windows/installer/prism
 - PRX-001：导入/replace协议校验，存储解码中性，keep不解密/改写；切协议不兼容建桥前PROXY_AUTH_INVALID。独立检查临时Bridge，normalStart自己的新桥同通道重检；schema5表不变，安全resolutionPolicy可选，RPC不能覆盖DNS/降级。
 - UX-001、ENV-003：[`共享阶段`](../src/application/proxy-network.ts)及native两页显示策略/字节范围/计数、不加密链路及代理host/目标DNS区分。7条代理库/6条服务/2条adapter回归仅编写未执行，[清单](verification/T10.md)，无真实DNS/Windows浏览器/页面，T11未通过。
 
+### T11 网络故障/门禁（部分实现，系统隔离未实现）
+
+- ENV-003、PRX-001：[`闭锁/巡检`](../internal/proxy/bridge_watch.go)及准确Job独立停止，不等服务锁/DB；请求取消/上传故障不误关整个桥。确认全树及桥退出前保护原数据，A闭锁不更改B，普通前检错误不冒充运行故障。
+- ENV-003、UX-001：[`网络根因`](../internal/workspace/runtime_network_fault.go)、持久化/恢复与native说明；network_error及清理阶段、启动含nil process真实闭锁、ForceStop/重开保根因；未终结Stop的预留与error展示分离，终态保存前不能被新Start替换。
+- PRX-001：[`双层门禁`](../internal/kernel/network_protection.go)缺少已验证全路径边界时真实代理Start拒绝，独立检查不解锁。7桥/2内核/9服务/1adapter回归仅编写，[清单](verification/T11.md)。用户许可管理员安装不等于已集成WFP/DNS/崩溃隔离；本票不记完整/验收。
+
 以下关联于 2026-09-30 发布，表示计划实现范围，不能据此判断已完成。当前状态与 blocking 依赖以 GitHub 为准；完整顺序见 [开发票据索引](ISSUES.md)，共同范围见 [总规格 Issue](https://github.com/axgiroud312-byte/prism-local-browser/issues/1)。
 
 | 需求 ID  | 实现或专项验证 Issue                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | 整体验收                                                                       |

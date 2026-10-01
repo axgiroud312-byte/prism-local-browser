@@ -173,6 +173,9 @@ func (s *Service) runtimeCall(request Request) Result {
 	} else if input.NetworkPolicy != "direct" {
 		return failure("PROXY_POLICY_MISMATCH", "此环境没有绑定代理，不能将代理启动自动降为直连。", false)
 	}
+	if slot := s.runtimeSlots[input.EnvironmentID]; runtimeStopPending(slot) {
+		return failure("PROFILE_BUSY", "本次停止任务尚未确认并保存终态，请等待后重新启动。", true)
+	}
 	if slot := s.runtimeSlots[input.EnvironmentID]; slot != nil && (slot.process != nil || slot.session.State == "starting" || slot.session.State == "stopping") {
 		if slot.session.State == "error" {
 			return failure("PROFILE_BUSY", "上次进程树退出尚未确认，请重试停止后再启动。", true)
@@ -273,7 +276,7 @@ func (s *Service) launchRuntime(ctx context.Context, slot *runtimeSlot, input Ru
 	case s.startGate <- struct{}{}:
 		defer func() { <-s.startGate }()
 	case <-ctx.Done():
-		s.finishRuntimeStart(slot, nil, ctx.Err())
+		s.finishRuntimeStart(slot, nil, nil, ctx.Err())
 		return
 	}
 	var network RuntimeProxyChannel
@@ -284,7 +287,7 @@ func (s *Service) launchRuntime(ctx context.Context, slot *runtimeSlot, input Ru
 			if network != nil {
 				_ = network.Close()
 			}
-			s.finishRuntimeStart(slot, nil, err)
+			s.finishRuntimeStart(slot, nil, network, err)
 			return
 		}
 		input.Network = network
@@ -293,7 +296,7 @@ func (s *Service) launchRuntime(ctx context.Context, slot *runtimeSlot, input Ru
 		if network != nil {
 			_ = network.Close()
 		}
-		s.finishRuntimeStart(slot, nil, err)
+		s.finishRuntimeStart(slot, nil, network, err)
 		return
 	}
 	launcher := s.options.LaunchRuntime
@@ -308,8 +311,8 @@ func (s *Service) launchRuntime(ctx context.Context, slot *runtimeSlot, input Ru
 		} else {
 			_ = network.Close()
 		}
-		if err == nil && network.Fault() != nil {
-			err = network.Fault()
+		if fault := network.Fault(); fault != nil {
+			err = errors.Join(fault, err)
 		}
 	}
 	deadlineErr := startup.Err()
@@ -338,7 +341,7 @@ func (s *Service) launchRuntime(ctx context.Context, slot *runtimeSlot, input Ru
 	if ctx.Err() != nil {
 		err = errors.Join(err, ctx.Err())
 	}
-	s.finishRuntimeStart(slot, process, err)
+	s.finishRuntimeStart(slot, process, network, err)
 }
 
 func runtimeError(err error) *Error {
@@ -385,7 +388,22 @@ func runtimeIntegrityProblem(err error) *kernel.Problem {
 	return nil
 }
 
-func (s *Service) finishRuntimeStart(slot *runtimeSlot, process RuntimeProcess, taskErr error) {
+func startupNetworkSnapshot(process RuntimeProcess, channel RuntimeProxyChannel) kernel.RuntimeSnapshot {
+	snapshot := kernel.RuntimeSnapshot{ResourcesExited: process == nil}
+	if process != nil {
+		snapshot = process.Snapshot()
+	}
+	if channel != nil && snapshot.ProxyError == nil {
+		snapshot.ProxyError = channel.Fault()
+	}
+	return snapshot
+}
+
+func runtimeStopPending(slot *runtimeSlot) bool {
+	return slot != nil && slot.stop != nil && (slot.stop.State == "accepted" || slot.stop.State == "running")
+}
+
+func (s *Service) finishRuntimeStart(slot *runtimeSlot, process RuntimeProcess, channel RuntimeProxyChannel, taskErr error) {
 	s.mu.Lock()
 	if s.runtimeSlots[slot.session.EnvironmentID] != slot {
 		s.mu.Unlock()
@@ -393,6 +411,11 @@ func (s *Service) finishRuntimeStart(slot *runtimeSlot, process RuntimeProcess, 
 			_ = process.Close()
 		}
 		return
+	}
+	// Re-read the latched channel error at readiness publication, not only
+	// immediately after launch. A bound channel may fail during startup.
+	if snapshot := startupNetworkSnapshot(process, channel); s.observeRuntimeNetworkFault(slot, snapshot) {
+		taskErr = errors.Join(snapshot.ProxyError, taskErr)
 	}
 	if s.closed || s.closeRequested.Load() || slot.session.State == "stopping" {
 		taskErr = errors.Join(taskErr, context.Canceled)
@@ -432,6 +455,9 @@ func (s *Service) finishRuntimeStart(slot *runtimeSlot, process RuntimeProcess, 
 	}
 	slot.cleanupIntent = true
 	slot.startupError = runtimeError(taskErr)
+	if slot.session.NetworkPolicy == "proxy" && slot.startupError.Code == "NETWORK_PROTECTION_UNAVAILABLE" {
+		slot.session.NetworkFault = &RuntimeNetworkFault{State: "network_error", Error: slot.startupError, ObservedAt: timestamp(), Containment: "stopped"}
+	}
 	s.mu.Unlock()
 	var cleanupErr error
 	if process != nil {
@@ -450,6 +476,11 @@ func (s *Service) finishRuntimeStart(slot *runtimeSlot, process RuntimeProcess, 
 	if s.runtimeSlots[slot.session.EnvironmentID] != slot {
 		return
 	}
+	if s.observeRuntimeNetworkFault(slot, startupNetworkSnapshot(process, channel)) && runtimeIntegrityProblem(taskErr) == nil {
+		// The channel can latch while cleanup is in progress. Preserve that
+		// concrete cause instead of a generic launch/cleanup error.
+		slot.startupError = slot.session.NetworkFault.Error
+	}
 	slot.start.State, slot.start.Stage, slot.start.Error = "failed", "failed", slot.startupError
 	if slot.startupError.Code == "OPERATION_CANCELLED" {
 		slot.start.State, slot.start.Stage, slot.start.CancelRequested = "cancelled", "cancelled", true
@@ -464,6 +495,10 @@ func (s *Service) finishRuntimeStart(slot *runtimeSlot, process RuntimeProcess, 
 		}
 		slot.session.Error = &Error{Code: "PROCESS_STOP_TIMEOUT", Message: "启动失败后本次进程树退出尚未确认，目录与档案锁仍保留；可重试停止。", Retryable: true}
 		slot.session.CanControl, slot.session.NextAction = process.Snapshot().ControlReady, "请先尝试正常关闭本次会话；未确认退出前不能启动或替换数据。"
+		_ = s.observeRuntimeNetworkFault(slot, startupNetworkSnapshot(process, channel))
+		if slot.session.NetworkFault != nil {
+			setRuntimeNetworkContainment(slot, "exit-unconfirmed")
+		}
 		_ = s.persistRuntime(slot, &slot.start, "启动失败，清理未确认")
 		s.workers.Add(1)
 		go s.watchRuntime(slot, process)
@@ -486,8 +521,19 @@ func (s *Service) finishRuntimeStart(slot *runtimeSlot, process RuntimeProcess, 
 		}
 	}
 	slot.session.NextAction = "本次启动未完成且资源已退出，可修复所示原因后使用原档案重试。"
+	if slot.startupError.Code == "NETWORK_PROTECTION_UNAVAILABLE" {
+		slot.session.NextAction = "当前代理启动被安全门禁阻止，没有创建浏览器；需隔离组件实现并验证，普通重试不能解除此门禁。"
+	}
+	_ = s.observeRuntimeNetworkFault(slot, startupNetworkSnapshot(process, channel))
+	if slot.session.NetworkFault != nil {
+		setRuntimeNetworkContainment(slot, "stopped")
+		slot.session.State, slot.session.Error = "error", slot.session.NetworkFault.Error
+		if slot.session.NetworkFault.Error.Code != "NETWORK_PROTECTION_UNAVAILABLE" {
+			slot.session.NextAction = "启动期间代理通道失败，本次资源已确认退出；修复后沿原档案新建通道并重新前检。"
+		}
+	}
 	_ = s.persistRuntime(slot, &slot.start, "浏览器启动失败")
-	if !slot.session.PersistencePending {
+	if !slot.session.PersistencePending && !runtimeStopPending(slot) {
 		delete(s.profileUses, slot.session.EnvironmentID)
 	}
 }

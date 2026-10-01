@@ -5,6 +5,15 @@ import (
 )
 
 func (s *Service) applyRuntimeFault(slot *runtimeSlot, snapshot kernel.RuntimeSnapshot) {
+	// The channel/Job owner already initiated safety cleanup without waiting
+	// for SQLite. A failed state write must not suppress fault observation.
+	if snapshot.ProxyError != nil && (slot.session.NetworkFault == nil || snapshot.NetworkCleanupFailed && slot.session.NetworkFault.Containment == "stopping") && s.observeRuntimeNetworkFault(slot, snapshot) {
+		_ = s.persistRuntime(slot, nil, "代理通道故障，停止本次会话")
+		return
+	}
+	if slot.session.NetworkFault != nil {
+		return
+	}
 	if slot.cleanupIntent || slot.session.PersistencePending || slot.session.State == "stopping" {
 		return
 	}
@@ -22,8 +31,6 @@ func (s *Service) applyRuntimeFault(slot *runtimeSlot, snapshot kernel.RuntimeSn
 		}
 	} else if !snapshot.ControlReady {
 		observed = &Error{Code: "CONTROL_CHANNEL_LOST", Message: "浏览器仍在，但私有控制通道已断开；不假报停止或重新生成身份。", Retryable: false}
-	} else if snapshot.ProxyError != nil {
-		observed = &Error{Code: snapshot.ProxyError.Code, Message: snapshot.ProxyError.Message, Retryable: snapshot.ProxyError.Retryable}
 	}
 	if observed == nil {
 		return
@@ -56,7 +63,12 @@ func (s *Service) completeObservedExit(slot *runtimeSlot, snapshot kernel.Runtim
 		code := snapshot.ExitCode
 		slot.session.LastExitCode = &code
 	}
-	if slot.cleanupIntent && !forced && slot.startupError != nil && slot.startupError.Code != "OPERATION_CANCELLED" {
+	_ = s.observeRuntimeNetworkFault(slot, snapshot)
+	if slot.session.NetworkFault != nil {
+		setRuntimeNetworkContainment(slot, "stopped")
+		slot.session.State, slot.session.Error = "error", slot.session.NetworkFault.Error
+		slot.session.NextAction = "网络故障后的本次进程树/桥接资源已确认退出；原代理策略与档案不变，修复后重新检查并启动。"
+	} else if slot.cleanupIntent && !forced && slot.startupError != nil && slot.startupError.Code != "OPERATION_CANCELLED" {
 		slot.session.State, slot.session.Error = "error", slot.startupError
 		slot.session.NextAction = "启动失败后的本次清理已确认退出；保留原始失败原因，修复后可重试原档案。"
 	} else if snapshot.ExitKnown && snapshot.ExitCode != 0 && !slot.cleanupIntent && !forced && !s.closed {
@@ -67,7 +79,9 @@ func (s *Service) completeObservedExit(slot *runtimeSlot, snapshot kernel.Runtim
 		slot.session.State, slot.session.Error = "ready", nil
 		slot.session.NextAction = "已确认本次进程树退出，原浏览数据保持，可使用原档案重开。"
 	}
-	delete(s.profileUses, slot.session.EnvironmentID)
+	if !runtimeStopPending(slot) {
+		delete(s.profileUses, slot.session.EnvironmentID)
+	}
 }
 
 func (s *Service) forceStopRuntime(input runtimeRequest) Result {
@@ -135,7 +149,7 @@ func (s *Service) reconcileRuntime(input runtimeRequest) Result {
 	if slot == nil || slot.session.SessionID != input.SessionID {
 		return failure("REVISION_CONFLICT", "会话已变更，未重新接管或修改其他会话。", true)
 	}
-	if slot.process != nil || slot.session.State == "starting" || slot.session.State == "stopping" {
+	if slot.process != nil || runtimeStopPending(slot) || slot.session.State == "starting" || slot.session.State == "stopping" {
 		return failure("PROFILE_BUSY", "这份会话仍由当前监督器控制，请查看当前状态或先正常关闭。", true)
 	}
 	if slot.reconcile != nil && (slot.reconcile.State == "accepted" || slot.reconcile.State == "running") {

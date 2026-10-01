@@ -28,6 +28,7 @@ func (c *syntheticRuntimeChannel) Endpoint() string                      { retur
 func (c *syntheticRuntimeChannel) BindBrowser(func(net.Conn) bool) error { return nil }
 func (c *syntheticRuntimeChannel) Close() error                          { c.closes.Add(1); return nil }
 func (c *syntheticRuntimeChannel) Fault() *proxy.CheckError              { return nil }
+func (c *syntheticRuntimeChannel) Failed() <-chan struct{}               { return nil }
 func (c *syntheticRuntimeChannel) Preflight(_ context.Context, progress func(proxy.Step)) proxy.Report {
 	c.checks.Add(1)
 	if c.beforeCheck != nil {

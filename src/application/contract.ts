@@ -176,6 +176,7 @@ export interface RuntimeSession {
   proxyRevision?: number;
   proxyChannelId?: string;
   proxyReport?: ProxyCheckReport;
+  networkFault?: { state: "network_error"; error: ApplicationError; observedAt: string; containment: "stopping" | "stopped" | "exit-unconfirmed" };
   pid?: number;
   processCreatedAt?: string;
   startedAt?: string;

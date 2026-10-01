@@ -148,7 +148,7 @@ func (s *Service) flushOneRuntimeWrite(pending *runtimePendingWrite) error {
 	}
 	delete(s.runtimePending, slot.session.EnvironmentID)
 	reconciling := slot.reconcile != nil && (slot.reconcile.State == "accepted" || slot.reconcile.State == "running")
-	if slot.process == nil && !slot.session.NeedsReconcile && !reconciling && (slot.session.State == "ready" || slot.session.State == "error") {
+	if slot.process == nil && !slot.session.NeedsReconcile && !reconciling && !runtimeStopPending(slot) && (slot.session.State == "ready" || slot.session.State == "error") {
 		delete(s.profileUses, slot.session.EnvironmentID)
 	}
 	return nil
@@ -214,6 +214,14 @@ func validateSavedRuntime(session RuntimeSession, environmentID string) error {
 	if report := session.ProxyReport; report != nil && (report.Mode != "native" || report.ChannelID != session.ProxyChannelID || report.ProxyID != session.ProxyID || report.Revision != session.ProxyRevision) {
 		return errors.New("saved preflight does not match the proxy session")
 	}
+	if network := session.NetworkFault; network != nil {
+		if session.NetworkPolicy != "proxy" || network.State != "network_error" || network.Error == nil || network.Error.Code == "" || network.Error.Message == "" || network.Containment != "stopping" && network.Containment != "stopped" && network.Containment != "exit-unconfirmed" {
+			return errors.New("invalid saved network fault")
+		}
+		if _, err := time.Parse(time.RFC3339Nano, network.ObservedAt); err != nil {
+			return errors.New("invalid network fault observation time")
+		}
+	}
 	if session.State != "ready" && session.State != "starting" && session.State != "running" && session.State != "stopping" && session.State != "error" {
 		return errors.New("invalid saved runtime state")
 	}
@@ -235,7 +243,7 @@ func (s *Service) inspectSavedRuntime(session RuntimeSession) (kernel.ManagedRec
 	if session.ResourceVersion != kernel.ManagedRuntimeVersion {
 		return kernel.ManagedRecovery{ProcessState: "unconfirmed"}, &kernel.Problem{Code: "SESSION_IDENTITY_UNCONFIRMED", Message: "旧记录没有可核对的进程树身份，暂不解除数据保护；未接管或结束任何进程。", Retryable: true}
 	}
-	return kernel.InspectManagedProfile(s.root, session.EnvironmentID, session.SessionID, session.UserDataRef, session.RootPID, session.ProcessCreatedAt, session.LaunchStage == "queued" || session.LaunchStage == "proxy-preflight" || session.LaunchStage == "no-process-created")
+	return kernel.InspectManagedProfile(s.root, session.EnvironmentID, session.SessionID, session.UserDataRef, session.RootPID, session.ProcessCreatedAt, session.LaunchStage == "queued" || session.LaunchStage == "network-protection" || session.LaunchStage == "proxy-preflight" || session.LaunchStage == "no-process-created")
 }
 
 func (s *Service) reconcileRuntimeSlot(slot *runtimeSlot) error {
@@ -270,6 +278,7 @@ func (s *Service) applyReconciledRuntime(slot *runtimeSlot, recovery kernel.Mana
 			slot.session.Error.Code, slot.session.Error.Message = "DATA_DIR_LOCKED", "实际浏览数据目录仍被占用，尚未确认停止；没有删除旧锁或浏览数据。"
 		}
 		s.profileUses[slot.session.EnvironmentID] = true
+		setRuntimeNetworkContainment(slot, "exit-unconfirmed")
 	} else {
 		priorError := slot.session.Error
 		slot.session.PID, slot.session.NeedsReconcile = 0, false
@@ -284,6 +293,11 @@ func (s *Service) applyReconciledRuntime(slot *runtimeSlot, recovery kernel.Mana
 		} else if priorError != nil && (priorError.Code == "PROCESS_CRASHED" || priorError.Code == "PROCESS_READY_TIMEOUT" || priorError.Code == "PROCESS_START_FAILED") {
 			slot.session.State, slot.session.Error = "error", priorError
 			slot.session.NextAction = "原进程和目录已确认空闲；保留上次异常原因，修复后可使用原档案重试。"
+		}
+		if slot.session.NetworkFault != nil {
+			setRuntimeNetworkContainment(slot, "stopped")
+			slot.session.State, slot.session.Error = "error", slot.session.NetworkFault.Error
+			slot.session.NextAction = "已核对旧故障会话资源退出，未恢复旧桥；修复后重新检查并启动原档案。"
 		}
 		delete(s.profileUses, slot.session.EnvironmentID)
 	}

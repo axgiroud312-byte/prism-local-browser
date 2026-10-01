@@ -4,6 +4,8 @@
 
 **T01–T04已验收；T05–T10已本地实现，完整验收待补。** 固定档案、正常会话/独立目录、异常监督和受保护代理已接；HTTP/HTTPS/SOCKS5共用独立认证通道及同通道启动前检查，参数无上游密码，SOCKS5目标域名由代理解析。API准入、真实DNS/网络/浏览数据和新页面仍待验收，T11全路径保护、管理端Cookie及完整备份待后续，不返回模拟成功。网页原型仍为demo。当前先开发、不运行CI/完整回归；实际状态见 [PROGRESS.md](docs/PROGRESS.md)。
 
+**当前源码的真实代理浏览器启动被安全门禁阻止。** T11仅有故障监督和拒绝启动的部分实现，完整系统隔离/DNS委托/崩溃保护尚未解决；独立代理检查仍可进行，不是启动许可。用户允许未来隔离组件管理员安装，并选择先推进不依赖它的其他功能；不现在提权或修改系统，不宣称T11完成。
+
 [产品需求](docs/PRD.md) · [开发方案](docs/DEVELOPMENT.md) · [内核合同](docs/KERNEL.md) · [需求追踪](docs/TRACEABILITY.md) · [验收记录](docs/ACCEPTANCE.md)
 
 开发入口：[项目开发指引](AGENTS.md) · [开发规范](docs/ENGINEERING.md) · [V1 总规格](docs/SPEC.md) · [开发 Issues 与依赖](docs/ISSUES.md)

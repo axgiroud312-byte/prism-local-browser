@@ -55,7 +55,10 @@ func TestNativeSOCKS5ImportReplaceClearAndProtocolChangesPreserveSecrets(t *test
 
 func TestNativeProtocolKeepNeverDecryptsAndIncompatibleAuthUsesSameCheckStartError(t *testing.T) {
 	channel := &syntheticRuntimeChannel{}
-	s, _, kernelID := fingerprintFixture(t, Options{OpenProxyChannel: func(config proxy.Configuration, credentials *proxy.Credentials, opts proxy.BridgeOptions) (RuntimeProxyChannel, error) {
+	s, _, kernelID := fingerprintFixture(t, Options{LaunchRuntime: func(context.Context, RuntimeLaunch) (RuntimeProcess, error) {
+		t.Error("invalid kept authentication reached launch seam")
+		return newSyntheticRuntimeProcess(), nil
+	}, OpenProxyChannel: func(config proxy.Configuration, credentials *proxy.Credentials, opts proxy.BridgeOptions) (RuntimeProxyChannel, error) {
 		if credentials != nil {
 			if err := proxy.ValidateProtocolCredentials(config.Type, *credentials); err != nil {
 				return nil, err

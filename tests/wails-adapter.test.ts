@@ -39,6 +39,14 @@ test("SOCKS5 safe reports keep fixed remote-DNS policy and share stage vocabular
   assert.match(proxyResolutionLabel(report.resolutionPolicy), /上游解析/); assert.equal(proxyResolutionLabel(undefined), "未记录目标解析策略");
 });
 
+test("network fault observations stay separate from historic preflight and cannot be request overrides", async () => {
+  const session: RuntimeSession = { mode: "native", environmentId: "synthetic-environment", sessionId: "synthetic-session", operationId: "synthetic-operation", state: "error", revision: 1, fingerprintRevision: 1, kernelId: "synthetic-kernel", userDataRef: "synthetic-ref", networkPolicy: "proxy", proxyId: "synthetic-proxy", proxyRevision: 1, proxyChannelId: "synthetic-channel", pid: 0, canControl: false, canForce: false, needsReconcile: false, persistencePending: false, networkFault: { state: "network_error", error: { code: "NETWORK_PROTECTION_UNAVAILABLE", message: "合成门禁缺失，不是已安装隔离组件。", retryable: false }, observedAt: "2026-10-01T00:00:00Z", containment: "stopped" } };
+  const { app, calls } = fixture(request => request.method === "Workspace.Read" ? ok({ ...empty(), runtimeSessions: { [session.environmentId]: session } }) : rejected);
+  assert.ok((await app.refresh()).ok); assert.equal(app.getSnapshot().runtimeSessions?.[session.environmentId].networkFault?.state, "network_error"); assert.equal(app.getSnapshot().runtimeSessions?.[session.environmentId].proxyReport, undefined);
+  await app.startRuntime({ environmentId: session.environmentId, requestId: "synthetic-bypass-attempt", networkPolicy: "proxy", networkProtectionReady: true, networkFault: undefined, allowUnsafeProxy: true } as Parameters<WailsAdapter["startRuntime"]>[0]);
+  assert.deepEqual(calls.find(call => call.method === "Runtime.Start")?.payload, { environmentId: session.environmentId, requestId: "synthetic-bypass-attempt", networkPolicy: "proxy" });
+});
+
 test("native starts empty/loading, has no demo compatibility and only publishes native reads", async () => {
   const workspace = empty();
   const { app, calls } = fixture(() => ok(workspace));

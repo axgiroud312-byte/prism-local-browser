@@ -3,12 +3,24 @@ package workspace
 import (
 	"context"
 	"net/netip"
+	"sync"
 
 	"github.com/axgiroud312-byte/prism-local-browser/internal/kernel"
 	"github.com/axgiroud312-byte/prism-local-browser/internal/proxy"
 )
 
 func (s *Service) prepareRuntimeNetwork(ctx context.Context, slot *runtimeSlot, input RuntimeLaunch) (RuntimeProxyChannel, error) {
+	if err := s.runtimeStage(slot, "network-protection"); err != nil {
+		return nil, err
+	}
+	// LaunchRuntime is a trusted host-only synthetic seam. It cannot make the
+	// real kernel launcher bypass its independent protection gate, and desktop
+	// production never injects it. RPC has no unsafe/protection-ready override.
+	if s.options.LaunchRuntime == nil {
+		if err := kernel.RequireProxyNetworkBoundary(); err != nil {
+			return nil, err
+		}
+	}
 	if err := s.runtimeStage(slot, "proxy-preflight"); err != nil {
 		return nil, err
 	}
@@ -105,19 +117,35 @@ func (s *Service) prepareRuntimeNetwork(ctx context.Context, slot *runtimeSlot, 
 // browser tree exits. Done means BOTH the Job and channel resources are gone.
 type networkRuntimeProcess struct {
 	RuntimeProcess
-	channel RuntimeProxyChannel
-	done    chan struct{}
+	channel       RuntimeProxyChannel
+	done          chan struct{}
+	mu            sync.Mutex
+	cleanupFailed bool
 }
 
 func ownRuntimeNetwork(process RuntimeProcess, channel RuntimeProxyChannel) RuntimeProcess {
 	owned := &networkRuntimeProcess{RuntimeProcess: process, channel: channel, done: make(chan struct{})}
 	go func() { <-process.Done(); _ = channel.Close(); close(owned.done) }()
+	go func() {
+		select {
+		case <-channel.Failed():
+			if owned.Close() != nil {
+				owned.mu.Lock()
+				owned.cleanupFailed = true
+				owned.mu.Unlock()
+			}
+		case <-owned.done:
+		}
+	}()
 	return owned
 }
 func (p *networkRuntimeProcess) Done() <-chan struct{} { return p.done }
 func (p *networkRuntimeProcess) Snapshot() kernel.RuntimeSnapshot {
 	snapshot := p.RuntimeProcess.Snapshot()
 	snapshot.ProxyError = p.channel.Fault()
+	p.mu.Lock()
+	snapshot.NetworkCleanupFailed = snapshot.NetworkCleanupFailed || p.cleanupFailed
+	p.mu.Unlock()
 	select {
 	case <-p.done:
 	default:

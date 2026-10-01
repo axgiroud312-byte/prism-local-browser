@@ -26,6 +26,7 @@ type ManagedNetwork interface {
 	BindBrowser(func(net.Conn) bool) error
 	Close() error
 	Fault() *proxy.CheckError
+	Failed() <-chan struct{}
 }
 type ManagedProfile struct {
 	EnvironmentID string
@@ -40,23 +41,25 @@ type ManagedProfile struct {
 }
 
 type ManagedProcess struct {
-	pipe         *pipeProcess
-	done         chan struct{}
-	release      func()
-	stopGate     chan struct{}
-	mu           sync.Mutex
-	lastSnapshot RuntimeSnapshot
-	network      ManagedNetwork
+	pipe                 *pipeProcess
+	done                 chan struct{}
+	release              func()
+	stopGate             chan struct{}
+	mu                   sync.Mutex
+	lastSnapshot         RuntimeSnapshot
+	network              ManagedNetwork
+	networkCleanupFailed bool
 }
 
 // Root death, control loss, and complete resource exit are distinct facts.
 type RuntimeSnapshot struct {
-	RootAlive       bool
-	ControlReady    bool
-	ResourcesExited bool
-	ExitKnown       bool
-	ExitCode        uint32
-	ProxyError      *proxy.CheckError
+	RootAlive            bool
+	ControlReady         bool
+	ResourcesExited      bool
+	ExitKnown            bool
+	ExitCode             uint32
+	ProxyError           *proxy.CheckError
+	NetworkCleanupFailed bool
 }
 
 func (process *ManagedProcess) PID() int              { return int(process.pipe.pid) }
@@ -82,6 +85,7 @@ func (process *ManagedProcess) snapshotLocked() RuntimeSnapshot {
 	result := RuntimeSnapshot{RootAlive: err == nil && state == uint32(windows.WAIT_TIMEOUT), ControlReady: !process.pipe.writeLost.Load()}
 	if process.network != nil {
 		result.ProxyError = process.network.Fault()
+		result.NetworkCleanupFailed = process.networkCleanupFailed
 	}
 	select {
 	case <-process.pipe.readEnded:
@@ -196,6 +200,7 @@ func (process *ManagedProcess) Close() error {
 }
 
 func LaunchManagedProfile(ctx context.Context, root string, record Record, profile ManagedProfile) (_ *ManagedProcess, resultErr error) {
+	if profile.Network != nil { if err := RequireProxyNetworkBoundary(); err != nil { return nil, err } }
 	if sessionID, err := uuid.Parse(profile.SessionID); err != nil || sessionID.String() != profile.SessionID {
 		return nil, problem("VALIDATION_FAILED", "invalid-session-id", "受控会话标识无效，未启动。")
 	}
@@ -288,6 +293,19 @@ func LaunchManagedProfile(ctx context.Context, root string, record Record, profi
 	var releaseOnce sync.Once
 	process := &ManagedProcess{pipe: p, done: make(chan struct{}), release: func() { releaseOnce.Do(release) }, stopGate: make(chan struct{}, 1), network: profile.Network}
 	go process.observeExit()
+	if profile.Network != nil {
+		go func() {
+			select {
+			case <-profile.Network.Failed():
+				if process.Close() != nil {
+					process.mu.Lock()
+					process.networkCleanupFailed = true
+					process.mu.Unlock()
+				}
+			case <-process.done:
+			}
+		}()
+	}
 	stopStartup := context.AfterFunc(ctx, func() { _ = process.Close() })
 	defer func() {
 		stopStartup()

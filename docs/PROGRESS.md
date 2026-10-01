@@ -1,11 +1,11 @@
 # Goal 当前执行位置
 
-更新时间：2026-10-01 14:05 Asia/Shanghai。
+更新时间：2026-10-01 15:41 Asia/Shanghai。
 
 - Goal：执行中；[规则](GOAL.md)；完成 **4/21**（验收任务计数）。
-- 当前任务：T10 / [Issue #11](https://github.com/axgiroud312-byte/prism-local-browser/issues/11)，已实现待验收，准备本地提交；T05–T09待验收。
-- 当前步骤：SOCKS5指定无认证/用户名密码方法、远端IDNA域名/IPv4/IPv6、同桥检查/浏览器链已接，native两页共享阶段/策略。1 P2（协议切换keep错误误分类）已源码闭环，无剩余可信P1/P2。14:00生产proxy/kernel/workspace静态编译、源码/测试TS类型/格式通过；7+6+2回归仅编写，不运行测试/网络/浏览器/点击/CI或完整构建。
-- 现场：`goal/t10-socks5-remote-dns`，基于T09 `f6ebca1`；未提交为SOCKS协议/Bridge/协议凭据校验、检查/启动增量、native阶段/策略/字节限额、新回归与文档。旧证据/安装包/内核保留，无用户遗留改动。
+- 当前任务：T11 / [Issue #12](https://github.com/axgiroud312-byte/prism-local-browser/issues/12)，部分实现待保存，完整系统隔离受阻；T05–T10待验收，不称T11已完整开发。
+- 当前步骤：故障闭锁/准确Job独立停止、network_error/恢复和门禁已编写，首轮2 P2+2收尾缺口源码闭环，无剩余可信P1/P2。特权WFP独立路径仅是socket候选，委托DNS/崩溃完整边界未解决；用户明确选择保存部分并继续不依赖它的Cookie/批量/备份，门禁不解、无现在提权/改系统。
+- 现场：`goal/t11-fail-closed-network`，基于T10 `88ba61a`；未提交为Bridge/Job故障、服务根因/门禁/恢复/Stop预留、安全字段/native说明、7+2+9+1回归与文档。14:36生产静态/TS类型/格式、15:39最后后端生产编译/格式通过，Go测试包未编译，全回归未执行，无程序/网络/点击/CI/安装构建或系统修改。
 
 ## 任务状态
 
@@ -20,8 +20,8 @@
 | T07 | #8 | 已实现待验收 | 本地 `e4e427f`；[验收清单](verification/T07.md)，原blocking #7仍OPEN，无PR/推送 |
 | T08 | #9 | 已实现待验收 | 本地 `f020076`；[验收清单](verification/T08.md)，blocking #3 CLOSED，无PR/推送 |
 | T09 | #10 | 已实现待验收 | 本地 `f6ebca1`；[验收清单](verification/T09.md)，原blocking #7/#9仍OPEN，无PR/推送 |
-| T10 | #11 | 已实现待验收 | [验收清单](verification/T10.md)；准备本地提交，唯一blocking #10仍OPEN |
-| T11 | #12 | 待开始 | — |
+| T10 | #11 | 已实现待验收 | 本地 `88ba61a`；[验收清单](verification/T10.md)，唯一blocking #10仍OPEN，无PR/推送 |
+| T11 | #12 | 部分实现/系统边界研究 | [清单](verification/T11.md)；普通代理Start被门禁阻止，特权隔离未实现；#11仍OPEN |
 | T12 | #13 | 待开始 | — |
 | T13 | #14 | 待开始 | — |
 | T14 | #15 | 待开始 | — |
@@ -112,6 +112,12 @@
 - 13:50：T09本地提交f6ebca1，工作树干净后切T10分支，无推送/PR；继续SOCKS5与远端DNS策略。既有未验收票保持OPEN，验收仍4/21，无CI/网络/浏览器/点击/测试。
 - 13:50–14:00：T10接RFC1928/1929单一方法不降级、IDNA DOMAINNAME远端目标DNS/IPv4/IPv6及完整BND，HTTP origin-form/HTTPS隧道共用T09Bridge。独立检查临时Bridge、normalStart自己的新桥重检，协议凭据校验/keep不读取改写，SOCKS用户名冒号不误用HTTP规则；native共享stage/安全策略、UTF8字节限额/计数，代理host DNS自身仍本机。首轮1 P2为切HTTP并keep后误报bridge/process，已统一PROXY_AUTH_INVALID，最后只读闭环无剩余可信P1/P2。14:00必要生产静态/TS类型/格式通过，7+6+2回归未执行、Go测试包未编译，无DNS/网络/程序/点击/CI或安装构建。
 - 14:05：最后34份文档/本地链接/需求/路由/嵌入文档及格式通过。只读预读T11 #12全文、四项验收及唯一blocking #11 OPEN，无承担者/该预定分支PR；本票提交前不写T11，后续按D007消费本地T10。
+- 14:05：T10本地提交88ba61a，干净后切T11分支，无推送/PR，继续准确会话网络故障与不能维持阻断时的停止；验收4/21不增加。T09/T10本地开发评论已单独发布，不代表票据关闭。
+- T11边界调查：Job仅限速、WFP普通用户默认无ADD权限、AppID同二进制不区分环境，AppContainer固定内核/sandbox兼容未证明；URL proxy/resolver开关不覆盖所有路径，DNS Client可委托查询。用户明确允许管理员安装隔离组件（不现在提权/改系统），记D012；继续研究最小WFP broker及委托DNS，不以授权宣称实现已存在。
+- 14:30：部分实现含门禁（真实Start在DPAPI/建桥前、kernel创建前分别拒绝NETWORK_PROTECTION_UNAVAILABLE）、每桥Failed闭锁/30s同bridge巡检/4背景调度、独立准确Job停止不等DB、networkFault network_error保留根因及stopping/stopped/exit-unconfirmed、copy-on-write持久事件与恢复。4桥+2内核+5服务+1adapter回归未执行，Go测试包未编译；生产静态/源码测试TS类型/格式通过。原TS字段误放Operation已修；源码评审和系统方案研究中，T11不记完整，未写T12。
+- 14:36–15:39：修首轮2 P2及后续2缺口：请求ctx/上传source故障不误关会话、启动收尾读取闭锁且不按cleanupIntent丢根因、显式传channel保存nil process故障、未終结Stop独立guard及lease保留防后来Start替换旧slot。最后只读全部源码闭环，无剩余可信P1/P2；7桥/2内核/9服务/1adapter回归未执行，Go测试包未编译。14:36生产静态/TS类型/格式和15:39最后backend生产编译/格式通过。
+- 特权调查结束：ALE_ORIGINAL_APP_ID仅定义重定向原AppID，未保证DnsClient委托归属；独立可信副本+WFP只是socket候选，持久拒绝/服务崩溃/端口回收仍须闭环。用户选择保存T11部分后先开发其他不依赖票，GOAL/D012已记。只读预读T12 #13全文/四项验收，唯一blocking #7 OPEN且本地T06可用；本票保存前未写T12。
+- 15:41：最后35份文档/本地链接/需求/路由/嵌入文档及格式通过；准备保存T11阶段提交，按用户明确选择进入不依赖T11的T12。不推送/开PR，#12仍部分未完成，代理真实启动门禁保持拒绝。
 - 13:19–13:21：二轮确认首3项关闭，剩3 P2：原ctx固定拨号丢连接trace阶段、body/排队取消与期限误归因、超大文件未废旧preview。已实际Dial明确发阶段、真实ctx区分取消/超时/响应错误、非空文件先Discard再校验，补body受控回归与连接阶段断言。既有x/net IDNA标direct（不升版本/sum不变），许可注記补齐。13:21最后生产包静态编译、源码/测试TS类型与格式通过；最后聚焦只读复核无剩余可信P1/P2，仅源码结论。7+7+3新增回归未执行，准备本地T08提交，无网络/程序/UI/CI。
 
 ## 恢复资源与 GitHub

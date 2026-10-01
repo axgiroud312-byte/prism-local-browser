@@ -71,7 +71,8 @@ func socksDestination(target string) ([]byte, string, *CheckError) {
 	return packet, stage, nil
 }
 
-func (b *Bridge) socksConnect(ctx context.Context, conn net.Conn, target string, probe *bridgeProbe) *CheckError {
+func (b *Bridge) socksConnect(ctx context.Context, conn net.Conn, target string, probe *bridgeProbe) (failure *CheckError) {
+	defer func() { failure = requestContextFailure(ctx, failure) }()
 	if ctx.Err() != nil {
 		return &CheckError{Code: "OPERATION_CANCELLED", Message: "本次SOCKS5连接已取消，没有发起目标请求。", Retryable: true}
 	}
