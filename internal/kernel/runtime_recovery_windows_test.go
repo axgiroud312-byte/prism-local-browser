@@ -4,6 +4,7 @@ package kernel
 
 import (
 	"os"
+	"path/filepath"
 	"testing"
 	"time"
 	"unsafe"
@@ -11,6 +12,37 @@ import (
 	"github.com/google/uuid"
 	"golang.org/x/sys/windows"
 )
+
+func TestRecoveryInspectionNeverCreatesMissingBrowserDirectoriesOrLocks(t *testing.T) {
+	root, environmentID, sessionID := t.TempDir(), uuid.NewString(), uuid.NewString()
+	ref := "environments/" + environmentID + "/user-data"
+	dir := filepath.Join(root, filepath.FromSlash(ref))
+	for attempt := 0; attempt < 2; attempt++ {
+		observed, err := InspectExistingManagedProfile(root, environmentID, sessionID, ref, 0, "", true, true, true)
+		if err != nil || !observed.DirectoryFree || !observed.SessionMatches || !observed.ResourcesExited {
+			t.Fatal("known uninitialized state could not be checked", err)
+		}
+		if _, err := os.Stat(dir); !os.IsNotExist(err) {
+			t.Fatal("inspection created missing directory", err)
+		}
+	}
+	if _, err := InspectExistingManagedProfile(root, environmentID, sessionID, ref, 0, "", true, false, false); err == nil {
+		t.Fatal("required missing data was accepted")
+	}
+	if err := os.MkdirAll(dir, 0700); err != nil {
+		t.Fatal(err)
+	}
+	observed, err := InspectExistingManagedProfile(root, environmentID, sessionID, ref, 0, "", true, false, true)
+	if err != nil || !observed.DirectoryFree || !observed.SessionMatches {
+		t.Fatal("prepared directory without runtime claim was rejected", err)
+	}
+	if _, err := os.Stat(filepath.Join(dir, ".prism-runtime.lock")); !os.IsNotExist(err) {
+		t.Fatal("inspection created a lock file", err)
+	}
+	if _, err := InspectExistingManagedProfile(root, environmentID, sessionID, ref, 0, "", false, true, true); err == nil {
+		t.Fatal("unknown creation stage bypassed missing record")
+	}
+}
 
 func TestManagedRecoveryChecksTheActualLockAndNeverAdoptsAReusedPID(t *testing.T) {
 	root, environmentID, sessionID := t.TempDir(), uuid.NewString(), uuid.NewString()

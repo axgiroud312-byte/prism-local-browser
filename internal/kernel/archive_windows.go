@@ -212,15 +212,25 @@ func VerifyFiles(root string, files map[string]string) error {
 // RemoveOwnedTree is used only for internally allocated staging/kernel IDs.
 // Revalidate and pin the actual parent at every deletion, never follow links.
 func RemoveOwnedTree(path string) error {
+	return RemoveOwnedTreeContext(context.Background(), path)
+}
+
+func RemoveOwnedTreeContext(ctx context.Context, path string) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
 	if _, err := os.Lstat(path); os.IsNotExist(err) {
 		return nil
 	}
-	if err := desktopbase.ValidateTree(path); err != nil {
-		return err
-	}
 	paths := []string{}
 	if err := filepath.WalkDir(path, func(path string, entry os.DirEntry, err error) error {
+		if stop := ctx.Err(); stop != nil {
+			return stop
+		}
 		if err != nil {
+			return err
+		}
+		if err := desktopbase.ValidatePath(path); err != nil {
 			return err
 		}
 		paths = append(paths, path)
@@ -229,6 +239,9 @@ func RemoveOwnedTree(path string) error {
 		return err
 	}
 	for i := len(paths) - 1; i >= 0; i-- {
+		if err := ctx.Err(); err != nil {
+			return err
+		}
 		release, err := desktopbase.PinDirectories(filepath.Dir(paths[i]))
 		if err != nil {
 			return err

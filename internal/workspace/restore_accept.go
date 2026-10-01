@@ -79,7 +79,7 @@ func (s *Service) acceptRestore(input RestoreRequest) Result {
 	if baseline != d.baseline {
 		return failure("REVISION_CONFLICT", "预检后当前配置已变化，请重新查看恢复影响。", true)
 	}
-	plan := restorePlan{ID: id(), Source: d.path, Baseline: d.baseline, ArchiveSHA256: input.ArchiveSHA256, Environments: []restoreStoredEnvironment{}, Proxies: []restoreStoredProxy{}, KernelMapping: d.kernelMapping, Moves: []restoreMove{}}
+	plan := restorePlan{JournalVersion: 2, ID: id(), Source: d.path, Baseline: d.baseline, ArchiveSHA256: input.ArchiveSHA256, Environments: []restoreStoredEnvironment{}, Proxies: []restoreStoredProxy{}, KernelMapping: d.kernelMapping, Moves: []restoreMove{}}
 	for index, item := range d.data.environments {
 		if slot := s.runtimeSlots[item.manifest.ID]; slot != nil {
 			if slot.session.NeedsReconcile || slot.session.PersistencePending {

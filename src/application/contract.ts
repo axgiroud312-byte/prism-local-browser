@@ -192,6 +192,7 @@ export interface NativeRestoreReport {
   mode: "native"; requestId: string; previewId: string; archiveSha256: string; sequence: number;
   environmentCount: number; switchedCount: number; credentialReentryCount: number;
   committed: boolean; rolledBack: boolean; protected: boolean;
+  recoveredAfterRestart?: boolean; interruptedStage?: string;
 }
 export interface NativeRestorePage {
   mode: "native"; previewId: string; offset: number; total: number;

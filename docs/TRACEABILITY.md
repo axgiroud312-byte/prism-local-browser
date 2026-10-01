@@ -27,6 +27,12 @@
 
 ## 已发布的桌面开发任务
 
+### T18 中断恢复（开发中，未运行验收）
+
+- BKP-001、ENV-003：[`journal启动恢复`](../internal/workspace/restore_recovery.go)、[`配置原/新摘要`](../internal/workspace/restore_consistency.go)及[`目录收尾`](../internal/workspace/restore_worker.go)从DB标记选择完整侧；其他启动记录恢复完之前保全局维护保护，不自动读取原包或开启浏览器。
+- DATA-001、ENV-003：[`现有目录检查`](../internal/kernel/profile_inspect_windows.go)仅打开既有目录/锁，结合初始化事实和准确Job，不在回滚后创建新的浏览目录；启动加载独立内存容器锁外执行，完成前不落恢复终态。
+- UX-001：恢复页显示中断阶段、自动恢复结果、占用/存储修复与明确重试；坏日志在桌面入口保留安全错误，原数据不重置。[`硬中断测试入口`](../internal/workspace/restore_recovery_test.go)是真正独立Process.Kill，仅合成root、默认需显式开关，当前**没有执行**；[待验收](verification/T18.md)。
+
 ### T17 完整恢复与执行回滚（本地源码完成，未运行验收）
 
 - BKP-001、DATA-001：[`受理/幂等`](../internal/workspace/restore_accept.go)、[`持久日志`](../internal/workspace/restore_storage.go)、[`执行/回滚`](../internal/workspace/restore_worker.go)、[`Windows目录对象`](../internal/backup/switch_windows.go)及[`逻辑配置事务`](../internal/workspace/restore_commit.go)；同卷旧副本、提交标记与配置同事务，不把混合状态发布成功。

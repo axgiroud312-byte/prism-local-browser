@@ -139,6 +139,12 @@ func (s *Service) executeRestore(ctx context.Context, task *restoreTask, plan *r
 	if baseline != plan.Baseline {
 		return &Error{Code: "REVISION_CONFLICT", Message: "预检后配置或数据初始化事实已改变，原目录未替换；请重新预检。", Retryable: true}
 	}
+	s.mu.Lock()
+	plan.PreviousBaseline, err = restoreAffectedBaseline(s.db, *plan)
+	s.mu.Unlock()
+	if err != nil {
+		return err
+	}
 	kernelReleases := []func(){}
 	defer func() {
 		for i := len(kernelReleases) - 1; i >= 0; i-- {
@@ -269,6 +275,10 @@ func (s *Service) executeRestore(ctx context.Context, task *restoreTask, plan *r
 	if _, err = s.createBackupSnapshot(ctx, backupExecution{OperationID: plan.ID, Scope: "selected", CreatedAt: timestamp(), Targets: oldTargets}, filepath.Join(directory, "previous-configuration.sqlite")); err != nil {
 		return err
 	}
+	plan.PreviousConfigurationSHA256, err = backup.PublishedDigest(ctx, filepath.Join(directory, "previous-configuration.sqlite"))
+	if err != nil {
+		return err
+	}
 	plan.Prepared = true
 	if err = s.observeRestore(task, *plan, "prepared", 0); err != nil {
 		return err
@@ -319,7 +329,7 @@ func (s *Service) executeRestore(ctx context.Context, task *restoreTask, plan *r
 		return err
 	}
 	s.mu.Lock()
-	err = s.commitRestoredConfiguration(task, *plan)
+	err = s.commitRestoredConfiguration(task, plan)
 	s.mu.Unlock()
 	if err != nil {
 		return err
@@ -327,7 +337,8 @@ func (s *Service) executeRestore(ctx context.Context, task *restoreTask, plan *r
 	return s.restoreCheckpoint("db-committed")
 }
 
-func rollbackRestoreDirectories(ctx context.Context, root string, plan restorePlan) error {
+func (s *Service) rollbackRestoreDirectories(ctx context.Context, plan restorePlan) error {
+	root := s.root
 	if !plan.Prepared {
 		return nil
 	}
@@ -358,6 +369,9 @@ func rollbackRestoreDirectories(ctx context.Context, root string, plan restorePl
 			if err = backup.MoveTree(ctx, root, m.Live, m.Incoming, m.NewIdentity, m.NewFiles); err != nil {
 				return err
 			}
+			if err = s.restoreCheckpoint("rollback-new-retained"); err != nil {
+				return err
+			}
 			present = false
 		} else if present && (!m.OldPresent || live != m.OldIdentity) {
 			return errors.New("unknown live directory protected")
@@ -376,6 +390,9 @@ func rollbackRestoreDirectories(ctx context.Context, root string, plan restorePl
 				if err = backup.MoveTree(ctx, root, m.Previous, m.Live, m.OldIdentity, m.OldFiles); err != nil {
 					return err
 				}
+				if err = s.restoreCheckpoint("rollback-old-restored"); err != nil {
+					return err
+				}
 			}
 			if err = backup.VerifyTree(ctx, root, m.Live, m.OldIdentity, m.OldFiles); err != nil {
 				return err
@@ -390,12 +407,25 @@ func rollbackRestoreDirectories(ctx context.Context, root string, plan restorePl
 func (s *Service) finishRestoreExecution(task *restoreTask, plan restorePlan, cause error) {
 	s.mu.Lock()
 	committed, readErr := s.restoreCommitted(plan.ID)
+	if readErr == nil {
+		readErr = s.verifyRestoreConfigurationOutcome(plan, committed)
+	}
 	s.mu.Unlock()
 	protected := readErr != nil
 	rolledBack := false
 	if !protected && !committed {
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
-		rollbackErr := rollbackRestoreDirectories(ctx, s.root, plan)
+		var rollbackErr error
+		if plan.Prepared {
+			var digest string
+			digest, rollbackErr = backup.PublishedDigest(ctx, filepath.Join(s.root, "backups", "restore", plan.ID, "previous-configuration.sqlite"))
+			if rollbackErr == nil && digest != plan.PreviousConfigurationSHA256 {
+				rollbackErr = errors.New("previous configuration copy differs")
+			}
+		}
+		if rollbackErr == nil {
+			rollbackErr = s.rollbackRestoreDirectories(ctx, plan)
+		}
 		cancel()
 		if rollbackErr != nil {
 			protected = true
@@ -406,6 +436,13 @@ func (s *Service) finishRestoreExecution(task *restoreTask, plan restorePlan, ca
 	}
 	if committed {
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
+		kernelRelease, kernelErr := s.pinRestoredKernels(ctx, plan)
+		if kernelErr != nil {
+			protected = true
+			cause = errors.Join(cause, kernelErr)
+		} else {
+			defer kernelRelease()
+		}
 		for _, m := range plan.Moves {
 			if err := backup.VerifyTree(ctx, s.root, m.Live, m.NewIdentity, m.NewFiles); err != nil {
 				protected = true
@@ -455,6 +492,13 @@ func (s *Service) finishRestoreExecution(task *restoreTask, plan restorePlan, ca
 		op.Error = &Error{Code: "RESTORE_INCOMPLETE", Message: "恢复状态尚未一致确认；原副本与日志已保留，环境保持维护保护。请核对占用、空间和权限后重试日志恢复。", Retryable: true}
 	}
 	task.plan = plan
+	if !protected && task.startup {
+		// Never persist a terminal phase before all remaining startup loaders have
+		// succeeded. A crash or write failure here must leave a replayable journal.
+		task.operation = op
+		s.scheduleRestoreBootstrap(task)
+		return
+	}
 	if err := s.persistRestore(task, op, phase); err != nil {
 		if !protected {
 			final := copyRestoreOperation(op)
@@ -476,6 +520,10 @@ func (s *Service) finishRestoreExecution(task *restoreTask, plan restorePlan, ca
 }
 
 func (s *Service) releaseRestore(task *restoreTask, committed bool) {
+	if task.startup {
+		s.scheduleRestoreBootstrap(task)
+		return
+	}
 	for _, e := range task.plan.Environments {
 		if committed {
 			delete(s.runtimeSlots, e.Manifest.ID)

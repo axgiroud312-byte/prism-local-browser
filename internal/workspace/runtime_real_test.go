@@ -16,6 +16,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/axgiroud312-byte/prism-local-browser/internal/desktopbase"
 	"github.com/axgiroud312-byte/prism-local-browser/internal/kernel"
 	"golang.org/x/sys/windows"
 )
@@ -181,6 +182,7 @@ func TestRealIndependentBrowserSessions(t *testing.T) {
 	observations := []syntheticBrowserReport{}
 	startedSessions := []RuntimeSession{}
 	stoppedSessions := []RuntimeSession{}
+	readChanged := map[string]bool{}
 	inspect := func(service *Service, name, phase string) {
 		deadline := time.After(45 * time.Second)
 		for {
@@ -190,7 +192,7 @@ func TestRealIndependentBrowserSessions(t *testing.T) {
 					continue
 				}
 				marker := "SYNTHETIC-" + name
-				if phase == "mutate" {
+				if phase == "mutate" || phase == "read" && readChanged[name] {
 					marker += "-CHANGED"
 				}
 				if report.After.Local == nil || *report.After.Local != marker || report.After.Indexed == nil || *report.After.Indexed != marker || report.After.Cookie != "prism_synthetic="+marker || report.RequestCookie != "prism_synthetic="+marker {
@@ -344,6 +346,78 @@ func TestRealIndependentBrowserSessions(t *testing.T) {
 			t.Fatal("restored configuration differs", err)
 		}
 		restoreEvidence = map[string]any{"status": "observed", "operation": completed, "afterBackupMutationObserved": true, "cookieLocalStorageIndexedDBRestored": true, "packageExternalEnvironmentUnchanged": true, "applicationServiceReopened": true, "profileUnchanged": true, "windowsUserContext": "same-user"}
+		if os.Getenv("PRISM_RESTORE_CRASH_VERIFY") == "1" {
+			// Real storage + actual host death in the SAME fixture and loopback
+			// origin. Each phase checks old/new data independently through a browser.
+			crashes := []map[string]any{}
+			for index, phase := range []string{"prepared", "old-retained", "new-switched", "before-db-commit", "db-committed"} {
+				if index > 0 {
+					reopened, err = Open(root, Options{})
+					if err != nil {
+						t.Fatal(err)
+					}
+					defer reopened.Close()
+				}
+				changedPhase.Store(true)
+				start(reopened, "A")
+				inspect(reopened, "A", "mutate")
+				stop(reopened, "A")
+				changedPhase.Store(false)
+				p := preview(t, reopened, "edit", environments["A"].ID)
+				p.Environment.Note = "SYNTHETIC_NOTE_AFTER_BACKUP"
+				value[any](t, call(reopened, "Environment.Update", Mutation{PreviewID: p.PreviewID, Configuration: p.Environment.Configuration, ExpectedRevision: p.ExpectedRevision, RequestID: id()}))
+				if err := reopened.Close(); err != nil {
+					t.Fatal(err)
+				}
+				signal := crashRestoreFixture(t, root, path, phase)
+				if err := os.Rename(path, path+".held"); err != nil {
+					t.Fatal(err)
+				}
+				func() {
+					lock, err := desktopbase.Acquire(root)
+					if err != nil {
+						t.Fatal(err)
+					}
+					defer lock.Close()
+					recovered, err := Open(root, Options{})
+					if err != nil {
+						t.Fatal(err)
+					}
+					defer recovered.Close()
+					final := waitBackupFixture(t, recovered, signal.OperationID)
+					newState := phase == "db-committed"
+					if !final.RestoreReport.RecoveredAfterRestart || final.RestoreReport.Protected || final.RestoreReport.Committed != newState || final.RestoreReport.RolledBack == newState {
+						t.Fatal("real crash selected wrong side", final)
+					}
+					readChanged["A"] = !newState
+					for _, name := range []string{"A", "B"} {
+						v := view(t, recovered)
+						if !reflect.DeepEqual(v.Fingerprints[environments[name].ID].Profile, profiles[name]) || v.DataReferences[environments[name].ID] != refs[name] {
+							t.Fatal("real crash changed identity/reference")
+						}
+						current, _, _, err := recovered.readEnvironment(environments[name].ID)
+						wantNote := environments[name].Note
+						if name == "A" && !newState {
+							wantNote = "SYNTHETIC_NOTE_AFTER_BACKUP"
+						}
+						if err != nil || current.Note != wantNote {
+							t.Fatal("real configuration and storage side differ", err)
+						}
+						start(recovered, name)
+						inspect(recovered, name, "read")
+						stop(recovered, name)
+					}
+					if err := recovered.Close(); err != nil {
+						t.Fatal(err)
+					}
+					crashes = append(crashes, map[string]any{"checkpoint": phase, "operation": final, "actualHostProcessKilled": true, "cookieLocalStorageIndexedDBReadAfterRecovery": true, "configurationMatchedSameSide": true, "externalEnvironmentUnchanged": true, "exactKernelAndIdentityPreserved": true})
+				}()
+				if err := os.Rename(path+".held", path); err != nil {
+					t.Fatal(err)
+				}
+			}
+			restoreEvidence["hardInterruptions"] = crashes
+		}
 	}
 	if destination := os.Getenv("PRISM_RUNTIME_EVIDENCE"); destination != "" {
 		evidence := map[string]any{"verifiedAt": timestamp(), "mode": "native", "kernelVersion": record.Version, "archiveSha256": record.ArchiveSHA256, "executableSha256": record.ExecutableSHA256, "profiles": profiles, "dataReferences": refs, "observations": observations, "startedSessions": startedSessions, "stoppedSessions": stoppedSessions, "transport": "inherited-private-pipe", "sandbox": true, "networkPolicy": "explicit-direct-test", "uiClicks": "not-run", "visibleBrowserWindows": true, "independentRootProcesses": true, "controlledJobsExited": true, "sameInputsAfterReopen": true}

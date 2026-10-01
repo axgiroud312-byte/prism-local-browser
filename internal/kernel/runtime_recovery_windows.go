@@ -25,6 +25,11 @@ type ManagedRecovery struct {
 // Never terminates a PID, adopts an unrelated process, or deletes a lock file.
 // Private anonymous pipes cannot be reconstructed after an app restart.
 func InspectManagedProfile(root, environmentID, sessionID, reference string, pid int, createdAt string, definitelyNotCreated bool) (ManagedRecovery, error) {
+	return InspectExistingManagedProfile(root, environmentID, sessionID, reference, pid, createdAt, definitelyNotCreated, false, false)
+}
+
+// Missing inputs are allowed only with separately persisted initialization facts.
+func InspectExistingManagedProfile(root, environmentID, sessionID, reference string, pid int, createdAt string, definitelyNotCreated, allowMissingDirectory, allowMissingLock bool) (ManagedRecovery, error) {
 	result := ManagedRecovery{ProcessState: "not-created"}
 	if parsed, err := uuid.Parse(sessionID); err != nil || parsed.String() != sessionID {
 		return result, problem("VALIDATION_FAILED", "invalid-session-identity", "保存的会话标识无效，未操作任何进程。")
@@ -65,7 +70,7 @@ func InspectManagedProfile(root, environmentID, sessionID, reference string, pid
 			}
 		}
 	}
-	lock, err := lockManagedProfile(root, environmentID, reference)
+	lock, err := inspectManagedProfileLock(root, environmentID, reference, pid == 0 && definitelyNotCreated && allowMissingDirectory, pid == 0 && definitelyNotCreated && allowMissingLock)
 	if err != nil {
 		var p *Problem
 		if errors.As(err, &p) && p.Code == "DATA_DIR_LOCKED" {
@@ -120,7 +125,7 @@ func InspectManagedProfile(root, environmentID, sessionID, reference string, pid
 		// Creation preceded readiness. Inspect the actual identity from the
 		// still-retained metadata instead of interpreting a zero journal PID.
 		lock.release()
-		observed, err := InspectManagedProfile(root, environmentID, sessionID, reference, metadata.PID, metadata.CreatedAt, false)
+		observed, err := InspectExistingManagedProfile(root, environmentID, sessionID, reference, metadata.PID, metadata.CreatedAt, false, false, false)
 		observed.RootPID, observed.ProcessCreatedAt = metadata.PID, metadata.CreatedAt
 		return observed, err
 	}

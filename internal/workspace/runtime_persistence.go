@@ -1,6 +1,7 @@
 package workspace
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"errors"
@@ -243,7 +244,11 @@ func (s *Service) inspectSavedRuntime(session RuntimeSession) (kernel.ManagedRec
 	if session.ResourceVersion != kernel.ManagedRuntimeVersion {
 		return kernel.ManagedRecovery{ProcessState: "unconfirmed"}, &kernel.Problem{Code: "SESSION_IDENTITY_UNCONFIRMED", Message: "旧记录没有可核对的进程树身份，暂不解除数据保护；未接管或结束任何进程。", Retryable: true}
 	}
-	return kernel.InspectManagedProfile(s.root, session.EnvironmentID, session.SessionID, session.UserDataRef, session.RootPID, session.ProcessCreatedAt, session.LaunchStage == "queued" || session.LaunchStage == "network-protection" || session.LaunchStage == "proxy-preflight" || session.LaunchStage == "no-process-created")
+	target, err := s.backupDataTarget(session.EnvironmentID, session.UserDataRef)
+	if err != nil {
+		return kernel.ManagedRecovery{ProcessState: "unconfirmed"}, err
+	}
+	return kernel.InspectExistingManagedProfile(s.root, session.EnvironmentID, session.SessionID, session.UserDataRef, session.RootPID, session.ProcessCreatedAt, session.LaunchStage == "queued" || session.LaunchStage == "network-protection" || session.LaunchStage == "proxy-preflight" || session.LaunchStage == "no-process-created", !target.DirectoryRequired, target.NeverUsed)
 }
 
 func (s *Service) reconcileRuntimeSlot(slot *runtimeSlot) error {
@@ -316,6 +321,10 @@ func (s *Service) applyReconciledRuntime(slot *runtimeSlot, recovery kernel.Mana
 }
 
 func (s *Service) recoverRuntimeSessions() error {
+	return s.recoverRuntimeSessionsContext(context.Background())
+}
+
+func (s *Service) recoverRuntimeSessionsContext(ctx context.Context) error {
 	rows, err := s.db.Query("SELECT environment_id,record_json FROM runtime_sessions")
 	if err != nil {
 		return err
@@ -344,6 +353,9 @@ func (s *Service) recoverRuntimeSessions() error {
 		return err
 	}
 	for _, session := range sessions {
+		if err := ctx.Err(); err != nil {
+			return err
+		}
 		environment, revision, profileID, err := s.readEnvironment(session.EnvironmentID)
 		if err != nil {
 			return err

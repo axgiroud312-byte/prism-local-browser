@@ -24,7 +24,7 @@ func restoredDataState(old, archived string) string {
 // The configuration and committed marker share ONE transaction. COMMIT errors
 // are resolved by reading this marker, never by guessing from the last phase.
 // Caller owns s.mu; the global restore barrier excludes new configuration work.
-func (s *Service) commitRestoredConfiguration(task *restoreTask, plan restorePlan) error {
+func (s *Service) commitRestoredConfiguration(task *restoreTask, plan *restorePlan) error {
 	if s.restoreTask != task || task.operation.CancelRequested || s.closed || s.closeRequested.Load() {
 		return context.Canceled
 	}
@@ -200,7 +200,11 @@ func (s *Service) commitRestoredConfiguration(task *restoreTask, plan restorePla
 	op.Stage = "db-committed"
 	op.RestoreReport.Sequence++
 	op.RestoreReport.Committed = true
-	if err = saveRestoreJournal(tx, plan, op, "db-committed"); err != nil {
+	plan.CommittedBaseline, err = restoreAffectedBaseline(tx, *plan)
+	if err != nil {
+		return err
+	}
+	if err = saveRestoreJournal(tx, *plan, op, "db-committed"); err != nil {
 		return err
 	}
 	marker, err := tx.Exec("UPDATE restore_jobs SET committed=1 WHERE operation_id=? AND committed=0", plan.ID)
@@ -223,6 +227,7 @@ func (s *Service) commitRestoredConfiguration(task *restoreTask, plan restorePla
 		return err
 	}
 	task.operation = op
+	task.plan = *plan
 	task.phase = "db-committed"
 	return nil
 }

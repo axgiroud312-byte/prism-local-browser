@@ -29,6 +29,10 @@ func (s *Service) retryRestoreFinalization(operationID string) Result {
 	if task.finalPending != nil {
 		return success(copyRestoreOperation(task.operation), operationID)
 	}
+	if task.bootstrapOutcome != nil {
+		s.scheduleRestoreBootstrap(task)
+		return success(copyRestoreOperation(task.operation), operationID)
+	}
 	if !task.recoveryAvailable {
 		return failure("RESTORE_INCOMPLETE", "重开后的恢复计划需要启动恢复流程核对，当前保持保护。", true)
 	}
@@ -139,6 +143,10 @@ func (s *Service) restoreCommitted(operationID string) (bool, error) {
 // directory rename or configuration replay occurs in this path.
 func (s *Service) flushRestorePersistence() {
 	task := s.restoreTask
+	if task != nil && !task.running && task.bootstrapReady && task.bootstrapOutcome != nil {
+		s.finishRestoreBootstrap(task)
+		return
+	}
 	if task == nil || task.running || task.acceptancePending || task.finalPending == nil {
 		return
 	}
@@ -176,29 +184,27 @@ func (s *Service) listRestoreOperations() ([]Operation, error) {
 	return result, rows.Err()
 }
 
-// T17 already refuses to expose an interrupted switch as an ordinary workspace.
-// T18 adds automatic recovery and explicit retry of this protected journal.
+// Load all candidates before starting any worker: one journal owns the global
+// switch barrier. Multiple or malformed candidates are retained, never replayed.
 func (s *Service) loadInterruptedRestore() error {
-	rows, err := s.db.Query("SELECT o.result_json,r.plan_json,r.phase FROM restore_jobs r JOIN operations o ON o.id=r.operation_id WHERE r.phase NOT IN ('finalized','rolled-back','rejected')")
+	rows, err := s.db.Query("SELECT o.result_json,r.plan_json,r.phase,r.committed,r.request_id,r.signature,q.signature,q.result_json FROM restore_jobs r LEFT JOIN operations o ON o.id=r.operation_id LEFT JOIN requests q ON q.id=r.request_id WHERE r.phase NOT IN ('finalized','rolled-back','rejected')")
 	if err != nil {
 		return err
 	}
 	defer rows.Close()
 	for rows.Next() {
 		if s.restoreTask != nil {
-			return errors.New("multiple incomplete restore journals")
+			return restoreRecoveryCountError(2)
 		}
-		var opJSON, planJSON, phase string
-		if err = rows.Scan(&opJSON, &planJSON, &phase); err != nil {
+		var opJSON, planJSON, phase, requestID, signature, requestSignature, requestJSON string
+		var committed bool
+		if err = rows.Scan(&opJSON, &planJSON, &phase, &committed, &requestID, &signature, &requestSignature, &requestJSON); err != nil {
 			return err
 		}
-		task := &restoreTask{phase: phase}
-		if decode([]byte(opJSON), &task.operation) != nil || decode([]byte(planJSON), &task.plan) != nil || task.plan.ID != task.operation.ID || task.operation.RestoreReport == nil {
-			return errors.New("invalid restore journal")
+		task, err := s.restoreRecoveryRecord(opJSON, planJSON, phase, requestID, signature, requestSignature, requestJSON, committed)
+		if err != nil {
+			return err
 		}
-		task.operation.PersistencePending = true
-		task.operation.RestoreReport.Protected = true
-		task.operation.Error = &Error{Code: "RESTORE_INCOMPLETE", Message: "恢复曾被中断；目录与配置保持保护，必须完成日志核对/回滚后再使用。", Retryable: true}
 		s.restoreTask = task
 	}
 	return rows.Err()

@@ -175,6 +175,12 @@ func (s *Service) finishBackup(task *backupTask, cause error) {
 }
 
 func (s *Service) recoverBackupExports() error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.recoverBackupExportsLocked()
+}
+
+func (s *Service) recoverBackupExportsLocked() error {
 	rows, err := s.db.Query(`SELECT b.operation_id,b.destination,b.temporary,b.targets_json,b.created_at,b.phase,o.result_json FROM backup_exports b JOIN operations o ON o.id=b.operation_id WHERE b.phase NOT IN ('completed','failed','cancelled')`)
 	if err != nil {
 		return err
@@ -204,8 +210,6 @@ func (s *Service) recoverBackupExports() error {
 	if err != nil {
 		return err
 	}
-	s.mu.Lock()
-	defer s.mu.Unlock()
 	recovery := []*backupTask{}
 	// Finish every fallible synchronous initialization before any goroutine can
 	// touch backupTasks. A failure returns with no recovery worker to abandon.

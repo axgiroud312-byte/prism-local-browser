@@ -349,6 +349,12 @@ parseSnapshot 校验 format、schemaVersion、主要记录字段、Cookie 数组
 
 配置与`committed=1`同事务。未提交反向还原旧目录；已提交核对新目录；未知标记或目录冲突保持维护，不发布成功。已观测终态仅日志写失败时，Workspace/Operation读取重试原结果保存、不重做目录动作。受理整体确认不存在才释放原request占位；未知继续查询。重开当前只加载保护，自动收敛留T18。native[`恢复界面`](../src/components/NativeRestoreExecution.tsx)提供覆盖/停止/凭据确认与原请求核实、任务取消/历史，实际验证见[T17待验收](verification/T17.md)。
 
+### T18 启动恢复增量（开发中，尚未运行验收）
+
+[`启动恢复`](../internal/workspace/restore_recovery.go)在其他worker/环境操作之前加载唯一未完成journal，校验受理关联、内部版本2、原身份/规范路径/目录对象/清单；[`配置摘要`](../internal/workspace/restore_consistency.go)只覆盖本次可能改动的环境/档案历史/初始化事实/代理与密文引用。旧摘要和原配置副本SHA在prepared前持久，新摘要与`committed=1`同事务；恢复先确认DB标记与对应配置匹配，再核对实际目录决定回滚旧侧或确认新侧，不读取原包或重做导入。
+
+启动期间保持原restoreTask屏障，目录结果确认后先恢复其余kernel/runtime/proxy/Cookie/batch/backup控制记录再开放操作；bootstrap前不持久化终态，独立内存容器锁外加载后发布，失败保留已完成步骤并明确重试。会话核对按持久初始化事实只读既有目录/锁，不创建已回滚为空的目录；Close可取消启动清理。已核对终态仅保存失败时只重试原观测，普通重试不复用过时finalPending去覆盖新保护。原生页面显示recoveredAfterRestart/interruptedStage及保留数据的修复步骤。5阶段与回滚再中断子进程Kill、真实浏览器组合用例仅编写，见[T18清单](verification/T18.md)。
+
 ### 原子替换与崩溃恢复
 
 #### T16只读预检增量（源码已完成，未运行验收）

@@ -159,9 +159,14 @@ func Open(root string, options Options) (*Service, error) {
 	}
 	if err = s.loadInterruptedRestore(); err != nil {
 		db.Close()
-		return nil, err
+		var safe *Error
+		if errors.As(err, &safe) {
+			return nil, safe
+		}
+		return nil, &Error{Code: "RESTORE_INCOMPLETE", Message: "未完成恢复日志无法完整读取或匹配原请求，未自动移动目录；请保留全部数据与日志，核对存储和完整副本后重开。", Retryable: true}
 	}
 	if s.restoreTask != nil {
+		s.startInterruptedRestore(s.restoreTask)
 		return s, nil
 	}
 	if err = s.recoverKernelOperations(); err != nil {
@@ -219,6 +224,9 @@ func (s *Service) beginShutdown() {
 	}
 	if s.restoreTask != nil && s.restoreTask.cancel != nil {
 		s.restoreTask.cancel()
+	}
+	if s.restoreTask != nil && s.restoreTask.bootstrapCancel != nil {
+		s.restoreTask.bootstrapCancel()
 	}
 	s.restorePreview = nil
 	if s.kernelTask != nil {

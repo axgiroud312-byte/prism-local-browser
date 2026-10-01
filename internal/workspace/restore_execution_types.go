@@ -27,6 +27,8 @@ type RestoreReport struct {
 	RolledBack             bool   `json:"rolledBack"`
 	Protected              bool   `json:"protected"`
 	CredentialReentryCount int    `json:"credentialReentryCount"`
+	RecoveredAfterRestart  bool   `json:"recoveredAfterRestart,omitempty"`
+	InterruptedStage       string `json:"interruptedStage,omitempty"`
 }
 type restoreStoredEnvironment struct {
 	Manifest         backup.Environment `json:"manifest"`
@@ -55,15 +57,19 @@ type restoreMove struct {
 	NewFiles    []backup.File       `json:"newFiles"`
 }
 type restorePlan struct {
-	ID            string                     `json:"id"`
-	Source        string                     `json:"source"` // private journal; never returned through RPC
-	Baseline      string                     `json:"baseline"`
-	ArchiveSHA256 string                     `json:"archiveSha256"`
-	Prepared      bool                       `json:"prepared"`
-	Environments  []restoreStoredEnvironment `json:"environments"`
-	Proxies       []restoreStoredProxy       `json:"proxies"`
-	KernelMapping map[string]string          `json:"kernelMapping"`
-	Moves         []restoreMove              `json:"moves"`
+	JournalVersion              int                        `json:"journalVersion"`
+	ID                          string                     `json:"id"`
+	Source                      string                     `json:"source"` // private journal; never returned through RPC
+	Baseline                    string                     `json:"baseline"`
+	ArchiveSHA256               string                     `json:"archiveSha256"`
+	PreviousConfigurationSHA256 string                     `json:"previousConfigurationSha256"`
+	PreviousBaseline            string                     `json:"previousBaseline"`
+	CommittedBaseline           string                     `json:"committedBaseline"`
+	Prepared                    bool                       `json:"prepared"`
+	Environments                []restoreStoredEnvironment `json:"environments"`
+	Proxies                     []restoreStoredProxy       `json:"proxies"`
+	KernelMapping               map[string]string          `json:"kernelMapping"`
+	Moves                       []restoreMove              `json:"moves"`
 }
 type restoreTask struct {
 	operation           Operation
@@ -77,6 +83,12 @@ type restoreTask struct {
 	finalPending        *Operation
 	finalPhase          string
 	recoveryAvailable   bool // set after this process has executed and retained a plan
+	startup             bool
+	bootstrapOutcome    *Operation
+	bootstrapReady      bool
+	bootstrapLoader     *Service // private startup state, published only after loading
+	bootstrapStep       int
+	bootstrapCancel     context.CancelFunc
 }
 
 func copyRestoreOperation(op Operation) Operation {

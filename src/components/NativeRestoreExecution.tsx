@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { mergeOperation, operationIsTerminal, type ApplicationService, type NativeRestorePreview, type Operation, type WorkspaceView } from "../application/contract";
 import { confirmsRestoreRequest } from "../application/restore-model";
 
-const stages: Record<string, string> = { accepted: "恢复已受理", revalidating: "再次核对原包", "stopping-environments": "正常停止受影响环境", prepared: "新目录与旧状态已准备", swapping: "切换目录", "db-committing": "提交配置事务", "db-committed": "确认新状态", finalized: "完整恢复完成", "rolled-back": "恢复未完成，原状态已回滚", protected: "恢复未完成，工作区保持维护保护", "storage-pending": "结果待保存，保护保持", "acceptance-pending": "原受理待核实" };
+const stages: Record<string, string> = { accepted: "恢复已受理", revalidating: "再次核对原包", "stopping-environments": "正常停止受影响环境", prepared: "新目录与旧状态已准备", swapping: "切换目录", "db-committing": "提交配置事务", "db-committed": "确认新状态", finalized: "完整恢复完成", "rolled-back": "恢复未完成，原状态已回滚", protected: "恢复未完成，工作区保持维护保护", "storage-pending": "结果待保存，保护保持", "acceptance-pending": "原受理待核实", recovering: "按日志找回完整状态", "workspace-recovery": "目录已核对，正在恢复其余本机记录" };
 
 export function NativeRestoreExecution({ application, workspace, preview, onConsumed, onLockChange }: { application: ApplicationService; workspace: WorkspaceView; preview?: NativeRestorePreview; onConsumed(previewId: string): void; onLockChange(locked: boolean): void }) {
   const [pending, setPending] = useState(() => application.getPendingRestore?.());
@@ -93,7 +93,9 @@ export function NativeRestoreExecution({ application, workspace, preview, onCons
     {pending && <p role="status">原请求 {pending.request.requestId} 受理未核实；保留原包与确认，不另建恢复。</p>}
     {message && <p role="alert">{message}</p>}
     {report && <><h3>{stages[operation.stage ?? ""] ?? operation.state}</h3><p>任务 {operation.id} · 已切换 {report.switchedCount} / {report.environmentCount}</p>{operation.error && <p role="alert">{operation.error.code}：{operation.error.message}</p>}
+      {report.recoveredAfterRestart && <p>上次应用在“{stages[report.interruptedStage ?? ""] ?? report.interruptedStage}”阶段退出。本次根据数据库提交标记和实际目录对象自动核对，没有重新导入原包。</p>}
       {report.protected && <p role="status">维护保护中；目录和配置核对完成前不能启动或修改环境。</p>}
+      {report.protected && operation.state === "failed" && <p>请先释放磁盘空间、恢复原权限或正常关闭占用本工作区的程序，再重试核对。保留原日志、incoming、previous及配置副本；不要手工删除锁文件、移动未知目录或把旧内核指向新数据。</p>}
       {report.rolledBack && <p>旧目录与配置已核对保留；没有恢复成功。修正原因后重新预检。</p>}
       {operation.state === "completed" && <p>完整新状态已提交并核对，原 ID 和 seed 保留。请按原 Windows 用户上下文重新打开验证登录状态。</p>}
       {active && <button className="button" disabled={busy || operation.cancelRequested || report.committed || operation.persistencePending} onClick={() => void cancel()}>取消此恢复并回滚</button>}

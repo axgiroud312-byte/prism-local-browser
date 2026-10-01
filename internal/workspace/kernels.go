@@ -485,6 +485,10 @@ func (s *Service) deleteKernel(record kernel.Record, operation *Operation) error
 }
 
 func (s *Service) recoverKernelOperations() error {
+	return s.recoverKernelOperationsContext(context.Background())
+}
+
+func (s *Service) recoverKernelOperationsContext(ctx context.Context) error {
 	rows, err := s.db.Query("SELECT result_json FROM operations WHERE json_extract(result_json,'$.kind') LIKE 'kernel-%'")
 	if err != nil {
 		return err
@@ -511,10 +515,13 @@ func (s *Service) recoverKernelOperations() error {
 		return err
 	}
 	for _, operation := range operations {
+		if err := ctx.Err(); err != nil {
+			return err
+		}
 		if parsed, err := uuid.Parse(operation.ResourceKey); err != nil || parsed.String() != operation.ResourceKey {
 			return errors.New("invalid internal staging resource key")
 		}
-		if err = kernel.RemoveOwnedTree(filepath.Join(s.root, "staging", "kernel-"+operation.ResourceKey)); err != nil {
+		if err = kernel.RemoveOwnedTreeContext(ctx, filepath.Join(s.root, "staging", "kernel-"+operation.ResourceKey)); err != nil {
 			return err
 		}
 		if operation.Kind == "kernel-install" && operation.KernelID != "" {
@@ -526,7 +533,7 @@ func (s *Service) recoverKernelOperations() error {
 				if parsed, err := uuid.Parse(operation.KernelID); err != nil || parsed.String() != operation.KernelID {
 					return errors.New("invalid recovery kernel ID")
 				}
-				if err = kernel.RemoveOwnedTree(filepath.Join(s.root, "kernels", operation.KernelID)); err != nil {
+				if err = kernel.RemoveOwnedTreeContext(ctx, filepath.Join(s.root, "kernels", operation.KernelID)); err != nil {
 					return err
 				}
 			}

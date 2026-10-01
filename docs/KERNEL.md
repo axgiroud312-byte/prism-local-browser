@@ -147,6 +147,8 @@ CDP 默认不开启。需要身份探测或本机自动化时，优先采用本�
 
 进入启动阶段但数据库PID0时读取锁元数据确认是否已创建；只有确实未创建才能使用安全中断分支。应用异常退出的kill-on-close不能代替重开后的实际核对；资源版本缺失、查询未知或尚未退出仍busy。指定强制结束只用于当前仍持有的Job、普通关闭已失败的会话；迟到worker结果与持久UPDATE须匹配session。源码及用例存在不代表Windows杀进程/崩溃恢复通过，[待验收](verification/T07.md)。
 
+T18修订重开核对：[`现有目录检查`](../internal/kernel/profile_inspect_windows.go)固定实际目录链、仅`OPEN_EXISTING`读取原锁，不创建目录或锁、不扫描浏览数据；只有持久never-initialized/directory-prepared事实与明确未创建会话匹配时才容许对应缺项，仍查询准确Job。正常Start继续完整数据树校验。避免bootstrap在回滚至旧目录不存在后自行创建未知目录；新增回归未运行，[T18](verification/T18.md)。
+
 ### T09 认证通道的实际开发边界
 
 独立TCP4 loopback监听不当作认证。内部前检同时验证当前host的TCP caller与随机token；浏览器用[`反向TCP四元组与准确Job`](../internal/kernel/proxy_guard_windows.go)判定客户端。QUERY副本在CreateProcess前绑定、句柄不继承，不泄漏副本影响kill-on-close；先收敛本次桥接/连接，再关闭副本并释放pins/实际目录，查询失败不改为放行或关闭沙箱。[D010边界](DECISIONS.md#d010--每会话代理通道只接纳其受控调用进程2026-10-01)不声称抵御管理员/恶意同SID注入或主动加入Job。

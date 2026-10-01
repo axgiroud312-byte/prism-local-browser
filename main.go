@@ -25,10 +25,16 @@ var frontend embed.FS
 // Numeric PE version is 0.3.0.0; preview revision is recorded separately by the build.
 var applicationVersion = "0.3.0-preview.1"
 
-type DesktopApp struct{ service *workspace.Service }
+type DesktopApp struct {
+	service      *workspace.Service
+	startupError *workspace.Error
+}
 
 func (app *DesktopApp) Call(request workspace.Request) workspace.Result {
 	if app.service == nil {
+		if app.startupError != nil {
+			return workspace.Result{Mode: "native", Error: app.startupError}
+		}
 		return workspace.Result{Mode: "native", Error: &workspace.Error{Code: "STORAGE_READ_FAILED", Message: "本地数据库无法打开，原数据未重置。请检查磁盘权限或数据库版本后重新打开。", Retryable: true}}
 	}
 	return app.service.Call(request)
@@ -73,7 +79,7 @@ func main() {
 		return
 	}
 	var desktopContext context.Context
-	service, _ := workspace.Open(root, workspace.Options{AppVersion: applicationVersion, ChooseArchive: func() (string, error) {
+	service, openErr := workspace.Open(root, workspace.Options{AppVersion: applicationVersion, ChooseArchive: func() (string, error) {
 		if desktopContext == nil {
 			return "", errors.New("desktop not ready")
 		}
@@ -97,6 +103,10 @@ func main() {
 		return
 	}
 	app := &DesktopApp{service: service}
+	var safeOpenError *workspace.Error
+	if errors.As(openErr, &safeOpenError) {
+		app.startupError = safeOpenError
+	}
 	err = wails.Run(&options.App{
 		Title: "棱镜浏览器 · 开发预览 " + applicationVersion, Width: 1440, Height: 1000, MinWidth: 720, MinHeight: 600,
 		AssetServer: &assetserver.Options{Assets: assets}, Bind: []interface{}{app},

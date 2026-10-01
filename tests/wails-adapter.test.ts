@@ -64,6 +64,21 @@ test("restore progress is monotonic and protected storage failure can become con
   const completed: Operation = { ...pending, state: "completed", stage: "finalized", persistencePending: false, restoreReport: { ...pending.restoreReport!, sequence: 8, protected: false } };
   assert.equal(invalidRestoreOperation(completed), false); assert.equal(mergeOperation(pending, completed), completed); assert.equal(mergeOperation(completed, task), completed);
 });
+test("restart recovery remains pending through bootstrap and rejects an unconfirmed completed report", async () => {
+  const task: Operation = { ...restoreOperation(), stage: "workspace-recovery", persistencePending: true, restoreReport: { ...restoreOperation().restoreReport!, sequence: 10, committed: true, switchedCount: 1, recoveredAfterRestart: true, interruptedStage: "db-committed" } };
+  let observed = task;
+  const { app } = fixture(r => r.method === "Workspace.Read" ? ok({ ...empty(), restoreOperations: [observed], maintenance: observed }) : ok(observed));
+  const loading = await app.getOperation(task.id);
+  assert.ok(loading.ok);
+  if (loading.ok) { assert.equal(loading.data.persistencePending, true); assert.equal(loading.data.restoreReport?.protected, true); }
+  observed = { ...task, state: "completed" };
+  assert.equal((await app.getOperation(task.id)).ok, false);
+  observed = { ...task, state: "completed", stage: "finalized", persistencePending: false, restoreReport: { ...task.restoreReport!, protected: false, sequence: 11 } };
+  const complete = await app.getOperation(task.id);
+  assert.ok(complete.ok);
+  if (complete.ok) assert.equal(complete.data.restoreReport?.recoveredAfterRestart, true);
+  assert.equal(invalidRestoreOperation({ ...task, restoreReport: { ...task.restoreReport!, interruptedStage: 123 as unknown as string } }), true);
+});
 test("late refusal from an old restore cannot clear a newer unresolved request", async () => {
   let deliver!: (value: ApplicationResult<unknown>) => void;
   let first = true;

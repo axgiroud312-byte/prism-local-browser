@@ -4,6 +4,7 @@ export function invalidRestoreOperation(op: Operation): boolean {
   if (op.kind !== "backup-restore") return false;
   const r = op.restoreReport;
   if (!r || r.mode !== "native" || !r.requestId || !r.previewId || !/^[0-9a-f]{64}$/.test(r.archiveSha256)) return true;
+  if (r.recoveredAfterRestart !== undefined && typeof r.recoveredAfterRestart !== "boolean" || r.interruptedStage !== undefined && typeof r.interruptedStage !== "string" || r.recoveredAfterRestart && !r.interruptedStage) return true;
   if (![r.sequence, r.environmentCount, r.switchedCount, r.credentialReentryCount].every(n => Number.isSafeInteger(n) && n >= 0) || r.switchedCount > r.environmentCount || op.total !== r.environmentCount) return true;
   if (![r.committed, r.rolledBack, r.protected].every(b => typeof b === "boolean") || r.committed && r.rolledBack) return true;
   if (op.state === "completed" && (!r.committed || r.protected || r.switchedCount !== r.environmentCount || op.persistencePending)) return true;
