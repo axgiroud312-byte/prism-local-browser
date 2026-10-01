@@ -81,6 +81,7 @@ type Operation struct {
 	BackupReport       *BackupReport       `json:"backupReport,omitempty"`
 	RestoreReport      *RestoreReport      `json:"restoreReport,omitempty"`
 	RecycleReport      *RecycleReport      `json:"recycleReport,omitempty"`
+	MigrationReport    *MigrationReport    `json:"migrationReport,omitempty"`
 }
 type Mutation struct {
 	PreviewID        string        `json:"previewId"`
@@ -119,24 +120,27 @@ type State struct {
 	Activities    []Activity    `json:"activities"`
 }
 type View struct {
-	Mode               string                     `json:"mode"`
-	State              State                      `json:"state"`
-	KernelRecords      []KernelView               `json:"kernelRecords"`
-	KernelOperations   []Operation                `json:"kernelOperations"`
-	Fingerprints       map[string]ProfileRevision `json:"fingerprints"`
-	DataReferences     map[string]string          `json:"dataReferences"`
-	RuntimeSessions    map[string]RuntimeSession  `json:"runtimeSessions"`
-	NativeProxyRecords []ProxyView                `json:"nativeProxyRecords"`
-	ProxyOperations    []Operation                `json:"proxyOperations"`
-	CookieOperations   []Operation                `json:"cookieOperations"`
-	BatchOperations    []Operation                `json:"batchOperations"`
-	BackupOperations   []Operation                `json:"backupOperations"`
-	NativeBackups      []BackupRecord             `json:"nativeBackups"`
-	RestoreOperations  []Operation                `json:"restoreOperations"`
-	RecycleOperations  []Operation                `json:"recycleOperations"`
-	RecycleMaintenance *Operation                 `json:"recycleMaintenance,omitempty"`
-	Maintenance        *Operation                 `json:"maintenance,omitempty"`
-	EnvironmentPage    *EnvironmentPage           `json:"environmentPage,omitempty"`
+	Mode                 string                     `json:"mode"`
+	State                State                      `json:"state"`
+	KernelRecords        []KernelView               `json:"kernelRecords"`
+	KernelOperations     []Operation                `json:"kernelOperations"`
+	DefaultKernel        *KernelDefault             `json:"defaultKernel,omitempty"`
+	Fingerprints         map[string]ProfileRevision `json:"fingerprints"`
+	DataReferences       map[string]string          `json:"dataReferences"`
+	RuntimeSessions      map[string]RuntimeSession  `json:"runtimeSessions"`
+	NativeProxyRecords   []ProxyView                `json:"nativeProxyRecords"`
+	ProxyOperations      []Operation                `json:"proxyOperations"`
+	CookieOperations     []Operation                `json:"cookieOperations"`
+	BatchOperations      []Operation                `json:"batchOperations"`
+	BackupOperations     []Operation                `json:"backupOperations"`
+	NativeBackups        []BackupRecord             `json:"nativeBackups"`
+	RestoreOperations    []Operation                `json:"restoreOperations"`
+	RecycleOperations    []Operation                `json:"recycleOperations"`
+	RecycleMaintenance   *Operation                 `json:"recycleMaintenance,omitempty"`
+	MigrationOperations  []Operation                `json:"migrationOperations"`
+	MigrationMaintenance *Operation                 `json:"migrationMaintenance,omitempty"`
+	Maintenance          *Operation                 `json:"maintenance,omitempty"`
+	EnvironmentPage      *EnvironmentPage           `json:"environmentPage,omitempty"`
 }
 type KernelView struct {
 	kernel.Record

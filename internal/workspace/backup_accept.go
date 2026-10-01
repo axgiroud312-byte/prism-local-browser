@@ -17,8 +17,11 @@ import (
 
 func (s *Service) selectBackupDestination() Result {
 	s.mu.Lock()
-	blocked := s.recycleTask != nil
+	blocked, migrating := s.recycleTask != nil, s.migrationTask != nil
 	s.mu.Unlock()
+	if migrating {
+		return failure("MIGRATION_INCOMPLETE", "请先完成或取消原迁移任务。", true)
+	}
 	if blocked {
 		return failure("RECYCLE_INCOMPLETE", "请先完成原回收任务。", true)
 	}
@@ -38,7 +41,7 @@ func (s *Service) selectBackupDestination() Result {
 	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	if s.closed || s.closeRequested.Load() || s.recycleTask != nil {
+	if s.closed || s.closeRequested.Load() || s.recycleTask != nil || s.migrationTask != nil {
 		return failure("NATIVE_UNAVAILABLE", "工作区正在退出，未保存选择。", true)
 	}
 	for key, value := range s.backupDestinations {

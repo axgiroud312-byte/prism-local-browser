@@ -13,6 +13,8 @@ import type { NativeBackupReport, NativeBackupExportRequest, NativeRestorePrevie
 import { invalidRestoreOperation } from "../src/application/restore-model.ts";
 import { invalidRecycleOperation, validRecyclePage } from "../src/application/recycle-model.ts";
 import type { NativeRecycleRequest, NativeRecyclePage } from "../src/application/contract.ts";
+import type { NativeMigrationRequest, NativeMigrationPreview, KernelDefaultRequest } from "../src/application/contract.ts";
+import { invalidMigrationOperation, validMigrationPreview } from "../src/application/migration-model.ts";
 
 const empty = (): WorkspaceView => ({ mode: "native", state: { schemaVersion: 1, environments: [], proxies: [], kernels: [], backups: [], activities: [] } });
 const recycleRequest = (): NativeRecycleRequest => ({ previewId: "synthetic-recycle-preview", confirm: true, requestId: "synthetic-recycle-request" });
@@ -38,6 +40,132 @@ const restorePreview = (): NativeRestorePreview => ({ mode: "native", previewId:
 
 const restoreRequest = (): NativeRestoreRequest => ({ previewId: "synthetic-preview", archiveSha256: "a".repeat(64), confirmOverwrite: true, acknowledgeCredentials: true, stopRunning: true, requestId: "synthetic-restore-request" });
 const restoreOperation = (): Operation => ({ id: "synthetic-restore-operation", kind: "backup-restore", state: "running", stage: "prepared", cancelRequested: false, completedIds: [], total: 1, restoreReport: { mode: "native", requestId: "synthetic-restore-request", previewId: "synthetic-preview", archiveSha256: "a".repeat(64), sequence: 2, environmentCount: 1, switchedCount: 0, credentialReentryCount: 0, committed: false, rolledBack: false, protected: true } });
+
+const migrationRequest = (): NativeMigrationRequest => ({ previewId: "synthetic-migration-preview", confirm: true, requestId: "synthetic-migration-request" });
+const migrationOperation = (): Operation => ({ id: "synthetic-migration", kind: "migration", state: "running", stage: "trial-running", total: 1, completedIds: [], cancelRequested: false, environmentId: "synthetic-environment", migrationReport: { mode: "native", requestId: "synthetic-migration-request", previewId: "synthetic-migration-preview", environmentId: "synthetic-environment", oldKernelId: "old", newKernelId: "new", seed: "1256789", sequence: 4, backupVerified: true, archiveSha256: "a".repeat(64), trialExited: false, committed: false, protected: true } });
+
+test("migration acceptance keeps its original owner through transport uncertainty", async () => {
+  const task = migrationOperation();
+  const { app, calls } = fixture(r => r.method === "Workspace.Read" ? ok(empty()) : r.method === "Operation.Read" ? ok(task) : { ok: false, mode: "native", operationId: task.id, error: { code: "MIGRATION_RESULT_UNCONFIRMED", message: "unknown", retryable: true } });
+  assert.equal((await app.prepareMigration({ ...migrationRequest(), path: "SYNTHETIC_PRIVATE", seed: "999" } as NativeMigrationRequest)).ok, false);
+  assert.deepEqual(calls[0].payload, migrationRequest());
+  assert.equal(app.getPendingMigration()?.operationId, task.id);
+  const count = calls.length; assert.equal((await app.prepareMigration({ ...migrationRequest(), requestId: "another" })).ok, false); assert.equal(calls.length, count);
+  assert.ok((await app.getOperation(task.id)).ok); assert.equal(app.getPendingMigration(), undefined);
+});
+test("migration explicit nonacceptance clears only matching cached owner", async () => {
+  const task = migrationOperation(); task.stage = "acceptance-pending"; task.persistencePending = true;
+  let accepted = false;
+  const { app } = fixture(r => r.method === "Workspace.Read" ? ok(accepted ? empty() : { ...empty(), migrationOperations: [task], migrationMaintenance: task }) : accepted ? { ok: false, mode: "native", error: { code: "MIGRATION_NOT_ACCEPTED", message: "absent", retryable: true } } : { ok: false, mode: "native", operationId: task.id, error: { code: "MIGRATION_RESULT_UNCONFIRMED", message: "unknown", retryable: true } });
+  await app.prepareMigration(migrationRequest()); assert.ok(app.getPendingMigration()); accepted = true;
+  assert.equal((await app.prepareMigration(migrationRequest())).ok, false); assert.equal(app.getPendingMigration(), undefined); assert.ok(app.wasMigrationNotAccepted(migrationRequest().requestId));
+});
+test("migration rejects partial nested reports without throwing or announcing completion", async () => {
+  assert.equal(validMigrationPreview({ mode: "native", previewId: "p", environmentId: "e", expectedRevision: 1, after: { kernelId: "new" } } as NativeMigrationPreview, "e", "new"), false);
+  const task = migrationOperation(); task.migrationReport!.after = {} as NonNullable<typeof task.migrationReport>["after"];
+  assert.equal(invalidMigrationOperation(task), true);
+  const { app } = fixture(() => ok(task)); assert.equal((await app.getOperation(task.id)).ok, false);
+});
+test("migration protected result can advance only to newer verified terminal observation", () => {
+  const protectedTask = migrationOperation(); protectedTask.persistencePending = true; protectedTask.state = "failed"; protectedTask.stage = "protected";
+  const stale = migrationOperation(); stale.migrationReport!.sequence = 3;
+  assert.equal(mergeOperation(protectedTask, stale), protectedTask);
+  const done = migrationOperation(); done.state = "completed"; done.stage = "completed"; done.migrationReport = { ...done.migrationReport!, committed: true, trialExited: true, protected: false, sequence: 5 };
+  assert.equal(invalidMigrationOperation(done), false); assert.equal(mergeOperation(protectedTask, done), done);
+});
+test("default selection preserves original request and rejects mismatched native receipt", async () => {
+  const request: KernelDefaultRequest = { kernelId: "new", expectedRevision: 2, requestId: "default-original" };
+  let correct = false;
+  const { app, calls } = fixture(r => r.method === "Workspace.Read" ? ok(empty()) : ok({ kernelId: correct ? "new" : "foreign", revision: 3 }));
+  assert.equal((await app.setDefaultKernel(request)).ok, false); assert.deepEqual(app.getPendingKernelDefault(), request);
+  const count = calls.length; assert.equal((await app.setDefaultKernel({ ...request, requestId: "different" })).ok, false); assert.equal(calls.length, count);
+  correct = true; assert.ok((await app.setDefaultKernel(request)).ok); assert.equal(app.getPendingKernelDefault(), undefined);
+});
+test("rollback preflight is bound to the selected migration's recorded complete backup", async () => {
+  const task = migrationOperation(); task.state = "completed"; task.migrationReport = { ...task.migrationReport!, committed: true, trialExited: true, protected: false };
+  const { app, calls } = fixture(r => r.method === "Operation.Read" ? ok(task) : r.method === "Migration.SelectRollback" ? ok({ sourceToken: "owned-rollback", archiveSha256: "a".repeat(64) }) : r.method === "Backup.PreviewRestore" ? ok({ ...restorePreview(), archiveSha256: "c".repeat(64) }) : ok({ status: "discarded" }));
+  assert.equal((await app.previewMigrationRollback(task.id)).ok, false);
+  assert.ok(calls.some(c => c.method === "Backup.DiscardRestore" && (c.payload as { sourceToken: string }).sourceToken === "owned-rollback"));
+});
+test("leaving rollback while source selection is delayed discards the late token", async () => {
+  const task = migrationOperation(); task.state = "completed"; task.migrationReport = { ...task.migrationReport!, committed: true, trialExited: true, protected: false };
+  let deliver!: (r: ApplicationResult<unknown>) => void;
+  const { app, calls } = fixture(r => r.method === "Operation.Read" ? ok(task) : r.method === "Migration.SelectRollback" ? new Promise(resolve => { deliver = resolve; }) : ok({ status: "discarded" }));
+  const pending = app.previewMigrationRollback(task.id);
+  while (!deliver) await Promise.resolve();
+  await app.discardMigrationRollback(); deliver(ok({ sourceToken: "late-owned-token", archiveSha256: "a".repeat(64) }));
+  assert.equal((await pending).ok, false);
+  assert.ok(calls.some(c => c.method === "Backup.DiscardRestore")); assert.equal(calls.some(c => c.method === "Backup.PreviewRestore"), false);
+});
+test("migration environment lookup can query later pages without changing workspace list selection", async () => {
+  const { app, calls } = fixture(() => ok({ ...empty(), state: { ...empty().state, environments: [environment] }, environmentPage: { page: 2, pageSize: 25, total: 60, filteredTotal: 60, groups: [], runningCount: 0, errorCount: 0 } }));
+  const result = await app.lookupMigrationEnvironments(2, "synthetic"); assert.ok(result.ok);
+  assert.equal(result.data.items[0].id, environment.id); assert.equal(result.data.page, 2);
+  assert.equal(app.getSnapshot().state.environments.length, 0);
+  assert.deepEqual(calls[0].payload, { environmentQuery: { page: 2, pageSize: 25, search: "synthetic", group: "", status: "all" } });
+});
+
+test("null migration envelopes remain retryable and keep original request ownership", async () => {
+  for (const malformed of [null, { status: "accepted", operation: null }]) {
+    let accepted = false;
+    const { app } = fixture(r => r.method === "Workspace.Read" ? ok(empty()) : ok(accepted ? { status: "accepted", operation: migrationOperation() } : malformed));
+    assert.equal((await app.prepareMigration(migrationRequest())).ok, false);
+    assert.deepEqual(app.getPendingMigration()?.request, migrationRequest());
+    accepted = true;
+    assert.equal((await app.prepareMigration(migrationRequest())).ok, true);
+    assert.equal(app.getPendingMigration(), undefined);
+  }
+  assert.equal(invalidMigrationOperation(null), true);
+  const { app } = fixture(() => ok(null));
+  assert.equal((await app.getOperation(migrationOperation().id)).ok, false);
+});
+
+test("leaving migration rollback keeps a submitted preview through uncertainty and original retry", async () => {
+  const task = migrationOperation(); task.state = "completed"; task.migrationReport = { ...task.migrationReport!, committed: true, trialExited: true, protected: false };
+  let deliver!: (r: ApplicationResult<unknown>) => void, accepted = false;
+  const { app, calls } = fixture(r => r.method === "Operation.Read" ? ok(task) : r.method === "Migration.SelectRollback" ? ok({ sourceToken: "rollback-owned-token", archiveSha256: "a".repeat(64) }) : r.method === "Backup.PreviewRestore" ? ok(restorePreview()) : r.method === "Backup.ApplyRestore" ? accepted ? ok({ status: "accepted", operation: restoreOperation() }) : new Promise(resolve => { deliver = resolve; }) : r.method === "Workspace.Read" ? ok(empty()) : ok({ status: "discarded" }));
+  assert.ok((await app.previewMigrationRollback(task.id)).ok);
+  const pending = app.applyRestore(restoreRequest());
+  await app.discardMigrationRollback();
+  assert.equal(calls.some(c => c.method === "Backup.DiscardRestore"), false);
+  deliver(rejected); await pending;
+  await app.discardMigrationRollback();
+  assert.equal(calls.some(c => c.method === "Backup.DiscardRestore"), false);
+  accepted = true; assert.ok((await app.applyRestore(restoreRequest())).ok);
+  await app.discardMigrationRollback();
+  assert.equal(calls.some(c => c.method === "Backup.DiscardRestore"), false);
+  assert.equal(app.getPendingRestore(), undefined);
+});
+
+test("abandoned rollback cleanup resumes only after a definite restore refusal", async () => {
+  const task = migrationOperation(); task.state = "completed"; task.migrationReport = { ...task.migrationReport!, committed: true, trialExited: true, protected: false };
+  let deliver!: (r: ApplicationResult<unknown>) => void;
+  const { app, calls } = fixture(r => r.method === "Operation.Read" ? ok(task) : r.method === "Migration.SelectRollback" ? ok({ sourceToken: "rollback-refused-token", archiveSha256: "a".repeat(64) }) : r.method === "Backup.PreviewRestore" ? ok(restorePreview()) : r.method === "Backup.ApplyRestore" ? new Promise(resolve => { deliver = resolve; }) : r.method === "Workspace.Read" ? ok(empty()) : ok({ status: "discarded" }));
+  assert.ok((await app.previewMigrationRollback(task.id)).ok);
+  const pending = app.applyRestore(restoreRequest());
+  await app.discardMigrationRollback();
+  assert.equal(calls.some(c => c.method === "Backup.DiscardRestore"), false);
+  deliver({ ok: false, mode: "native", error: { code: "RESTORE_NOT_ACCEPTED", message: "absent", retryable: true } });
+  assert.equal((await pending).ok, false);
+  assert.equal(app.getPendingRestore(), undefined);
+  assert.equal(calls.filter(c => c.method === "Backup.DiscardRestore").length, 1);
+});
+
+test("remounted restore retry shares its in-flight acceptance before deferred cleanup", async () => {
+  const task = migrationOperation(); task.state = "completed"; task.migrationReport = { ...task.migrationReport!, committed: true, trialExited: true, protected: false };
+  let deliver!: (r: ApplicationResult<unknown>) => void;
+  const { app, calls } = fixture(r => r.method === "Operation.Read" ? ok(task) : r.method === "Migration.SelectRollback" ? ok({ sourceToken: "rollback-concurrent-token", archiveSha256: "a".repeat(64) }) : r.method === "Backup.PreviewRestore" ? ok(restorePreview()) : r.method === "Backup.ApplyRestore" ? new Promise(resolve => { deliver = resolve; }) : r.method === "Workspace.Read" ? ok(empty()) : ok({ status: "discarded" }));
+  assert.ok((await app.previewMigrationRollback(task.id)).ok);
+  const first = app.applyRestore(restoreRequest());
+  await app.discardMigrationRollback();
+  const remounted = app.applyRestore(restoreRequest());
+  assert.equal(first, remounted);
+  assert.equal(calls.filter(c => c.method === "Backup.ApplyRestore").length, 1);
+  assert.equal(calls.some(c => c.method === "Backup.DiscardRestore"), false);
+  deliver({ ok: false, mode: "native", error: { code: "PROFILE_BUSY", message: "busy", retryable: true } });
+  assert.equal((await first).ok, false); assert.equal((await remounted).ok, false);
+  assert.equal(calls.filter(c => c.method === "Backup.DiscardRestore").length, 1);
+});
 
 test("recycle commit projects explicit original confirmation without paths or client identities", async () => {
   const task = recycleOperation();

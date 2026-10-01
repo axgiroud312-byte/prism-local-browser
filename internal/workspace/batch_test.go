@@ -311,6 +311,7 @@ func TestBatchRejectsUnknownFieldsDuplicateTargetsAndIdReuse(t *testing.T) {
 
 func stripBatchSchema(t *testing.T, s *Service) {
 	t.Helper()
+	stripMaintenanceSchema(t, s)
 	for _, statement := range []string{"DROP TABLE restore_jobs", "DROP TABLE backup_exports", "DROP TABLE environment_data_state", "DROP TABLE batch_item_events", "DROP TABLE batch_items", "DROP TABLE batch_plans", "DROP INDEX environment_proxy_usage", "DROP INDEX environment_kernel_usage", "DROP INDEX fingerprint_seed_history"} {
 		if _, err := s.db.Exec(statement); err != nil {
 			t.Fatal(err)
@@ -332,7 +333,7 @@ func TestSchemaFiveToSixAddsOnlyBatchJournalAndKeepsOriginalIdentity(t *testing.
 	}
 	defer reopened.Close()
 	var version int
-	if err = reopened.db.QueryRow("PRAGMA user_version").Scan(&version); err != nil || version != 8 || !reflect.DeepEqual(before, view(t, reopened).Fingerprints[environment.ID]) {
+	if err = reopened.db.QueryRow("PRAGMA user_version").Scan(&version); err != nil || version != 10 || !reflect.DeepEqual(before, view(t, reopened).Fingerprints[environment.ID]) {
 		t.Fatal("schema migration changed saved identity")
 	}
 }

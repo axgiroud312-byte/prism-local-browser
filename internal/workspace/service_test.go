@@ -255,7 +255,7 @@ func TestRejectDemoAndPrototypePayloadsWithoutChangingNativeState(t *testing.T) 
 	before := view(t, s)
 	wantError(t, s.Call(Request{Mode: "demo", Method: "Workspace.Read", Payload: json.RawMessage(`{}`)}), "CAPABILITY_UNSUPPORTED")
 	wantError(t, s.Call(Request{Mode: "native", Method: "Environment.Create", Payload: json.RawMessage(`{"format":"prism-prototype","schemaVersion":1,"environments":[]}`)}), "VALIDATION_FAILED")
-	wantError(t, call(s, "Backup.ApplyRestore", map[string]string{"format": "prism-prototype"}), "CAPABILITY_UNSUPPORTED")
+	wantError(t, call(s, "Backup.ApplyRestore", map[string]string{"format": "prism-prototype"}), "VALIDATION_FAILED")
 	if !reflect.DeepEqual(before, view(t, s)) {
 		t.Fatal("demo input modified native records")
 	}
@@ -277,7 +277,7 @@ func TestSchemaVersionAndCorruptFilesAreNotOverwritten(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, err = db.Exec("PRAGMA user_version=8"); err != nil {
+	if _, err = db.Exec("PRAGMA user_version=10"); err != nil {
 		t.Fatal(err)
 	}
 	db.Close()

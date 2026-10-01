@@ -21,8 +21,11 @@ import (
 
 func (s *Service) restorePreviewCall(request Request) Result {
 	s.mu.Lock()
-	blocked := s.recycleTask != nil
+	blocked, migrating := s.recycleTask != nil, s.migrationTask != nil
 	s.mu.Unlock()
+	if migrating {
+		return failure("MIGRATION_INCOMPLETE", "迁移维护尚未收尾，请先核对原任务。", true)
+	}
 	if blocked {
 		return failure("RECYCLE_INCOMPLETE", "回收维护尚未收尾，请先核对原任务。", true)
 	}
@@ -50,7 +53,7 @@ func (s *Service) restorePreviewCall(request Request) Result {
 		if s.closed || s.closeRequested.Load() {
 			return failure("NATIVE_UNAVAILABLE", "应用正在退出。", true)
 		}
-		if s.restorePreflight != nil || s.recycleTask != nil {
+		if s.restorePreflight != nil || s.recycleTask != nil || s.migrationTask != nil {
 			return failure("PROFILE_BUSY", "先取消或等待当前只读预检。", true)
 		}
 		token := id()
@@ -119,7 +122,7 @@ func (s *Service) previewRestore(token string) (result Result) {
 		s.mu.Unlock()
 		return failure("PREVIEW_EXPIRED", "文件选择已失效，请重新选择。", true)
 	}
-	if s.restorePreflight != nil || s.recycleTask != nil {
+	if s.restorePreflight != nil || s.recycleTask != nil || s.migrationTask != nil {
 		s.mu.Unlock()
 		return failure("PROFILE_BUSY", "已有只读预检正在进行。", true)
 	}
@@ -153,6 +156,9 @@ func (s *Service) previewRestore(token string) (result Result) {
 	pkg, err := backup.Read(ctx, file)
 	if err != nil {
 		return preflightFailure(err)
+	}
+	if source.expectedSHA256 != "" && source.expectedSHA256 != pkg.ArchiveSHA256 {
+		return failure("BACKUP_INVALID", "保留的升级前备份与原摘要不一致，未恢复。", false)
 	}
 	previewID := id()
 	stageRef := "backups/preflight/" + previewID

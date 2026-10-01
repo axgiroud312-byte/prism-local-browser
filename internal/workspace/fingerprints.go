@@ -291,7 +291,7 @@ func profileChanges(before *DeviceProfile, after DeviceProfile) []ProfileChange 
 func (s *Service) AcquireProfileUse(environmentID string) (func(), error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	if s.closed || s.restoreTask != nil || s.recycleTask != nil {
+	if s.closed || s.restoreTask != nil || s.recycleTask != nil || s.migrationTask != nil {
 		return nil, errors.New("workspace closed")
 	}
 	if _, _, _, err := s.readEnvironment(environmentID); err != nil {

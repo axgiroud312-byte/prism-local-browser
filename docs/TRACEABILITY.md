@@ -27,6 +27,13 @@
 
 ## 已发布的桌面开发任务
 
+### T20 选定迁移与升级前恢复（本地源码，未运行验收）
+
+- CORE-001：[`schema10/默认构建与引用保护`](../internal/workspace/kernel_default.go)仅影响后续草稿；当前/历史/默认/迁移备份引用全部参与删除保护，缺失构建不替代。
+- FP-002、FP-001：[`预览与受理`](../internal/workspace/migration_api.go)展示精确版本/能力/参数差异，原seed稳定；[`副本诊断`](../internal/kernel/migration_probe_windows.go)读取实际值及持久合成存储，试用明确正常退出后才允许切换。
+- BKP-001、DATA-001：[`完整备份与副本`](../internal/workspace/migration_backup.go)、[`目录与配置决策`](../internal/workspace/migration_commit.go)及[`启动恢复`](../internal/workspace/migration_recovery.go)选择完整侧；兼容性回滚复用正式完整恢复，原备份SHA绑定、不把旧内核指向升级数据。
+- UX-001：[`原生迁移页`](../src/components/NativeMigrationManager.tsx)独立查找、明确确认及原任务核实；离页/迟到响应、同恢复请求重试和空响应均保护原owner。[服务/输出/adapter、硬退出和两真实构建入口](verification/T20.md)仅编写未执行；T11代理门禁保持，静态通过不算验收。
+
 ### T19 回收与找回（本地源码，未运行验收）
 
 - DATA-001、ENV-001：[`schema9/回收日志`](../internal/workspace/recycle_storage.go)、[`明确ID影响/确认`](../internal/workspace/recycle_api.go)、[`逐项事务`](../internal/workspace/recycle_commit.go)和[`目录worker`](../internal/workspace/recycle_worker.go)；回收配置保原身份与引用，正常业务只取active，找回推进环境修订阻旧任务ABA。

@@ -36,7 +36,7 @@ func (s *Service) parseCookieImport(payload json.RawMessage) Result {
 		return failure("VALIDATION_FAILED", "Cookie预览只接受目标环境与文本，不接受路径/会话覆盖。", false)
 	}
 	s.mu.Lock()
-	if s.closed || s.closeRequested.Load() || s.recycleTask != nil {
+	if s.closed || s.closeRequested.Load() || s.recycleTask != nil || s.migrationTask != nil {
 		s.mu.Unlock()
 		return failure("NATIVE_UNAVAILABLE", "工作区正在关闭，未读取Cookie。", true)
 	}
@@ -105,7 +105,7 @@ func (s *Service) parseCookieImport(payload json.RawMessage) Result {
 	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	if s.closed || s.closeRequested.Load() || s.recycleTask != nil || generation != s.cookieGeneration {
+	if s.closed || s.closeRequested.Load() || s.recycleTask != nil || s.migrationTask != nil || generation != s.cookieGeneration {
 		return failure("PREVIEW_EXPIRED", "此Cookie预览已被更新输入或退出作废，没有保存秘密。", true)
 	}
 	_, currentRevision, _, err := s.readEnvironment(environment.ID)

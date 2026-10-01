@@ -33,6 +33,7 @@ export interface WorkspaceView {
   damagedRecord?: string;
   kernelRecords?: NativeKernel[];
   kernelOperations?: Operation[];
+  defaultKernel?: KernelDefault;
   fingerprints?: Record<string, ProfileRevision>;
   dataReferences?: Record<string, string>;
   runtimeSessions?: Record<string, RuntimeSession>;
@@ -44,13 +45,15 @@ export interface WorkspaceView {
   restoreOperations?: Operation[];
   recycleOperations?: Operation[];
   recycleMaintenance?: Operation;
+  migrationOperations?: Operation[];
+  migrationMaintenance?: Operation;
   maintenance?: Operation;
   nativeBackups?: NativeBackup[];
   environmentPage?: NativeEnvironmentPage;
 }
 export interface Operation {
   id: string;
-  kind: "create" | "edit" | "kernel-install" | "kernel-verify" | "kernel-delete" | "runtime-start" | "runtime-stop" | "runtime-force-stop" | "runtime-reconcile" | "proxy-check" | "cookie-import" | "batch-create" | "batch-clone" | "batch-assign" | "backup-export" | "backup-restore" | "recycle";
+  kind: "create" | "edit" | "kernel-install" | "kernel-verify" | "kernel-delete" | "runtime-start" | "runtime-stop" | "runtime-force-stop" | "runtime-reconcile" | "proxy-check" | "cookie-import" | "batch-create" | "batch-clone" | "batch-assign" | "backup-export" | "backup-restore" | "recycle" | "migration";
   state: "accepted" | "running" | "completed" | "cancelled" | "failed";
   total: number;
   completedIds: string[];
@@ -69,6 +72,7 @@ export interface Operation {
   backupReport?: NativeBackupReport;
   restoreReport?: NativeRestoreReport;
   recycleReport?: NativeRecycleReport;
+  migrationReport?: NativeMigrationReport;
 }
 export interface OperationEvent {
   mode: ApplicationMode;
@@ -84,6 +88,11 @@ export const operationIsTerminal = (operation: Operation) =>
 export function mergeOperation(previous: Operation | undefined, next: Operation): Operation {
   if (previous?.batchReport && next.batchReport && previous.batchReport.planId === next.batchReport.planId && next.batchReport.sequence < previous.batchReport.sequence) return previous;
   if (!previous || previous.id !== next.id) return next;
+  if (previous.migrationReport && next.migrationReport) {
+    if (next.migrationReport.sequence < previous.migrationReport.sequence) return previous;
+    if (previous.stage === "acceptance-pending" && previous.persistencePending && !next.persistencePending) return next;
+    if (previous.persistencePending && next.migrationReport.sequence > previous.migrationReport.sequence) return next;
+  }
   if (previous.recycleReport && next.recycleReport) {
     if (next.recycleReport.sequence < previous.recycleReport.sequence) return previous;
     if (previous.persistencePending && next.recycleReport.sequence > previous.recycleReport.sequence) return next;
@@ -155,6 +164,17 @@ export interface ApplicationService {
   installKernel?(request: KernelInstallRequest): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
   verifyKernel?(kernelId: string, requestId: string): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
   deleteKernel?(kernelId: string, requestId: string): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
+  setDefaultKernel?(request: KernelDefaultRequest): Promise<ApplicationResult<KernelDefault>>;
+  getPendingKernelDefault?(): KernelDefaultRequest | undefined;
+  previewMigration?(environmentId: string, kernelId: string): Promise<ApplicationResult<NativeMigrationPreview>>;
+  lookupMigrationEnvironments?(page: number, search: string): Promise<ApplicationResult<{ items: Pick<Environment, "id" | "name" | "coreId" | "status">[]; page: number; total: number }>>;
+  prepareMigration?(request: NativeMigrationRequest): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
+  migrationAction?(operationId: string, action: "stop" | "commit" | "recover"): Promise<ApplicationResult<Operation>>;
+  previewMigrationRollback?(operationId: string): Promise<ApplicationResult<NativeRestorePreview>>;
+  discardMigrationRollback?(): Promise<void>;
+  consumeMigrationRollback?(previewId: string): void;
+  getPendingMigration?(): { request: NativeMigrationRequest; operationId?: string } | undefined;
+  wasMigrationNotAccepted?(requestId: string): boolean;
   startRuntime?(request: RuntimeStartRequest): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
   stopRuntime?(request: { environmentId: string; requestId: string }): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
   inspectRuntime?(ids: string[]): Promise<ApplicationResult<RuntimeSession[]>>;
@@ -357,6 +377,20 @@ export interface RuntimeSession {
   lastExitCode?: number;
 }
 
+export interface KernelDefault { kernelId: string; revision: number }
+export interface NativeMigrationRequest { previewId: string; confirm: boolean; requestId: string }
+export interface NativeMigrationPreview {
+  mode: "native"; previewId: string; environmentId: string; name: string; expectedRevision: number;
+  before: DeviceProfile; after: DeviceProfile; beforeCapabilities: FingerprintCapability[]; afterCapabilities: FingerprintCapability[];
+  changes: { field: string; before: string; after: string }[]; expiresAt: string;
+}
+export interface NativeMigrationObservation { fingerprint: KernelObservation; cookie: boolean; localStorage: boolean; indexedDB: boolean; sampledAt: string }
+export interface NativeMigrationReport {
+  mode: "native"; requestId: string; previewId: string; environmentId: string; oldKernelId: string; newKernelId: string; seed: string;
+  sequence: number; backupVerified: boolean; archiveSha256: string; trialExited: boolean; committed: boolean; protected: boolean;
+  before?: NativeMigrationObservation; after?: NativeMigrationObservation;
+}
+export interface KernelDefaultRequest { kernelId: string; expectedRevision: number; requestId: string }
 export interface KernelInstallRequest {
   source: "official" | "local";
   version: string;

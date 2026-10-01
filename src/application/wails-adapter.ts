@@ -1,21 +1,24 @@
 import type {
   ApplicationResult, ApplicationService, EnvironmentConfiguration, EnvironmentPreview,
   CreateBatchRequest, UpdateEnvironmentRequest, SavedEnvironment, WorkspaceView, Operation, OperationEvent,
-  KernelInstallRequest,
+  KernelInstallRequest, KernelDefault, KernelDefaultRequest,
   GenerateFingerprintRequest, CommitFingerprintRequest, ProfileRevision, RuntimeSession,
   ProxyConfiguration, ProxyImportPreview, ProxyUpdateRequest, ProxyTargetRequest, NativeProxy,
   CookieCommitRequest, CookieImportPreview, RuntimeStartRequest,
   NativeBatchPreviewRequest, NativeBatchPage, NativeEnvironmentQuery, NativeBackupExportRequest, NativeBackupPending, NativeRestorePreview, NativeRestorePage, NativeRestoreRequest,
   NativeRecycleAction, NativeRecyclePage, NativeRecyclePageRequest, NativeRecycleRequest,
+  NativeMigrationPreview, NativeMigrationRequest,
 } from "./contract.ts";
 import { mergeOperation, operationIsTerminal } from "./contract.ts";
 import { validBatchPage, validBatchReport } from "./batch-model.ts";
 import { confirmsBackupRequest, invalidBackupOperation } from "./backup-model.ts";
 import { confirmsRestoreRequest, invalidRestoreOperation } from "./restore-model.ts";
 import { confirmsRecycleRequest, invalidRecycleOperation, validRecyclePage } from "./recycle-model.ts";
+import { confirmsMigrationRequest, invalidMigrationOperation, validMigrationPreview } from "./migration-model.ts";
 
 export interface NativeRequest { mode: "native"; method: string; payload: unknown }
 export type NativeBridge = <T>(request: NativeRequest) => Promise<ApplicationResult<T>>;
+interface MigrationRollbackOwner { operationId: string; sourceToken?: string; previewId?: string; cancelled: boolean; discardAfterRefusal?: boolean }
 const projectConfiguration = (c: EnvironmentConfiguration): EnvironmentConfiguration => ({
   name: c.name, group: c.group, note: c.note, proxyId: c.proxyId, coreId: c.coreId, seed: c.seed,
   language: c.language, timezone: c.timezone, cpu: c.cpu, width: c.width, height: c.height,
@@ -41,9 +44,14 @@ export class WailsAdapter implements ApplicationService {
   private environmentQuery?: NativeEnvironmentQuery;
   private pendingBackup?: NativeBackupPending;
   private pendingRestore?: { request: NativeRestoreRequest; operationId?: string };
+  private restoreFlights = new Map<string, Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>>();
   private restoreRefusal?: string;
   private pendingRecycle?: { request: NativeRecycleRequest; operationId?: string };
   private recycleRefusal?: string;
+  private pendingMigration?: { request: NativeMigrationRequest; operationId?: string };
+  private migrationRefusal?: string;
+  private pendingKernelDefault?: KernelDefaultRequest;
+  private rollbackOwner?: MigrationRollbackOwner;
   constructor(bridge: NativeBridge) { this.bridge = bridge; }
   getSnapshot = () => this.view;
   subscribe = (listener: () => void) => { this.listeners.add(listener); return () => { this.listeners.delete(listener); }; };
@@ -52,7 +60,9 @@ export class WailsAdapter implements ApplicationService {
   private async invoke<T>(method: string, payload: unknown): Promise<ApplicationResult<T>> {
     try {
       const response = await this.bridge<T>({ mode: "native", method, payload });
+      if (!response || typeof response.ok !== "boolean" || response.ok && response.data == null || !response.ok && !response.error) throw new Error("Invalid native envelope");
       if (response.mode !== "native") {
+        if (method === "Migration.Prepare") return { ok: false, mode: "native", operationId: response.operationId, error: { code: "MIGRATION_RESULT_UNCONFIRMED", message: "迁移响应模式不符，原请求保持待核实。", retryable: true } };
         if (method === "Recycle.Commit") return { ok: false, mode: "native", operationId: response.operationId, error: { code: "RECYCLE_RESULT_UNCONFIRMED", message: "回收响应模式不符，原请求仍待核实。", retryable: true } };
         if (method === "Backup.ApplyRestore") return { ok: false, mode: "native", operationId: response.operationId, error: { code: "RESTORE_RESULT_UNCONFIRMED", message: "恢复响应模式不符；原请求保持待核实，不能另建恢复。", retryable: true } };
         if (method === "Backup.Export") return { ok: false, mode: "native", operationId: response.operationId, error: { code: "BACKUP_RESULT_UNCONFIRMED", message: "返回模式不符，已拒绝演示结果；这不证明后台未受理，原备份请求保留，请核实。", retryable: true } };
@@ -64,6 +74,7 @@ export class WailsAdapter implements ApplicationService {
   async refresh(): Promise<ApplicationResult<WorkspaceView>> {
     const sequence = ++this.refreshSequence;
     let response = await this.invoke<WorkspaceView>("Workspace.Read", this.environmentQuery ? { environmentQuery: { ...this.environmentQuery } } : {});
+    if (response.ok && ((response.data.migrationOperations ?? []).some(invalidMigrationOperation) || response.data.migrationMaintenance && (response.data.migrationMaintenance.kind !== "migration" || invalidMigrationOperation(response.data.migrationMaintenance)))) response = { ok: false, mode: "native", error: { code: "MIGRATION_RESULT_UNCONFIRMED", message: "迁移状态尚未核实，保留原请求。", retryable: true } };
     if (response.ok && ((response.data.recycleOperations ?? []).some(invalidRecycleOperation) || response.data.recycleMaintenance && (response.data.recycleMaintenance.kind !== "recycle" || invalidRecycleOperation(response.data.recycleMaintenance)))) response = { ok: false, mode: "native", error: { code: "RECYCLE_RESULT_UNCONFIRMED", message: "回收任务状态尚未核实，未接入为完成。", retryable: true } };
     if (response.ok && ((response.data.restoreOperations ?? []).some(invalidRestoreOperation) || response.data.maintenance && (response.data.maintenance.kind !== "backup-restore" || invalidRestoreOperation(response.data.maintenance)))) response = { ok: false, mode: "native", error: { code: "RESTORE_RESULT_UNCONFIRMED", message: "恢复报告身份或完整性未核实，未接入为成功。", retryable: true } };
     if (response.ok && (response.data.mode !== "native" || Object.values(response.data.runtimeSessions ?? {}).some(session => session.mode !== "native" || (session.proxyReport && (session.proxyReport.mode !== "native" || session.proxyReport.channelId !== session.proxyChannelId || session.proxyReport.proxyId !== session.proxyId || session.proxyReport.revision !== session.proxyRevision))) || (response.data.nativeProxyRecords ?? []).some(record => record.checkReport && record.checkReport.mode !== "native") || (response.data.proxyOperations ?? []).some(operation => operation.proxyReport && operation.proxyReport.mode !== "native") || (response.data.cookieOperations ?? []).some(invalidCookieReport) || (response.data.batchOperations ?? []).some(invalidBatchReport) || (response.data.backupOperations ?? []).some(invalidBackupOperation))) response = { ok: false, mode: "native", error: { code: "CAPABILITY_UNSUPPORTED", message: "工作区、会话或报告身份不匹配，已拒绝接入；未回退演示数据。", retryable: false } };
@@ -85,7 +96,12 @@ export class WailsAdapter implements ApplicationService {
         const merged = mergeOperation(this.operations.get(operation.id), operation);
         this.operations.set(merged.id, merged); this.confirmPendingRecycle(merged); return merged;
       });
-      this.view = { ...response.data, ...(batchOperations ? { batchOperations } : {}), ...(backupOperations ? { backupOperations } : {}), ...(restoreOperations ? { restoreOperations } : {}), ...(recycleOperations ? { recycleOperations } : {}) };
+      const migrationOperations = response.data.migrationOperations?.map(op => {
+        const merged = mergeOperation(this.operations.get(op.id), op); this.operations.set(op.id, merged);
+        if (confirmsMigrationRequest(merged, this.pendingMigration?.request)) this.pendingMigration = undefined;
+        return merged;
+      });
+      this.view = { ...response.data, ...(batchOperations ? { batchOperations } : {}), ...(backupOperations ? { backupOperations } : {}), ...(restoreOperations ? { restoreOperations } : {}), ...(recycleOperations ? { recycleOperations } : {}), ...(migrationOperations ? { migrationOperations } : {}) };
     }
     else this.view = { ...this.view, issue: response.error };
     this.publish();
@@ -122,16 +138,17 @@ export class WailsAdapter implements ApplicationService {
   }
   async getOperation(operationId: string) {
     const response = await this.invoke<Operation>("Operation.Read", { operationId });
-    if (response.ok && response.data.id !== operationId) return { ok: false as const, mode: "native" as const, error: { code: "CAPABILITY_UNSUPPORTED", message: "任务响应不是指定ID，未接管其他任务。", retryable: false } };
+    if (response.ok && (response.data.id !== operationId || typeof response.data.kind !== "string")) return { ok: false as const, mode: "native" as const, error: { code: "CAPABILITY_UNSUPPORTED", message: "任务响应不是指定ID，未接管其他任务。", retryable: false } };
     return this.confirmOperation(response);
   }
   async cancelOperation(operationId: string) {
     const response = await this.invoke<Operation>("Operation.Cancel", { operationId });
-    if (response.ok && response.data.id !== operationId) return { ok: false as const, mode: "native" as const, error: { code: "CAPABILITY_UNSUPPORTED", message: "取消响应不是指定ID，不作为其他任务的取消结果。", retryable: false } };
+    if (response.ok && (response.data.id !== operationId || typeof response.data.kind !== "string")) return { ok: false as const, mode: "native" as const, error: { code: "CAPABILITY_UNSUPPORTED", message: "取消响应不是指定ID，不作为其他任务的取消结果。", retryable: false } };
     return this.confirmOperation(response);
   }
   private confirmOperation(response: ApplicationResult<Operation>): ApplicationResult<Operation> {
-    if (!response.ok || (!response.data.kind.startsWith("kernel-") && !response.data.kind.startsWith("runtime-") && !response.data.kind.startsWith("batch-") && response.data.kind !== "proxy-check" && response.data.kind !== "cookie-import" && response.data.kind !== "backup-export" && response.data.kind !== "backup-restore" && response.data.kind !== "recycle")) return response;
+    if (!response.ok || (!response.data.kind.startsWith("kernel-") && !response.data.kind.startsWith("runtime-") && !response.data.kind.startsWith("batch-") && response.data.kind !== "proxy-check" && response.data.kind !== "cookie-import" && response.data.kind !== "backup-export" && response.data.kind !== "backup-restore" && response.data.kind !== "recycle" && response.data.kind !== "migration")) return response;
+    if (invalidMigrationOperation(response.data)) return { ok: false, mode: "native", operationId: response.data.id, error: { code: "MIGRATION_RESULT_UNCONFIRMED", message: "迁移报告尚未核实，保持原任务保护。", retryable: true } };
     if (invalidRecycleOperation(response.data)) return { ok: false, mode: "native", operationId: response.data.id, error: { code: "RECYCLE_RESULT_UNCONFIRMED", message: "回收任务报告尚未核实，保留原请求和目录保护。", retryable: true } };
     if (invalidRestoreOperation(response.data)) return { ok: false, mode: "native", operationId: response.data.id, error: { code: "RESTORE_RESULT_UNCONFIRMED", message: "恢复报告未核实；保留原任务ID，不重复切换。", retryable: true } };
     if (invalidBackupOperation(response.data)) return { ok: false, mode: "native", operationId: response.data.id, error: { code: "BACKUP_RESULT_UNCONFIRMED", message: "备份格式、统计或发布状态未核实；已知任务ID保留，不证明未受理，不重新导出。", retryable: true } };
@@ -144,6 +161,7 @@ export class WailsAdapter implements ApplicationService {
     this.confirmPendingBackup(operation);
     this.confirmPendingRestore(operation);
     this.confirmPendingRecycle(operation);
+    if (confirmsMigrationRequest(operation, this.pendingMigration?.request)) this.pendingMigration = undefined;
     if (operation !== previous) this.emit(operation);
     return { ...response, data: operation };
   }
@@ -157,6 +175,87 @@ export class WailsAdapter implements ApplicationService {
   }
   verifyKernel(kernelId: string, requestId: string) { return this.invoke<{ status: "accepted"; operation: Operation }>("Kernel.Verify", { kernelId, requestId }); }
   deleteKernel(kernelId: string, requestId: string) { return this.invoke<{ status: "accepted"; operation: Operation }>("Kernel.Delete", { kernelId, requestId }); }
+  async setDefaultKernel(request: KernelDefaultRequest) {
+    const projected = { kernelId: request.kernelId, expectedRevision: request.expectedRevision, requestId: request.requestId };
+    if (this.pendingKernelDefault && JSON.stringify(this.pendingKernelDefault) !== JSON.stringify(projected)) return { ok: false as const, mode: "native" as const, error: { code: "DEFAULT_RESULT_UNCONFIRMED", message: "请先核实原默认选择请求。", retryable: true } };
+    const owner = this.pendingKernelDefault ??= projected;
+    let result = await this.invoke<KernelDefault>("Kernel.SetDefault", projected);
+    if (result.ok && (!result.data || result.data.kernelId !== projected.kernelId || result.data.revision !== projected.expectedRevision + 1 || !Number.isSafeInteger(result.data.revision))) result = { ok: false, mode: "native", error: { code: "DEFAULT_RESULT_UNCONFIRMED", message: "默认选择回执与原请求不符，请核实原请求。", retryable: true } };
+    if (this.pendingKernelDefault === owner && (result.ok || ["VALIDATION_FAILED", "REVISION_CONFLICT", "REQUEST_ID_REUSED", "PROFILE_BUSY", "KERNEL_MISSING", "KERNEL_INTEGRITY_FAILED"].includes(result.error.code))) this.pendingKernelDefault = undefined;
+    await this.refresh();
+    return result;
+  }
+  getPendingKernelDefault() { return this.pendingKernelDefault ? { ...this.pendingKernelDefault } : undefined; }
+  async previewMigration(environmentId: string, kernelId: string): Promise<ApplicationResult<NativeMigrationPreview>> {
+    const result = await this.invoke<NativeMigrationPreview>("Migration.Preview", { environmentId, kernelId });
+    if (result.ok && !validMigrationPreview(result.data, environmentId, kernelId)) return { ok: false, mode: "native", error: { code: "MIGRATION_RESULT_UNCONFIRMED", message: "迁移预览身份或参数不符。", retryable: true } };
+    return result;
+  }
+  async lookupMigrationEnvironments(page: number, search: string) {
+    const result = await this.invoke<WorkspaceView>("Workspace.Read", { environmentQuery: { page, pageSize: 25, search, group: "", status: "all" } });
+    if (!result.ok) return result;
+    if (result.data.mode !== "native" || !result.data.environmentPage || result.data.environmentPage.page !== page || !Array.isArray(result.data.state?.environments)) return { ok: false as const, mode: "native" as const, error: { code: "MIGRATION_RESULT_UNCONFIRMED", message: "环境查找分页未核实。", retryable: true } };
+    return { ok: true as const, mode: "native" as const, data: { items: result.data.state.environments.map(e => ({ id: e.id, name: e.name, coreId: e.coreId, status: e.status })), page, total: result.data.environmentPage.filteredTotal } };
+  }
+  getPendingMigration() { return this.pendingMigration ? { ...this.pendingMigration, request: { ...this.pendingMigration.request } } : undefined; }
+  wasMigrationNotAccepted(requestId: string) { return this.migrationRefusal === requestId; }
+  async prepareMigration(request: NativeMigrationRequest) {
+    const projected = { previewId: request.previewId, confirm: request.confirm, requestId: request.requestId };
+    if (this.pendingMigration && JSON.stringify(this.pendingMigration.request) !== JSON.stringify(projected)) return { ok: false as const, mode: "native" as const, operationId: this.pendingMigration.operationId, error: { code: "MIGRATION_RESULT_UNCONFIRMED", message: "先核实原迁移请求，不另建副本。", retryable: true } };
+    const owner = this.pendingMigration ??= { request: projected };
+    let result = await this.invoke<{ status: "accepted"; operation: Operation }>("Migration.Prepare", projected);
+    if (result.ok) {
+      const operationId = result.data.operation?.id || result.operationId;
+      if (this.pendingMigration === owner && operationId) owner.operationId = operationId;
+      if (result.data.status !== "accepted" || !result.data.operation || !confirmsMigrationRequest(result.data.operation, projected)) result = { ok: false, mode: "native", operationId, error: { code: "MIGRATION_RESULT_UNCONFIRMED", message: "原迁移受理尚未核实，请保留原请求。", retryable: true } };
+      else { const checked = this.confirmOperation({ ok: true, mode: "native", data: result.data.operation }); result = checked.ok ? { ...result, data: { ...result.data, operation: checked.data } } : checked; }
+    } else if (this.pendingMigration === owner) {
+      if (result.operationId) owner.operationId = result.operationId;
+      else if (["VALIDATION_FAILED", "PREVIEW_EXPIRED", "NOT_FOUND", "REVISION_CONFLICT", "PROFILE_BUSY", "MIGRATION_NOT_ACCEPTED", "REQUEST_ID_REUSED", "NETWORK_PROTECTION_UNAVAILABLE", "KERNEL_MISSING", "KERNEL_INTEGRITY_FAILED"].includes(result.error.code)) { this.migrationRefusal = projected.requestId; this.pendingMigration = undefined; if (result.error.code === "MIGRATION_NOT_ACCEPTED" && owner.operationId) this.operations.delete(owner.operationId); }
+    }
+    await this.refresh();
+    const known = [...this.operations.values()].find(op => confirmsMigrationRequest(op, projected));
+    return known ? { ok: true as const, mode: "native" as const, operationId: known.id, data: { status: "accepted" as const, operation: known } } : result;
+  }
+  async migrationAction(operationId: string, action: "stop" | "commit" | "recover") {
+    const owner = this.pendingMigration;
+    const result = await this.invoke<Operation>("Migration.Action", { operationId, action, confirm: true });
+    if (!result.ok && result.error.code === "MIGRATION_NOT_ACCEPTED" && this.pendingMigration === owner && owner?.operationId === operationId) { this.migrationRefusal = owner.request.requestId; this.pendingMigration = undefined; this.operations.delete(operationId); }
+    if (result.ok && (result.data.id !== operationId || result.data.kind !== "migration")) return { ok: false as const, mode: "native" as const, error: { code: "MIGRATION_RESULT_UNCONFIRMED", message: "不是原迁移任务的结果。", retryable: true } };
+    const checked = this.confirmOperation(result); await this.refresh(); return checked;
+  }
+  async previewMigrationRollback(operationId: string): Promise<ApplicationResult<NativeRestorePreview>> {
+    const unconfirmed = (): ApplicationResult<NativeRestorePreview> => ({ ok: false, mode: "native", error: { code: "MIGRATION_RESULT_UNCONFIRMED", message: "升级前恢复预检尚未核实或已取消，未接入确认。", retryable: true } });
+    if (this.rollbackOwner) return unconfirmed();
+    const owner: MigrationRollbackOwner = { operationId, cancelled: false }; this.rollbackOwner = owner;
+    let retained = false;
+    try {
+      const operation = await this.getOperation(operationId);
+      if (!operation.ok || invalidMigrationOperation(operation.data) || operation.data.kind !== "migration" || !operationIsTerminal(operation.data) || !operation.data.migrationReport?.backupVerified || owner.cancelled) return unconfirmed();
+      const expected = operation.data.migrationReport.archiveSha256;
+      const selected = await this.invoke<{ sourceToken: string; archiveSha256: string }>("Migration.SelectRollback", { operationId });
+      if (!selected.ok) return selected;
+      owner.sourceToken = selected.data?.sourceToken;
+      if (!owner.sourceToken || selected.data.archiveSha256 !== expected || owner.cancelled) return unconfirmed();
+      const preview = await this.previewRestore(owner.sourceToken);
+      if (!preview.ok) return preview;
+      owner.previewId = preview.data.previewId;
+      if (preview.data.archiveSha256 !== expected || preview.data.environmentCount !== 1 || owner.cancelled) return unconfirmed();
+      retained = true; return preview;
+    } finally {
+      if (!retained) { owner.cancelled = true; if (owner.sourceToken) await this.discardRestore(owner.previewId ?? "", owner.sourceToken); if (this.rollbackOwner === owner) this.rollbackOwner = undefined; }
+    }
+  }
+  async discardMigrationRollback() {
+    const owner = this.rollbackOwner; if (!owner) return;
+    // A submitted restore owns the preview across navigation and transport loss.
+    // Only a definite refusal permits deferred cleanup to invalidate its token.
+    if (owner.previewId && this.pendingRestore?.request.previewId === owner.previewId) { owner.discardAfterRefusal = true; return; }
+    owner.cancelled = true;
+    if (owner.sourceToken) await this.discardRestore(owner.previewId ?? "", owner.sourceToken);
+    if (owner.previewId && this.rollbackOwner === owner) this.rollbackOwner = undefined;
+  }
+  consumeMigrationRollback(previewId: string) { if (this.rollbackOwner?.previewId === previewId) this.rollbackOwner = undefined; }
   private async runtimeMutation(method: string, payload: unknown) {
     const response = await this.invoke<{ status: "accepted"; operation: Operation }>(method, payload);
     if (response.ok && response.data.operation.proxyReport && response.data.operation.proxyReport.mode !== "native") return { ok: false as const, mode: "native" as const, error: { code: "CAPABILITY_UNSUPPORTED", message: "演示代理报告不能作为原生启动受理结果。", retryable: false } };
@@ -272,18 +371,27 @@ export class WailsAdapter implements ApplicationService {
     const checked = this.confirmOperation(result); await this.refresh(); return checked;
   }
   private confirmPendingRestore(operation: Operation) {
-    if (confirmsRestoreRequest(operation, this.pendingRestore?.request)) this.pendingRestore = undefined;
+    if (confirmsRestoreRequest(operation, this.pendingRestore?.request)) { this.consumeMigrationRollback(this.pendingRestore!.request.previewId); this.pendingRestore = undefined; }
   }
-  async applyRestore(request: NativeRestoreRequest) {
+  applyRestore(request: NativeRestoreRequest): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>> {
+    const projected = { previewId: request.previewId, archiveSha256: request.archiveSha256, confirmOverwrite: request.confirmOverwrite, acknowledgeCredentials: request.acknowledgeCredentials, stopRunning: request.stopRunning, requestId: request.requestId };
+    const signature = JSON.stringify(projected);
+    const prior = this.restoreFlights.get(signature);
+    if (prior) return prior;
+    const promise = this.performRestore(projected).finally(() => { if (this.restoreFlights.get(signature) === promise) this.restoreFlights.delete(signature); });
+    this.restoreFlights.set(signature, promise);
+    return promise;
+  }
+  private async performRestore(request: NativeRestoreRequest) {
     const projected = { previewId: request.previewId, archiveSha256: request.archiveSha256, confirmOverwrite: request.confirmOverwrite, acknowledgeCredentials: request.acknowledgeCredentials, stopRunning: request.stopRunning, requestId: request.requestId };
     if (this.pendingRestore && JSON.stringify(this.pendingRestore.request) !== JSON.stringify(projected)) return { ok: false as const, mode: "native" as const, operationId: this.pendingRestore.operationId, error: { code: "RESTORE_RESULT_UNCONFIRMED", message: "原恢复受理尚待核实；只可查询或重发原请求。", retryable: true } };
     const owner = this.pendingRestore ??= { request: projected };
     if (this.restoreRefusal === request.requestId) this.restoreRefusal = undefined;
     let response = await this.invoke<{ status: "accepted"; operation: Operation }>("Backup.ApplyRestore", projected);
     if (response.ok) {
-      const operationId = response.data.operation.id || response.operationId;
+      const operationId = response.data.operation?.id || response.operationId;
       if (this.pendingRestore === owner && operationId) owner.operationId = operationId;
-      if (response.data.status !== "accepted" || !confirmsRestoreRequest(response.data.operation, projected)) response = { ok: false, mode: "native", operationId, error: { code: "RESTORE_RESULT_UNCONFIRMED", message: "恢复受理报告与原请求未一致核实；保持原请求，不创建新任务。", retryable: true } };
+      if (response.data.status !== "accepted" || !response.data.operation || !confirmsRestoreRequest(response.data.operation, projected)) response = { ok: false, mode: "native", operationId, error: { code: "RESTORE_RESULT_UNCONFIRMED", message: "恢复受理报告与原请求未一致核实；保持原请求，不创建新任务。", retryable: true } };
       else {
         const checked = this.confirmOperation({ ok: true, mode: "native", data: response.data.operation });
         response = checked.ok ? { ...response, data: { ...response.data, operation: checked.data } } : checked;
@@ -294,6 +402,7 @@ export class WailsAdapter implements ApplicationService {
         if (response.error.code === "RESTORE_NOT_ACCEPTED" && owner.operationId) this.operations.delete(owner.operationId);
         this.restoreRefusal = projected.requestId;
         this.pendingRestore = undefined;
+        if (this.rollbackOwner?.previewId === projected.previewId && this.rollbackOwner.discardAfterRefusal) await this.discardMigrationRollback();
       }
     }
     await this.refresh();

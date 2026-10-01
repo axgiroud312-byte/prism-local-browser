@@ -11,7 +11,7 @@ import (
 )
 
 // Both export and the trusted import schema use exactly this projection.
-const nativeV1SchemaProjection = "DROP TABLE IF EXISTS recycle_jobs; DROP TABLE IF EXISTS environment_trash; DROP TABLE IF EXISTS restore_jobs; PRAGMA user_version=7"
+const nativeV1SchemaProjection = "DROP TABLE IF EXISTS migration_kernel_refs; DROP TABLE IF EXISTS kernel_migrations; DROP TABLE IF EXISTS kernel_default; DROP TABLE IF EXISTS recycle_jobs; DROP TABLE IF EXISTS environment_trash; DROP TABLE IF EXISTS restore_jobs; PRAGMA user_version=7"
 
 func (s *Service) initializeRecycle() error {
 	var version int

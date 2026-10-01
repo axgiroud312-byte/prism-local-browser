@@ -20,7 +20,7 @@ func recycleProblem(err error) Result {
 	return failure("RECYCLE_INCOMPLETE", "回收目录或配置尚未完整核对，保留原数据和日志；请检查目录占用、空间、权限及原副本后重试原任务。", true)
 }
 func (s *Service) recycleIdle() bool {
-	return s.restoreTask == nil && s.recycleTask == nil && s.restorePreflight == nil && s.kernelTask == nil && len(s.batchTasks) == 0 && len(s.batchAcceptances) == 0 && len(s.backupTasks) == 0 && len(s.cookieTasks) == 0 && len(s.proxyChecks) == 0 && len(s.proxyPending) == 0 && len(s.cookiePending) == 0 && len(s.runtimePending) == 0
+	return s.migrationTask == nil && s.restoreTask == nil && s.recycleTask == nil && s.restorePreflight == nil && s.kernelTask == nil && len(s.batchTasks) == 0 && len(s.batchAcceptances) == 0 && len(s.backupTasks) == 0 && len(s.cookieTasks) == 0 && len(s.proxyChecks) == 0 && len(s.proxyPending) == 0 && len(s.cookiePending) == 0 && len(s.runtimePending) == 0
 }
 func (s *Service) recycleTargetFree(environmentID string) error {
 	if s.profileUses[environmentID] || s.runtimeOwnsProfileUse(environmentID) || s.runtimePending[environmentID] != nil {

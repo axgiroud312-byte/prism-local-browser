@@ -55,8 +55,9 @@ type RestorePreview struct {
 	Credentials            []RestoreCredential `json:"credentials"`
 }
 type restoreSource struct {
-	path    string
-	expires time.Time
+	path           string
+	expires        time.Time
+	expectedSHA256 string // host-owned migration backup; never a caller path
 }
 type restoreEnvironmentData struct {
 	manifest    backup.Environment

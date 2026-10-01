@@ -51,6 +51,22 @@ func NewOutput(root, destination, operationID string) (_ *Output, resultErr erro
 	if err != nil {
 		return nil, err
 	}
+	return newOutput(root, destination, temporary, "")
+}
+
+// Host-only, fixed destination for a journal-owned pre-upgrade backup. The
+// external OutputPaths contract continues to reject every workspace destination.
+func NewMigrationOutput(root, operationID string) (*Output, error) {
+	if !CanonicalID(operationID) {
+		return nil, errors.New("invalid migration backup owner")
+	}
+	relative := "backups/migrations/" + operationID
+	parent := filepath.Join(root, filepath.FromSlash(relative))
+	return newOutput(root, filepath.Join(parent, "before"+Extension), filepath.Join(parent, ".prism-"+operationID+".partial"), relative)
+}
+
+func newOutput(root, destination, temporary, internalParent string) (_ *Output, resultErr error) {
+	var err error
 	if err = desktopbase.ValidatePath(destination); err != nil {
 		return nil, err
 	}
@@ -72,7 +88,11 @@ func NewOutput(root, destination, operationID string) (_ *Output, resultErr erro
 	if err != nil {
 		return nil, err
 	}
-	if actualParent == actualRoot || strings.HasPrefix(actualParent, actualRoot+`\`) {
+	if internalParent != "" {
+		if actualParent != actualRoot+`\`+strings.ReplaceAll(internalParent, "/", `\`) {
+			return nil, errors.New("migration destination object outside owned root")
+		}
+	} else if actualParent == actualRoot || strings.HasPrefix(actualParent, actualRoot+`\`) {
 		return nil, errors.New("actual destination is inside source workspace")
 	}
 	if _, err = os.Lstat(destination); err == nil || !os.IsNotExist(err) {

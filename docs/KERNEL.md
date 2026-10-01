@@ -301,6 +301,8 @@ HTTP经目标流写origin-form，HTTPS经同本机CONNECT透传TLS；SOCKS5本�
 
 ## 内核升级与完整恢复
 
+T20本地源码已接完整备份→规范独立副本旧/新试用→正常停止→明确切换；[`窄诊断`](../internal/kernel/migration_probe_windows.go)仅用自有匿名pipe和短期本机origin验证实际版本/语言/时区/CPU及持久合成Cookie/LocalStorage/IndexedDB，不访问原环境或替代用户网站兼容验收。正常结束必须Job全退出且实际退出码0；取消仅清理准确自有Job。缺失启动锁元数据仅在已记录WorkIdentity的未发布work UUID上通过[`准确Job核对`](../internal/kernel/migration_recovery_windows.go)收敛，不推广到普通环境。迁移独立journal/目录对象/配置摘要支持重开，旧构建恢复复用正式完整备份路径；代理环境仍保T11门禁。两不同真实构建、实际硬退出和浏览数据恢复入口仅编写，见[T20](verification/T20.md)，尚无运行证据。
+
 T17本地源码加入同卷目录恢复：[`目录对象核对/移动`](../internal/backup/switch_windows.go)持有已验证根和完整可见文件集合，拒绝reparse/可见hardlink/未知对象；采用实际目录身份识别rename结果。旧目录留在本次previous，日志DB提交标记决定旧状态回滚或完整新状态确认。归档锁不导入，新锁不保存旧PID/session；实际安装目录不能继续标never-initialized。此处是源码边界，非恶意同SID新增写入的强隔离保证，实际完整浏览数据/精确内核重开待[T17验收](verification/T17.md)；T18接续硬中断恢复。
 
 升级须先停止目标环境并确认进程树退出，取得环境锁，再制作完整、校验可恢复的文件系统快照。快照包括整个 `user-data-dir`、配套环境元数据、指纹配置、旧内核标识与配置版本；单独导出 Cookie 不构成完整快照。

@@ -90,6 +90,7 @@ import kernelText from "../docs/KERNEL.md?raw";
 const Markdown = lazy(() => import("react-markdown"));
 import remarkGfm from "remark-gfm";
 import { NativeKernelManager } from "./components/NativeKernelManager";
+import { NativeMigrationManager } from "./components/NativeMigrationManager";
 import { NativeProxyManager } from "./components/NativeProxyManager";
 import { NativeRuntimeNetwork } from "./components/NativeRuntimeNetwork";
 import { NativeCookieImport } from "./components/NativeCookieImport";
@@ -349,7 +350,7 @@ export default function App({ application }: { application: ApplicationService }
     latestOperationEvent.current = event;
     if (event) setBatch({ label: "创建环境", done: event.operation.completedIds.length, total: event.operation.total });
   }), [application]);
-  const nativeRuntimeActive = nativeMode && (!!workspace.maintenance || !!workspace.recycleMaintenance || (workspace.restoreOperations ?? []).some(operation => !operationIsTerminal(operation)) || Object.values(workspace.runtimeSessions ?? {}).some(session => ["starting", "running", "stopping"].includes(session.state) || !!session.pid || session.needsReconcile || session.persistencePending) || (workspace.batchOperations ?? []).some(operation => !operationIsTerminal(operation)));
+  const nativeRuntimeActive = nativeMode && (!!workspace.migrationMaintenance || !!workspace.maintenance || !!workspace.recycleMaintenance || (workspace.restoreOperations ?? []).some(operation => !operationIsTerminal(operation)) || Object.values(workspace.runtimeSessions ?? {}).some(session => ["starting", "running", "stopping"].includes(session.state) || !!session.pid || session.needsReconcile || session.persistencePending) || (workspace.batchOperations ?? []).some(operation => !operationIsTerminal(operation)));
   useEffect(() => {
     if (!nativeRuntimeActive || !application.refresh) return;
     let cancelled = false;
@@ -977,6 +978,7 @@ export default function App({ application }: { application: ApplicationService }
         </header>
         <main>
           {nativeMode && workspace.maintenance && <div className="prototype-notice" role="status">完整恢复正在维护保护中，配置修改与新启动暂不可用。<Button onClick={() => navigate("backups")}>查看恢复任务</Button></div>}
+          {nativeMode && workspace.migrationMaintenance && <div className="prototype-notice" role="status">内核迁移维护中，原环境保持停止。<Button onClick={() => navigate("kernels")}>查看试用与迁移</Button></div>}
           <div className="page-heading">
             <div>
               <div className="eyebrow">
@@ -1733,7 +1735,7 @@ export default function App({ application }: { application: ApplicationService }
               </section>
             </>
           )}
-          {route === "kernels" && nativeMode && <NativeKernelManager application={application} workspace={workspace} />}
+          {route === "kernels" && nativeMode && <><NativeKernelManager application={application} workspace={workspace} /><NativeMigrationManager application={application} workspace={workspace} /></>}
           {route === "kernels" && !nativeMode && (
             <>
               <div className="info-strip">

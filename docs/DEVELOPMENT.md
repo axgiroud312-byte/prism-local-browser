@@ -365,6 +365,16 @@ schema9保留原环境/档案行，以`environment_trash`标记回收成员，`r
 
 [`启动恢复`](../internal/workspace/recycle_recovery.go)检查唯一目录writer、完整决策字段、原受理和配置摘要；restore/recycle未完成日志并存时保护。目录结果后锁外加载其余启动记录，再落终态/解除维护；未加载会话不报告已停止。终态写失败仅重试保存原观测。native包仍v1/schema7，排除回收环境及本机日志；新restore journalVersion3摘要包括回收成员，v2算法保留。原生[`回收界面`](../src/components/NativeRecycleManager.tsx)接移除/找回/永久删除/原请求核实，记录与[待验收入口](verification/T19.md)均区分源码和实际结果。
 
+### T20 内核迁移与升级前完整恢复（本地源码，未运行验收）
+
+schema10增加默认构建与独立迁移日志/保留引用；[`默认选择`](../internal/workspace/kernel_default.go)按expectedRevision/requestId保存，仅编译之后新建草稿，旧环境/旧草稿不变。当前/历史档案、默认和全部迁移备份历史构建共同阻止删除。native v1备份仍schema7，排除本机默认与控制日志。
+
+[`迁移接口`](../internal/workspace/migration_api.go)为`Migration.Preview/Prepare/Action/SelectRollback`；一次明确选一个已停止环境，冻结原配置摘要、seed及两精确构建。独立kind `migration`及全局维护屏障贯穿[`完整备份/工作副本`](../internal/workspace/migration_backup.go)、[`旧新试用`](../internal/workspace/migration_trial.go)和[`明确切换`](../internal/workspace/migration_commit.go)，不复用普通克隆身份或嵌套restore任务。旧/新参数及能力差异可查看，副本诊断包含实际指纹与同origin持久合成存储；正常停止要求准确全树及已知0退出码。
+
+prepared保存目录对象/清单，旧目录留previous，试用目录移到原规范引用；配置与committed/新摘要同事务。任何提交返回均读持久决策，不用旧计划补偿未知结果。[`启动恢复`](../internal/workspace/migration_recovery.go)先核对唯一writer，选择完整旧/新侧，加载其余启动记录后才保存终态；失败保屏障并支持重试，不把中断试用当授权。兼容问题通过绑定原SHA的短期token走正式`Backup.PreviewRestore/ApplyRestore`，完整撤回备份后变化。
+
+[`原生迁移页`](../src/components/NativeMigrationManager.tsx)独立25条查找与原请求核实；adapter保默认/迁移pending，回滚离页清理不能废弃未决恢复，同请求在途恢复Promise合并。代理绑定环境仍保T11门禁，待全路径隔离及试用路由集成。[测试入口与未验收边界](verification/T20.md)分别记录合成服务、Process.Kill与两不同真实构建；没有运行结果。
+
 ### 原子替换与崩溃恢复
 
 #### T16只读预检增量（源码已完成，未运行验收）

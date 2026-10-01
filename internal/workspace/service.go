@@ -47,8 +47,10 @@ type Options struct {
 	ChooseBackupDestination func() (string, error)
 	ChooseBackupSource      func() (string, error)
 	AppVersion              string
-	RestoreCheckpoint       func(string) error // host-only failure injection, never RPC
-	RecycleCheckpoint       func(string) error // host-only failure injection, never RPC
+	RestoreCheckpoint       func(string) error  // host-only failure injection, never RPC
+	RecycleCheckpoint       func(string) error  // host-only failure injection, never RPC
+	MigrationCheckpoint     func(string) error  // host-only failure injection, never RPC
+	CommitMigration         func(*sql.Tx) error // host-only COMMIT acknowledgement fault, never RPC
 }
 type draft struct {
 	Kind        string
@@ -100,6 +102,8 @@ type Service struct {
 	restoreTask        *restoreTask
 	recycleDraft       *recycleDraft
 	recycleTask        *recycleTask
+	migrationDraft     *migrationDraft
+	migrationTask      *migrationTask
 }
 
 func failure(code, message string, retryable bool) Result {
@@ -171,6 +175,14 @@ func Open(root string, options Options) (*Service, error) {
 	if err = s.loadInterruptedRecycle(); err != nil {
 		db.Close()
 		return nil, &Error{Code: "RECYCLE_INCOMPLETE", Message: "回收日志不完整或存在多个目录维护任务；原目录与配置保留，请修复原日志后重开。", Retryable: true}
+	}
+	if err = s.loadInterruptedMigration(); err != nil {
+		db.Close()
+		return nil, &Error{Code: "MIGRATION_INCOMPLETE", Message: "迁移日志不完整或存在多个目录维护任务，请保留原数据、备份及日志后核对。", Retryable: true}
+	}
+	if s.migrationTask != nil {
+		s.startMigrationWorker(s.migrationTask, s.recoverMigration)
+		return s, nil
 	}
 	if s.recycleTask != nil {
 		s.startRecycle(s.recycleTask, true)
@@ -266,6 +278,14 @@ func (s *Service) beginShutdown() {
 		task.cancel()
 	}
 	processes := []RuntimeProcess{}
+	if task := s.migrationTask; task != nil {
+		if task.cancel != nil {
+			task.cancel()
+		}
+		if task.process != nil {
+			processes = append(processes, task.process)
+		}
+	}
 	for _, slot := range s.runtimeSlots {
 		slot.cancel()
 		if slot.process != nil {
@@ -300,6 +320,7 @@ func (s *Service) closeResources(processes []RuntimeProcess, finished chan struc
 	s.flushBackupPersistence()
 	s.flushRestorePersistence()
 	s.flushRecyclePersistence()
+	s.flushMigrationPersistence()
 	proxy.Wipe(s.proxyRequestKey)
 	s.proxyRequestKey = nil
 	s.closeError = s.db.Close()
@@ -323,6 +344,9 @@ func (s *Service) closeResources(processes []RuntimeProcess, finished chan struc
 	}
 	if s.recycleTask != nil {
 		s.closeError = errors.Join(s.closeError, errors.New("recycle outcome remains protected or could not be persisted"))
+	}
+	if s.migrationTask != nil {
+		s.closeError = errors.Join(s.closeError, errors.New("migration outcome remains protected for next startup"))
 	}
 	close(finished)
 }
@@ -354,7 +378,10 @@ func (s *Service) initialize() error {
 	if err := s.initializeRestores(); err != nil {
 		return err
 	}
-	return s.initializeRecycle()
+	if err := s.initializeRecycle(); err != nil {
+		return err
+	}
+	return s.initializeMigrations()
 }
 
 func (s *Service) initializeProfiles() error {
@@ -362,7 +389,7 @@ func (s *Service) initializeProfiles() error {
 	if err := s.db.QueryRow("PRAGMA user_version").Scan(&version); err != nil {
 		return err
 	}
-	if version > 9 {
+	if version > 10 {
 		return errors.New("unsupported workspace version")
 	}
 	if version >= 3 {
@@ -516,6 +543,9 @@ func (s *Service) Call(request Request) Result {
 		}
 		return s.selectKernelArchive()
 	}
+	if request.Method == "Migration.SelectRollback" {
+		return s.selectMigrationRollback(request.Payload)
+	}
 	// Read-only preflight must bypass all recovery/persistence flush dispatch.
 	if request.Method == "Backup.SelectRestoreSource" || request.Method == "Backup.PreviewRestore" || request.Method == "Backup.ReadRestorePage" || request.Method == "Backup.DiscardRestore" {
 		return s.restorePreviewCall(request)
@@ -533,6 +563,15 @@ func (s *Service) Call(request Request) Result {
 	defer s.mu.Unlock()
 	if s.closed || s.closeRequested.Load() {
 		return failure("NATIVE_UNAVAILABLE", "工作区已关闭，请重新打开应用。", true)
+	}
+	if request.Method == "Workspace.Read" || request.Method == "Operation.Read" || strings.HasPrefix(request.Method, "Migration.") {
+		s.flushMigrationPersistence()
+	}
+	if s.migrationTask != nil && request.Method != "Workspace.Read" && request.Method != "Operation.Read" && request.Method != "Operation.Cancel" && request.Method != "Migration.Action" && request.Method != "Migration.Prepare" && request.Method != "Runtime.Stop" && request.Method != "Runtime.Inspect" {
+		return failure("MIGRATION_INCOMPLETE", "迁移维护中，原环境保持停止，请完成或取消原迁移任务。", true)
+	}
+	if t := s.migrationTask; t != nil && t.startup && !t.bootstrapReady && (request.Method == "Runtime.Stop" || request.Method == "Runtime.Inspect") {
+		return failure("MIGRATION_INCOMPLETE", "启动恢复尚未加载原会话，不能认定环境已经停止。", true)
 	}
 	if request.Method == "Workspace.Read" || request.Method == "Operation.Read" || request.Method == "Backup.ApplyRestore" || request.Method == "Backup.RecoverRestore" {
 		s.flushRestorePersistence()
@@ -567,6 +606,9 @@ func (s *Service) Call(request Request) Result {
 	}
 	if strings.HasPrefix(request.Method, "Recycle.") {
 		return s.recycleCall(request)
+	}
+	if strings.HasPrefix(request.Method, "Migration.") {
+		return s.migrationCall(request)
 	}
 	if request.Method == "Workspace.Read" || request.Method == "Runtime.Inspect" || request.Method == "Operation.Read" || strings.HasPrefix(request.Method, "Runtime.") {
 		s.flushRuntimePersistence()
@@ -604,6 +646,12 @@ func (s *Service) Call(request Request) Result {
 		return s.runtimeCall(request)
 	case "Fingerprint.Generate", "Fingerprint.ListRevisions", "Fingerprint.PreviewRestore":
 		return s.fingerprintCall(request)
+	case "Kernel.SetDefault":
+		var input KernelDefaultRequest
+		if decode(request.Payload, &input) != nil {
+			return failure("VALIDATION_FAILED", "默认选择不接受未知字段。", false)
+		}
+		return s.setKernelDefault(input)
 	case "Kernel.Install", "Kernel.Verify", "Kernel.Delete", "Kernel.List":
 		return s.kernelCall(request)
 	case "Workspace.Read":
@@ -686,6 +734,12 @@ func (s *Service) Call(request Request) Result {
 		}
 		if decode(request.Payload, &input) != nil {
 			return failure("VALIDATION_FAILED", "任务请求无效。", false)
+		}
+		if task := s.migrationTask; task != nil && task.plan.ID == input.OperationID {
+			if request.Method == "Operation.Cancel" {
+				return s.cancelMigration(task)
+			}
+			return success(copyMigrationOperation(task.operation), task.plan.ID)
 		}
 		if task := s.restoreTask; task != nil && task.operation.ID == input.OperationID {
 			if request.Method == "Operation.Cancel" {
@@ -836,6 +890,13 @@ func (s *Service) preview(kind, sourceID string) Result {
 			return storageFailure(err)
 		}
 		config := Configuration{Name: "", Group: "日常运营", CoreID: PendingKernelID, Seed: seed, Language: "en-US", Timezone: "America/New_York", CPU: "auto", Width: 1280, Height: 800, RestoreTabs: true, FingerprintVersion: "windows-desktop-v1"}
+		if sourceID == "" {
+			selected, err := s.readKernelDefault()
+			if err != nil {
+				return failure("STORAGE_READ_FAILED", "默认构建选择无法读取，未改用其他构建。", true)
+			}
+			config.CoreID = selected.KernelID
+		}
 		if sourceID != "" {
 			config = source.Configuration
 			config.Name = source.Name + " 副本"
@@ -847,6 +908,17 @@ func (s *Service) preview(kind, sourceID string) Result {
 	}
 	p := Preview{PreviewID: id(), Environment: e, ExpectedRevision: revision}
 	d := draft{Kind: kind, Preview: p}
+	if kind == "create" && e.CoreID != PendingKernelID {
+		record, err := savedKernelFrom(s.db, e.CoreID, true)
+		if err != nil {
+			return kernelFailure(err)
+		}
+		profile, err := frozenProfile(e.Configuration, &record, FingerprintGeneratorVersion, 1, false)
+		if err != nil {
+			return kernelFailure(err)
+		}
+		p.Fingerprint = &FingerprintPreview{Mode: "native", PreviewProfile: profile, CapabilityReport: capabilityReport(profile, &record), Changes: profileChanges(nil, profile), Action: "generate"}
+	}
 	if kind == "edit" {
 		if s.profileUses[e.ID] && !s.runtimeOwnsProfileUse(e.ID) {
 			return failure("PROFILE_BUSY", "请先停止该环境，再编辑关键配置。", true)
@@ -1255,6 +1327,19 @@ func (s *Service) viewPage(query EnvironmentQuery) (View, error) {
 		return View{}, err
 	}
 	var recycleMaintenance *Operation
+	migrations, err := s.listMigrations()
+	if err != nil {
+		return View{}, err
+	}
+	var migrationMaintenance *Operation
+	if s.migrationTask != nil {
+		op := copyMigrationOperation(s.migrationTask.operation)
+		migrationMaintenance = &op
+	}
+	defaultKernel, err := s.readKernelDefault()
+	if err != nil {
+		return View{}, err
+	}
 	if s.recycleTask != nil {
 		op := copyRecycleOperation(s.recycleTask.operation)
 		recycleMaintenance = &op
@@ -1264,5 +1349,5 @@ func (s *Service) viewPage(query EnvironmentQuery) (View, error) {
 		op := copyRestoreOperation(s.restoreTask.operation)
 		maintenance = &op
 	}
-	return View{Mode: "native", State: state, KernelRecords: installed, KernelOperations: operations, Fingerprints: profiles, DataReferences: references, RuntimeSessions: sessions, NativeProxyRecords: proxyRecords, ProxyOperations: proxyOperations, CookieOperations: cookieOperations, BatchOperations: batchOperations, BackupOperations: backupOperations, NativeBackups: backups, RestoreOperations: restores, Maintenance: maintenance, RecycleOperations: recycles, RecycleMaintenance: recycleMaintenance, EnvironmentPage: &page}, nil
+	return View{Mode: "native", State: state, KernelRecords: installed, KernelOperations: operations, DefaultKernel: &defaultKernel, Fingerprints: profiles, DataReferences: references, RuntimeSessions: sessions, NativeProxyRecords: proxyRecords, ProxyOperations: proxyOperations, CookieOperations: cookieOperations, BatchOperations: batchOperations, BackupOperations: backupOperations, NativeBackups: backups, RestoreOperations: restores, Maintenance: maintenance, RecycleOperations: recycles, RecycleMaintenance: recycleMaintenance, MigrationOperations: migrations, MigrationMaintenance: migrationMaintenance, EnvironmentPage: &page}, nil
 }

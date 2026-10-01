@@ -69,7 +69,7 @@ func (s *Service) acceptRestore(input RestoreRequest) Result {
 	if d.preview.OverwriteCount > 0 && !input.ConfirmOverwrite || d.preview.CredentialReentryCount > 0 && !input.AcknowledgeCredentials {
 		return failure("VALIDATION_FAILED", "请明确确认覆盖影响及凭据需要重新输入的范围。", false)
 	}
-	if s.recycleTask != nil || s.restorePreflight != nil || s.kernelTask != nil || len(s.batchTasks) > 0 || len(s.batchAcceptances) > 0 || len(s.backupTasks) > 0 || len(s.cookieTasks) > 0 || len(s.proxyChecks) > 0 || len(s.proxyPending) > 0 || len(s.cookiePending) > 0 || len(s.runtimePending) > 0 {
+	if s.migrationTask != nil || s.recycleTask != nil || s.restorePreflight != nil || s.kernelTask != nil || len(s.batchTasks) > 0 || len(s.batchAcceptances) > 0 || len(s.backupTasks) > 0 || len(s.cookieTasks) > 0 || len(s.proxyChecks) > 0 || len(s.proxyPending) > 0 || len(s.cookiePending) > 0 || len(s.runtimePending) > 0 {
 		return failure("PROFILE_BUSY", "当前有维护、批次、Cookie或观测待保存任务；先完成它，再恢复。", true)
 	}
 	baseline, err := restoreBaseline(s.db)
