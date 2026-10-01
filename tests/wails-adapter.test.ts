@@ -9,7 +9,8 @@ import { currentCookieOperation } from "../src/application/cookie-import.ts";
 import { mergeBatchPage, validBatchPage, validBatchReport } from "../src/application/batch-model.ts";
 import { readRuntimeStartPlan } from "../src/application/runtime-start-plan.ts";
 import { confirmsBackupRequest, validBackupReport } from "../src/application/backup-model.ts";
-import type { NativeBackupReport, NativeBackupExportRequest, NativeRestorePreview } from "../src/application/contract.ts";
+import type { NativeBackupReport, NativeBackupExportRequest, NativeRestorePreview, NativeRestoreRequest } from "../src/application/contract.ts";
+import { invalidRestoreOperation } from "../src/application/restore-model.ts";
 
 const empty = (): WorkspaceView => ({ mode: "native", state: { schemaVersion: 1, environments: [], proxies: [], kernels: [], backups: [], activities: [] } });
 const ok = <T>(data: T): ApplicationResult<T> => ({ ok: true, mode: "native", data });
@@ -30,6 +31,70 @@ const syntheticBatchReport = (): NativeBatchReport => ({ mode: "native", planId:
 const syntheticBackupReport = (): NativeBackupReport => ({ requestId: "synthetic-backup-request", mode: "native", format: "prism-local-backup", schemaVersion: 1, scope: "selected", environmentCount: 2, copiedEnvironmentCount: 0, fileCount: 0, byteCount: 0, sequence: 1, published: false, name: "synthetic.prismbackup", credentials: "windows-current-user-dpapi", browserData: "sensitive-same-user-not-portable", kernelBinariesIncluded: false });
 
 const restorePreview = (): NativeRestorePreview => ({ mode: "native", previewId: "synthetic-preview", format: "prism-local-backup", name: "synthetic.prismbackup", archiveSha256: "a".repeat(64), manifestSha256: "b".repeat(64), scope: "selected", createdAt: "2026-10-01T00:00:00Z", expiresAt: "2026-10-01T00:30:00Z", environmentCount: 1, addCount: 1, overwriteCount: 0, conflictCount: 0, missingKernelCount: 0, credentialReentryCount: 0, bytes: 100, canRestore: true, kernels: [], credentials: [] });
+
+const restoreRequest = (): NativeRestoreRequest => ({ previewId: "synthetic-preview", archiveSha256: "a".repeat(64), confirmOverwrite: true, acknowledgeCredentials: true, stopRunning: true, requestId: "synthetic-restore-request" });
+const restoreOperation = (): Operation => ({ id: "synthetic-restore-operation", kind: "backup-restore", state: "running", stage: "prepared", cancelRequested: false, completedIds: [], total: 1, restoreReport: { mode: "native", requestId: "synthetic-restore-request", previewId: "synthetic-preview", archiveSha256: "a".repeat(64), sequence: 2, environmentCount: 1, switchedCount: 0, credentialReentryCount: 0, committed: false, rolledBack: false, protected: true } });
+
+test("restore mutation projects only confirmation and binds the accepted package, never paths or archived config", async () => {
+  const task = restoreOperation();
+  const { app, calls } = fixture(r => r.method === "Workspace.Read" ? ok({ ...empty(), restoreOperations: [task], maintenance: task }) : ok({ status: "accepted", operation: task }));
+  const result = await app.applyRestore({ ...restoreRequest(), path: "SYNTHETIC_PRIVATE_PATH", seed: "999", configuration: "UNTRUSTED_CONFIG" } as NativeRestoreRequest);
+  assert.ok(result.ok && result.data.operation.state === "running");
+  assert.deepEqual(calls[0].payload, restoreRequest()); assert.equal(app.getPendingRestore(), undefined);
+  assert.equal(app.getSnapshot().maintenance?.id, task.id);
+});
+test("unknown restore acceptance retains original request and known ID, rejects a new request, and recovers on matching read", async () => {
+  let readable = false;
+  const task = restoreOperation();
+  const { app, calls } = fixture(r => r.method === "Workspace.Read" ? ok(empty()) : r.method === "Operation.Read" ? ok(task) : readable ? ok({ status: "accepted", operation: task }) : { ok: false, mode: "native", operationId: task.id, error: { code: "RESTORE_INCOMPLETE", message: "synthetic unknown", retryable: true } });
+  assert.equal((await app.applyRestore(restoreRequest())).ok, false);
+  assert.deepEqual(app.getPendingRestore(), { request: restoreRequest(), operationId: task.id });
+  const count = calls.length; assert.equal((await app.applyRestore({ ...restoreRequest(), requestId: "other" })).ok, false); assert.equal(calls.length, count);
+  readable = true; assert.ok((await app.getOperation(task.id)).ok); assert.equal(app.getPendingRestore(), undefined);
+});
+test("malformed, demo or premature completed restore reports never erase pending acceptance", async () => {
+  for (const bad of [ { ...restoreOperation(), state: "completed" }, { ...restoreOperation(), restoreReport: { ...restoreOperation().restoreReport, mode: "demo" } }, { ...restoreOperation(), restoreReport: { ...restoreOperation().restoreReport, archiveSha256: "b".repeat(64) } } ]) {
+    const { app } = fixture(r => r.method === "Workspace.Read" ? ok(empty()) : ok({ status: "accepted", operation: bad }));
+    assert.equal((await app.applyRestore(restoreRequest())).ok, false); assert.ok(app.getPendingRestore());
+  }
+});
+test("restore progress is monotonic and protected storage failure can become confirmed completion", () => {
+  const task = restoreOperation(); const pending: Operation = { ...task, state: "failed", stage: "storage-pending", persistencePending: true, restoreReport: { ...task.restoreReport!, sequence: 8, committed: true, switchedCount: 1 } };
+  assert.equal(invalidRestoreOperation(pending), false);
+  const completed: Operation = { ...pending, state: "completed", stage: "finalized", persistencePending: false, restoreReport: { ...pending.restoreReport!, sequence: 8, protected: false } };
+  assert.equal(invalidRestoreOperation(completed), false); assert.equal(mergeOperation(pending, completed), completed); assert.equal(mergeOperation(completed, task), completed);
+});
+test("late refusal from an old restore cannot clear a newer unresolved request", async () => {
+  let deliver!: (value: ApplicationResult<unknown>) => void;
+  let first = true;
+  const { app } = fixture(r => r.method === "Workspace.Read" ? ok(empty()) : r.method === "Operation.Read" ? ok(restoreOperation()) : first ? (first = false, new Promise(resolve => { deliver = resolve; })) : rejected);
+  const old = app.applyRestore(restoreRequest());
+  await app.getOperation(restoreOperation().id);
+  const newRequest = { ...restoreRequest(), requestId: "synthetic-new-request", previewId: "synthetic-new-preview" };
+  await app.applyRestore(newRequest);
+  deliver({ ok: false, mode: "native", error: { code: "PREVIEW_EXPIRED", message: "old", retryable: true } }); await old;
+  assert.equal(app.getPendingRestore()?.request.requestId, newRequest.requestId);
+});
+test("confirmed nonacceptance releases the old restore identity and a verified acceptance replaces its temporary overlay", async () => {
+  const request = restoreRequest(), task = restoreOperation();
+  const unknown: Operation = { ...task, state: "accepted", stage: "acceptance-pending", persistencePending: true, restoreReport: { ...task.restoreReport!, sequence: 1 } };
+  let absent = false;
+  const { app } = fixture(r => r.method === "Workspace.Read" ? ok(empty()) : r.method === "Operation.Read" ? ok(unknown) : absent ? { ok: false, mode: "native", error: { code: "RESTORE_NOT_ACCEPTED", message: "synthetic absent", retryable: true } } : { ok: false, mode: "native", operationId: task.id, error: { code: "RESTORE_INCOMPLETE", message: "unknown", retryable: true } });
+  await app.applyRestore(request); await app.getOperation(task.id); assert.ok(app.getPendingRestore());
+  absent = true; const result = await app.applyRestore(request); assert.equal(result.ok, false); assert.equal(app.getPendingRestore(), undefined);
+  assert.equal(app.wasRestoreNotAccepted(request.requestId), true);
+  const accepted: Operation = { ...unknown, persistencePending: false, stage: "accepted" };
+  assert.equal(mergeOperation(unknown, accepted), accepted);
+});
+test("a late explicit restore refusal is observable by a new page even with empty task history", async () => {
+  let deliver!: (value: ApplicationResult<unknown>) => void;
+  const { app } = fixture(r => r.method === "Workspace.Read" ? ok(empty()) : new Promise(resolve => { deliver = resolve; }));
+  const result = app.applyRestore(restoreRequest());
+  const remountedRequest = app.getPendingRestore()!.request;
+  let notified = false; app.subscribe(() => { notified = app.wasRestoreNotAccepted(remountedRequest.requestId); });
+  deliver({ ok: false, mode: "native", error: { code: "PROFILE_BUSY", message: "synthetic not accepted", retryable: true } }); await result;
+  assert.equal(app.getPendingRestore(), undefined); assert.equal(notified, true); assert.deepEqual(app.getSnapshot().restoreOperations ?? [], []);
+});
 
 test("restore preflight never refreshes/flushed workspace and sends only host source token", async () => {
   const { app, calls } = fixture(() => ok(restorePreview()));

@@ -347,7 +347,7 @@ export default function App({ application }: { application: ApplicationService }
     latestOperationEvent.current = event;
     if (event) setBatch({ label: "创建环境", done: event.operation.completedIds.length, total: event.operation.total });
   }), [application]);
-  const nativeRuntimeActive = nativeMode && (Object.values(workspace.runtimeSessions ?? {}).some(session => ["starting", "running", "stopping"].includes(session.state) || !!session.pid || session.needsReconcile || session.persistencePending) || (workspace.batchOperations ?? []).some(operation => !operationIsTerminal(operation)));
+  const nativeRuntimeActive = nativeMode && (!!workspace.maintenance || (workspace.restoreOperations ?? []).some(operation => !operationIsTerminal(operation)) || Object.values(workspace.runtimeSessions ?? {}).some(session => ["starting", "running", "stopping"].includes(session.state) || !!session.pid || session.needsReconcile || session.persistencePending) || (workspace.batchOperations ?? []).some(operation => !operationIsTerminal(operation)));
   useEffect(() => {
     if (!nativeRuntimeActive || !application.refresh) return;
     let cancelled = false;
@@ -973,6 +973,7 @@ export default function App({ application }: { application: ApplicationService }
           </div>
         </header>
         <main>
+          {nativeMode && workspace.maintenance && <div className="prototype-notice" role="status">完整恢复正在维护保护中，配置修改与新启动暂不可用。<Button onClick={() => navigate("backups")}>查看恢复任务</Button></div>}
           <div className="page-heading">
             <div>
               <div className="eyebrow">

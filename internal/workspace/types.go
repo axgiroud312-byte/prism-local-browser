@@ -79,6 +79,7 @@ type Operation struct {
 	CookieReport       *CookieImportReport `json:"cookieReport,omitempty"`
 	BatchReport        *BatchReport        `json:"batchReport,omitempty"`
 	BackupReport       *BackupReport       `json:"backupReport,omitempty"`
+	RestoreReport      *RestoreReport      `json:"restoreReport,omitempty"`
 }
 type Mutation struct {
 	PreviewID        string        `json:"previewId"`
@@ -130,6 +131,8 @@ type View struct {
 	BatchOperations    []Operation                `json:"batchOperations"`
 	BackupOperations   []Operation                `json:"backupOperations"`
 	NativeBackups      []BackupRecord             `json:"nativeBackups"`
+	RestoreOperations  []Operation                `json:"restoreOperations"`
+	Maintenance        *Operation                 `json:"maintenance,omitempty"`
 	EnvironmentPage    *EnvironmentPage           `json:"environmentPage,omitempty"`
 }
 type KernelView struct {

@@ -27,6 +27,12 @@
 
 ## 已发布的桌面开发任务
 
+### T17 完整恢复与执行回滚（本地源码完成，未运行验收）
+
+- BKP-001、DATA-001：[`受理/幂等`](../internal/workspace/restore_accept.go)、[`持久日志`](../internal/workspace/restore_storage.go)、[`执行/回滚`](../internal/workspace/restore_worker.go)、[`Windows目录对象`](../internal/backup/switch_windows.go)及[`逻辑配置事务`](../internal/workspace/restore_commit.go)；同卷旧副本、提交标记与配置同事务，不把混合状态发布成功。
+- FP-001：恢复原ID/seed/参数/历史，精确构建可映射本机ID，编号/配置revision与身份分开；真实目录提升初始化事实，旧更强事实保留。包外环境与本机历史不被清空。
+- UX-001：[`native恢复执行`](../src/components/NativeRestoreExecution.tsx)与[`Wails原请求保护`](../src/application/wails-adapter.ts)区分受理、进度、回滚、未知保护和完成。已有[`服务回归`](../internal/workspace/restore_execution_test.go)、[`目录回归`](../internal/backup/switch_windows_test.go)及adapter用例仅编写未执行；[验收清单](verification/T17.md)。
+
 ### T01 应用契约先导（2026-09-30；原型层级）
 
 ENV-002、UX-001、DOC-001 的创建/编辑/取消/刷新流程已接入 [ApplicationService](../src/application/contract.ts) 与 [DemoAdapter](../src/application/demo-adapter.ts)，[main.tsx](../src/main.tsx) 注入服务，页面不直接写 localStorage。保存失败保留旧记录和草稿，expectedRevision 拒绝过期写入；旧 v1 记录兼容，revision 存入额外元数据。其他页保留 demo-only 兼容接口，仍没有 Go/native 服务。

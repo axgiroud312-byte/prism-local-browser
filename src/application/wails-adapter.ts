@@ -5,11 +5,12 @@ import type {
   GenerateFingerprintRequest, CommitFingerprintRequest, ProfileRevision, RuntimeSession,
   ProxyConfiguration, ProxyImportPreview, ProxyUpdateRequest, ProxyTargetRequest, NativeProxy,
   CookieCommitRequest, CookieImportPreview, RuntimeStartRequest,
-  NativeBatchPreviewRequest, NativeBatchPage, NativeEnvironmentQuery, NativeBackupExportRequest, NativeBackupPending, NativeRestorePreview, NativeRestorePage,
+  NativeBatchPreviewRequest, NativeBatchPage, NativeEnvironmentQuery, NativeBackupExportRequest, NativeBackupPending, NativeRestorePreview, NativeRestorePage, NativeRestoreRequest,
 } from "./contract.ts";
 import { mergeOperation, operationIsTerminal } from "./contract.ts";
 import { validBatchPage, validBatchReport } from "./batch-model.ts";
 import { confirmsBackupRequest, invalidBackupOperation } from "./backup-model.ts";
+import { confirmsRestoreRequest, invalidRestoreOperation } from "./restore-model.ts";
 
 export interface NativeRequest { mode: "native"; method: string; payload: unknown }
 export type NativeBridge = <T>(request: NativeRequest) => Promise<ApplicationResult<T>>;
@@ -37,6 +38,8 @@ export class WailsAdapter implements ApplicationService {
   private refreshSequence = 0;
   private environmentQuery?: NativeEnvironmentQuery;
   private pendingBackup?: NativeBackupPending;
+  private pendingRestore?: { request: NativeRestoreRequest; operationId?: string };
+  private restoreRefusal?: string;
   constructor(bridge: NativeBridge) { this.bridge = bridge; }
   getSnapshot = () => this.view;
   subscribe = (listener: () => void) => { this.listeners.add(listener); return () => { this.listeners.delete(listener); }; };
@@ -46,6 +49,7 @@ export class WailsAdapter implements ApplicationService {
     try {
       const response = await this.bridge<T>({ mode: "native", method, payload });
       if (response.mode !== "native") {
+        if (method === "Backup.ApplyRestore") return { ok: false, mode: "native", operationId: response.operationId, error: { code: "RESTORE_RESULT_UNCONFIRMED", message: "恢复响应模式不符；原请求保持待核实，不能另建恢复。", retryable: true } };
         if (method === "Backup.Export") return { ok: false, mode: "native", operationId: response.operationId, error: { code: "BACKUP_RESULT_UNCONFIRMED", message: "返回模式不符，已拒绝演示结果；这不证明后台未受理，原备份请求保留，请核实。", retryable: true } };
         return { ok: false, mode: "native", error: { code: "CAPABILITY_UNSUPPORTED", message: "服务返回了演示记录，已拒绝接入真实工作区。", retryable: false } };
       }
@@ -55,6 +59,7 @@ export class WailsAdapter implements ApplicationService {
   async refresh(): Promise<ApplicationResult<WorkspaceView>> {
     const sequence = ++this.refreshSequence;
     let response = await this.invoke<WorkspaceView>("Workspace.Read", this.environmentQuery ? { environmentQuery: { ...this.environmentQuery } } : {});
+    if (response.ok && ((response.data.restoreOperations ?? []).some(invalidRestoreOperation) || response.data.maintenance && (response.data.maintenance.kind !== "backup-restore" || invalidRestoreOperation(response.data.maintenance)))) response = { ok: false, mode: "native", error: { code: "RESTORE_RESULT_UNCONFIRMED", message: "恢复报告身份或完整性未核实，未接入为成功。", retryable: true } };
     if (response.ok && (response.data.mode !== "native" || Object.values(response.data.runtimeSessions ?? {}).some(session => session.mode !== "native" || (session.proxyReport && (session.proxyReport.mode !== "native" || session.proxyReport.channelId !== session.proxyChannelId || session.proxyReport.proxyId !== session.proxyId || session.proxyReport.revision !== session.proxyRevision))) || (response.data.nativeProxyRecords ?? []).some(record => record.checkReport && record.checkReport.mode !== "native") || (response.data.proxyOperations ?? []).some(operation => operation.proxyReport && operation.proxyReport.mode !== "native") || (response.data.cookieOperations ?? []).some(invalidCookieReport) || (response.data.batchOperations ?? []).some(invalidBatchReport) || (response.data.backupOperations ?? []).some(invalidBackupOperation))) response = { ok: false, mode: "native", error: { code: "CAPABILITY_UNSUPPORTED", message: "工作区、会话或报告身份不匹配，已拒绝接入；未回退演示数据。", retryable: false } };
     if (sequence !== this.refreshSequence) return response;
     if (response.ok) {
@@ -66,7 +71,11 @@ export class WailsAdapter implements ApplicationService {
         const merged = mergeOperation(this.operations.get(operation.id), operation);
         this.operations.set(merged.id, merged); this.confirmPendingBackup(merged); return merged;
       });
-      this.view = { ...response.data, ...(batchOperations ? { batchOperations } : {}), ...(backupOperations ? { backupOperations } : {}) };
+      const restoreOperations = response.data.restoreOperations?.map(operation => {
+        const merged = mergeOperation(this.operations.get(operation.id), operation);
+        this.operations.set(merged.id, merged); this.confirmPendingRestore(merged); return merged;
+      });
+      this.view = { ...response.data, ...(batchOperations ? { batchOperations } : {}), ...(backupOperations ? { backupOperations } : {}), ...(restoreOperations ? { restoreOperations } : {}) };
     }
     else this.view = { ...this.view, issue: response.error };
     this.publish();
@@ -112,7 +121,8 @@ export class WailsAdapter implements ApplicationService {
     return this.confirmOperation(response);
   }
   private confirmOperation(response: ApplicationResult<Operation>): ApplicationResult<Operation> {
-    if (!response.ok || (!response.data.kind.startsWith("kernel-") && !response.data.kind.startsWith("runtime-") && !response.data.kind.startsWith("batch-") && response.data.kind !== "proxy-check" && response.data.kind !== "cookie-import" && response.data.kind !== "backup-export")) return response;
+    if (!response.ok || (!response.data.kind.startsWith("kernel-") && !response.data.kind.startsWith("runtime-") && !response.data.kind.startsWith("batch-") && response.data.kind !== "proxy-check" && response.data.kind !== "cookie-import" && response.data.kind !== "backup-export" && response.data.kind !== "backup-restore")) return response;
+    if (invalidRestoreOperation(response.data)) return { ok: false, mode: "native", operationId: response.data.id, error: { code: "RESTORE_RESULT_UNCONFIRMED", message: "恢复报告未核实；保留原任务ID，不重复切换。", retryable: true } };
     if (invalidBackupOperation(response.data)) return { ok: false, mode: "native", operationId: response.data.id, error: { code: "BACKUP_RESULT_UNCONFIRMED", message: "备份格式、统计或发布状态未核实；已知任务ID保留，不证明未受理，不重新导出。", retryable: true } };
     if (invalidBatchReport(response.data)) return { ok: false, mode: "native", error: { code: "CAPABILITY_UNSUPPORTED", message: "批次类型或计划身份不匹配，不能计为持久任务结果。", retryable: false } };
     if (invalidCookieReport(response.data)) return { ok: false, mode: "native", error: { code: "CAPABILITY_UNSUPPORTED", message: "Cookie读回报告的环境/会话身份不匹配，不能计为真实写入。", retryable: false } };
@@ -121,6 +131,7 @@ export class WailsAdapter implements ApplicationService {
     const operation = mergeOperation(previous, response.data);
     this.operations.set(operation.id, operation);
     this.confirmPendingBackup(operation);
+    this.confirmPendingRestore(operation);
     if (operation !== previous) this.emit(operation);
     return { ...response, data: operation };
   }
@@ -241,6 +252,43 @@ export class WailsAdapter implements ApplicationService {
     return result;
   }
   getPendingBackupExport(): NativeBackupPending | undefined { return this.pendingBackup ? { ...this.pendingBackup, request: { ...this.pendingBackup.request, environmentIds: [...this.pendingBackup.request.environmentIds] } } : undefined; }
+  getPendingRestore() { return this.pendingRestore ? { ...this.pendingRestore, request: { ...this.pendingRestore.request } } : undefined; }
+  wasRestoreNotAccepted(requestId: string) { return this.restoreRefusal === requestId; }
+  async retryRestore(operationId: string) {
+    const result = await this.invoke<Operation>("Backup.RecoverRestore", { operationId });
+    if (result.ok && (result.data.id !== operationId || result.data.kind !== "backup-restore")) return { ok: false as const, mode: "native" as const, error: { code: "RESTORE_RESULT_UNCONFIRMED", message: "恢复核对响应不是原任务。", retryable: true } };
+    const checked = this.confirmOperation(result); await this.refresh(); return checked;
+  }
+  private confirmPendingRestore(operation: Operation) {
+    if (confirmsRestoreRequest(operation, this.pendingRestore?.request)) this.pendingRestore = undefined;
+  }
+  async applyRestore(request: NativeRestoreRequest) {
+    const projected = { previewId: request.previewId, archiveSha256: request.archiveSha256, confirmOverwrite: request.confirmOverwrite, acknowledgeCredentials: request.acknowledgeCredentials, stopRunning: request.stopRunning, requestId: request.requestId };
+    if (this.pendingRestore && JSON.stringify(this.pendingRestore.request) !== JSON.stringify(projected)) return { ok: false as const, mode: "native" as const, operationId: this.pendingRestore.operationId, error: { code: "RESTORE_RESULT_UNCONFIRMED", message: "原恢复受理尚待核实；只可查询或重发原请求。", retryable: true } };
+    const owner = this.pendingRestore ??= { request: projected };
+    if (this.restoreRefusal === request.requestId) this.restoreRefusal = undefined;
+    let response = await this.invoke<{ status: "accepted"; operation: Operation }>("Backup.ApplyRestore", projected);
+    if (response.ok) {
+      const operationId = response.data.operation.id || response.operationId;
+      if (this.pendingRestore === owner && operationId) owner.operationId = operationId;
+      if (response.data.status !== "accepted" || !confirmsRestoreRequest(response.data.operation, projected)) response = { ok: false, mode: "native", operationId, error: { code: "RESTORE_RESULT_UNCONFIRMED", message: "恢复受理报告与原请求未一致核实；保持原请求，不创建新任务。", retryable: true } };
+      else {
+        const checked = this.confirmOperation({ ok: true, mode: "native", data: response.data.operation });
+        response = checked.ok ? { ...response, data: { ...response.data, operation: checked.data } } : checked;
+      }
+    } else if (this.pendingRestore === owner) {
+      if (response.operationId) owner.operationId = response.operationId;
+      else if (["VALIDATION_FAILED", "PREVIEW_EXPIRED", "BACKUP_INVALID", "REVISION_CONFLICT", "PROFILE_BUSY", "SESSION_IDENTITY_UNCONFIRMED", "REQUEST_ID_REUSED", "RESTORE_NOT_ACCEPTED"].includes(response.error.code)) {
+        if (response.error.code === "RESTORE_NOT_ACCEPTED" && owner.operationId) this.operations.delete(owner.operationId);
+        this.restoreRefusal = projected.requestId;
+        this.pendingRestore = undefined;
+      }
+    }
+    await this.refresh();
+    const known = [...this.operations.values()].find(op => confirmsRestoreRequest(op, projected));
+    if (known) return { ok: true as const, mode: "native" as const, operationId: known.id, data: { status: "accepted" as const, operation: known } };
+    return response;
+  }
   private confirmPendingBackup(operation: Operation) {
     if (confirmsBackupRequest(operation, this.pendingBackup?.request)) this.pendingBackup = undefined;
   }

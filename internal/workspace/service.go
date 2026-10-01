@@ -47,6 +47,7 @@ type Options struct {
 	ChooseBackupDestination func() (string, error)
 	ChooseBackupSource      func() (string, error)
 	AppVersion              string
+	RestoreCheckpoint       func(string) error // host-only failure injection, never RPC
 }
 type draft struct {
 	Kind        string
@@ -95,6 +96,7 @@ type Service struct {
 	restorePreview     *restoreDraft
 	restorePreflight   *restorePreflight
 	restoreScratch     string
+	restoreTask        *restoreTask
 }
 
 func failure(code, message string, retryable bool) Result {
@@ -155,6 +157,13 @@ func Open(root string, options Options) (*Service, error) {
 		db.Close()
 		return nil, err
 	}
+	if err = s.loadInterruptedRestore(); err != nil {
+		db.Close()
+		return nil, err
+	}
+	if s.restoreTask != nil {
+		return s, nil
+	}
 	if err = s.recoverKernelOperations(); err != nil {
 		db.Close()
 		return nil, err
@@ -207,6 +216,9 @@ func (s *Service) beginShutdown() {
 	s.closed = true
 	if s.restorePreflight != nil {
 		s.restorePreflight.cancel()
+	}
+	if s.restoreTask != nil && s.restoreTask.cancel != nil {
+		s.restoreTask.cancel()
 	}
 	s.restorePreview = nil
 	if s.kernelTask != nil {
@@ -263,6 +275,7 @@ func (s *Service) closeResources(processes []RuntimeProcess, finished chan struc
 	s.flushCookiePersistence()
 	s.flushBatchPersistence()
 	s.flushBackupPersistence()
+	s.flushRestorePersistence()
 	proxy.Wipe(s.proxyRequestKey)
 	s.proxyRequestKey = nil
 	s.closeError = s.db.Close()
@@ -280,6 +293,9 @@ func (s *Service) closeResources(processes []RuntimeProcess, finished chan struc
 	}
 	if len(s.backupTasks) != 0 {
 		s.closeError = errors.Join(s.closeError, errors.New("backup observations could not all be persisted"))
+	}
+	if s.restoreTask != nil {
+		s.closeError = errors.Join(s.closeError, errors.New("restore outcome remains protected or could not be persisted"))
 	}
 	close(finished)
 }
@@ -305,7 +321,10 @@ func (s *Service) initialize() error {
 	if err := s.initializeBatches(); err != nil {
 		return err
 	}
-	return s.initializeBackups()
+	if err := s.initializeBackups(); err != nil {
+		return err
+	}
+	return s.initializeRestores()
 }
 
 func (s *Service) initializeProfiles() error {
@@ -313,7 +332,7 @@ func (s *Service) initializeProfiles() error {
 	if err := s.db.QueryRow("PRAGMA user_version").Scan(&version); err != nil {
 		return err
 	}
-	if version > 7 {
+	if version > 8 {
 		return errors.New("unsupported workspace version")
 	}
 	if version >= 3 {
@@ -485,6 +504,28 @@ func (s *Service) Call(request Request) Result {
 	if s.closed || s.closeRequested.Load() {
 		return failure("NATIVE_UNAVAILABLE", "工作区已关闭，请重新打开应用。", true)
 	}
+	if request.Method == "Workspace.Read" || request.Method == "Operation.Read" || request.Method == "Backup.ApplyRestore" || request.Method == "Backup.RecoverRestore" {
+		s.flushRestorePersistence()
+	}
+	if s.restoreTask != nil && request.Method != "Workspace.Read" && request.Method != "Operation.Read" && request.Method != "Operation.Cancel" && request.Method != "Runtime.Inspect" && request.Method != "Runtime.Stop" && request.Method != "Backup.ApplyRestore" && request.Method != "Backup.RecoverRestore" {
+		return failure("RESTORE_INCOMPLETE", "完整恢复维护中，配置与目录切换保持保护；请读取恢复任务结果。", true)
+	}
+	if request.Method == "Backup.ApplyRestore" {
+		var input RestoreRequest
+		if decode(request.Payload, &input) != nil {
+			return failure("VALIDATION_FAILED", "恢复请求不接受未知字段、路径或客户端档案。", false)
+		}
+		return s.acceptRestore(input)
+	}
+	if request.Method == "Backup.RecoverRestore" {
+		var input struct {
+			OperationID string `json:"operationId"`
+		}
+		if decode(request.Payload, &input) != nil || input.OperationID == "" {
+			return failure("VALIDATION_FAILED", "请选择原恢复任务。", false)
+		}
+		return s.retryRestoreFinalization(input.OperationID)
+	}
 	if request.Method == "Workspace.Read" || request.Method == "Runtime.Inspect" || request.Method == "Operation.Read" || strings.HasPrefix(request.Method, "Runtime.") {
 		s.flushRuntimePersistence()
 	}
@@ -603,6 +644,12 @@ func (s *Service) Call(request Request) Result {
 		}
 		if decode(request.Payload, &input) != nil {
 			return failure("VALIDATION_FAILED", "任务请求无效。", false)
+		}
+		if task := s.restoreTask; task != nil && task.operation.ID == input.OperationID {
+			if request.Method == "Operation.Cancel" {
+				return s.cancelRestore(task)
+			}
+			return success(copyRestoreOperation(task.operation), task.operation.ID)
 		}
 		if task := s.backupTasks[input.OperationID]; task != nil {
 			if request.Method == "Operation.Cancel" {
@@ -1139,5 +1186,14 @@ func (s *Service) viewPage(query EnvironmentQuery) (View, error) {
 	if err != nil {
 		return View{}, err
 	}
-	return View{Mode: "native", State: state, KernelRecords: installed, KernelOperations: operations, Fingerprints: profiles, DataReferences: references, RuntimeSessions: sessions, NativeProxyRecords: proxyRecords, ProxyOperations: proxyOperations, CookieOperations: cookieOperations, BatchOperations: batchOperations, BackupOperations: backupOperations, NativeBackups: backups, EnvironmentPage: &page}, nil
+	restores, err := s.listRestoreOperations()
+	if err != nil {
+		return View{}, err
+	}
+	var maintenance *Operation
+	if s.restoreTask != nil {
+		op := copyRestoreOperation(s.restoreTask.operation)
+		maintenance = &op
+	}
+	return View{Mode: "native", State: state, KernelRecords: installed, KernelOperations: operations, Fingerprints: profiles, DataReferences: references, RuntimeSessions: sessions, NativeProxyRecords: proxyRecords, ProxyOperations: proxyOperations, CookieOperations: cookieOperations, BatchOperations: batchOperations, BackupOperations: backupOperations, NativeBackups: backups, RestoreOperations: restores, Maintenance: maintenance, EnvironmentPage: &page}, nil
 }

@@ -41,12 +41,14 @@ export interface WorkspaceView {
   cookieOperations?: Operation[];
   batchOperations?: Operation[];
   backupOperations?: Operation[];
+  restoreOperations?: Operation[];
+  maintenance?: Operation;
   nativeBackups?: NativeBackup[];
   environmentPage?: NativeEnvironmentPage;
 }
 export interface Operation {
   id: string;
-  kind: "create" | "edit" | "kernel-install" | "kernel-verify" | "kernel-delete" | "runtime-start" | "runtime-stop" | "runtime-force-stop" | "runtime-reconcile" | "proxy-check" | "cookie-import" | "batch-create" | "batch-clone" | "batch-assign" | "backup-export";
+  kind: "create" | "edit" | "kernel-install" | "kernel-verify" | "kernel-delete" | "runtime-start" | "runtime-stop" | "runtime-force-stop" | "runtime-reconcile" | "proxy-check" | "cookie-import" | "batch-create" | "batch-clone" | "batch-assign" | "backup-export" | "backup-restore";
   state: "accepted" | "running" | "completed" | "cancelled" | "failed";
   total: number;
   completedIds: string[];
@@ -63,6 +65,7 @@ export interface Operation {
   cookieReport?: CookieImportReport;
   batchReport?: NativeBatchReport;
   backupReport?: NativeBackupReport;
+  restoreReport?: NativeRestoreReport;
 }
 export interface OperationEvent {
   mode: ApplicationMode;
@@ -78,6 +81,11 @@ export const operationIsTerminal = (operation: Operation) =>
 export function mergeOperation(previous: Operation | undefined, next: Operation): Operation {
   if (previous?.batchReport && next.batchReport && previous.batchReport.planId === next.batchReport.planId && next.batchReport.sequence < previous.batchReport.sequence) return previous;
   if (!previous || previous.id !== next.id) return next;
+  if (previous.restoreReport && next.restoreReport) {
+    if (next.restoreReport.sequence < previous.restoreReport.sequence) return previous;
+    if (previous.stage === "acceptance-pending" && previous.persistencePending && !next.persistencePending) return next;
+    if (previous.persistencePending && next.restoreReport.sequence > previous.restoreReport.sequence) return next;
+  }
   if (previous.backupReport && next.backupReport && next.backupReport.sequence < previous.backupReport.sequence) return previous;
   if (previous.kind === "backup-export" && previous.stage === "acceptance-pending" && previous.persistencePending && !next.persistencePending) return next;
   if (previous.batchReport && next.batchReport && next.batchReport.sequence < previous.batchReport.sequence) return previous;
@@ -157,6 +165,10 @@ export interface ApplicationService {
   previewRestore?(sourceToken: string): Promise<ApplicationResult<NativeRestorePreview>>;
   readRestorePage?(request: { previewId: string; offset: number; pageSize: number }): Promise<ApplicationResult<NativeRestorePage>>;
   discardRestore?(previewId: string, sourceToken: string): Promise<ApplicationResult<{ status: "discarded" }>>;
+  applyRestore?(request: NativeRestoreRequest): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
+  getPendingRestore?(): { request: NativeRestoreRequest; operationId?: string } | undefined;
+  wasRestoreNotAccepted?(requestId: string): boolean;
+  retryRestore?(operationId: string): Promise<ApplicationResult<Operation>>;
   commitBatch?(request: { planId: string; requestId: string }): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
   retryBatch?(request: { operationId: string; requestId: string }): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
   queryEnvironments?(request: NativeEnvironmentQuery): Promise<ApplicationResult<WorkspaceView>>;
@@ -172,6 +184,14 @@ export interface NativeRestorePreview {
   bytes: number; canRestore: boolean;
   kernels: { id: string; version: string; archiveSha256: string; executableSha256: string; localId: string; state: "pending" | "missing" | "unavailable" | "verified-bytes"; required: boolean }[];
   credentials: { proxyId: string; state: "none" | "available-current-user" | "reentry-required" }[];
+}
+export interface NativeRestoreRequest {
+  previewId: string; archiveSha256: string; confirmOverwrite: boolean; acknowledgeCredentials: boolean; stopRunning: boolean; requestId: string;
+}
+export interface NativeRestoreReport {
+  mode: "native"; requestId: string; previewId: string; archiveSha256: string; sequence: number;
+  environmentCount: number; switchedCount: number; credentialReentryCount: number;
+  committed: boolean; rolledBack: boolean; protected: boolean;
 }
 export interface NativeRestorePage {
   mode: "native"; previewId: string; offset: number; total: number;

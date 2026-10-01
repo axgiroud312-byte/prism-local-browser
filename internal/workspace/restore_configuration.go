@@ -44,6 +44,9 @@ func validateConfigurationSchema(ctx context.Context, db *sql.DB) error {
 	if err = template.initialize(); err != nil {
 		return err
 	}
+	if _, err = trusted.Exec("DROP TABLE restore_jobs; PRAGMA user_version=7"); err != nil {
+		return err
+	}
 	want, err := configurationSchema(ctx, trusted)
 	if err != nil {
 		return err

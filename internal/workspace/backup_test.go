@@ -425,7 +425,7 @@ func TestSchemaSixToSevenPreservesOriginalIdentityAndBrowserBytes(t *testing.T) 
 	os.MkdirAll(directory, 0700)
 	path := filepath.Join(directory, "Cookies")
 	os.WriteFile(path, []byte("SYNTHETIC_MIGRATION_DATA"), 0600)
-	if _, err := s.db.Exec("DROP TABLE backup_exports"); err != nil {
+	if _, err := s.db.Exec("DROP TABLE restore_jobs; DROP TABLE backup_exports"); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := s.db.Exec("DROP TABLE environment_data_state"); err != nil {
@@ -441,7 +441,7 @@ func TestSchemaSixToSevenPreservesOriginalIdentityAndBrowserBytes(t *testing.T) 
 	}
 	defer reopened.Close()
 	var version int
-	if err = reopened.db.QueryRow("PRAGMA user_version").Scan(&version); err != nil || version != 7 {
+	if err = reopened.db.QueryRow("PRAGMA user_version").Scan(&version); err != nil || version != 8 {
 		t.Fatal("backup journal migration failed", err)
 	}
 	after := view(t, reopened).Fingerprints[environment.ID]
@@ -499,7 +499,7 @@ func TestDataInitializationFactIsMonotonicAndMissingClaimedDataCannotBecomeEmpty
 func TestLegacyInitializationRemainsUnconfirmedAndCannotGrantMissingDirectory(t *testing.T) {
 	s, root := fixture(t, Options{})
 	environment, _ := create(t, s, "合成旧版缺失数据")
-	for _, statement := range []string{"DROP TABLE backup_exports", "DROP TABLE environment_data_state", "PRAGMA user_version=6"} {
+	for _, statement := range []string{"DROP TABLE restore_jobs", "DROP TABLE backup_exports", "DROP TABLE environment_data_state", "PRAGMA user_version=6"} {
 		if _, err := s.db.Exec(statement); err != nil {
 			t.Fatal(err)
 		}

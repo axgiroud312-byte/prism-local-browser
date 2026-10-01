@@ -1,21 +1,24 @@
 import { useEffect, useRef, useState } from "react";
-import type { ApplicationService, NativeRestorePage, NativeRestorePreview } from "../application/contract";
+import type { ApplicationService, NativeRestorePage, NativeRestorePreview, WorkspaceView } from "../application/contract";
+import { NativeRestoreExecution } from "./NativeRestoreExecution";
 
 const reason: Record<string, string> = { "name-conflict": "名称已由另一环境占用", "fingerprint-id-conflict": "档案ID属于另一环境", "prepared-identity-conflict": "批次仍保留此身份", "seed-or-reserved-identity-conflict": "其他身份的当前、历史或预约seed冲突", "original-fingerprint-reference-conflict": "原档案引用不一致" };
 const kernelState: Record<string, string> = { pending: "未绑定（仍不能启动）", missing: "缺少同版本同摘要内核", unavailable: "本机文件无法核对", "verified-bytes": "本机文件与精确构建相符" };
 const credentialState: Record<string, string> = { none: "无认证", "available-current-user": "当前Windows用户可解密（未联网检查）", "reentry-required": "当前密钥上下文不可用，恢复后须重新输入认证" };
 
-export function NativeRestoreManager({ application }: { application: ApplicationService }) {
+export function NativeRestoreManager({ application, workspace }: { application: ApplicationService; workspace: WorkspaceView }) {
   const [source, setSource] = useState<{ token: string; name: string }>();
   const [preview, setPreview] = useState<NativeRestorePreview>();
   const [page, setPage] = useState<NativeRestorePage>();
   const [busy, setBusy] = useState(false), [message, setMessage] = useState(""), [discarding, setDiscarding] = useState(false);
+  const [executionLocked, setExecutionLocked] = useState(false);
+  const executionLock = useRef(false);
   const mounted = useRef(true), generation = useRef(0), flight = useRef(false);
   const discardFlight = useRef(false);
   const owned = useRef({ previewId: "", sourceToken: "" });
-  useEffect(() => { mounted.current = true; return () => { mounted.current = false; generation.current++; const current = owned.current; void application.discardRestore?.(current.previewId, current.sourceToken); }; }, [application]);
+  useEffect(() => { mounted.current = true; return () => { mounted.current = false; generation.current++; const current = owned.current; if (!executionLock.current && application.getPendingRestore?.()?.request.previewId !== current.previewId) void application.discardRestore?.(current.previewId, current.sourceToken); }; }, [application]);
   async function choose() {
-    if (flight.current || discardFlight.current) return; flight.current = true; setBusy(true); setMessage(""); const current = ++generation.current;
+    if (flight.current || discardFlight.current || executionLock.current) return; flight.current = true; setBusy(true); setMessage(""); const current = ++generation.current;
     const result = await application.selectRestoreSource?.(); flight.current = false;
     if (!mounted.current || current !== generation.current) { if (result?.ok && result.data.sourceToken) void application.discardRestore?.("", result.data.sourceToken); return; }
     setBusy(false);
@@ -28,7 +31,7 @@ export function NativeRestoreManager({ application }: { application: Application
     if (result?.ok) setPage(result.data); else setMessage(result?.error.message ?? "无法读取影响清单。");
   }
   async function inspect() {
-    if (!source || flight.current || discardFlight.current) return; flight.current = true; setBusy(true); setMessage(""); setPreview(undefined); setPage(undefined); const current = ++generation.current;
+    if (!source || flight.current || discardFlight.current || executionLock.current) return; flight.current = true; setBusy(true); setMessage(""); setPreview(undefined); setPage(undefined); const current = ++generation.current;
     const result = await application.previewRestore?.(source.token); flight.current = false;
     if (!mounted.current || current !== generation.current) { if (result?.ok) void application.discardRestore?.(result.data.previewId, source.token); return; }
     setBusy(false);
@@ -36,7 +39,7 @@ export function NativeRestoreManager({ application }: { application: Application
     owned.current.previewId = result.data.previewId; setPreview(result.data); await readPage(result.data, 0, current);
   }
   async function discard() {
-    if (discardFlight.current) return;
+    if (discardFlight.current || executionLock.current) return;
     discardFlight.current = true; setDiscarding(true);
     const current = owned.current;
     const result = await application.discardRestore?.(current.previewId, current.sourceToken);
@@ -50,7 +53,7 @@ export function NativeRestoreManager({ application }: { application: Application
   return <section className="native-proxy-panel" aria-label="恢复只读预检">
     <h2>恢复前只读预检</h2>
     <p>先完整核对文件、配置、原身份和覆盖范围。不会停止环境或修改当前数据库、浏览目录；演示 JSON 不可用。</p>
-    <div className="native-proxy-actions"><button className="button" disabled={busy || discarding} onClick={() => void choose()}>选择本机备份包</button><span>{source?.name ?? "尚未选择"}</span><button className="button" disabled={busy || discarding || !source} onClick={() => void inspect()}>完整校验并预览</button>{source && <button className="button" disabled={discarding} onClick={() => void discard()}>{busy ? "取消只读预检" : "丢弃此预览"}</button>}</div>
+    <div className="native-proxy-actions"><button className="button" disabled={busy || discarding || executionLocked} onClick={() => void choose()}>选择本机备份包</button><span>{source?.name ?? "尚未选择"}</span><button className="button" disabled={busy || discarding || executionLocked || !source} onClick={() => void inspect()}>完整校验并预览</button>{source && <button className="button" disabled={discarding || executionLocked} onClick={() => void discard()}>{busy ? "取消只读预检" : "丢弃此预览"}</button>}</div>
     {busy && <p role="status">正在流式读取全部文件并核对摘要…</p>}{message && <p role="alert">{message}</p>}
     {preview && <>
       <h3>包校验通过 · 尚未恢复</h3><p>备份时间：{preview.createdAt} · 新增 {preview.addCount} · 覆盖 {preview.overwriteCount} · 冲突 {preview.conflictCount} · 缺失/未核对精确内核 {preview.missingKernelCount}</p>
@@ -61,7 +64,7 @@ export function NativeRestoreManager({ application }: { application: Application
       <h3>代理凭据</h3>{preview.credentials.map(c => <p key={c.proxyId}>{c.proxyId} · {credentialState[c.state]}</p>)}
       <p>代理可解密不代表浏览器登录可跨用户恢复；浏览数据仍限定原Windows用户/密钥上下文，不承诺跨机便携。</p>
       {preview.conflictCount > 0 && <p role="alert">存在身份或共享代理/凭据冲突。请先处理当前配置，再重新预检；不通过生成新seed绕过。</p>}
-      <p>本阶段仅预检；正式目录切换由完整恢复流程接续。</p>
     </>}
+    <NativeRestoreExecution application={application} workspace={workspace} preview={preview} onLockChange={locked => { executionLock.current = locked; setExecutionLocked(locked); }} onConsumed={previewId => { if (owned.current.previewId !== previewId) return; generation.current++; owned.current = { previewId: "", sourceToken: "" }; setSource(undefined); setPreview(undefined); setPage(undefined); }} />
   </section>;
 }

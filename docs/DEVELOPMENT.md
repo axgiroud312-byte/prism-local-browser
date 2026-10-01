@@ -341,6 +341,14 @@ parseSnapshot 校验 format、schemaVersion、主要记录字段、Cookie 数组
 
 浏览器数据可能包含 Windows 用户绑定的加密信息。首个桌面验收范围先确保同一 Windows 用户上下文中的本软件恢复；重装系统、跨电脑或其他用户账户的登录状态恢复，必须另做显式支持和验证，不由“目录复制成功”推断。
 
+### T17 完整恢复执行增量（本地源码，尚未运行验收）
+
+[`受理`](../internal/workspace/restore_accept.go)消费T16预览及原摘要，冻结包/环境/历史/凭据闭包；全局配置维护屏障、正常Stop及持久观测通过后，重新核对基线与精确内核文件。[`worker`](../internal/workspace/restore_worker.go)使用同卷incoming/previous、旧配置副本和[`稳定目录对象`](../internal/backup/switch_windows.go)，持久prepared计划先于首次rename；目录校验和移动只处理已知对象，未知目录保持保护。取消不自动重新打开已停止会话。
+
+[`schema8恢复日志`](../internal/workspace/restore_storage.go)与[`配置事务`](../internal/workspace/restore_commit.go)保持同一app.db，不用包内SQLite覆盖本机库。保留原ID/seed/档案历史，全部历史只做已核对的精确kernel ID映射及hash重算；环境配置revision推进防旧批次ABA，包外记录保留。实际安装目录至少directory-prepared，旧runtime-claimed/legacy-unconfirmed不降级；不导入旧运行控制身份。代理原ref/DPAPI密文保持，不可解密须重输；未变包外共享代理不改修订或当前通道。native v1包仍schema7，导出剔除本机restore_jobs。
+
+配置与`committed=1`同事务。未提交反向还原旧目录；已提交核对新目录；未知标记或目录冲突保持维护，不发布成功。已观测终态仅日志写失败时，Workspace/Operation读取重试原结果保存、不重做目录动作。受理整体确认不存在才释放原request占位；未知继续查询。重开当前只加载保护，自动收敛留T18。native[`恢复界面`](../src/components/NativeRestoreExecution.tsx)提供覆盖/停止/凭据确认与原请求核实、任务取消/历史，实际验证见[T17待验收](verification/T17.md)。
+
 ### 原子替换与崩溃恢复
 
 #### T16只读预检增量（源码已完成，未运行验收）

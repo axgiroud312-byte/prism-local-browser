@@ -261,7 +261,7 @@ func TestNativeProxyV4MigrationAndInterruptedCheckRecoveryPreserveEnvironmentIde
 		t.Fatal(err)
 	}
 	var version int
-	if err := reopened.db.QueryRow("PRAGMA user_version").Scan(&version); err != nil || version != 7 || view(t, reopened).State.Environments[0].Seed != e.Seed {
+	if err := reopened.db.QueryRow("PRAGMA user_version").Scan(&version); err != nil || version != 8 || view(t, reopened).State.Environments[0].Seed != e.Seed {
 		t.Fatal("schema4 migration lost fixed identity")
 	}
 	record := importProxyFixture(t, reopened, "localhost:8080")

@@ -91,6 +91,7 @@ func TestRealIndependentBrowserSessions(t *testing.T) {
 	}
 	reports := make(chan syntheticBrowserReport, 64)
 	var readPhase atomic.Bool
+	var changedPhase atomic.Bool
 	token := id()
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "no-store")
@@ -117,10 +118,13 @@ func TestRealIndependentBrowserSessions(t *testing.T) {
 		if readPhase.Load() {
 			phase = "read"
 		}
+		if changedPhase.Load() {
+			phase = "mutate"
+		}
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		fmt.Fprintf(w, `<!doctype html><title>Prism synthetic isolation %s</title><script>
 (async () => {
- const name=%q, phase=%q, marker="SYNTHETIC-"+name;
+ const name=%q, phase=%q, marker="SYNTHETIC-"+name+(phase==="mutate"?"-CHANGED":"");
  const database = () => new Promise((resolve,reject) => {
    const request=indexedDB.open("prism-synthetic-isolation",1);
    request.onupgradeneeded=()=>request.result.createObjectStore("state");
@@ -137,7 +141,7 @@ func TestRealIndependentBrowserSessions(t *testing.T) {
  };
  const state=async()=>({cookie:document.cookie,local:localStorage.getItem("marker"),indexed:await indexed()});
  const before=await state();
- if(phase==="write"){document.cookie="prism_synthetic="+marker+";Path=/;Max-Age=3600;SameSite=Lax";localStorage.setItem("marker",marker);await indexed(marker);}
+ if(phase==="write"||phase==="mutate"){document.cookie="prism_synthetic="+marker+";Path=/;Max-Age=3600;SameSite=Lax";localStorage.setItem("marker",marker);await indexed(marker);}
  const after=await state();
  await fetch(%q,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name,phase,before,after})});
 })();</script>`, name, name, phase, "/"+token+"/report")
@@ -186,6 +190,9 @@ func TestRealIndependentBrowserSessions(t *testing.T) {
 					continue
 				}
 				marker := "SYNTHETIC-" + name
+				if phase == "mutate" {
+					marker += "-CHANGED"
+				}
 				if report.After.Local == nil || *report.After.Local != marker || report.After.Indexed == nil || *report.After.Indexed != marker || report.After.Cookie != "prism_synthetic="+marker || report.RequestCookie != "prism_synthetic="+marker {
 					t.Fatalf("wrong independent synthetic storage: %+v", report)
 				}
@@ -293,9 +300,55 @@ func TestRealIndependentBrowserSessions(t *testing.T) {
 		}
 		recoveryEvidence = map[string]any{"status": "observed", "rootFaultInjected": true, "faultExitCode": 79, "crashObservation": observed, "otherRootAlive": true, "sameBrowserStorageAfterRetry": true, "forceStopActuallyUsed": forceUsed, "applicationCrashRestart": "not-run"}
 	}
+	restoreEvidence := map[string]any{"status": "not-run"}
+	if os.Getenv("PRISM_RESTORE_VERIFY") == "1" {
+		// Separate opt-in; only this fixture's profiles/loopback origin are used.
+		path := filepath.Join(t.TempDir(), "synthetic-real-restore.prismbackup")
+		token := backupDestinationFixture(t, reopened, path)
+		exported := acceptBackupFixture(t, reopened, BackupExportRequest{Scope: "selected", EnvironmentIDs: []string{environments["A"].ID}, DestinationToken: token, StopRunning: true, RequestID: id()})
+		if result := waitRuntimeReal(t, reopened, exported.ID); result.State != "completed" {
+			t.Fatal("real backup failed", result.Error)
+		}
+		changedPhase.Store(true)
+		start(reopened, "A")
+		inspect(reopened, "A", "mutate")
+		stop(reopened, "A")
+		changedPhase.Store(false)
+		p := preview(t, reopened, "edit", environments["A"].ID)
+		p.Environment.Note = "SYNTHETIC_NOTE_AFTER_BACKUP"
+		value[any](t, call(reopened, "Environment.Update", Mutation{PreviewID: p.PreviewID, Configuration: p.Environment.Configuration, ExpectedRevision: p.ExpectedRevision, RequestID: id()}))
+		previewed := value[RestorePreview](t, previewPackageFixture(t, reopened, path))
+		_, restoring := acceptRestoreFixture(t, reopened, previewed)
+		completed := waitRuntimeReal(t, reopened, restoring.ID)
+		if completed.State != "completed" || !completed.RestoreReport.Committed || completed.RestoreReport.Protected {
+			t.Fatal("real restore incomplete", completed.Error)
+		}
+		if err := reopened.Close(); err != nil {
+			t.Fatal(err)
+		}
+		reopened, err = Open(root, Options{})
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer reopened.Close()
+		for _, name := range []string{"A", "B"} {
+			if !reflect.DeepEqual(view(t, reopened).Fingerprints[environments[name].ID].Profile, profiles[name]) {
+				t.Fatal("restore changed fixed profile")
+			}
+			start(reopened, name)
+			inspect(reopened, name, "read")
+			stop(reopened, name)
+		}
+		current, _, _, err := reopened.readEnvironment(environments["A"].ID)
+		if err != nil || current.Note != environments["A"].Note {
+			t.Fatal("restored configuration differs", err)
+		}
+		restoreEvidence = map[string]any{"status": "observed", "operation": completed, "afterBackupMutationObserved": true, "cookieLocalStorageIndexedDBRestored": true, "packageExternalEnvironmentUnchanged": true, "applicationServiceReopened": true, "profileUnchanged": true, "windowsUserContext": "same-user"}
+	}
 	if destination := os.Getenv("PRISM_RUNTIME_EVIDENCE"); destination != "" {
 		evidence := map[string]any{"verifiedAt": timestamp(), "mode": "native", "kernelVersion": record.Version, "archiveSha256": record.ArchiveSHA256, "executableSha256": record.ExecutableSHA256, "profiles": profiles, "dataReferences": refs, "observations": observations, "startedSessions": startedSessions, "stoppedSessions": stoppedSessions, "transport": "inherited-private-pipe", "sandbox": true, "networkPolicy": "explicit-direct-test", "uiClicks": "not-run", "visibleBrowserWindows": true, "independentRootProcesses": true, "controlledJobsExited": true, "sameInputsAfterReopen": true}
 		evidence["recovery"] = recoveryEvidence
+		evidence["restore"] = restoreEvidence
 		encoded, err := json.MarshalIndent(evidence, "", "  ")
 		if err != nil {
 			t.Fatal(err)

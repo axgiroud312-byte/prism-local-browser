@@ -26,6 +26,9 @@ type Profile struct {
 	lock    *os.File
 	release func()
 	Missing bool
+	// Borrowed rename-capable root, owned by MoveTree. Enumerate a duplicated
+	// handle instead of reopening a path without FILE_SHARE_DELETE.
+	enumerationRoot *os.File
 }
 
 func openCaptured(path string, directory bool, exclusive bool) (*os.File, windows.ByHandleFileInformation, error) {
@@ -103,6 +106,10 @@ func (p *Profile) capture(ctx context.Context, path, relative string) error {
 		return err
 	}
 	defer directory.Close()
+	return p.captureDirectory(ctx, path, relative, directory)
+}
+
+func (p *Profile) captureDirectory(ctx context.Context, path, relative string, directory *os.File) error {
 	for {
 		names, readErr := directory.Readdirnames(256)
 		for _, name := range names {
@@ -186,33 +193,63 @@ func (p *Profile) Validate(ctx context.Context) error {
 		}
 	}
 	seen := 0
-	err := filepath.WalkDir(p.root, func(path string, entry os.DirEntry, err error) error {
+	directories := []string{""}
+	for _, entry := range p.entries {
+		if entry.directory && entry.relative != "" {
+			directories = append(directories, entry.relative)
+		}
+	}
+	for _, relative := range directories {
+		if err := ctx.Err(); err != nil {
+			return err
+		}
+		path := filepath.Join(p.root, filepath.FromSlash(relative))
+		var directory *os.File
+		var err error
+		if relative == "" && p.enumerationRoot != nil {
+			var copy windows.Handle
+			process := windows.CurrentProcess()
+			err = windows.DuplicateHandle(process, windows.Handle(p.enumerationRoot.Fd()), process, &copy, 0, false, windows.DUPLICATE_SAME_ACCESS)
+			if err == nil {
+				directory = os.NewFile(uintptr(copy), path)
+			}
+		} else {
+			directory, _, err = openCaptured(path, true, false)
+		}
 		if err != nil {
 			return err
 		}
-		if err = ctx.Err(); err != nil {
+		for {
+			names, readErr := directory.Readdirnames(256)
+			for _, name := range names {
+				if relative == "" && name == ".prism-runtime.lock" {
+					continue
+				}
+				entry := name
+				if relative != "" {
+					entry = relative + "/" + name
+				}
+				if _, exists := expected[entry]; !exists {
+					directory.Close()
+					return errors.New("browser data entry set changed")
+				}
+				seen++
+			}
+			if readErr == io.EOF {
+				break
+			}
+			if readErr != nil {
+				directory.Close()
+				return readErr
+			}
+			if err = ctx.Err(); err != nil {
+				directory.Close()
+				return err
+			}
+		}
+		if err = directory.Close(); err != nil {
 			return err
 		}
-		if path == p.root {
-			return nil
-		}
-		relative, err := filepath.Rel(p.root, path)
-		if err != nil {
-			return err
-		}
-		relative = filepath.ToSlash(relative)
-		if relative == ".prism-runtime.lock" {
-			return nil
-		}
-		directory, exists := expected[relative]
-		if !exists || directory != entry.IsDir() {
-			return errors.New("browser data entry set changed")
-		}
-		seen++
-		return nil
-	})
-	if err != nil {
-		return err
 	}
 	if seen != len(expected) {
 		return errors.New("browser data entries disappeared")

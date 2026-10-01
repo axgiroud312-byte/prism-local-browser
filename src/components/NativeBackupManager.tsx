@@ -110,6 +110,6 @@ export function NativeBackupManager({ application, workspace, selectedIds }: { a
     {(workspace.nativeBackups ?? []).map(record => <p key={record.id}>{record.name} · {record.environmentCount} 个环境 · {record.createdAt}<button className="button" disabled={busy || inFlight.current} onClick={() => { void read(record.operationId); }}>读取该任务</button></p>)}
     <h3>导出任务（包括取消和失败）</h3>
     {records.map(record => <p key={record.id}>{record.backupReport?.name} · {record.state}<button className="button" disabled={busy || inFlight.current} onClick={() => { void read(record.id); }}>查看保存结果</button></p>)}
-    <NativeRestoreManager application={application} />
+    <NativeRestoreManager application={application} workspace={workspace} />
   </section>;
 }
