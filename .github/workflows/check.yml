@@ -82,6 +82,18 @@ jobs:
           New-Item -ItemType Directory -Force -Path "$PWD/output/goal/T04" | Out-Null
           go test ./internal/kernel -run TestRealFingerprintChromiumArchive -count=1 -v
           if ($LASTEXITCODE) { exit $LASTEXITCODE }
+      - name: Real saved fingerprint regenerate, restore and reopen without UI clicking
+        shell: pwsh
+        run: |
+          $env:GOPATH = "$PWD/.tools/gopath"
+          $env:GOCACHE = "$PWD/.tools/gocache"
+          $env:GOTOOLCHAIN = 'local'
+          $env:CGO_ENABLED = '0'
+          $env:PRISM_KERNEL_ARCHIVE = "$PWD/.tools/fingerprint-chromium/148.0.7778.215/ungoogled-chromium_148.0.7778.215-1.1_windows_x64.zip"
+          $env:PRISM_PROFILE_EVIDENCE = "$PWD/output/goal/T05/ci-saved-profile-real-probe.json"
+          New-Item -ItemType Directory -Force -Path "$PWD/output/goal/T05" | Out-Null
+          go test ./internal/workspace -run '^TestRealSavedFingerprintRevisions$' -count=1 -timeout 4m -v
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
       - name: Explicitly requested real kernel desktop UI flow
         if: github.event_name == 'workflow_dispatch' && inputs.run_ui_clicks
         run: npm run verify:kernel
@@ -101,4 +113,5 @@ jobs:
             output/goal/T04/kernel-uia-verification.json
             output/goal/T04/kernel-failed-controls.txt
             output/goal/T04/ci-real-probe.json
+            output/goal/T05/ci-saved-profile-real-probe.json
           if-no-files-found: error

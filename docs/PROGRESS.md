@@ -1,11 +1,11 @@
 # Goal 当前执行位置
 
-更新时间：2026-09-30 22:53 Asia/Shanghai。
+更新时间：2026-10-01 11:25 Asia/Shanghai。
 
 - Goal：执行中；[规则](GOAL.md)；完成 **4/21**（验收任务计数）。
 - 当前任务：T05 / [Issue #6](https://github.com/axgiroud312-byte/prism-local-browser/issues/6)，进行中。
-- 当前步骤：T04已合入并关闭；T05全文与唯一依赖#5实际成果已核对。只读接入地图完成，开始固定档案/能力编译与事务历史的最小增量；不实施T06启停，不运行任何自动点击。
-- 现场：`goal/t05-fingerprint-revisions`，从合入`dc0a148`建分支；未提交仅T04收尾与T05开始记录，先文档检查/提交，再实现。T03全部证据/旧空库保留，无用户遗留改动。
+- 当前步骤：T05实现/三项P2修复已完成，文档与真实旧样本已同步。最终复验遇C盘不足；用户改为清理无用产物、暂停CI/完整回归、先开发完。准备本地保存T05开发检查点，再继续T06实现；新增界面、最终构建及收尾验收仍待补，不关闭#6。
+- 现场：`goal/t05-fingerprint-revisions`，记录提交`61d663f`；未提交为kernel编译/冻结输入诊断、workspace/schema3与测试、应用契约/Demo/Wails、档案面板/页面、CI、只读数据库验收器及进度文档。T03全部证据/旧空库保留，无用户遗留改动。
 
 ## 任务状态
 
@@ -15,7 +15,7 @@
 | T02 | #3 | 已完成 | 代码 `134dc66`、记录 `fc4aa47`、合入 `44517c5`；[记录](verification/T02.md)；[PR #24](https://github.com/axgiroud312-byte/prism-local-browser/pull/24)，最终 CI 全通过 |
 | T03 | #4 | 已完成 | 代码`62dae8e`、合入`99c6a36`；[验收](verification/T03.md)、[PR #25](https://github.com/axgiroud312-byte/prism-local-browser/pull/25)，Windows11/干净runner闭环与CI全通过 |
 | T04 | #5 | 已完成 | 代码`89e94d7`、合入`dc0a148`、[PR #26](https://github.com/axgiroud312-byte/prism-local-browser/pull/26)；[验收](verification/T04.md)/[证据](verification/T04-kernel-acceptance.json)，CI全通过 |
-| T05 | #6 | 进行中 | [验收清单](verification/T05.md)；依赖#5已完成，接入调查完成 |
+| T05 | #6 | 已实现待验收 | [验收清单](verification/T05.md)；相关回归/真实旧样本通过，最终UI/构建/全量/CI待补 |
 | T06 | #7 | 待开始 | — |
 | T07 | #8 | 待开始 | — |
 | T08 | #9 | 待开始 | — |
@@ -87,10 +87,15 @@
 - 22:08–22:15：用户明确停止自动化点击；当前没有本产品进程，未启动后续点击。独立核对已完成闭环exe与当前最终exe同SHA-256 `7d2f9dd7…14a338`；最终安装两个76文件构建再次只读实算一致、staging为空。补充新UI尝试保持stopped（合成名受共享输入影响），不冒称成功；现有同exe闭环的重开/真实复验/引用禁删/移除结果有效，完整记录与实际时间分别公开到T04-kernel-acceptance.json。仅复制已检查无其他窗口内容的既有截图；私人路径/受遮挡失败截图不公开。默认CI所有点击步骤需显式手动opt-in，后台check与Go/vet/构建及真实无头pipe探测保留。新文档检查通过，准备提交。
 - 22:24：代码/证据/文档提交`89e94d7`并推送goal/t04-exact-kernel，创建PR #26（关联关闭#5）。当前仅官方gh checks watch后台等待结果；不启动UI/点击或不同票实现。停止后脚本只做UTF-8显式解码静态语法核对、证据只读生成/全文件实算与文档检查，全部通过。
 - 22:51–22:53：T04 CI三项已通过，真实无头探测的下载JSON/76文件/摘要/三次实际读值和正常退出核对通过，所有点击未执行。PR #26合入dc0a148，#5四项验收勾选并CLOSED，完成4/21。从origin/main建goal/t05-fingerprint-revisions；#6全文/原生blocking已重读，唯一#5成果可用。只读地图指出当前指纹表无历史、旧更新可绕过冻结、事务内单连接查询风险，T05针对根因增量解决；未实施新代码或运行新测试。
+- 23:18：T05记录提交61d663f后先补6条档案行为回归，首轮缺AcquireProfileUse按预期失败；实现schema3历史/当前引用、固定版本与规范化摘要、能力白名单编译、显式生成/同内核回滚、事务/幂等/冲突和host-only忙租约后，全部workspace模块测试通过。仅合成测试用host seam提供测试能力，不执行假exe或把它当真实证据。真实v1/v2迁移夹具还原实际表结构，不靠降低版本号伪造迁移。新页面/真实保存档案参数读取尚未执行，未算完成。
+- 23:28–23:45：真实148安装后消费SQLite保存档案做三次无头读取：修订1 seed1055482829/PID64024、重生成修订2 seed546308099/PID69548、回滚并重开修订3 seed1055482829/PID10924；实际版本148.0.7778.215、CPU8/de-DE/Berlin一致，三PID正常退出。编译器未下发未验收的菜单语言、GPU/字体/屏幕参数；网站语言在不下发lang的条件下实际回读通过。合成已有数据文件和引用不变、诊断目录清空。相关kernel/workspace测试通过；新增3条Demo档案回归先红后绿，32项JS通过。扩展能力system类型首次导致旧内核页标签缺类型，补明确标签后typecheck通过。新增面板/历史/变更预览/过期草稿阻断已接入，但未启动UI或点击，未记真实页面验收。
+- 2026-10-01 10:49–10:59：只读评审发现Demo旧预览可用最新expectedRevision追加重复档案修订、相同提交并发重试缓存交叉，以及Go特殊空/Local时区不是冻结IANA输入。各补失败回归先红后绿，Demo统一同步写入且各RPC独占幂等缓存，检查原预览基线/hash/连续修订；编译器与旧API统一拒绝特殊时区。37项application/Wails测试、typecheck与全部kernel/workspace Go通过；前端只读复核确认两项关闭且无新增可信阻断，后端时区修复由实际回归核对。保存/生成互锁、pending兼容说明及普通内核切换锁定已补；无页面点击。旧UIA脚本只维护schema3/显式预览步骤，不执行。下一步票末后台检查、最终实际无头读值、Windows构建，再提交推送/CI；#6与新增UI验收保持未完成。
+- 11:00–11:25：最终保存档案无头复验在安装阶段返回STORAGE_WRITE_FAILED；C盘仅约190MB，而ZIP181MiB+解包424.6MiB不可完成。询问临时目录后用户改为先清理无用构建、不要继续CI测试、先开发完。已按授权清理仅本项目GOCACHE与build/bin两个可重建exe，释放约485MiB，C盘约670MiB空闲；没有删除源码、内核、T03包/旧数据库或证据，没有创建D盘目录。暂停后续CI/完整回归/真实复验，不开PR或推main触发CI。D007与GOAL记录开发优先覆盖旧单票验收节奏，待验收票不计数；T05真实旧样本已公开并保留原时间/版本边界，合同/追踪/验收记录同步。T06 #7全文已读，原生blocking #6仍OPEN，本地前置实现可用；先保存T05本地提交再继续后票开发。
+- 11:27：仅必要静态核对通过：typecheck、29文档/链接、两个只读数据库脚本node --check、gofmt与git diff --check。没有运行CI、全量回归、构建或真实进程/页面测试。
 
 ## 恢复资源与 GitHub
 
 - 已有其他 Node/Chrome 进程属于用户现场，不停止。已核对 5173 为本仓库旧 Vite 服务；4173 未监听（纠正初查格式误判）。本 Goal 尚未启动服务，UI 测试用独立端口 5183 和新浏览器上下文。
 - `output/`、`.playwright-cli/`、`dist/`、`node_modules/` 为现有忽略目录；不删除旧成果。新测试输出使用 `output/goal/`，仅保留合成证据。
 - `npx playwright install chromium` 已成功安装本票测试浏览器（仅前端检查，不是 fingerprint-chromium）。测试使用 5183，由 Playwright 启停独立 Vite，首次测试已退出；旧 5173 不动。Serena 本机索引 `.serena/` 已忽略。
-- GitHub：T01–T04已完成同步，#5 CLOSED、PR #26 MERGED；#1保留。T05 #6唯一活动票，无PR/承担者；只读调查已结束，无命令/代理/UI进程。停止点击指示已记GOAL/D005，合成夹具保留，不自动重放任何界面操作。
+- GitHub：T01–T04已完成同步，#5 CLOSED、PR #26 MERGED；#1保留。T05 #6仍OPEN且无PR；T06 #7无承担者/PR，原生blocking #6保持真实状态。两个只读评审均结束，失败无头命令已结束，无本任务UI或测试进程。停止点击与暂停CI指示已记GOAL/D005/D007，不自动重放任何界面或完整验证。

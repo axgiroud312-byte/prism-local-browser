@@ -50,9 +50,11 @@ type Environment struct {
 	CreatedAt string `json:"createdAt"`
 }
 type Preview struct {
-	PreviewID        string      `json:"previewId"`
-	Environment      Environment `json:"environment"`
-	ExpectedRevision int64       `json:"expectedRevision,omitempty"`
+	PreviewID        string              `json:"previewId"`
+	Environment      Environment         `json:"environment"`
+	ExpectedRevision int64               `json:"expectedRevision,omitempty"`
+	Fingerprint      *FingerprintPreview `json:"fingerprint,omitempty"`
+	UserDataRef      string              `json:"userDataRef,omitempty"`
 }
 type Operation struct {
 	ID              string         `json:"id"`
@@ -73,6 +75,8 @@ type Mutation struct {
 	RequestID        string        `json:"requestId"`
 	ExpectedRevision int64         `json:"expectedRevision,omitempty"`
 	Count            int           `json:"count,omitempty"`
+	EnvironmentID    string        `json:"environmentId,omitempty"`
+	ProfileHash      string        `json:"profileHash,omitempty"`
 }
 type Kernel struct {
 	ID        string `json:"id"`
@@ -98,10 +102,12 @@ type State struct {
 	Activities    []Activity    `json:"activities"`
 }
 type View struct {
-	Mode             string       `json:"mode"`
-	State            State        `json:"state"`
-	KernelRecords    []KernelView `json:"kernelRecords"`
-	KernelOperations []Operation  `json:"kernelOperations"`
+	Mode             string                     `json:"mode"`
+	State            State                      `json:"state"`
+	KernelRecords    []KernelView               `json:"kernelRecords"`
+	KernelOperations []Operation                `json:"kernelOperations"`
+	Fingerprints     map[string]ProfileRevision `json:"fingerprints"`
+	DataReferences   map[string]string          `json:"dataReferences"`
 }
 type KernelView struct {
 	kernel.Record

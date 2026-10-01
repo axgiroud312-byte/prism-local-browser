@@ -2,7 +2,7 @@
 
 本项目选择 [fingerprint-chromium](https://github.com/adryfish/fingerprint-chromium/blob/main/README-ZH.md) 作为 Windows 桌面版的内核方向。本文定义配置生成、内核管理、独立环境启动和代理接入的实现边界，供后续桌面后端开发使用。
 
-**网页原型与 native 能力分别记录。**T04 已下载实算148 Windows x64 ZIP并受控运行探测，精确安装、校验和原生页面正在验收；正常环境启停仍待T06。原型里的 GPU、指纹摘要、连接结果和启动状态均是演示数据，不能标成内核探测结果。本合同中代理、正常进程和完整恢复的未交付项不因内核诊断通过而自动完成，实时结果见 [T04记录](verification/T04.md) 与 [当前进度](PROGRESS.md)。
+**网页原型与 native 能力分别记录。**T04 精确安装、校验和受控148 Windows x64探测已验收；T05固定档案、预览和历史回滚已实现，保存档案无头回读有实际证据，但新增页面与完整收尾验收未完成。正常环境启停仍待T06。原型里的 GPU、指纹摘要、连接结果和启动状态均是演示数据，不能标成内核探测结果。本合同中代理、正常进程和完整恢复的未交付项不因内核诊断通过而自动完成，实时结果见 [T04记录](verification/T04.md)、[T05记录](verification/T05.md) 与 [当前进度](PROGRESS.md)。
 
 核实日期：2026-09-30。Ant-Browser 仅作为架构参考，本项目不复制其源码；旧比特浏览器材料仅用于理解交互与字段关系，不作为本项目内核、算法或资源池来源。
 
@@ -44,9 +44,9 @@
 | `fingerprint.brand`              | `--fingerprint-brand=Chrome`                                  | 固定品牌策略；描述为 Chromium 内核的 Chrome 兼容声明                               |
 | `fingerprint.brandVersion`       | `--fingerprint-brand-version=<actualVersion>`                 | 由已核验的实际内核版本生成，用户不能随意改；升级时显式迁移                         |
 | `fingerprint.cpuCores`           | `--fingerprint-hardware-concurrency=<n>`                      | 可选受限整数预设；空值表示由 seed 决定。UI 和后端共同校验                          |
-| `locale.uiLanguage`              | `--lang=<tag>`                                                | 浏览器界面语言，受支持语言清单校验                                                 |
+| `locale.uiLanguage`              | 上游 `--lang=<tag>`，本项目尚未验收菜单语言                   | T05固定为 `system`，不下发 `--lang`；网站语言不代表菜单语言已生效                    |
 | `locale.acceptLanguages`         | `--accept-lang=<ordered-tags>`                                | 网站语言顺序去重后保存；后续核对请求头与网页 API                                   |
-| `locale.timezone`                | `--timezone=<IANA-name>`                                      | 保存完整 IANA 时区；跟随代理时先解析成功再保存，失败阻断                           |
+| `locale.timezone`                | `--timezone=<IANA-name>`                                      | 保存明确 IANA 时区，拒绝空值与 `Local`；跟随代理时先解析成功再保存，失败阻断         |
 | `proxy.profileId`                | `--proxy-server=http://127.0.0.1:<bridgePort>`                | 后端解析为独立代理桥接实例；启动命令无上游凭据                                     |
 | `network.webrtcPolicy`           | `--disable-non-proxied-udp`                                   | 固定策略；仍需覆盖 WebRTC、IPv6、UDP 等真实网络验收                                |
 | `compatibility.disabledSpoofing` | `--disable-spoofing=font,audio,canvas,clientrects,gpu` 的子集 | 高级兼容项，默认空；变更要展示影响并保存配置版本                                   |
@@ -105,6 +105,10 @@
 
 用户明确保存后，`Fingerprint.CommitRevision` 校验预览、环境停止状态及 `expectedRevision`，在同一事务中保存完整档案和环境引用；提交成功才递增修订号并返回 `newRevision`。取消或关闭未保存编辑会丢弃预览，旧档案保持不变。新建环境由 `Profile.CreateBatch` 在创建事务中保存所选预览及环境记录。
 
+T05实际增量以 [应用接口](DEVELOPMENT.md#t05-固定档案增量已实现完整验收待补) 和源码为准：当前单条新建仍是 `Environment.Create`；提交使用服务会话 `previewId` 和 `profileHash` 而非信任客户端完整档案。环境修订与档案修订分开，普通元数据保存只增加前者。回滚先由 `Fingerprint.PreviewRestore` 返回变化，再明确提交为新单调修订；只接受同一精确内核且编译输入与原历史一致。v1/v2迁移保留旧seed/生成器/pending，已有数据引用不变。[真实保存档案样本](verification/T05-saved-profile-observations.json) 仅证明受控临时诊断参数回读，不证明正常环境/Cookie/新页面操作。
+
+能力编译器只下发所选不可变构建的observed能力：Windows/品牌/实际版本组、seed、网站语言顺序、明确时区，以及已核验的显式CPU偏好。GPU/字体/噪声具体算法留给内核，不下发假硬件值；窗口宽高只保存偏好，不编译成屏幕伪装。`Generate` 不执行探测，因此预览 `observedFingerprint` 为null、`canLaunchNative` 为false；构建安装时的能力证据明确标为非当前环境实测。正常启动监督器须接入host-only忙租约，租约单元测试不能代替真实运行证据。
+
 每个指纹记录保存 `seed`、`generatorVersion`、`schemaVersion`、`configRevision`、`kernelId`、`coreActualVersion`、`coreExecutableSha256`、所有显式字段、配置规范化哈希。`generatorVersion` 标识应用生成规则；`configRevision` 随用户明确修改递增。打开详情、复制摘要、停止、重开和读取配置均不得触发重随机。
 
 “重新生成”只在已停止环境中提供，先改变草稿并展示变更摘要；提交前再次检查停止状态。首次生成失败时不创建半成品；提交失败时保留旧有效配置。请求 ID 用于去重，保存采用修订号冲突检查；重新读取预览不得再次随机生成。
@@ -126,7 +130,7 @@ CDP 默认不开启。需要身份探测或本机自动化时，优先采用本�
 
 ## 请求与返回合同
 
-以下均是**面向 UI 的目标外部应用接口示例**，以 [DEVELOPMENT.md 的本地应用接口](DEVELOPMENT.md#6-本地应用接口) 为统一契约；其中生成预览/正常启动尚未完整实现，T04实际已接接口以该文档的增量说明及源码为准。成功返回 `{ ok: true, data, operationId? }`，失败返回 `{ ok: false, error: { code, message, retryable, details? }, operationId? }`。ID 均为虚构示例；应用后端按 ID 解析内核、数据目录与凭据，前端不得提交任意可执行文件路径。
+以下均是**面向 UI 的目标外部应用接口示例**，以 [DEVELOPMENT.md 的本地应用接口](DEVELOPMENT.md#6-本地应用接口) 为统一契约；T04/T05实际已接接口以该文档的增量说明及源码为准，正常启动仍未实现。成功返回 `{ ok: true, data, operationId? }`，失败返回 `{ ok: false, error: { code, message, retryable, details? }, operationId? }`。ID 均为虚构示例；应用后端按 ID 解析内核、数据目录与凭据，前端不得提交任意可执行文件路径。
 
 生成预览请求；该调用不保存环境：
 

@@ -10,7 +10,7 @@ const stageLabels: Record<string, string> = {
   completed: "已完成", failed: "失败，查看具体原因", cancelled: "已取消", interrupted: "上次任务被中断",
 };
 const fieldLabels: Record<string, string> = { identity: "品牌和真实版本", seed: "固定种子", cpu: "CPU", acceptLanguages: "网页/请求语言", timezone: "时区", uiLanguage: "浏览器菜单语言", memory: "内存", gpu: "GPU/WebGL", "font/canvas/audio/clientrects": "字体 / 绘图 / 音频", "screen/location/webgpu/tls/mac": "屏幕 / 定位 / 其他", "proxy/webrtc": "代理 / WebRTC" };
-const statusLabels = { configurable: "可配置 · 已实测", "seed-generated": "由固定内核按 seed 生成", unverified: "未验证 · 不开放编辑" };
+const statusLabels = { configurable: "可配置 · 已实测", "seed-generated": "由固定内核按 seed 生成", system: "跟随真实环境", unverified: "未验证 · 不开放编辑" };
 
 export function NativeKernelManager({ application, workspace }: { application: ApplicationService; workspace: WorkspaceView }) {
   const [source, setSource] = useState<"official" | "local">("official");

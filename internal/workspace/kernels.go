@@ -221,7 +221,7 @@ func (s *Service) kernelCall(request Request) Result {
 		}
 		if request.Method == "Kernel.Delete" {
 			var count int
-			if err = s.db.QueryRow("SELECT COUNT(*) FROM fingerprints WHERE kernel_id=?", target.KernelID).Scan(&count); err != nil {
+			if err = s.db.QueryRow("SELECT (SELECT COUNT(*) FROM fingerprints WHERE kernel_id=?)+(SELECT COUNT(*) FROM fingerprint_revisions WHERE kernel_id=?)", target.KernelID, target.KernelID).Scan(&count); err != nil {
 				return storageFailure(err)
 			}
 			if count > 0 {
@@ -447,7 +447,7 @@ func (s *Service) publishKernel(prepared *kernel.Prepared, operation *Operation)
 
 func (s *Service) deleteKernel(record kernel.Record, operation *Operation) error {
 	var count int
-	if err := s.db.QueryRow("SELECT COUNT(*) FROM fingerprints WHERE kernel_id=?", record.ID).Scan(&count); err != nil {
+	if err := s.db.QueryRow("SELECT (SELECT COUNT(*) FROM fingerprints WHERE kernel_id=?)+(SELECT COUNT(*) FROM fingerprint_revisions WHERE kernel_id=?)", record.ID, record.ID).Scan(&count); err != nil {
 		return err
 	}
 	if count > 0 {

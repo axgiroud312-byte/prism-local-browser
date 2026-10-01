@@ -33,7 +33,14 @@ func syntheticKernelPrepare(ctx context.Context, root string, input kernel.Insta
 	digest := sha256.Sum256(bytes)
 	hash := hex.EncodeToString(digest[:])
 	kernelID := id()
-	return &kernel.Prepared{Directory: payload, Staging: staging, Record: kernel.Record{ID: kernelID, Version: input.Version, Architecture: "amd64", ArchiveSHA256: input.ExpectedChecksum, ExecutableSHA256: hash, ExecutableRelativePath: "chrome.exe", InstallPath: "kernels/" + kernelID, Source: kernel.Source{Kind: "local", Location: filepath.Base(path), Tag: input.Version}, Files: map[string]string{"chrome.exe": hash}, InstalledAt: timestamp(), Report: kernel.Report{AdapterVersion: kernel.AdapterVersion, Version: kernel.CapabilityVersion, Transport: "synthetic-test-only", Observations: []kernel.Observation{{BrowserVersion: input.Version}}, Capabilities: []kernel.Capability{}}}}, nil
+	// Deliberately synthetic evidence through a test-only host seam. Nothing here
+	// is executed or used as public evidence of a real build's capabilities.
+	report := kernel.Report{AdapterVersion: kernel.AdapterVersion, Version: kernel.CapabilityVersion, Transport: "synthetic-test-only", Observations: []kernel.Observation{{BrowserVersion: input.Version}}, Capabilities: []kernel.Capability{}}
+	for _, field := range []string{"identity", "cpu", "acceptLanguages", "timezone"} {
+		report.Capabilities = append(report.Capabilities, kernel.Capability{Field: field, Status: "configurable", Source: "observed", Note: "synthetic-test-only"})
+	}
+	report.Capabilities = append(report.Capabilities, kernel.Capability{Field: "seed", Status: "seed-generated", Source: "observed", Note: "synthetic-test-only"}, kernel.Capability{Field: "uiLanguage", Status: "unverified", Source: "not-probed", Note: "synthetic-test-only"})
+	return &kernel.Prepared{Directory: payload, Staging: staging, Record: kernel.Record{ID: kernelID, Version: input.Version, Architecture: "amd64", ArchiveSHA256: input.ExpectedChecksum, ExecutableSHA256: hash, ExecutableRelativePath: "chrome.exe", InstallPath: "kernels/" + kernelID, Source: kernel.Source{Kind: "local", Location: filepath.Base(path), Tag: input.Version}, Files: map[string]string{"chrome.exe": hash}, InstalledAt: timestamp(), Report: report}}, nil
 }
 func syntheticArchive(t *testing.T) string {
 	t.Helper()
@@ -71,6 +78,7 @@ func waitKernel(t *testing.T, s *Service, operationID string) Operation {
 func TestV1MigrationPreservesSavedIdentityAndUnknownVersions(t *testing.T) {
 	s, root := fixture(t, Options{})
 	saved, _ := create(t, s, "迁移保持身份")
+	stripFingerprintSchema(t, s)
 	for _, statement := range []string{"DROP TRIGGER immutable_kernel_evidence", "DROP TABLE kernel_evidence", "PRAGMA user_version=1"} {
 		if _, err := s.db.Exec(statement); err != nil {
 			t.Fatal(err)
@@ -87,7 +95,7 @@ func TestV1MigrationPreservesSavedIdentityAndUnknownVersions(t *testing.T) {
 	}
 	var version int
 	reopened.db.QueryRow("PRAGMA user_version").Scan(&version)
-	if version != 2 {
+	if version != 3 {
 		t.Fatal("schema migration not committed")
 	}
 }
@@ -120,9 +128,8 @@ func TestKernelInstallIsImmutableIdempotentAndReferenceProtected(t *testing.T) {
 	if _, err := s.db.Exec("UPDATE kernel_evidence SET record_json='{}' WHERE kernel_id=?", first.ID); err == nil {
 		t.Fatal("immutable evidence overwritten in place")
 	}
-	p := preview(t, s, "create", "")
+	p := generateFingerprint(t, s, preview(t, s, "create", ""), first.ID, false)
 	p.Environment.Name = "固定内核引用"
-	p.Environment.CoreID = first.ID
 	value[map[string]any](t, call(s, "Environment.Create", Mutation{PreviewID: p.PreviewID, Configuration: p.Environment.Configuration, Count: 1, RequestID: id()}))
 	wantError(t, call(s, "Kernel.Delete", map[string]string{"kernelId": first.ID, "requestId": id()}), "PROFILE_BUSY")
 	if err := kernel.VerifyFiles(filepath.Join(root, "kernels", first.ID), first.Files); err != nil {

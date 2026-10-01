@@ -79,13 +79,18 @@ import {
   operationIsTerminal,
   type ApplicationService,
   type OperationEvent,
+  type EnvironmentPreview,
+  type FingerprintPreview,
+  type ProfileRevision,
 } from "./application/contract";
+import { applyFingerprint, fingerprintMatchesConfiguration } from "./application/fingerprint-model";
 import prdText from "../docs/PRD.md?raw";
 import developmentText from "../docs/DEVELOPMENT.md?raw";
 import kernelText from "../docs/KERNEL.md?raw";
 const Markdown = lazy(() => import("react-markdown"));
 import remarkGfm from "remark-gfm";
 import { NativeKernelManager } from "./components/NativeKernelManager";
+import { FingerprintRevisionPanel } from "./components/FingerprintRevisionPanel";
 
 type Route =
   "environments" | "proxies" | "kernels" | "backups" | "activity" | "guide";
@@ -96,6 +101,9 @@ type Drawer = {
   previewId: string;
   requestId: string;
   expectedRevision?: number;
+  fingerprint?: FingerprintPreview;
+  history?: ProfileRevision[];
+  userDataRef?: string;
 };
 type Dialog =
   | { kind: "delete"; ids: string[] }
@@ -248,9 +256,14 @@ export default function App({ application }: { application: ApplicationService }
   const [selected, setSelected] = useState<string[]>([]);
   const [page, setPage] = useState(1);
   const [drawer, setDrawer] = useState<Drawer | null>(null);
+  const drawerRef = useRef(drawer);
+  drawerRef.current = drawer;
+  const previewOpenSequence = useRef(0);
+  const fingerprintBusy = useRef(false);
   const [dialog, setDialog] = useState<Dialog | null>(null);
   const [formError, setFormError] = useState("");
   const [generating, setGenerating] = useState(false);
+  const [savePending, setSavePending] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [toast, setToast] = useState<{ text: string; error?: boolean } | null>(
     null,
@@ -281,6 +294,7 @@ export default function App({ application }: { application: ApplicationService }
   const latestOperationEvent = useRef<OperationEvent | undefined>(undefined);
   const checkingBusy = useRef(false);
   const initialDraft = useRef("");
+  const initialFingerprintHash = useRef("");
   const backupFile = useRef<HTMLInputElement>(null);
   const cookieFile = useRef<HTMLInputElement>(null);
   const proxyFile = useRef<HTMLInputElement>(null);
@@ -330,13 +344,14 @@ export default function App({ application }: { application: ApplicationService }
     return () => window.removeEventListener("hashchange", change);
   }, []);
   const closeDrawer = () => {
-    if (generating) return;
+    if (generating || saving.current) return;
     if (
       drawer &&
-      JSON.stringify(drawer.environment) !== initialDraft.current &&
+      (JSON.stringify(drawer.environment) !== initialDraft.current || (drawer.fingerprint?.previewProfile.configHash ?? "") !== initialFingerprintHash.current) &&
       !window.confirm("配置尚未保存。确定放弃本次编辑吗？")
     )
       return;
+    previewOpenSequence.current++;
     if (drawer) void application.discardPreview(drawer.previewId);
     setDrawer(null);
   };
@@ -419,54 +434,90 @@ export default function App({ application }: { application: ApplicationService }
   ).length;
   const errors = state.environments.filter((e) => e.status === "error").length;
   const patchDraft = (value: Partial<Environment>) => {
+    if (saving.current) return;
     setFormError("");
     setDrawer((d) =>
-      d ? { ...d, environment: { ...d.environment, ...value } } : d,
+      d ? { ...d, requestId: uid("request"), environment: { ...d.environment, ...value } } : d,
     );
   };
   async function openCreate(template?: Environment) {
+    const sequence = ++previewOpenSequence.current;
     const result = await application.previewEnvironment({ kind: "create", sourceId: template?.id });
+    if (sequence !== previewOpenSequence.current) { if (result.ok) void application.discardPreview(result.data.previewId); return; }
     if (!result.ok) { notify(result.error.message, true); return; }
     const preview = result.data;
     initialDraft.current = JSON.stringify(preview.environment);
+    initialFingerprintHash.current = preview.fingerprint?.previewProfile.configHash ?? "";
     setDrawer({ kind: "create", ...preview, requestId: uid("request"), tab: "basic" });
     setFormError("");
     setQuantity(1);
     setMenu(null);
   }
   async function openEdit(e: Environment) {
+    const sequence = ++previewOpenSequence.current;
     const result = await application.previewEnvironment({ kind: "edit", sourceId: e.id });
+    if (sequence !== previewOpenSequence.current) { if (result.ok) void application.discardPreview(result.data.previewId); return; }
     if (!result.ok) { notify(result.error.message, true); return; }
     const preview = result.data;
     initialDraft.current = JSON.stringify(preview.environment);
+    initialFingerprintHash.current = preview.fingerprint?.previewProfile.configHash ?? "";
     setDrawer({ kind: "edit", ...preview, requestId: uid("request"), tab: "basic" });
     setQuantity(1);
     setFormError("");
     setMenu(null);
+    const history = await application.listFingerprintRevisions(e.id);
+    setDrawer(current => current?.previewId === preview.previewId ? { ...current, history: history.ok ? history.data : undefined } : current);
+    if (!history.ok && drawerRef.current?.previewId === preview.previewId) setFormError(history.error.message);
   }
-  async function regenerate() {
-    if (!drawer) return;
+  function applyProfilePreview(previewId: string, preview: EnvironmentPreview) {
+    setDrawer(current => {
+      if (!current || current.previewId !== previewId || !preview.fingerprint) return current;
+      return { ...current, requestId: uid("request"), fingerprint: preview.fingerprint, userDataRef: preview.userDataRef ?? current.userDataRef, environment: applyFingerprint(current.environment, preview.fingerprint.previewProfile) };
+    });
+  }
+  async function generateProfile(regenerate = false) {
+    if (!drawer || fingerprintBusy.current || saving.current) return;
+    const target = drawer.previewId;
+    fingerprintBusy.current = true;
     setGenerating(true);
-    await sleep(500);
-    const result = await application.regeneratePreview(drawer.previewId);
-    if (result.ok) patchDraft({ seed: result.data.environment.seed });
-    else setFormError(result.error.message);
-    setGenerating(false);
-    if (result.ok) notify("新的指纹种子已生成，保存后生效；浏览器数据不变。");
+    setFormError("");
+    try {
+      const result = await application.generateFingerprint({ previewId: target, kernelId: drawer.environment.coreId, templateId: drawer.environment.fingerprintVersion, overrides: drawer.environment, regenerate });
+      if (drawerRef.current?.previewId !== target) return;
+      if (result.ok) { applyProfilePreview(target, result.data); notify(regenerate ? "新的种子只在预览中；查看变更后保存才生效。" : "档案预览已更新，没有保存或启动浏览器。"); }
+      else setFormError(result.error.message);
+    } finally { fingerprintBusy.current = false; setGenerating(false); }
+  }
+  async function previewProfileRestore(revision: number) {
+    if (!drawer || fingerprintBusy.current || saving.current) return;
+    const target = drawer.previewId;
+    fingerprintBusy.current = true; setGenerating(true); setFormError("");
+    try {
+      const result = await application.previewFingerprintRestore(target, revision);
+      if (drawerRef.current?.previewId !== target) return;
+      if (result.ok) { applyProfilePreview(target, result.data); notify("旧档案已加载为回滚预览；保存才生效，名称、代理和数据保持不变。"); }
+      else setFormError(result.error.message);
+    } finally { fingerprintBusy.current = false; setGenerating(false); }
   }
   async function saveEnvironment() {
-    if (batchBusy.current || saving.current || !drawer) return;
+    if (batchBusy.current || saving.current || fingerprintBusy.current || !drawer) return;
+    const target = drawer.previewId;
     saving.current = true;
+    setSavePending(true);
     try {
-      const request = { previewId: drawer.previewId, configuration: drawer.environment, requestId: drawer.requestId };
+      const request = { previewId: drawer.previewId, configuration: drawer.environment, requestId: drawer.requestId, profileHash: drawer.fingerprint?.previewProfile.configHash };
       if (drawer.kind === "edit") {
-        const result = await application.updateEnvironment({ ...request, expectedRevision: drawer.expectedRevision! });
+        const result = drawer.fingerprint && (!nativeMode || drawer.environment.coreId !== "kernel-pending")
+          ? await application.commitFingerprintRevision({ ...request, expectedRevision: drawer.expectedRevision!, environmentId: drawer.environment.id, profileHash: drawer.fingerprint.previewProfile.configHash })
+          : await application.updateEnvironment({ ...request, expectedRevision: drawer.expectedRevision! });
+        if (drawerRef.current?.previewId !== target) return;
         if (!result.ok) { setFormError(result.error.message); return; }
         notify("环境配置已保存");
         setDrawer(null);
         return;
       }
       const accepted = await application.createBatch({ ...request, count: quantity });
+      if (drawerRef.current?.previewId !== target) return;
       if (!accepted.ok) { setFormError(accepted.error.message); return; }
       batchBusy.current = true;
       creationOperation.current = accepted.data.operation.id;
@@ -487,6 +538,7 @@ export default function App({ application }: { application: ApplicationService }
       setGroup("全部分组"); setStatus("all"); setSearch(""); setPage(1);
     } finally {
       saving.current = false;
+      setSavePending(false);
       if (creationOperation.current) {
         batchBusy.current = false;
         creationOperation.current = null;
@@ -682,6 +734,14 @@ export default function App({ application }: { application: ApplicationService }
     notify("环境已从工作区移除");
   }
   const summary = routeInfo[route];
+  const selectedKernelRecord = workspace.kernelRecords?.find(record => record.id === drawer?.environment.coreId);
+  const canGenerateProfile = !nativeMode || selectedKernelRecord?.status === "verified";
+  const profileIsFresh = !!drawer?.fingerprint && fingerprintMatchesConfiguration(drawer.fingerprint.previewProfile, drawer.environment);
+  // Preserve T02's explicit, non-launchable pending configuration workflow.
+  // Selecting an installed build still requires a complete matching preview.
+  const pendingConfiguration = nativeMode && drawer?.environment.coreId === "kernel-pending";
+  const canSaveProfile = pendingConfiguration || profileIsFresh;
+  const canConfigureProfileField = (field: string) => !nativeMode || !!selectedKernelRecord?.report.capabilities.some(capability => capability.field === field && capability.status === "configurable" && capability.source === "observed");
   return (
     <div className="app-shell">
       <aside
@@ -2081,6 +2141,8 @@ export default function App({ application }: { application: ApplicationService }
                   </div>
                   <Field label="固定内核版本">
                     <select
+                      aria-label="固定内核版本"
+                      disabled={generating || savePending || (drawer.kind === "edit" && (!nativeMode || state.environments.find(environment => environment.id === drawer.environment.id)?.coreId !== "kernel-pending"))}
                       value={drawer.environment.coreId}
                       onChange={(e) => patchDraft({ coreId: e.target.value })}
                     >
@@ -2092,7 +2154,7 @@ export default function App({ application }: { application: ApplicationService }
                     </select>
                   </Field>
                   <p className="field-hint">
-                    {nativeMode ? "先在内核页安装并核验 fingerprint-chromium，再显式选择精确构建。旧档案不会自动重绑定；保存引用不代表环境已可启动。" : "实际内核：fingerprint-chromium。当前仅演示配置绑定，未安装浏览器内核。"}
+                    {nativeMode ? "先在内核页安装核验，再显式选择并生成档案预览。普通编辑不能切换已有精确构建；旧档案不自动重绑定，保存不代表已可启动。" : "实际内核：fingerprint-chromium。当前仅演示配置绑定，未安装浏览器内核。"}
                   </p>
                 </>
               )}
@@ -2109,8 +2171,8 @@ export default function App({ application }: { application: ApplicationService }
                     </div>
                     <Button
                       className="soft-primary"
-                      disabled={generating}
-                      onClick={regenerate}
+                      disabled={generating || savePending || !canGenerateProfile}
+                      onClick={() => void generateProfile(true)}
                     >
                       {generating ? (
                         <LoaderCircle size={16} className="spin" />
@@ -2140,6 +2202,8 @@ export default function App({ application }: { application: ApplicationService }
                     </Field>
                     <Field label="CPU 线程数">
                       <select
+                        disabled={generating || savePending || !canConfigureProfileField("cpu")}
+                        aria-label="CPU线程偏好"
                         value={drawer.environment.cpu}
                         onChange={(e) => patchDraft({ cpu: e.target.value })}
                       >
@@ -2155,6 +2219,7 @@ export default function App({ application }: { application: ApplicationService }
                     <h3>语言与地区</h3>
                     <button
                       className="text-button"
+                      disabled={generating || savePending || !canConfigureProfileField("acceptLanguages") || !canConfigureProfileField("timezone")}
                       onClick={() => {
                         const p = state.proxies.find(
                           (p) => p.id === drawer.environment.proxyId,
@@ -2186,6 +2251,8 @@ export default function App({ application }: { application: ApplicationService }
                   <div className="field-row">
                     <Field label="网站语言">
                       <select
+                        disabled={generating || savePending || !canConfigureProfileField("acceptLanguages")}
+                        aria-label="网站语言"
                         value={drawer.environment.language}
                         onChange={(e) =>
                           patchDraft({ language: e.target.value })
@@ -2200,6 +2267,8 @@ export default function App({ application }: { application: ApplicationService }
                     </Field>
                     <Field label="时区">
                       <select
+                        disabled={generating || savePending || !canConfigureProfileField("timezone")}
+                        aria-label="设备时区"
                         value={drawer.environment.timezone}
                         onChange={(e) =>
                           patchDraft({ timezone: e.target.value })
@@ -2211,33 +2280,7 @@ export default function App({ application }: { application: ApplicationService }
                       </select>
                     </Field>
                   </div>
-                  <div className="form-section-title">
-                    <span>02</span>
-                    <h3>内核生成项</h3>
-                    <Tag>只读说明</Tag>
-                  </div>
-                  <div className="generated-fields">
-                    {[
-                      "GPU 与 WebGL 参数",
-                      "浏览器报告的内存",
-                      "Canvas / Audio / ClientRects",
-                      "字体相关输出",
-                    ].map((s) => (
-                      <div key={s}>
-                        <span>{s}</span>
-                        <span>
-                          按种子生成 · 待真实读取
-                          <LockKeyhole size={12} />
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="form-note">
-                    <Info size={17} />
-                    <span>
-                      这里展示生成规则，不伪造实际硬件读值。最终结果须由固定版本内核运行后核对。
-                    </span>
-                  </div>
+                  <FingerprintRevisionPanel preview={drawer.fingerprint} history={drawer.history} native={nativeMode} stale={!profileIsFresh && !pendingConfiguration} busy={generating || savePending} canGenerate={canGenerateProfile} dataRef={drawer.userDataRef} onPreview={() => void generateProfile()} onRestore={revision => void previewProfileRestore(revision)} />
                 </>
               )}
               {drawer.tab === "preferences" && (
@@ -2261,6 +2304,7 @@ export default function App({ application }: { application: ApplicationService }
                   <div className="field-row">
                     <Field label="窗口宽度">
                       <input
+                        disabled={generating || savePending}
                         type="number"
                         value={drawer.environment.width}
                         onChange={(e) =>
@@ -2270,6 +2314,7 @@ export default function App({ application }: { application: ApplicationService }
                     </Field>
                     <Field label="窗口高度">
                       <input
+                        disabled={generating || savePending}
                         type="number"
                         value={drawer.environment.height}
                         onChange={(e) =>
@@ -2327,15 +2372,15 @@ export default function App({ application }: { application: ApplicationService }
             <div className="drawer-footer">
               <span>
                 <ShieldCheck size={14} />
-                {nativeMode ? "保存到本机 SQLite · 提交成功才完成" : "仅保存在当前浏览器的演示数据"}
+                {pendingConfiguration ? "仅保存待绑定配置 · 未生成可用档案，不能启动" : !canSaveProfile ? "请在设备指纹页选择内核、生成并查看预览" : nativeMode ? "保存到本机 SQLite · 提交成功才完成" : "仅保存在当前浏览器的演示数据"}
               </span>
               <div>
-                <Button disabled={generating} onClick={closeDrawer}>
+                <Button disabled={generating || savePending} onClick={closeDrawer}>
                   取消
                 </Button>
                 <Button
                   className="primary"
-                  disabled={generating}
+                  disabled={generating || savePending || !canSaveProfile}
                   onClick={saveEnvironment}
                 >
                   <Check size={16} />

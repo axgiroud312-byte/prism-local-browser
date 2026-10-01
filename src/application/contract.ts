@@ -22,6 +22,8 @@ export interface EnvironmentPreview {
   previewId: string;
   environment: Environment;
   expectedRevision?: number;
+  fingerprint?: FingerprintPreview;
+  userDataRef?: string;
 }
 export interface SavedEnvironment { record: Environment; revision: number }
 export interface WorkspaceView {
@@ -31,6 +33,8 @@ export interface WorkspaceView {
   damagedRecord?: string;
   kernelRecords?: NativeKernel[];
   kernelOperations?: Operation[];
+  fingerprints?: Record<string, ProfileRevision>;
+  dataReferences?: Record<string, string>;
 }
 export interface Operation {
   id: string;
@@ -72,12 +76,14 @@ export interface CreateBatchRequest {
   configuration: EnvironmentConfiguration;
   count: number;
   requestId: string;
+  profileHash?: string;
 }
 export interface UpdateEnvironmentRequest {
   previewId: string;
   configuration: EnvironmentConfiguration;
   expectedRevision: number;
   requestId: string;
+  profileHash?: string;
 }
 export interface DemoCompatibility {
   update(change: (state: State) => State): ApplicationResult<WorkspaceView>;
@@ -95,6 +101,10 @@ export interface ApplicationService {
   previewEnvironment(request: { kind: "create" | "edit"; sourceId?: string }): Promise<ApplicationResult<EnvironmentPreview>>;
   regeneratePreview(previewId: string): Promise<ApplicationResult<EnvironmentPreview>>;
   discardPreview(previewId: string): Promise<ApplicationResult<{ status: "discarded" }>>;
+  generateFingerprint(request: GenerateFingerprintRequest): Promise<ApplicationResult<EnvironmentPreview>>;
+  listFingerprintRevisions(environmentId: string): Promise<ApplicationResult<ProfileRevision[]>>;
+  previewFingerprintRestore(previewId: string, revision: number): Promise<ApplicationResult<EnvironmentPreview>>;
+  commitFingerprintRevision(request: CommitFingerprintRequest): Promise<ApplicationResult<{ status: "completed"; environment: SavedEnvironment; newRevision: number; fingerprintRevision: number }>>;
   createBatch(request: CreateBatchRequest): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
   updateEnvironment(request: UpdateEnvironmentRequest): Promise<ApplicationResult<{ status: "completed"; environment: SavedEnvironment }>>;
   getOperation(operationId: string): Promise<ApplicationResult<Operation>>;
@@ -121,7 +131,7 @@ export interface KernelObservation {
 export interface KernelReport {
   adapterVersion: string; version: string; sampledAt: string; transport: string; sandbox: boolean;
   observations: KernelObservation[];
-  capabilities: { field: string; status: "configurable" | "seed-generated" | "unverified"; source: string; note: string }[];
+  capabilities: FingerprintCapability[];
 }
 export interface NativeKernel {
   id: string; version: string; architecture: string;
@@ -129,4 +139,42 @@ export interface NativeKernel {
   archiveSha256: string; executableSha256: string; executableRelativePath: string;
   installPath: string; installedAt: string; status: "verified" | "missing"; usedBy: string[];
   report: KernelReport;
+}
+
+export interface FingerprintCapability {
+  field: string;
+  status: "configurable" | "seed-generated" | "system" | "unverified";
+  source: string;
+  note: string;
+}
+export interface DeviceProfile {
+  schemaVersion: number; configRevision: number; seed: string;
+  templateId: string; templateVersion: string; generatorVersion: string;
+  platform: string; platformVersion: string; brand: string; brandVersion: string;
+  kernelId: string; coreActualVersion: string; coreExecutableSha256: string;
+  adapterVersion: string; capabilityVersion: string;
+  language: string; acceptLanguages: string[]; uiLanguage: string; timezone: string;
+  regionPreset: string; cpu: string; width: number; height: number;
+  parameters: string[]; configHash: string;
+}
+export interface FingerprintPreview {
+  mode: ApplicationMode;
+  previewProfile: DeviceProfile;
+  capabilityReport: {
+    kernelId: string; evidenceStatus: string; capabilities: FingerprintCapability[];
+    observedFingerprint: KernelObservation | null; canLaunchNative: boolean;
+  };
+  changes: { field: string; before: string; after: string }[];
+  action: string;
+  restoredFrom?: number;
+}
+export interface ProfileRevision {
+  profile: DeviceProfile; createdAt: string; action: string; restoredFrom?: number;
+}
+export interface GenerateFingerprintRequest {
+  previewId: string; kernelId: string; templateId: string; regenerate?: boolean;
+  overrides: Pick<EnvironmentConfiguration, "language" | "timezone" | "cpu" | "width" | "height">;
+}
+export interface CommitFingerprintRequest extends UpdateEnvironmentRequest {
+  environmentId: string; profileHash: string;
 }

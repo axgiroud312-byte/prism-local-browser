@@ -10,15 +10,20 @@ const root = resolve(process.argv[2]);
 const db = new DatabaseSync(join(root, "app.db"), { readOnly: true });
 let view;
 try {
-  assert.equal(db.prepare("PRAGMA user_version").get().user_version, 2);
+  assert.equal(db.prepare("PRAGMA user_version").get().user_version, 3);
   assert.deepEqual(db.prepare("PRAGMA foreign_key_check").all(), []);
   const records = db.prepare("SELECT k.status,e.record_json FROM kernel_evidence e JOIN kernels k ON k.id=e.kernel_id ORDER BY k.rowid DESC").all().map(row => ({ ...JSON.parse(row.record_json), status: row.status }));
-  const environments = db.prepare("SELECT e.id,e.kernel_id,e.revision,e.fingerprint_id,f.kernel_id AS fingerprint_kernel_id,f.seed,f.config_json FROM environments e JOIN fingerprints f ON f.id=e.fingerprint_id ORDER BY e.code").all().map(row => {
+  const environments = db.prepare("SELECT e.id,e.kernel_id,e.revision,e.fingerprint_id,e.user_data_ref,f.kernel_id AS fingerprint_kernel_id,f.seed,f.config_json,f.config_revision,r.profile_json FROM environments e JOIN fingerprints f ON f.id=e.fingerprint_id LEFT JOIN fingerprint_revisions r ON r.fingerprint_id=f.id AND r.revision=f.config_revision ORDER BY e.code").all().map(row => {
     const config = JSON.parse(row.config_json);
+    const profile = JSON.parse(row.profile_json);
     assert.equal(row.kernel_id, row.fingerprint_kernel_id);
     assert.equal(config.coreId, row.kernel_id);
     assert.equal(config.seed, String(row.seed));
-    return { id: row.id, kernelId: row.kernel_id, revision: row.revision, seed: String(row.seed), configuration: config };
+    assert.equal(profile.configRevision, row.config_revision);
+    assert.equal(profile.seed, config.seed);
+    assert.equal(profile.kernelId, row.kernel_id);
+    assert.equal(row.user_data_ref, `environments/${row.id}/user-data`);
+    return { id: row.id, kernelId: row.kernel_id, revision: row.revision, seed: String(row.seed), configuration: config, fingerprint: profile, userDataRef: row.user_data_ref };
   });
   const operations = db.prepare("SELECT result_json FROM operations WHERE json_extract(result_json,'$.kind') LIKE 'kernel-%' ORDER BY rowid DESC").all().map(row => JSON.parse(row.result_json));
   assert.equal(db.prepare("SELECT COUNT(*) AS count FROM proxies").get().count, 0);
@@ -30,7 +35,7 @@ try {
     assert.ok(record.report.observations.length >= 3);
     assert.ok(record.report.observations.every(sample => sample.normalExit && sample.browserVersion === record.version));
   }
-  view = { schemaVersion: 2, records, environments, operations };
+  view = { schemaVersion: 3, records, environments, operations };
 } finally { db.close(); }
 
 if (process.argv.includes("--hash")) {

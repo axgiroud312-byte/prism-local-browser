@@ -295,3 +295,89 @@ test("creation does not interrupt an in-flight stop and can be retried after it 
   assert.equal((await waitFor(app, accepted.operation.id)).state, "completed");
   assert.equal(app.getSnapshot().state.environments.find(e => e.id === "env-1")!.status, "ready");
 });
+
+test("fingerprint generation is demo-only, read-only and a forged seed cannot bypass the preview", async () => {
+  const { app, storage } = fixture();
+  const p = data(await app.previewEnvironment({ kind: "edit", sourceId: "env-1" }));
+  const before = storage.value;
+  const generated = data(await app.generateFingerprint({ previewId: p.previewId, kernelId: p.environment.coreId, templateId: "windows-desktop-v1", overrides: { ...p.environment, cpu: "8" }, regenerate: true }));
+  assert.equal(generated.fingerprint?.mode, "demo");
+  assert.equal(generated.fingerprint?.capabilityReport.observedFingerprint, null);
+  assert.equal(generated.fingerprint?.previewProfile.coreExecutableSha256, "");
+  assert.deepEqual(generated.fingerprint?.previewProfile.parameters, []);
+  assert.equal(storage.value, before);
+  assert.notEqual(generated.environment.seed, p.environment.seed);
+  const forged = await app.updateEnvironment({ previewId: p.previewId, configuration: { ...generated.environment, seed: "123" }, expectedRevision: p.expectedRevision!, requestId: "forged-fingerprint" });
+  assert.equal(forged.ok, false);
+  data(await app.discardPreview(p.previewId));
+  assert.equal(storage.value, before);
+});
+
+test("frozen demo profile history survives reopen and restore keeps names and cookies", async () => {
+  const { app, storage } = fixture();
+  const original = app.getSnapshot().state.environments[0];
+  const p = data(await app.previewEnvironment({ kind: "edit", sourceId: original.id }));
+  const regenerated = data(await app.generateFingerprint({ previewId: p.previewId, kernelId: original.coreId, templateId: "windows-desktop-v1", overrides: original, regenerate: true }));
+  data(await app.commitFingerprintRevision({ previewId: p.previewId, environmentId: original.id, profileHash: regenerated.fingerprint!.previewProfile.configHash, configuration: { ...regenerated.environment, name: "合成历史新名称" }, expectedRevision: p.expectedRevision!, requestId: "demo-profile-commit" }));
+  const reopened = new DemoAdapter(storage);
+  assert.equal(data(await reopened.listFingerprintRevisions(original.id)).length, 2);
+  const next = data(await reopened.previewEnvironment({ kind: "edit", sourceId: original.id }));
+  const restore = data(await reopened.previewFingerprintRestore(next.previewId, 1));
+  assert.equal(restore.environment.name, "合成历史新名称");
+  assert.equal(restore.environment.seed, original.seed);
+  assert.ok(restore.fingerprint!.changes.some(change => change.field === "seed"));
+  data(await reopened.commitFingerprintRevision({ previewId: next.previewId, environmentId: original.id, profileHash: restore.fingerprint!.previewProfile.configHash, configuration: restore.environment, expectedRevision: next.expectedRevision!, requestId: "demo-profile-restore" }));
+  const saved = reopened.getSnapshot().state.environments.find(e => e.id === original.id)!;
+  assert.equal(saved.seed, original.seed);
+  assert.equal(saved.name, "合成历史新名称");
+  assert.deepEqual(saved.cookies, original.cookies);
+  assert.equal(data(await new DemoAdapter(storage).listFingerprintRevisions(original.id))[0].profile.configRevision, 3);
+  assert.equal(JSON.parse(storage.value!).schemaVersion, 1);
+});
+
+test("frozen demo profile write failure keeps current and historical records intact", async () => {
+  const { app, storage } = fixture();
+  const p = data(await app.previewEnvironment({ kind: "edit", sourceId: "env-1" }));
+  const next = data(await app.generateFingerprint({ previewId: p.previewId, kernelId: p.environment.coreId, templateId: "windows-desktop-v1", overrides: p.environment, regenerate: true }));
+  const request = { previewId: p.previewId, environmentId: p.environment.id, profileHash: next.fingerprint!.previewProfile.configHash, configuration: next.environment, expectedRevision: p.expectedRevision!, requestId: "history-failure" };
+  const before = storage.value;
+  storage.failWrite = true;
+  const failed = await app.commitFingerprintRevision(request);
+  assert.equal(failed.ok, false);
+  assert.equal(storage.value, before);
+  assert.equal(data(await app.listFingerprintRevisions("env-1")).length, 1);
+  storage.failWrite = false;
+  data(await app.commitFingerprintRevision(request));
+  data(await app.commitFingerprintRevision(request));
+  assert.equal(data(await app.listFingerprintRevisions("env-1")).length, 2);
+});
+
+test("a stale fingerprint preview cannot be promoted by supplying the latest revision", async () => {
+  const { app, storage } = fixture();
+  const first = data(await app.previewEnvironment({ kind: "edit", sourceId: "env-1" }));
+  const stale = data(await app.previewEnvironment({ kind: "edit", sourceId: "env-1" }));
+  const newer = data(await app.regeneratePreview(first.previewId));
+  const older = data(await app.regeneratePreview(stale.previewId));
+  const saved = data(await app.commitFingerprintRevision({ previewId: newer.previewId, environmentId: "env-1", profileHash: newer.fingerprint!.previewProfile.configHash, configuration: newer.environment, expectedRevision: newer.expectedRevision!, requestId: "newer-profile" }));
+  const before = storage.value;
+  const result = await app.commitFingerprintRevision({ previewId: older.previewId, environmentId: "env-1", profileHash: older.fingerprint!.previewProfile.configHash, configuration: older.environment, expectedRevision: saved.newRevision, requestId: "promoted-old-profile" });
+  assert.equal(result.ok, false);
+  if (!result.ok) assert.equal(result.error.code, "REVISION_CONFLICT");
+  assert.equal(storage.value, before);
+  const reopened = new DemoAdapter(storage);
+  assert.equal(reopened.getSnapshot().issue, undefined);
+  assert.deepEqual(data(await reopened.listFingerprintRevisions("env-1")).map(item => item.profile.configRevision), [2, 1]);
+});
+
+test("simultaneous identical fingerprint commits reuse one result and never cross-cache methods", async () => {
+  const { app } = fixture();
+  const p = data(await app.previewEnvironment({ kind: "edit", sourceId: "env-1" }));
+  const next = data(await app.regeneratePreview(p.previewId));
+  const request = { previewId: p.previewId, environmentId: "env-1", profileHash: next.fingerprint!.previewProfile.configHash, configuration: next.environment, expectedRevision: p.expectedRevision!, requestId: "concurrent-profile" };
+  const results = await Promise.all([app.commitFingerprintRevision(request), app.commitFingerprintRevision(request)]);
+  assert.deepEqual(data(results[0]), data(results[1]));
+  assert.equal(data(await app.listFingerprintRevisions("env-1")).length, 2);
+  const reused = await app.updateEnvironment(request);
+  assert.equal(reused.ok, false);
+  if (!reused.ok) assert.equal(reused.error.code, "REQUEST_ID_REUSED");
+});

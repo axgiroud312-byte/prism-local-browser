@@ -74,7 +74,7 @@ DOC-001 要求以上页面、需求 ID、开发任务和验收记录互相可追
 
 以下字段是未来契约建议。原型可用更轻的数据结构，但必须保留业务语义；迁移到 SQLite 时由适配器显式转换，不能把 localStorage 对象直接当成生产数据库。
 
-原型把 seed、language、timezone、cpu、窗口大小和 Cookie 数组直接放在 Environment 中，内核引用字段为 coreId，分组为 group；没有独立 FingerprintProfile/Revision 表。原型状态是 ready/starting/running/stopping/error，ready 对应已停止。以下 kernelId、fingerprintId、revision 等字段是后续模型，不能作为当前导入文件必需字段。
+原型把 seed、language、timezone、cpu、窗口大小和 Cookie 数组直接放在 Environment 中，内核引用字段为 coreId，分组为 group；T05 在额外演示元数据中保存档案历史，不改变原型快照格式。原型状态是 ready/starting/running/stopping/error，ready 对应已停止。以下 kernelId、fingerprintId、revision 等字段是桌面模型，不能作为当前原型导入文件必需字段。
 
 | 记录                | 关键字段                                                                                                                                        |
 | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -144,7 +144,17 @@ T02 已实现的原生 RPC 为 `Workspace.Read`、`Environment.Preview`、`Previ
 
 T04 增量接口为 `Kernel.SelectArchive`（系统文件选择器→当前会话token，不接任意路径）、`Kernel.Install`（来源/精确版本/预期摘要/token/可信确认/requestId→受理操作）、`Kernel.List`、`Kernel.Verify` 与 `Kernel.Delete`（后两者接精确kernelId/requestId→受理操作）。Windows内核维护单任务并发仅作资源/维护保护，不限制安装数量。下载/解包/真实探测在worker中运行，`Operation.Read/Cancel`可查询/取消；页面以持久服务状态为准，重开不自动重装或换版本。
 
-SQLite schema v2 事务新增 `kernel_evidence`，保存来源、tag、源码commit或null、架构、归档/主程序/完整文件清单摘要、内部相对位置及带adapter/能力版本和会话时间的真实报告。v1迁移保留既有ID/seed/配置和pending引用；同一证据不允许UPDATE。新安装采用同卷暂存/边界检查/摘要与PE/CDP验证，再分配新ID发布，登记内核与完成操作同一事务提交；失败清理本次资源，持久日志支持重开时清理已分配的未提交暂存/发布目录，不触碰无关目录。重新核验不把损坏字节重算成可信摘要；被指纹档案引用的构建不能直接移除。正常环境启动、完整修订/回滚和批量任务恢复仍分别留T05/T06/T13。
+SQLite schema v2 事务新增 `kernel_evidence`，保存来源、tag、源码commit或null、架构、归档/主程序/完整文件清单摘要、内部相对位置及带adapter/能力版本和会话时间的真实报告。v1迁移保留既有ID/seed/配置和pending引用；同一证据不允许UPDATE。新安装采用同卷暂存/边界检查/摘要与PE/CDP验证，再分配新ID发布，登记内核与完成操作同一事务提交；失败清理本次资源，持久日志支持重开时清理已分配的未提交暂存/发布目录，不触碰无关目录。重新核验不把损坏字节重算成可信摘要；被当前或历史档案引用的构建不能直接移除。正常环境启动和批量任务恢复仍分别留T06/T13。
+
+### T05 固定档案增量（已实现，完整验收待补）
+
+- `Fingerprint.Generate({ previewId, kernelId, templateId, overrides: { language, timezone, cpu, width, height }, regenerate })` 从服务会话的预览生成Windows固定输入、能力报告和相对当前档案的变化。默认保留 seed；`regenerate: true` 显式生成新 seed。不启动内核、不写数据库、不改变环境修订。只接受白名单字段，拒绝客户端提供参数、GPU读值或完整档案。
+- `Fingerprint.CommitRevision({ environmentId, previewId, profileHash, configuration, expectedRevision, requestId })` 校验服务预览、摘要、当前环境修订/原预览基线和精确内核证据，事务写当前引用、不可变历史、请求结果、操作与活动；返回 `newRevision`（环境修订）及 `fingerprintRevision`（档案修订）。普通名称/备注/代理等保存不增加档案修订，也不换 seed。旧 `Environment.Create/Update` 同样校验，不能绕过生成流程；`kernel-pending` 仅保留待绑定配置兼容，不可启动。
+- `Fingerprint.ListRevisions({ environmentId })` 返回倒序历史；`Fingerprint.PreviewRestore({ previewId, revision })` 只预览同一精确内核的旧设备输入。保存后追加新的单调档案修订，不倒退编号、不恢复旧名称/代理、不清空浏览数据；pending或跨内核恢复拒绝。
+- SQLite schema3增加 `fingerprint_revisions`、当前档案 `config_revision` 和环境 `user_data_ref`。历史禁止UPDATE，保持原 `fingerprint_id`，避免为历史复制受当前seed唯一约束的行。v1/v2升级事务保留原ID、seed、展开字段和旧生成器版本；未知版本/坏输入阻断，不悄悄重生成。管理引用为 `environments/<environment-id>/user-data`，本票只建立引用、不自动创建或打开真实浏览目录。
+- 固定档案保存模板/生成器/独立档案schema版本、语言顺序、明确IANA时区、CPU/窗口偏好、真实内核身份/摘要、适配器/能力版本和能力编译的参数。空时区和 `Local` 拒绝。规范化SHA-256基于固定字段顺序的JSON（`configHash`置空）；包含档案修订，不包含名称、代理和网页Cookie。
+- host-only `AcquireProfileUse` 是供T06监督器复用的忙租约，持有期间拒绝关键档案及代理修改；不通过RPC接收伪造running/ready。当前未实现正常启动，不能把此租约的契约测试说成真实运行验收。
+- Demo仅在 `_application.fingerprintRevisions` 记录演示历史，checksum带 `demo-`，无真实内核证据；localStorage写成功才发布。`prism-prototype` schemaVersion 1不增加必需字段，旧记录可读。外层/嵌套模式均与Wails隔离。[实际测试与剩余边界](verification/T05.md)。
 
 当前 ApplicationService 统一 `{ ok, mode, data/error, operationId? }`、预览 ID、requestId、expectedRevision 与 Operation 事件。创建返回 `status: accepted`，需查询/事件确认 `completed/cancelled/failed`；编辑仅在存储写入成功后返回 `status: completed`。只提交配置白名单，不能从草稿修改 ID、Cookie 或运行状态。UI 按操作 ID、模式、序号和终态过滤迟到事件。demo 的预览、幂等请求缓存和 Operation 在当前服务会话有效，不宣称任务重开续作；revision 用额外存储元数据持久保存，旧 v1 演示记录可显式读取且快照类型不变。其他页经 demo-only compatibility 逐步接入；native 不可使用该兼容入口。
 

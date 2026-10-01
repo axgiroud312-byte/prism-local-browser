@@ -2,6 +2,7 @@ import type {
   ApplicationResult, ApplicationService, EnvironmentConfiguration, EnvironmentPreview,
   CreateBatchRequest, UpdateEnvironmentRequest, SavedEnvironment, WorkspaceView, Operation, OperationEvent,
   KernelInstallRequest,
+  GenerateFingerprintRequest, CommitFingerprintRequest, ProfileRevision,
 } from "./contract.ts";
 import { mergeOperation } from "./contract.ts";
 
@@ -47,16 +48,32 @@ export class WailsAdapter implements ApplicationService {
     this.publish();
     return response;
   }
-  previewEnvironment(request: { kind: "create" | "edit"; sourceId?: string }) { return this.invoke<EnvironmentPreview>("Environment.Preview", request); }
-  regeneratePreview(previewId: string) { return this.invoke<EnvironmentPreview>("Preview.Regenerate", { previewId }); }
+  private async previewCall(method: string, payload: unknown): Promise<ApplicationResult<EnvironmentPreview>> {
+    const response = await this.invoke<EnvironmentPreview>(method, payload);
+    if (response.ok && response.data.fingerprint && response.data.fingerprint.mode !== "native") return { ok: false, mode: "native", error: { code: "CAPABILITY_UNSUPPORTED", message: "演示档案不能进入真实工作区。", retryable: false } };
+    return response;
+  }
+  previewEnvironment(request: { kind: "create" | "edit"; sourceId?: string }) { return this.previewCall("Environment.Preview", request); }
+  regeneratePreview(previewId: string) { return this.previewCall("Preview.Regenerate", { previewId }); }
   discardPreview(previewId: string) { return this.invoke<{ status: "discarded" }>("Preview.Discard", { previewId }); }
+  generateFingerprint(request: GenerateFingerprintRequest) {
+    const o = request.overrides;
+    return this.previewCall("Fingerprint.Generate", { previewId: request.previewId, kernelId: request.kernelId, templateId: request.templateId, regenerate: !!request.regenerate, overrides: { language: o.language, timezone: o.timezone, cpu: o.cpu, width: o.width, height: o.height } });
+  }
+  listFingerprintRevisions(environmentId: string) { return this.invoke<ProfileRevision[]>("Fingerprint.ListRevisions", { environmentId }); }
+  previewFingerprintRestore(previewId: string, revision: number) { return this.previewCall("Fingerprint.PreviewRestore", { previewId, revision }); }
+  async commitFingerprintRevision(request: CommitFingerprintRequest) {
+    const response = await this.invoke<{ status: "completed"; environment: SavedEnvironment; newRevision: number; fingerprintRevision: number }>("Fingerprint.CommitRevision", { previewId: request.previewId, environmentId: request.environmentId, profileHash: request.profileHash, expectedRevision: request.expectedRevision, requestId: request.requestId, configuration: projectConfiguration(request.configuration) });
+    if (response.ok) await this.refresh();
+    return response;
+  }
   async createBatch(request: CreateBatchRequest) {
-    const response = await this.invoke<{ status: "accepted"; operation: Operation }>("Environment.Create", { previewId: request.previewId, requestId: request.requestId, count: request.count, configuration: projectConfiguration(request.configuration) });
+    const response = await this.invoke<{ status: "accepted"; operation: Operation }>("Environment.Create", { previewId: request.previewId, requestId: request.requestId, count: request.count, profileHash: request.profileHash, configuration: projectConfiguration(request.configuration) });
     if (response.ok) { await this.refresh(); this.emit(response.data.operation); }
     return response;
   }
   async updateEnvironment(request: UpdateEnvironmentRequest) {
-    const response = await this.invoke<{ status: "completed"; environment: SavedEnvironment }>("Environment.Update", { previewId: request.previewId, requestId: request.requestId, expectedRevision: request.expectedRevision, configuration: projectConfiguration(request.configuration) });
+    const response = await this.invoke<{ status: "completed"; environment: SavedEnvironment }>("Environment.Update", { previewId: request.previewId, requestId: request.requestId, expectedRevision: request.expectedRevision, profileHash: request.profileHash, configuration: projectConfiguration(request.configuration) });
     if (response.ok) await this.refresh();
     return response;
   }

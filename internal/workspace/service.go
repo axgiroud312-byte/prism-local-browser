@@ -35,19 +35,21 @@ type Options struct {
 	VerifyKernel  func(context.Context, string, kernel.Record, string) (kernel.Report, error)
 }
 type draft struct {
-	Kind    string
-	Preview Preview
+	Kind        string
+	Preview     Preview
+	BaseProfile *DeviceProfile
 }
 type Service struct {
-	mu         sync.Mutex
-	db         *sql.DB
-	drafts     map[string]draft
-	options    Options
-	root       string
-	archives   map[string]string
-	kernelTask *kernelTask
-	workers    sync.WaitGroup
-	closed     bool
+	mu          sync.Mutex
+	db          *sql.DB
+	drafts      map[string]draft
+	options     Options
+	root        string
+	archives    map[string]string
+	kernelTask  *kernelTask
+	workers     sync.WaitGroup
+	closed      bool
+	profileUses map[string]bool
 }
 
 func failure(code, message string, retryable bool) Result {
@@ -97,7 +99,7 @@ func Open(root string, options Options) (*Service, error) {
 		return nil, err
 	}
 	db.SetMaxOpenConns(1)
-	s := &Service{db: db, root: absolute, drafts: map[string]draft{}, archives: map[string]string{}, options: options}
+	s := &Service{db: db, root: absolute, drafts: map[string]draft{}, archives: map[string]string{}, profileUses: map[string]bool{}, options: options}
 	if err = s.initialize(); err != nil {
 		db.Close()
 		return nil, err
@@ -129,17 +131,26 @@ func (s *Service) initialize() error {
 	if err := s.db.QueryRow("PRAGMA user_version").Scan(&version); err != nil {
 		return err
 	}
-	if version > 2 {
+	if version > 3 {
 		return errors.New("unsupported workspace version")
 	}
-	if version == 2 {
+	if version == 3 {
 		return s.checkSchema()
+	}
+	if version == 2 {
+		if err := s.checkKernelSchema(); err != nil {
+			return err
+		}
+		return s.migrateFingerprints()
 	}
 	if version == 1 {
 		if err := s.checkBaseSchema(); err != nil {
 			return err
 		}
-		return s.migrateKernels()
+		if err := s.migrateKernels(); err != nil {
+			return err
+		}
+		return s.migrateFingerprints()
 	}
 	var tables int
 	if err := s.db.QueryRow("SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'").Scan(&tables); err != nil {
@@ -175,9 +186,29 @@ func (s *Service) initialize() error {
 	if err = tx.Commit(); err != nil {
 		return err
 	}
-	return s.migrateKernels()
+	if err = s.migrateKernels(); err != nil {
+		return err
+	}
+	return s.migrateFingerprints()
 }
 func (s *Service) checkSchema() error {
+	if err := s.checkKernelSchema(); err != nil {
+		return err
+	}
+	for _, statement := range []string{
+		"SELECT config_revision FROM fingerprints LIMIT 0",
+		"SELECT user_data_ref FROM environments LIMIT 0",
+		"SELECT fingerprint_id,revision,kernel_id,profile_json,created_at,action,restored_from FROM fingerprint_revisions LIMIT 0",
+	} {
+		rows, err := s.db.Query(statement)
+		if err != nil {
+			return err
+		}
+		rows.Close()
+	}
+	return nil
+}
+func (s *Service) checkKernelSchema() error {
 	if err := s.checkBaseSchema(); err != nil {
 		return err
 	}
@@ -257,6 +288,8 @@ func (s *Service) Call(request Request) Result {
 		return failure("NATIVE_UNAVAILABLE", "工作区已关闭，请重新打开应用。", true)
 	}
 	switch request.Method {
+	case "Fingerprint.Generate", "Fingerprint.ListRevisions", "Fingerprint.PreviewRestore":
+		return s.fingerprintCall(request)
 	case "Kernel.Install", "Kernel.Verify", "Kernel.Delete", "Kernel.List":
 		return s.kernelCall(request)
 	case "Workspace.Read":
@@ -289,17 +322,38 @@ func (s *Service) Call(request Request) Result {
 		if !exists {
 			return failure("PREVIEW_EXPIRED", "预览已失效，请重新打开配置。", true)
 		}
+		if s.profileUses[d.Preview.Environment.ID] {
+			return failure("PROFILE_BUSY", "环境正被运行或维护使用，请停止后重新生成。", true)
+		}
+		if d.Preview.Environment.CoreID != PendingKernelID {
+			c := d.Preview.Environment.Configuration
+			return s.generateFingerprint(GenerateFingerprint{PreviewID: input.PreviewID, KernelID: c.CoreID, TemplateID: c.FingerprintVersion, Overrides: FingerprintOverrides{Language: c.Language, Timezone: c.Timezone, CPU: c.CPU, Width: c.Width, Height: c.Height}, Regenerate: true})
+		}
 		seed, err := s.newSeed(d.Preview.Environment.Seed)
 		if err != nil {
 			return storageFailure(err)
 		}
 		d.Preview.Environment.Seed = seed
+		if d.Preview.Fingerprint != nil {
+			revision := int64(1)
+			if d.BaseProfile != nil {
+				revision = d.BaseProfile.ConfigRevision + 1
+			}
+			profile, err := frozenProfile(d.Preview.Environment.Configuration, nil, "native-initial-v1", revision, true)
+			if err != nil {
+				return storageFailure(err)
+			}
+			d.Preview.Fingerprint = &FingerprintPreview{Mode: "native", PreviewProfile: profile, CapabilityReport: capabilityReport(profile, nil), Changes: profileChanges(d.BaseProfile, profile), Action: "regenerate"}
+		}
 		s.drafts[input.PreviewID] = d
 		return success(d.Preview, "")
-	case "Environment.Create", "Environment.Update":
+	case "Environment.Create", "Environment.Update", "Fingerprint.CommitRevision":
 		var input Mutation
 		if decode(request.Payload, &input) != nil {
 			return failure("VALIDATION_FAILED", "提交字段无效；不能导入原型快照、身份或浏览数据。", false)
+		}
+		if request.Method == "Fingerprint.CommitRevision" && (input.EnvironmentID == "" || input.ProfileHash == "") {
+			return failure("VALIDATION_FAILED", "提交完整档案需要环境标识和服务预览摘要。", false)
 		}
 		return s.mutate(request.Method, input)
 	case "Operation.Read", "Operation.Cancel":
@@ -341,7 +395,7 @@ func (s *Service) newSeed(exclude string) (string, error) {
 			continue
 		}
 		var count int
-		if err = s.db.QueryRow("SELECT COUNT(*) FROM fingerprints WHERE seed=?", candidate).Scan(&count); err != nil {
+		if err = s.db.QueryRow("SELECT (SELECT COUNT(*) FROM fingerprints WHERE seed=?)+(SELECT COUNT(*) FROM fingerprint_revisions WHERE json_extract(profile_json,'$.seed')=?)", candidate, strconv.FormatInt(candidate, 10)).Scan(&count); err != nil {
 			return "", err
 		}
 		if count == 0 {
@@ -351,10 +405,10 @@ func (s *Service) newSeed(exclude string) (string, error) {
 }
 func (s *Service) readEnvironment(environmentID string) (Environment, int64, string, error) {
 	var e Environment
-	var configJSON, profileID, name, kernelID, profileKernelID, proxyID, seed string
+	var configJSON, profileID, name, kernelID, profileKernelID, proxyID, seed, dataRef string
 	var revision int64
 	var code int
-	err := s.db.QueryRow(`SELECT e.id,e.code,e.created_at,e.revision,e.fingerprint_id,f.config_json,e.name,e.kernel_id,f.kernel_id,COALESCE(e.proxy_id,''),CAST(f.seed AS TEXT) FROM environments e JOIN fingerprints f ON f.id=e.fingerprint_id WHERE e.id=?`, environmentID).Scan(&e.ID, &code, &e.CreatedAt, &revision, &profileID, &configJSON, &name, &kernelID, &profileKernelID, &proxyID, &seed)
+	err := s.db.QueryRow(`SELECT e.id,e.code,e.created_at,e.revision,e.fingerprint_id,f.config_json,e.name,e.kernel_id,f.kernel_id,COALESCE(e.proxy_id,''),CAST(f.seed AS TEXT),e.user_data_ref FROM environments e JOIN fingerprints f ON f.id=e.fingerprint_id WHERE e.id=?`, environmentID).Scan(&e.ID, &code, &e.CreatedAt, &revision, &profileID, &configJSON, &name, &kernelID, &profileKernelID, &proxyID, &seed, &dataRef)
 	if err != nil {
 		return e, 0, "", err
 	}
@@ -363,6 +417,14 @@ func (s *Service) readEnvironment(environmentID string) (Environment, int64, str
 	}
 	if validate(e.Configuration) != "" || e.Name != name || e.CoreID != kernelID || profileKernelID != kernelID || e.ProxyID != proxyID || e.Seed != seed {
 		return e, 0, "", errors.New("inconsistent saved configuration")
+	}
+	profile, err := readProfileFrom(s.db, profileID)
+	if err != nil {
+		return e, 0, "", err
+	}
+	ref, err := dataReference(e.ID)
+	if err != nil || dataRef != ref || !profileMatchesConfiguration(profile.Profile, e.Configuration) {
+		return e, 0, "", errors.New("inconsistent current profile or data reference")
 	}
 	e.Code = fmt.Sprintf("%03d", code)
 	e.Status = "ready"
@@ -399,7 +461,24 @@ func (s *Service) preview(kind, sourceID string) Result {
 		revision = 0
 	}
 	p := Preview{PreviewID: id(), Environment: e, ExpectedRevision: revision}
-	s.drafts[p.PreviewID] = draft{kind, p}
+	d := draft{Kind: kind, Preview: p}
+	if kind == "edit" {
+		if s.profileUses[e.ID] {
+			return failure("PROFILE_BUSY", "请先停止该环境，再编辑关键配置。", true)
+		}
+		_, _, profileID, err := s.readEnvironment(e.ID)
+		if err != nil {
+			return failure("STORAGE_READ_FAILED", "本地档案无法读取。", true)
+		}
+		p.Fingerprint, p.UserDataRef, err = s.previewCurrentProfile(e.ID, profileID, e.Configuration)
+		if err != nil {
+			return failure("STORAGE_READ_FAILED", "本地完整档案无法读取。", true)
+		}
+		base := p.Fingerprint.PreviewProfile
+		d.BaseProfile = &base
+	}
+	d.Preview = p
+	s.drafts[p.PreviewID] = d
 	return success(p, "")
 }
 func validate(config Configuration) string {
@@ -413,7 +492,7 @@ func validate(config Configuration) string {
 	if config.Width < 400 || config.Width > 7680 || config.Height < 400 || config.Height > 7680 {
 		return "窗口宽高应为 400 至 7680 的整数。"
 	}
-	if _, err = time.LoadLocation(config.Timezone); err != nil {
+	if !kernel.ValidTimezone(config.Timezone) {
 		return "请选择有效的 IANA 时区。"
 	}
 	if !map[string]bool{"auto": true, "4": true, "8": true, "12": true, "16": true}[config.CPU] {
@@ -466,6 +545,15 @@ func (s *Service) mutate(method string, input Mutation) Result {
 	if (creating && d.Kind != "create") || (!creating && d.Kind != "edit") {
 		return failure("VALIDATION_FAILED", "预览与提交类型不一致。", false)
 	}
+	if !creating && s.profileUses[d.Preview.Environment.ID] {
+		return failure("PROFILE_BUSY", "环境正被运行或维护使用，未提交设备档案或修改目录。", true)
+	}
+	if method == "Fingerprint.CommitRevision" && input.EnvironmentID != d.Preview.Environment.ID {
+		return failure("VALIDATION_FAILED", "预览不属于所选环境。", false)
+	}
+	if method == "Fingerprint.CommitRevision" && (d.Preview.Fingerprint == nil || d.Preview.Fingerprint.PreviewProfile.KernelID == PendingKernelID || input.ProfileHash != d.Preview.Fingerprint.PreviewProfile.ConfigHash) {
+		return failure("VALIDATION_FAILED", "请生成完整的精确内核档案，并按服务预览摘要提交。", false)
+	}
 	if creating && input.Count != 1 {
 		return failure("CAPABILITY_UNSUPPORTED", "持久批量任务尚未接入，请暂用单个创建；这不是产品数量配额。", false)
 	}
@@ -496,6 +584,10 @@ func (s *Service) mutate(method string, input Mutation) Result {
 	if config.CoreID != PendingKernelID && kernelStatus != "verified" {
 		return failure("KERNEL_INTEGRITY_FAILED", "指定内核未通过核验，未保存；不会改用其他内核。", true)
 	}
+	profile, prepared := s.mutationProfile(tx, d, input, creating)
+	if !prepared.OK {
+		return prepared
+	}
 	if config.ProxyID != "" {
 		if err = tx.QueryRow("SELECT COUNT(*) FROM proxies WHERE id=?", config.ProxyID).Scan(&count); err != nil {
 			return storageFailure(err)
@@ -524,6 +616,18 @@ func (s *Service) mutate(method string, input Mutation) Result {
 		}
 		revision++
 	}
+	if !creating {
+		current, err := readProfileFrom(tx, profileID)
+		if err != nil {
+			return failure("STORAGE_READ_FAILED", "当前完整档案无法读取，未保存。", true)
+		}
+		if d.BaseProfile == nil || current.Profile.ConfigHash != d.BaseProfile.ConfigHash {
+			return failure("REVISION_CONFLICT", "设备档案已改变，请重新打开最新记录。", true)
+		}
+		if profile.ConfigHash != current.Profile.ConfigHash && profile.ConfigRevision != current.Profile.ConfigRevision+1 {
+			return failure("REVISION_CONFLICT", "档案修订序号不连续，未保存。", true)
+		}
+	}
 	if err = tx.QueryRow("SELECT COUNT(*) FROM environments WHERE name=? AND id<>?", config.Name, e.ID).Scan(&count); err != nil {
 		return storageFailure(err)
 	}
@@ -542,16 +646,42 @@ func (s *Service) mutate(method string, input Mutation) Result {
 		if err != nil {
 			return storageFailure(err)
 		}
-		_, err = tx.Exec(`INSERT INTO environments(id,code,name,kernel_id,proxy_id,fingerprint_id,revision,created_at) VALUES(?,?,?,?,?,?,?,?)`, e.ID, code, config.Name, config.CoreID, nullable(config.ProxyID), profileID, revision, e.CreatedAt)
+		ref, referenceErr := dataReference(e.ID)
+		if referenceErr != nil {
+			return storageFailure(referenceErr)
+		}
+		_, err = tx.Exec(`INSERT INTO environments(id,code,name,kernel_id,proxy_id,fingerprint_id,revision,created_at,user_data_ref) VALUES(?,?,?,?,?,?,?,?,?)`, e.ID, code, config.Name, config.CoreID, nullable(config.ProxyID), profileID, revision, e.CreatedAt, ref)
 	} else {
 		_, err = tx.Exec(`UPDATE fingerprints SET seed=?,kernel_id=?,config_json=? WHERE id=?`, config.Seed, config.CoreID, string(configJSON), profileID)
 		if err != nil {
 			return storageFailure(err)
 		}
-		_, err = tx.Exec(`UPDATE environments SET name=?,kernel_id=?,proxy_id=?,revision=? WHERE id=? AND revision=?`, config.Name, config.CoreID, nullable(config.ProxyID), revision, e.ID, input.ExpectedRevision)
+		var updated sql.Result
+		updated, err = tx.Exec(`UPDATE environments SET name=?,kernel_id=?,proxy_id=?,revision=? WHERE id=? AND revision=?`, config.Name, config.CoreID, nullable(config.ProxyID), revision, e.ID, input.ExpectedRevision)
+		if err == nil {
+			count, affectedErr := updated.RowsAffected()
+			if affectedErr != nil {
+				return storageFailure(affectedErr)
+			}
+			if count != 1 {
+				return failure("REVISION_CONFLICT", "环境已被修改，未覆盖较新的配置。", true)
+			}
+		}
 	}
 	if err != nil {
 		return storageFailure(err)
+	}
+	if creating || d.BaseProfile == nil || profile.ConfigHash != d.BaseProfile.ConfigHash {
+		action, restoredFrom := "legacy-edit", int64(0)
+		if d.Preview.Fingerprint != nil && config.CoreID != PendingKernelID {
+			action, restoredFrom = d.Preview.Fingerprint.Action, d.Preview.Fingerprint.RestoredFrom
+		}
+		if creating && config.CoreID == PendingKernelID {
+			action = "pending-create"
+		}
+		if err = appendProfile(tx, profileID, profile, action, restoredFrom); err != nil {
+			return storageFailure(err)
+		}
 	}
 	e.Configuration = config
 	e.Code = fmt.Sprintf("%03d", code)
@@ -565,6 +695,9 @@ func (s *Service) mutate(method string, input Mutation) Result {
 	result := success(map[string]any{"status": "completed", "environment": map[string]any{"record": e, "revision": revision}}, operation.ID)
 	if creating {
 		result = success(map[string]any{"status": "accepted", "operation": operation}, operation.ID)
+	}
+	if method == "Fingerprint.CommitRevision" {
+		result = success(map[string]any{"status": "completed", "environment": map[string]any{"record": e, "revision": revision}, "newRevision": revision, "fingerprintRevision": profile.ConfigRevision}, operation.ID)
 	}
 	resultJSON, _ := json.Marshal(result)
 	if _, err = tx.Exec("INSERT INTO requests(id,signature,result_json) VALUES(?,?,?)", input.RequestID, signature, string(resultJSON)); err != nil {
@@ -668,5 +801,9 @@ func (s *Service) view() (View, error) {
 	if err != nil {
 		return View{}, err
 	}
-	return View{Mode: "native", State: state, KernelRecords: installed, KernelOperations: operations}, nil
+	profiles, references, err := s.profileViews()
+	if err != nil {
+		return View{}, err
+	}
+	return View{Mode: "native", State: state, KernelRecords: installed, KernelOperations: operations, Fingerprints: profiles, DataReferences: references}, nil
 }

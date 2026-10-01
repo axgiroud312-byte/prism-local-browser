@@ -3,6 +3,7 @@ import test from "node:test";
 import { WailsAdapter, type NativeBridge, type NativeRequest } from "../src/application/wails-adapter.ts";
 import type { ApplicationResult, Operation, OperationEvent, WorkspaceView } from "../src/application/contract.ts";
 import type { Environment } from "../src/domain.ts";
+import { applyFingerprint, demoFingerprint, demoProfile, fingerprintMatchesConfiguration } from "../src/application/fingerprint-model.ts";
 
 const empty = (): WorkspaceView => ({ mode: "native", state: { schemaVersion: 1, environments: [], proxies: [], kernels: [], backups: [], activities: [] } });
 const ok = <T>(data: T): ApplicationResult<T> => ({ ok: true, mode: "native", data });
@@ -140,4 +141,43 @@ test("a late running cancel response cannot regress a confirmed kernel terminal 
   const late = await pending;
   assert.ok(late.ok && late.data.state === "cancelled");
   assert.equal(events.length, 1); assert.equal(events[0].type, "OperationCompleted");
+});
+
+test("fingerprint calls whitelist preferences and IDs, not client hardware, paths or commands", async () => {
+  const { app, calls } = fixture(() => rejected);
+  const untrusted = { ...environment, language: "de-DE", timezone: "Europe/Berlin", cpu: "8", gpuVendor: "SYNTHETIC_GPU", arguments: ["--no-sandbox"], userDataDir: "SYNTHETIC_PATH" };
+  await app.generateFingerprint({ previewId: "preview", kernelId: "exact-kernel", templateId: "windows-desktop-v1", overrides: untrusted, regenerate: true });
+  await app.previewFingerprintRestore("preview", 1);
+  await app.listFingerprintRevisions(environment.id);
+  await app.commitFingerprintRevision({ previewId: "preview", environmentId: environment.id, profileHash: "canonical-hash", configuration: untrusted, expectedRevision: 2, requestId: "fingerprint-request" });
+  assert.deepEqual(calls.map(call => call.method), ["Fingerprint.Generate", "Fingerprint.PreviewRestore", "Fingerprint.ListRevisions", "Fingerprint.CommitRevision"]);
+  assert.deepEqual((calls[0].payload as { overrides: unknown }).overrides, { language: "de-DE", timezone: "Europe/Berlin", cpu: "8", width: 1280, height: 800 });
+  assert.ok(!JSON.stringify(calls).includes("SYNTHETIC_GPU"));
+  assert.ok(!JSON.stringify(calls).includes("SYNTHETIC_PATH"));
+  assert.ok(!JSON.stringify(calls).includes("--no-sandbox"));
+  assert.equal((calls[3].payload as { profileHash: string }).profileHash, "canonical-hash");
+});
+
+test("native rejects a nested demo fingerprint preview and previews publish no saved snapshot", async () => {
+  const p = { previewId: "synthetic-preview", environment, expectedRevision: 1, fingerprint: demoFingerprint(demoProfile(environment, 1)) };
+  const { app } = fixture(() => ok(p));
+  const before = app.getSnapshot(); let publishes = 0; app.subscribe(() => publishes++);
+  const result = await app.generateFingerprint({ previewId: p.previewId, kernelId: environment.coreId, templateId: "windows-desktop-v1", overrides: environment });
+  assert.equal(result.ok, false);
+  if (!result.ok) assert.equal(result.error.code, "CAPABILITY_UNSUPPORTED");
+  assert.equal(app.getSnapshot(), before);
+  assert.equal(publishes, 0);
+});
+
+test("applying a delayed device preview keeps unsaved names/proxy/URLs and detects stale preferences", () => {
+  const draft = { ...environment, name: "合成未保存名称", proxyId: "synthetic-proxy", urls: "https://example.test/", cookies: [{ name: "synthetic", value: "", domain: "example.test", path: "/" }] };
+  const profile = demoProfile({ ...environment, seed: "456", cpu: "8" }, 2);
+  const next = applyFingerprint(draft, profile);
+  assert.equal(next.name, draft.name);
+  assert.equal(next.proxyId, draft.proxyId);
+  assert.equal(next.urls, draft.urls);
+  assert.deepEqual(next.cookies, draft.cookies);
+  assert.equal(next.seed, "456");
+  assert.equal(fingerprintMatchesConfiguration(profile, next), true);
+  assert.equal(fingerprintMatchesConfiguration(profile, { ...next, height: 900 }), false);
 });

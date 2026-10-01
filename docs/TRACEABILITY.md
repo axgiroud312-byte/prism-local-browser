@@ -2,7 +2,7 @@
 
 # 需求到实现的追踪表
 
-版本：1.0 · 日期：2026-09-30
+版本：1.0 · 更新日期：2026-10-01
 
 本表将 PRD 的 12 项需求关联到当前前端入口和建议验收。**出现源码入口只代表存在相应原型逻辑，不代表完整桌面能力已经实现，也不代表测试已经通过。** 实际执行记录统一放在 [ACCEPTANCE.md](ACCEPTANCE.md)。
 
@@ -15,7 +15,7 @@
 | ENV-001 环境列表与批量操作    | `/#/environments`；搜索、筛选、选择、分页、批量按钮       | [`App.tsx`](../src/App.tsx)：`App` 内 `visible`、`pageItems`、`selected`，`saveEnvironment`、`launch`、`stop`、`removeEnvironments`                            | 名称/编号/备注搜索及空结果可恢复；筛选和翻页不扩大已选 ID；批量任务只影响所选项，失败单独显示；取消保留已完成项；无产品数量配额。                          |
 | ENV-002 创建与编辑环境        | `/#/environments`；新建/编辑右抽屉                        | [`App.tsx`](../src/App.tsx)：`openCreate`、`openEdit`、`patchDraft`、`saveEnvironment`；[`domain.ts`](../src/domain.ts)：`validateEnvironment`                 | 名称不能为空且不重名；非法网址/窗口尺寸不保存；取消不写入草稿；模板新建生成新 ID 和 seed、不复制 Cookie；代理选择明确；运行中的关键配置受保护。            |
 | ENV-003 启动停止与失败保护    | `/#/environments`；单个与批量启停；`/#/activity` 查看原因 | [`App.tsx`](../src/App.tsx)：`launch`、`stop`、`event`；[`domain.ts`](../src/domain.ts)：`launchError`                                                         | 未检查/失败代理及缺失内核阻止模拟启动；无静默直连；快速重复点击不重复执行；关闭或取消后没有遗留启动任务；状态与日志一致且持续标明模拟。                    |
-| FP-001 固定设备档案           | `/#/environments`；抽屉“指纹”页签                         | [`App.tsx`](../src/App.tsx)：`openCreate`、`regenerate`、`saveEnvironment`；[`domain.ts`](../src/domain.ts)：`uniqueSeed`、`createSnapshot`、`restoreSnapshot` | 新建 seed 在支持范围内且检查冲突；关闭/重开、修改代理及恢复不自动换 seed；重新生成取消不生效、保存后生效；示例 Cookie 不随重生成清空。                     |
+| FP-001 固定设备档案           | `/#/environments`；抽屉“指纹”页签                         | [`App.tsx`](../src/App.tsx)：`generateProfile`、`previewProfileRestore`、`saveEnvironment`；[`档案服务`](../internal/workspace/fingerprints.go)；[`DemoAdapter`](../src/application/demo-adapter.ts) | 新建 seed 在支持范围内且检查冲突；关闭/重开、修改代理及恢复不自动换 seed；生成/回滚只改预览，明确提交后生效；数据引用不随重生成清空。 |
 | FP-002 指纹能力分层           | `/#/environments` 的指纹说明；`/#/kernels` 的能力说明     | [`App.tsx`](../src/App.tsx)：指纹页签、内核能力展示及 `kernel` 对话框；[`domain.ts`](../src/domain.ts)：`Environment`、`Kernel`                                | 区分可配置、内核按 seed 生成和待核对项；原型不展示伪造的真实硬件读值；窗口大小与屏幕指纹区分；更换版本不能宣称已有真实验证。                               |
 | PRX-001 代理导入检测与分配    | `/#/proxies`；导入/编辑/检查；环境抽屉代理绑定            | [`domain.ts`](../src/domain.ts)：`parseProxyText`、`launchError`；[`App.tsx`](../src/App.tsx)：`openProxyImport`、`checkProxy`、代理编辑与绑定控件             | HTTP/HTTPS/SOCKS5、转义凭据和 IPv6 正确解析；错误行有行号；密码不进入列表与日志；被引用代理不能直接删除；检查清楚标为模拟，编辑后重新检查。                |
 | CK-001 Cookie 导入            | `/#/environments`；环境行“导入 Cookie”                    | [`App.tsx`](../src/App.tsx)：`openCookies`、Cookie 预览及提交；[`domain.ts`](../src/domain.ts)：`parseCookies`、`mergeCookies`                                 | JSON/Netscape 格式可预览；错误数据不提交；空 value、会话属性、到期字段及分区信息保留；按完整身份键合并；写入只影响选定示例环境，预览和日志隐藏值。         |
@@ -47,11 +47,18 @@ UX-001、DOC-001 的发布入口在 [安装器](../build/windows/installer/prism
 
 实际验收入口：[安装说明](INSTALLATION.md)、[安装闭环脚本](../scripts/verify-installer.ps1)、[目录与失败测试](../internal/desktopbase/install_windows_test.go)、[逐票记录](verification/T03.md) 与 [最终双环境证据](verification/T03-release-acceptance.json)。T03 本机Windows11与干净Windows runner实际安装闭环、最终远程检查均通过；不将安装壳通过推导为真实浏览器/代理/完整恢复通过。不同构建的hash和源清单分别记录。
 
-### T04 精确内核与能力记录（本地服务 / Windows 诊断增量，验收中）
+### T04 精确内核与能力记录（本地服务 / Windows 诊断增量，已验收）
 
 - CORE-001：[`kernel`模块](../internal/kernel/install_windows.go)取得用户明确选择的官方tag或可信本地ZIP，校验实际归档/程序/完整清单摘要、amd64及PE/CDP真实版本；暂存和新ID发布，不允许原地覆盖。SQLite schema2记录证据、操作/失败和引用，旧pending档案不自动换内核，已引用构建受保护。原生[`内核页`](../src/components/NativeKernelManager.tsx)只读真实服务状态，区分受理与完成、可查询/取消任务。
 - FP-002：[`受控探测`](../internal/kernel/probe_windows.go)保留沙箱，CDP仅通过限定继承句柄的私有匿名pipe。148实际HTTP/网页UA与UA-CH版本、测试种子、CPU、语言和时区回读通过；报告区分observed、source-derived和not-probed。菜单语言、字体/Canvas/音频、屏幕/定位、网络泄漏等未验收项不宣称可编辑或生效。
 - 相关服务/恶意归档/真实junction/文件锁/迁移及前端测试已通过；52JS/13UI票末回归、全部Go/vet及production构建通过。官方/可信本地148真实安装、150缺失/坏hash失败、相同production exe的精确绑定/重开/真实复验/引用保护/闲置移除已记录到[真实证据](verification/T04-kernel-acceptance.json)。补充UI尝试受共享输入干扰后按用户要求stopped，不声称全通过；停止后不再自动点击，默认CI只后台检查与无头实际读值。[CI36728637966](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/36728637966)全通过，PR26合入dc0a148，#5已关闭。正常环境启停、完整指纹修订和升级回滚不是本票范围。
+
+### T05 固定档案与同内核修订（已实现，完整验收待补）
+
+- FP-001、ENV-002：[`固定档案服务`](../internal/workspace/fingerprints.go)与[`事务保存`](../internal/workspace/service.go)实现只读生成、服务预览/hash/原基线校验、schema3历史、同内核回滚新修订及持久幂等。名称/代理不换seed、不增加档案修订；旧pending/ID/seed/生成器版本迁移保留，已有数据引用不变。host-only忙租约供T06接入，不冒充正常运行监督器。
+- FP-002：[`能力白名单编译器`](../internal/kernel/fingerprint_windows.go)只下发所选构建已核验身份/seed/网站语言/时区/CPU参数；菜单语言保持system，GPU/字体等未实测具体值不伪造，窗口不写作屏幕。共享[`预览历史面板`](../src/components/FingerprintRevisionPanel.tsx)区分可配置、seed生成、真实环境和未验证，生成不启动浏览器。
+- [`服务回归`](../internal/workspace/fingerprints_test.go)、[`Demo回归`](../tests/application.test.ts)及[`Wails模式/白名单`](../tests/wails-adapter.test.ts)覆盖事务失败/重试/幂等、原预览冲突、同内核限制、特殊时区拒绝和历史重开。37项相关JS、类型与kernel/workspace Go通过；三项评审P2已修复。
+- [`真实保存档案回读`](../internal/workspace/fingerprints_real_test.go)与[实际样本](verification/T05-saved-profile-observations.json)证明已保存→重生成→回滚→服务重开仍复用原输入，合成文件/引用保持、诊断进程正常退出。样本是2026-09-30评审前工作树结果，不能冒充最终版本全量通过；真实Cookie与正常目录会话未验收。2026-10-01最终复验因C盘不足失败，随后用户要求先开发、停止CI/完整回归；新增UI仍未操作，[逐票记录](verification/T05.md)。
 
 以下关联于 2026-09-30 发布，表示计划实现范围，不能据此判断已完成。当前状态与 blocking 依赖以 GitHub 为准；完整顺序见 [开发票据索引](ISSUES.md)，共同范围见 [总规格 Issue](https://github.com/axgiroud312-byte/prism-local-browser/issues/1)。
 
