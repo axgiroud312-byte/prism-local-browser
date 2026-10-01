@@ -87,6 +87,7 @@ import { applyFingerprint, fingerprintMatchesConfiguration } from "./application
 import prdText from "../docs/PRD.md?raw";
 import developmentText from "../docs/DEVELOPMENT.md?raw";
 import kernelText from "../docs/KERNEL.md?raw";
+import userGuideText from "../docs/USER_GUIDE.md?raw";
 const Markdown = lazy(() => import("react-markdown"));
 import remarkGfm from "remark-gfm";
 import { NativeKernelManager } from "./components/NativeKernelManager";
@@ -98,6 +99,7 @@ import { NativeBatchDialog, type NativeBatchDialogInput } from "./components/Nat
 import { readRuntimeStartPlan } from "./application/runtime-start-plan";
 import { NativeBackupManager } from "./components/NativeBackupManager";
 import { NativeRecycleManager } from "./components/NativeRecycleManager";
+import { NativeDiagnostics } from "./components/NativeDiagnostics";
 import { FingerprintRevisionPanel } from "./components/FingerprintRevisionPanel";
 
 type Route =
@@ -230,7 +232,7 @@ function Field({
 function docHref(href?: string) {
   if (!href) return "#/guide";
   if (/^(https?:|#|\/#)/.test(href)) return href;
-  if (/(?:PRD|DEVELOPMENT|KERNEL)\.md/.test(href)) return "#/guide";
+  if (/(?:PRD|DEVELOPMENT|KERNEL|USER_GUIDE)\.md/.test(href)) return "#/guide";
   if (href.includes("README.md"))
     return "https://github.com/axgiroud312-byte/prism-local-browser";
   return (
@@ -298,7 +300,7 @@ export default function App({ application }: { application: ApplicationService }
   > | null>(null);
   const [groupName, setGroupName] = useState("");
   const [deleteData, setDeleteData] = useState(false);
-  const [docTab, setDocTab] = useState<"prd" | "development" | "kernel">("prd");
+  const [docTab, setDocTab] = useState<"user" | "prd" | "development" | "kernel">(nativeMode ? "user" : "prd");
   const [batch, setBatch] = useState<{
     label: string;
     done: number;
@@ -1939,10 +1941,10 @@ export default function App({ application }: { application: ApplicationService }
             </>
           )}
           {route === "activity" && (
-            <section className="work-card">
+            <>{nativeMode && <NativeDiagnostics application={application} />}<section className="work-card">
               <div className="section-toolbar">
                 <h2>最近操作</h2>
-                <Button
+                {!nativeMode && <Button
                   onClick={() =>
                     download(
                       "prism-activity.json",
@@ -1952,7 +1954,7 @@ export default function App({ application }: { application: ApplicationService }
                 >
                   <Download size={15} />
                   导出记录
-                </Button>
+                </Button>}
               </div>
               <div className="activity-list">
                 {state.activities.map((a) => {
@@ -1984,7 +1986,7 @@ export default function App({ application }: { application: ApplicationService }
                   </div>
                 ); })}
               </div>
-            </section>
+            </section></>
           )}
           {route === "guide" && (
             <>
@@ -1993,9 +1995,9 @@ export default function App({ application }: { application: ApplicationService }
                   <BookOpen size={28} />
                 </div>
                 <div>
-                  <h2>从产品需求，走到可实现的页面</h2>
+                  <h2>{nativeMode ? "本机使用指南与排错" : "从产品需求，走到可实现的页面"}</h2>
                   <p>
-                    {nativeMode ? "环境配置由本机 SQLite 持久保存。真实内核、代理、Cookie 和完整恢复按后续任务接入；未接入功能不会使用模拟成功。" : "需求编号贯穿页面、数据模型与验收项。当前交互原型全部使用本地示例数据。"}
+                    {nativeMode ? "当前为开发源码能力：代理启动仍受系统隔离门禁保护，完整桌面验收和新安装包待交付。按指南查看具体步骤、诊断和验证状态。" : "需求编号贯穿页面、数据模型与验收项。当前交互原型全部使用本地示例数据。"}
                   </p>
                 </div>
                 <Tag kind="blue-tag">v1.0 交付规格</Tag>
@@ -2037,6 +2039,7 @@ export default function App({ application }: { application: ApplicationService }
                 <div className="list-tabs">
                   {(
                     [
+                      { id: "user", text: "本机使用指南" },
                       { id: "prd", text: "产品需求 PRD" },
                       { id: "development", text: "开发与验收" },
                       { id: "kernel", text: "内核适配合同" },
@@ -2055,12 +2058,12 @@ export default function App({ application }: { application: ApplicationService }
                       className="compact"
                       onClick={() =>
                         download(
-                          docTab === "prd"
+                          docTab === "user" ? "USER_GUIDE.md" : docTab === "prd"
                             ? "PRD.md"
                             : docTab === "kernel"
                               ? "KERNEL.md"
                               : "DEVELOPMENT.md",
-                          docTab === "prd"
+                          docTab === "user" ? userGuideText : docTab === "prd"
                             ? prdText
                             : docTab === "kernel"
                               ? kernelText
@@ -2091,11 +2094,11 @@ export default function App({ application }: { application: ApplicationService }
                             onClick={(ev) => {
                               if (
                                 href &&
-                                /(?:PRD|DEVELOPMENT|KERNEL)\.md/.test(href)
+                                /(?:PRD|DEVELOPMENT|KERNEL|USER_GUIDE)\.md/.test(href)
                               ) {
                                 ev.preventDefault();
                                 setDocTab(
-                                  href.includes("KERNEL")
+                                  href.includes("USER_GUIDE") ? "user" : href.includes("KERNEL")
                                     ? "kernel"
                                     : href.includes("DEVELOPMENT")
                                       ? "development"
@@ -2112,7 +2115,7 @@ export default function App({ application }: { application: ApplicationService }
                         ),
                       }}
                     >
-                      {docTab === "prd"
+                      {docTab === "user" ? userGuideText : docTab === "prd"
                         ? prdText
                         : docTab === "kernel"
                           ? kernelText
@@ -3216,6 +3219,7 @@ export default function App({ application }: { application: ApplicationService }
             </div>
             <div className="modal-body">
               <p>{storageIssue}</p>
+              {nativeMode && workspace.issue?.code !== "WORKSPACE_LOADING" && <NativeDiagnostics application={application} />}
             </div>
             <div className="modal-footer">
               {workspace.damagedRecord !== undefined ? (

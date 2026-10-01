@@ -171,6 +171,16 @@ app-data/
 
 ## 6 本地应用接口
 
+### T21 独立脱敏诊断（本地源码，未运行验收）
+
+[`DesktopApp`](../main.go)在普通Service分发之前提供`Diagnostics.Preview/Export/EndVerification`，因此数据库Open失败也能返回最小报告；只有native模式。预览无客户端输入，后两者只接收`reportId/requestId`，路径由host系统保存器提供；不调用Workspace.Read、待写flush、浏览目录、DPAPI或内核探测。
+
+[`报告`](../internal/workspace/diagnostics_report.go)采用独立结构/固定枚举，未知文本变other/unknown。只取一致只读事务中的计数和有界记录，schema10无需新迁移。TryLock繁忙立即最小报告，SQL查询有10s context；坏节标partial。最多100任务/100会话/20内核，单条过大或不可解析计omitted；只导出已保存状态与host维护标志，不声称实时进程/网络结果。进度含明确`progressMetric`。
+
+[`导出host`](../internal/workspace/diagnostics_host.go)冻结15分钟预览及实际JSON字节/SHA-256，保存至工作区外新JSON，使用原目录/文件句柄发布，不覆盖。失败仅对自有未发布临时对象标删除；发布后关闭未知只核对原文件，不重写。应用会话内保留按requestId的输入/结果账本，旧请求换报告拒绝；账本不跨应用持久化，重启不自动重放。EndVerification在无在途操作时返回已知回执或明确unconfirmed，保留原记录，允许用户结束核实再发新请求。
+
+[`adapter`](../src/application/diagnostics-client.ts)持有离页状态，合并同操作在途Promise，未知响应保留原请求。固定格式/模式/报告ID/摘要匹配才确认；明确写入前失败才允许新请求。页面展示报告排除字段与not-checked签名状态，实际签名仍来自发布构建记录。没有云上传与新依赖。[T21清单](verification/T21.md)。
+
 ### T13 持久批次与服务端分页（源码已编写，未运行验收）
 
 - `Batch.Preview`接受`kind: create`与原生创建草稿/配置/数量，或`clone`与明确sourceIds，或`assign`与逐环境proxyId映射。30分钟计划冻结安全配置/固定档案、源/目标环境修订及节点修订；不接受秘密、任意路径、浏览数据或客户端身份。创建用模板与正JS安全整数count虚拟表示，预览不为所有项分配ID/seed/目录；不是环境总数配额。

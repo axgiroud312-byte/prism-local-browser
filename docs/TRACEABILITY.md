@@ -27,6 +27,12 @@
 
 ## 已发布的桌面开发任务
 
+### T21 诊断与指南独立部分（本地源码，未运行验收）
+
+- UX-001、DOC-001：[`NativeDiagnostics`](../src/components/NativeDiagnostics.tsx)接活动页/数据库打开失败对话框，冻结预览、原请求核实及明确结束核实；[`adapter`](../src/application/diagnostics-client.ts)跨离页保留未知状态。原native活动原文导出改为脱敏报告。
+- DATA-001：[`独立白名单报告`](../internal/workspace/diagnostics_report.go)及[`host保存`](../internal/workspace/diagnostics_host.go)不读取浏览内容/凭据、不flush待写状态；工作区外新文件、原字节SHA及应用会话内回执去重。签名not-checked不冒充签名检测。
+- DOC-001与12需求：[使用指南](USER_GUIDE.md)接入指南页及下载；旧[安装说明](INSTALLATION.md)标明旧包适用范围。[T21](verification/T21.md)保留源码/验收区分，T11/T14及完整安装包证据仍缺，未计入完成。
+
 ### T20 选定迁移与升级前恢复（本地源码，未运行验收）
 
 - CORE-001：[`schema10/默认构建与引用保护`](../internal/workspace/kernel_default.go)仅影响后续草稿；当前/历史/默认/迁移备份引用全部参与删除保护，缺失构建不替代。

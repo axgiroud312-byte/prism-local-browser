@@ -15,6 +15,7 @@ import { invalidRecycleOperation, validRecyclePage } from "../src/application/re
 import type { NativeRecycleRequest, NativeRecyclePage } from "../src/application/contract.ts";
 import type { NativeMigrationRequest, NativeMigrationPreview, KernelDefaultRequest } from "../src/application/contract.ts";
 import { invalidMigrationOperation, validMigrationPreview } from "../src/application/migration-model.ts";
+import type { DiagnosticPreview, DiagnosticReceipt } from "../src/application/contract.ts";
 
 const empty = (): WorkspaceView => ({ mode: "native", state: { schemaVersion: 1, environments: [], proxies: [], kernels: [], backups: [], activities: [] } });
 const recycleRequest = (): NativeRecycleRequest => ({ previewId: "synthetic-recycle-preview", confirm: true, requestId: "synthetic-recycle-request" });
@@ -43,6 +44,76 @@ const restoreOperation = (): Operation => ({ id: "synthetic-restore-operation", 
 
 const migrationRequest = (): NativeMigrationRequest => ({ previewId: "synthetic-migration-preview", confirm: true, requestId: "synthetic-migration-request" });
 const migrationOperation = (): Operation => ({ id: "synthetic-migration", kind: "migration", state: "running", stage: "trial-running", total: 1, completedIds: [], cancelRequested: false, environmentId: "synthetic-environment", migrationReport: { mode: "native", requestId: "synthetic-migration-request", previewId: "synthetic-migration-preview", environmentId: "synthetic-environment", oldKernelId: "old", newKernelId: "new", seed: "1256789", sequence: 4, backupVerified: true, archiveSha256: "a".repeat(64), trialExited: false, committed: false, protected: true } });
+
+const diagnosticPreview = (): DiagnosticPreview => ({ reportId: "00000000-0000-4000-8000-000000000001", sha256: "a".repeat(64), bytes: 500, expiresAt: "2030-01-01T00:00:00Z", report: { format: "prism-local-diagnostics", schemaVersion: 1, generatedAt: "2026-10-02T00:00:00Z", application: { version: "0.3.0", platform: "windows", architecture: "amd64", goVersion: "go1.27.1", signature: "not-checked" }, proxyProtection: "unavailable", excluded: [], workspace: { status: "unavailable", counts: {}, maintenance: [], operations: [], sessions: [], kernels: [], unavailableSections: [], omittedRecords: 0, observationSource: "saved-records-and-host-maintenance-not-live-probe", operationLimit: 100, sessionLimit: 100, kernelLimit: 20 } } });
+
+test("diagnostic transport loss retains the original export across subscribers", async () => {
+  const p = diagnosticPreview(); let attempt = 0;
+  const { app, calls } = fixture(r => {
+    if (r.method === "Diagnostics.Preview") return ok(p);
+    if (++attempt === 1) throw new Error("SYNTHETIC_PRIVATE_TRANSPORT_ERROR");
+    return ok({ status: "saved", reportId: p.reportId, sha256: p.sha256 });
+  });
+  await app.previewDiagnostics();
+  const unsubscribe = app.subscribe(() => {});
+  assert.equal((await app.exportDiagnostics()).ok, false); unsubscribe();
+  assert.equal(app.getDiagnosticState().pending, true);
+  assert.ok(!JSON.stringify(app.getDiagnosticState()).includes("SYNTHETIC_PRIVATE"));
+  const before = calls.length;
+  assert.equal((await app.previewDiagnostics()).ok, false); assert.equal(calls.length, before);
+  assert.ok((await app.exportDiagnostics()).ok);
+  assert.deepEqual(calls[1].payload, calls[2].payload);
+  assert.deepEqual(Object.keys(calls[1].payload as object).sort(), ["reportId", "requestId"]);
+  assert.equal(app.getDiagnosticState().pending, false);
+  assert.equal(app.getDiagnosticState().receipt?.status, "saved");
+  assert.ok(calls.every(r => !r.method.startsWith("Workspace.")));
+});
+
+test("diagnostic preview and save coalesce concurrent calls", async () => {
+  const p = diagnosticPreview();
+  let finishPreview!: (r: ApplicationResult<DiagnosticPreview>) => void;
+  let finishExport!: (r: ApplicationResult<DiagnosticReceipt>) => void;
+  const preview = new Promise<ApplicationResult<DiagnosticPreview>>(resolve => { finishPreview = resolve; });
+  const saved = new Promise<ApplicationResult<DiagnosticReceipt>>(resolve => { finishExport = resolve; });
+  const { app, calls } = fixture(r => r.method === "Diagnostics.Preview" ? preview : saved);
+  const a = app.previewDiagnostics(), b = app.previewDiagnostics(); assert.equal(a, b);
+  assert.equal((await app.exportDiagnostics()).ok, false);
+  finishPreview(ok(p)); await a;
+  const c = app.exportDiagnostics(), d = app.exportDiagnostics(); assert.equal(c, d);
+  assert.equal((await app.endDiagnosticVerification()).ok, false);
+  finishExport(ok({ status: "cancelled", reportId: p.reportId })); await c;
+  assert.equal(calls.length, 2); assert.equal(app.getDiagnosticState().pending, false);
+});
+
+test("diagnostic wrong hash, null and demo receipts never acknowledge the save", async () => {
+  for (const receipt of [ok({ status: "saved", reportId: diagnosticPreview().reportId, sha256: "b".repeat(64) }), ok(null), { ...ok({ status: "cancelled", reportId: diagnosticPreview().reportId }), mode: "demo" as const }]) {
+    const { app } = fixture(r => r.method === "Diagnostics.Preview" ? ok(diagnosticPreview()) : receipt);
+    await app.previewDiagnostics();
+    assert.equal((await app.exportDiagnostics()).ok, false);
+    assert.equal(app.getDiagnosticState().pending, true);
+    assert.equal(app.getDiagnosticState().receipt, undefined);
+  }
+});
+
+test("diagnostic definite write refusal permits an explicitly new attempt", async () => {
+  let fail = true; const p = diagnosticPreview();
+  const { app, calls } = fixture(r => r.method === "Diagnostics.Preview" ? ok(p) : fail ? rejected : ok({ status: "cancelled", reportId: p.reportId }));
+  await app.previewDiagnostics(); await app.exportDiagnostics();
+  assert.equal(app.getDiagnosticState().pending, false); fail = false;
+  await app.exportDiagnostics();
+  assert.notDeepEqual(calls[1].payload, calls[2].payload);
+});
+
+test("diagnostic explicit end keeps the unknown fact and unblocks a new preview", async () => {
+  const p = diagnosticPreview();
+  const { app, calls } = fixture(r => r.method === "Diagnostics.Preview" ? ok(p) : r.method === "Diagnostics.EndVerification" ? ok({ status: "unconfirmed", reportId: p.reportId }) : { ok: false, mode: "native", error: { code: "DIAGNOSTICS_RESULT_UNCONFIRMED", message: "original file inaccessible", retryable: true } });
+  await app.previewDiagnostics(); await app.exportDiagnostics();
+  assert.ok((await app.endDiagnosticVerification()).ok);
+  assert.deepEqual(calls[1].payload, calls[2].payload);
+  assert.equal(app.getDiagnosticState().receipt?.status, "unconfirmed");
+  assert.equal(app.getDiagnosticState().pending, false);
+  assert.ok((await app.previewDiagnostics()).ok);
+});
 
 test("migration acceptance keeps its original owner through transport uncertainty", async () => {
   const task = migrationOperation();

@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"unsafe"
 
 	"github.com/axgiroud312-byte/prism-local-browser/internal/desktopbase"
 	"github.com/google/uuid"
@@ -27,12 +28,16 @@ type Output struct {
 }
 
 func OutputPaths(root, destination, operationID string) (string, string, error) {
+	return outputPaths(root, destination, operationID, Extension)
+}
+
+func outputPaths(root, destination, operationID, extension string) (string, string, error) {
 	parsed, err := uuid.Parse(operationID)
 	if err != nil || parsed.String() != operationID {
 		return "", "", errors.New("invalid backup owner")
 	}
 	destination, err = filepath.Abs(destination)
-	if err != nil || strings.HasPrefix(destination, `\\`) || filepath.VolumeName(destination) == "" || !strings.EqualFold(filepath.Ext(destination), Extension) || !ValidName(filepath.Base(destination)) {
+	if err != nil || strings.HasPrefix(destination, `\\`) || filepath.VolumeName(destination) == "" || !strings.EqualFold(filepath.Ext(destination), extension) || !ValidName(filepath.Base(destination)) {
 		return "", "", errors.New("unsupported backup destination")
 	}
 	root, err = filepath.Abs(root)
@@ -52,6 +57,26 @@ func NewOutput(root, destination, operationID string) (_ *Output, resultErr erro
 		return nil, err
 	}
 	return newOutput(root, destination, temporary, "")
+}
+
+// Diagnostics use the same pinned, no-overwrite publisher with a fixed JSON
+// extension. No caller-supplied extension or workspace destination is accepted.
+func NewDiagnosticOutput(root, destination, requestID string) (*Output, error) {
+	destination, temporary, err := outputPaths(root, destination, requestID, ".json")
+	if err != nil {
+		return nil, err
+	}
+	return newOutput(root, destination, temporary, "")
+}
+
+// Discard marks only this still-open unpublished temporary object for deletion.
+// It never follows a path or deletes a published destination.
+func (o *Output) Discard() error {
+	if o.published {
+		return errors.New("published output cannot be discarded")
+	}
+	remove := byte(1)
+	return windows.SetFileInformationByHandle(windows.Handle(o.File.Fd()), windows.FileDispositionInfo, &remove, uint32(unsafe.Sizeof(remove)))
 }
 
 // Host-only, fixed destination for a journal-owned pre-upgrade backup. The

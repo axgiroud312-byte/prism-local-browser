@@ -141,6 +141,10 @@ export interface ApplicationService {
   readonly compatibility?: DemoCompatibility;
   getSnapshot(): WorkspaceView;
   refresh?(): Promise<ApplicationResult<WorkspaceView>>;
+  getDiagnosticState?(): DiagnosticState;
+  previewDiagnostics?(): Promise<ApplicationResult<DiagnosticPreview>>;
+  exportDiagnostics?(): Promise<ApplicationResult<DiagnosticReceipt>>;
+  endDiagnosticVerification?(): Promise<ApplicationResult<DiagnosticReceipt>>;
   subscribe(listener: () => void): () => void;
   subscribeEvents(listener: (event: OperationEvent) => void): () => void;
   previewEnvironment(request: { kind: "create" | "edit"; sourceId?: string }): Promise<ApplicationResult<EnvironmentPreview>>;
@@ -210,6 +214,27 @@ export interface ApplicationService {
 export interface NativeBackupExportRequest {
   scope: "all" | "selected"; environmentIds: string[]; destinationToken: string; stopRunning: boolean; requestId: string;
 }
+
+export interface DiagnosticReport {
+  format: "prism-local-diagnostics"; schemaVersion: 1; generatedAt: string;
+  application: { version: string; platform: string; architecture: string; goVersion: string; signature: "not-checked" };
+  proxyProtection: "available" | "unavailable"; excluded: string[];
+  workspace: {
+    status: "available" | "partial" | "unavailable"; startupCode?: string; schemaVersion?: number;
+    counts: Record<string, number>; maintenance: DiagnosticOperation[]; operations: DiagnosticOperation[];
+    sessions: { label: string; state: string; networkPolicy: string; errorCode?: string; networkErrorCode?: string; containment: string; needsReconcile: boolean; persistencePending: boolean }[];
+    kernels: { label: string; version: string; status: string; archiveSha256: string; executableSha256: string }[];
+    unavailableSections: string[]; omittedRecords: number; observationSource: string;
+    operationLimit: number; sessionLimit: number; kernelLimit: number;
+  };
+}
+export interface DiagnosticOperation {
+  label: string; kind: string; state: string; stage: string; errorCode?: string;
+  persistencePending: boolean; cancelRequested: boolean; total: number; completed: number; progressMetric: string;
+}
+export interface DiagnosticPreview { reportId: string; sha256: string; bytes: number; expiresAt: string; report: DiagnosticReport }
+export interface DiagnosticReceipt { status: "saved" | "cancelled" | "unconfirmed"; reportId: string; sha256?: string }
+export interface DiagnosticState { preview?: DiagnosticPreview; pending: boolean; busy: boolean; receipt?: DiagnosticReceipt; error?: ApplicationError }
 export interface NativeRestorePreview {
   mode: "native"; previewId: string; format: "prism-local-backup"; name: string;
   archiveSha256: string; manifestSha256: string; scope: "all" | "selected"; createdAt: string; expiresAt: string;

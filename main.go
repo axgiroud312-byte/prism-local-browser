@@ -28,9 +28,13 @@ var applicationVersion = "0.3.0-preview.1"
 type DesktopApp struct {
 	service      *workspace.Service
 	startupError *workspace.Error
+	diagnostics  *workspace.DiagnosticHost
 }
 
 func (app *DesktopApp) Call(request workspace.Request) workspace.Result {
+	if app.diagnostics != nil && (request.Method == "Diagnostics.Preview" || request.Method == "Diagnostics.Export" || request.Method == "Diagnostics.EndVerification") {
+		return app.diagnostics.Call(request)
+	}
 	if app.service == nil {
 		if app.startupError != nil {
 			return workspace.Result{Mode: "native", Error: app.startupError}
@@ -107,6 +111,15 @@ func main() {
 	if errors.As(openErr, &safeOpenError) {
 		app.startupError = safeOpenError
 	}
+	if openErr != nil && app.startupError == nil {
+		app.startupError = &workspace.Error{Code: "STORAGE_READ_FAILED", Message: "本地数据库无法打开，原数据未重置。", Retryable: true}
+	}
+	app.diagnostics = workspace.NewDiagnosticHost(root, applicationVersion, service, app.startupError, func() (string, error) {
+		if desktopContext == nil {
+			return "", errors.New("desktop not ready")
+		}
+		return wailsruntime.SaveFileDialog(desktopContext, wailsruntime.SaveDialogOptions{Title: "保存脱敏诊断（请选择新的 JSON 文件）", DefaultFilename: "prism-diagnostics.json", Filters: []wailsruntime.FileFilter{{DisplayName: "脱敏诊断 JSON", Pattern: "*.json"}}})
+	})
 	err = wails.Run(&options.App{
 		Title: "棱镜浏览器 · 开发预览 " + applicationVersion, Width: 1440, Height: 1000, MinWidth: 720, MinHeight: 600,
 		AssetServer: &assetserver.Options{Assets: assets}, Bind: []interface{}{app},

@@ -15,6 +15,7 @@ import { confirmsBackupRequest, invalidBackupOperation } from "./backup-model.ts
 import { confirmsRestoreRequest, invalidRestoreOperation } from "./restore-model.ts";
 import { confirmsRecycleRequest, invalidRecycleOperation, validRecyclePage } from "./recycle-model.ts";
 import { confirmsMigrationRequest, invalidMigrationOperation, validMigrationPreview } from "./migration-model.ts";
+import { DiagnosticsClient } from "./diagnostics-client.ts";
 
 export interface NativeRequest { mode: "native"; method: string; payload: unknown }
 export type NativeBridge = <T>(request: NativeRequest) => Promise<ApplicationResult<T>>;
@@ -52,6 +53,11 @@ export class WailsAdapter implements ApplicationService {
   private migrationRefusal?: string;
   private pendingKernelDefault?: KernelDefaultRequest;
   private rollbackOwner?: MigrationRollbackOwner;
+  private diagnostics = new DiagnosticsClient((method, payload) => this.invoke(method, payload), () => this.publish());
+  getDiagnosticState = () => this.diagnostics.getState();
+  previewDiagnostics = () => this.diagnostics.preview();
+  exportDiagnostics = () => this.diagnostics.export();
+  endDiagnosticVerification = () => this.diagnostics.endVerification();
   constructor(bridge: NativeBridge) { this.bridge = bridge; }
   getSnapshot = () => this.view;
   subscribe = (listener: () => void) => { this.listeners.add(listener); return () => { this.listeners.delete(listener); }; };
