@@ -3,6 +3,7 @@ package workspace
 import (
 	"encoding/json"
 	"github.com/axgiroud312-byte/prism-local-browser/internal/kernel"
+	"github.com/axgiroud312-byte/prism-local-browser/internal/proxy"
 )
 
 const PendingKernelID = "kernel-pending"
@@ -73,6 +74,8 @@ type Operation struct {
 	Report             *kernel.Report `json:"report,omitempty"`
 	EnvironmentID      string         `json:"environmentId,omitempty"`
 	SessionID          string         `json:"sessionId,omitempty"`
+	ProxyID            string         `json:"proxyId,omitempty"`
+	ProxyReport        *proxy.Report  `json:"proxyReport,omitempty"`
 }
 type Mutation struct {
 	PreviewID        string        `json:"previewId"`
@@ -111,13 +114,15 @@ type State struct {
 	Activities    []Activity    `json:"activities"`
 }
 type View struct {
-	Mode             string                     `json:"mode"`
-	State            State                      `json:"state"`
-	KernelRecords    []KernelView               `json:"kernelRecords"`
-	KernelOperations []Operation                `json:"kernelOperations"`
-	Fingerprints     map[string]ProfileRevision `json:"fingerprints"`
-	DataReferences   map[string]string          `json:"dataReferences"`
-	RuntimeSessions  map[string]RuntimeSession  `json:"runtimeSessions"`
+	Mode               string                     `json:"mode"`
+	State              State                      `json:"state"`
+	KernelRecords      []KernelView               `json:"kernelRecords"`
+	KernelOperations   []Operation                `json:"kernelOperations"`
+	Fingerprints       map[string]ProfileRevision `json:"fingerprints"`
+	DataReferences     map[string]string          `json:"dataReferences"`
+	RuntimeSessions    map[string]RuntimeSession  `json:"runtimeSessions"`
+	NativeProxyRecords []ProxyView                `json:"nativeProxyRecords"`
+	ProxyOperations    []Operation                `json:"proxyOperations"`
 }
 type KernelView struct {
 	kernel.Record

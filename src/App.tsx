@@ -90,6 +90,7 @@ import kernelText from "../docs/KERNEL.md?raw";
 const Markdown = lazy(() => import("react-markdown"));
 import remarkGfm from "remark-gfm";
 import { NativeKernelManager } from "./components/NativeKernelManager";
+import { NativeProxyManager } from "./components/NativeProxyManager";
 import { FingerprintRevisionPanel } from "./components/FingerprintRevisionPanel";
 
 type Route =
@@ -263,6 +264,7 @@ export default function App({ application }: { application: ApplicationService }
   const previewOpenSequence = useRef(0);
   const fingerprintBusy = useRef(false);
   const [dialog, setDialog] = useState<Dialog | null>(null);
+  const [nativeProxyImportOpen, setNativeProxyImportOpen] = useState(false);
   const [formError, setFormError] = useState("");
   const [generating, setGenerating] = useState(false);
   const [savePending, setSavePending] = useState(false);
@@ -774,7 +776,7 @@ export default function App({ application }: { application: ApplicationService }
     setMenu(null);
   }
   function openProxyImport() {
-    if (nativeMode) { notify("真实代理导入与凭据保护尚未接入，请勿填写真实凭据。", true); return; }
+    if (nativeMode) { setNativeProxyImportOpen(true); return; }
     setDialog({ kind: "proxy" });
     setProxyText("");
     setProxyRows([]);
@@ -1497,7 +1499,8 @@ export default function App({ application }: { application: ApplicationService }
               </div>
             </>
           )}
-          {route === "proxies" && (
+          {route === "proxies" && nativeMode && <NativeProxyManager application={application} workspace={workspace} importOpen={nativeProxyImportOpen} onImportOpenChange={setNativeProxyImportOpen} />}
+          {route === "proxies" && !nativeMode && (
             <>
               <div className="info-strip">
                 <Info size={18} />

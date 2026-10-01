@@ -23,6 +23,7 @@ import (
 	_ "time/tzdata"
 
 	"github.com/axgiroud312-byte/prism-local-browser/internal/kernel"
+	"github.com/axgiroud312-byte/prism-local-browser/internal/proxy"
 	"modernc.org/sqlite"
 )
 
@@ -37,6 +38,10 @@ type Options struct {
 	// Test seam only. The desktop always launches the verified real process.
 	LaunchRuntime  func(context.Context, RuntimeLaunch) (RuntimeProcess, error)
 	InspectRuntime func(RuntimeSession) (kernel.ManagedRecovery, error)
+	// Host-only seams. The desktop always uses Windows user DPAPI and TLS checks.
+	ProtectProxySecret   func(string, []byte) ([]byte, error)
+	UnprotectProxySecret func(string, []byte) ([]byte, error)
+	CheckProxy           func(context.Context, proxy.Configuration, *proxy.Credentials, func(proxy.Step)) proxy.Report
 }
 type draft struct {
 	Kind        string
@@ -44,24 +49,30 @@ type draft struct {
 	BaseProfile *DeviceProfile
 }
 type Service struct {
-	mu             sync.Mutex
-	db             *sql.DB
-	drafts         map[string]draft
-	options        Options
-	root           string
-	archives       map[string]string
-	kernelTask     *kernelTask
-	workers        sync.WaitGroup
-	closed         bool
-	profileUses    map[string]bool
-	runtimeSlots   map[string]*runtimeSlot
-	startGate      chan struct{}
-	closeDone      chan struct{}
-	closeError     error
-	closeOnce      sync.Once
-	closeRequested atomic.Bool
-	runtimePending map[string]*runtimePendingWrite
-	runtimeResults map[string]Operation
+	mu              sync.Mutex
+	db              *sql.DB
+	drafts          map[string]draft
+	options         Options
+	root            string
+	archives        map[string]string
+	kernelTask      *kernelTask
+	workers         sync.WaitGroup
+	closed          bool
+	profileUses     map[string]bool
+	runtimeSlots    map[string]*runtimeSlot
+	startGate       chan struct{}
+	closeDone       chan struct{}
+	closeError      error
+	closeOnce       sync.Once
+	closeRequested  atomic.Bool
+	runtimePending  map[string]*runtimePendingWrite
+	runtimeResults  map[string]Operation
+	proxyImport     *proxyImportDraft
+	proxyRequestKey []byte
+	proxyChecks     map[string]*proxyCheckTask
+	proxyResults    map[string]Operation
+	proxyPending    map[string]*proxyCheckWrite
+	proxyCheckGate  chan struct{}
 }
 
 func failure(code, message string, retryable bool) Result {
@@ -112,6 +123,7 @@ func Open(root string, options Options) (*Service, error) {
 	}
 	db.SetMaxOpenConns(1)
 	s := &Service{db: db, root: absolute, drafts: map[string]draft{}, archives: map[string]string{}, profileUses: map[string]bool{}, runtimeSlots: map[string]*runtimeSlot{}, startGate: make(chan struct{}, 1), closeDone: make(chan struct{}), runtimePending: map[string]*runtimePendingWrite{}, runtimeResults: map[string]Operation{}, options: options}
+	s.proxyChecks, s.proxyResults, s.proxyPending, s.proxyCheckGate = map[string]*proxyCheckTask{}, map[string]Operation{}, map[string]*proxyCheckWrite{}, make(chan struct{}, 4)
 	if err = s.initialize(); err != nil {
 		db.Close()
 		return nil, err
@@ -121,6 +133,10 @@ func Open(root string, options Options) (*Service, error) {
 		return nil, err
 	}
 	if err = s.recoverRuntimeSessions(); err != nil {
+		db.Close()
+		return nil, err
+	}
+	if err = s.recoverProxyChecks(); err != nil {
 		db.Close()
 		return nil, err
 	}
@@ -153,6 +169,10 @@ func (s *Service) beginShutdown() {
 	if s.kernelTask != nil {
 		s.kernelTask.cancel()
 	}
+	s.discardProxyImport()
+	for _, task := range s.proxyChecks {
+		task.cancel()
+	}
 	processes := []RuntimeProcess{}
 	for _, slot := range s.runtimeSlots {
 		slot.cancel()
@@ -182,9 +202,15 @@ func (s *Service) closeResources(processes []RuntimeProcess, finished chan struc
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.flushRuntimePersistence()
+	s.flushProxyPersistence()
+	proxy.Wipe(s.proxyRequestKey)
+	s.proxyRequestKey = nil
 	s.closeError = s.db.Close()
 	if len(s.runtimePending) != 0 {
 		s.closeError = errors.Join(s.closeError, errors.New("runtime observations could not all be persisted before shutdown"))
+	}
+	if len(s.proxyPending) != 0 {
+		s.closeError = errors.Join(s.closeError, errors.New("proxy check results could not all be persisted before shutdown"))
 	}
 	close(finished)
 }
@@ -197,9 +223,14 @@ func (s *Service) initialize() error {
 		return err
 	}
 	if version == 3 {
-		return s.migrateRuntimeSessions()
+		if err := s.migrateRuntimeSessions(); err != nil {
+			return err
+		}
 	}
-	return s.checkRuntimeSchema()
+	if err := s.checkRuntimeSchema(); err != nil {
+		return err
+	}
+	return s.initializeProxies()
 }
 
 func (s *Service) initializeProfiles() error {
@@ -207,10 +238,10 @@ func (s *Service) initializeProfiles() error {
 	if err := s.db.QueryRow("PRAGMA user_version").Scan(&version); err != nil {
 		return err
 	}
-	if version > 4 {
+	if version > 5 {
 		return errors.New("unsupported workspace version")
 	}
-	if version == 3 || version == 4 {
+	if version >= 3 {
 		return s.checkSchema()
 	}
 	if version == 2 {
@@ -369,6 +400,12 @@ func (s *Service) Call(request Request) Result {
 	if request.Method == "Workspace.Read" || request.Method == "Runtime.Inspect" || request.Method == "Operation.Read" || strings.HasPrefix(request.Method, "Runtime.") {
 		s.flushRuntimePersistence()
 	}
+	if request.Method == "Workspace.Read" || strings.HasPrefix(request.Method, "Operation.") || strings.HasPrefix(request.Method, "Proxy.") {
+		s.flushProxyPersistence()
+	}
+	if strings.HasPrefix(request.Method, "Proxy.") {
+		return s.proxyCall(request)
+	}
 	switch request.Method {
 	case "Runtime.Start", "Runtime.Stop", "Runtime.Inspect", "Runtime.ForceStop", "Runtime.Reconcile":
 		return s.runtimeCall(request)
@@ -447,6 +484,12 @@ func (s *Service) Call(request Request) Result {
 		if decode(request.Payload, &input) != nil {
 			return failure("VALIDATION_FAILED", "任务请求无效。", false)
 		}
+		if pending, exists := s.proxyResults[input.OperationID]; exists {
+			if request.Method == "Operation.Cancel" {
+				return s.cancelProxyOperation(pending)
+			}
+			return success(pending, pending.ID)
+		}
 		if pending, exists := s.runtimeResults[input.OperationID]; exists {
 			return success(pending, input.OperationID)
 		}
@@ -467,6 +510,9 @@ func (s *Service) Call(request Request) Result {
 			}
 		}
 		if request.Method == "Operation.Cancel" {
+			if operation.Kind == "proxy-check" {
+				return s.cancelProxyOperation(operation)
+			}
 			return s.cancelRuntimeOperation(operation)
 		}
 		return success(operation, operation.ID)
@@ -884,7 +930,7 @@ func (s *Service) view() (View, error) {
 	if err != nil {
 		return View{}, err
 	}
-	rows, err = s.db.Query("SELECT a.id,a.created_at,a.action,a.target,a.detail,COALESCE(r.environment_id,''),COALESCE(r.session_id,''),COALESCE(r.error_code,''),COALESCE(r.next_action,'') FROM activities a LEFT JOIN runtime_events r ON r.activity_id=a.id ORDER BY a.rowid DESC")
+	rows, err = s.db.Query(`SELECT a.id,a.created_at,a.action,a.target,a.detail,COALESCE(r.environment_id,''),COALESCE(r.session_id,''),COALESCE(r.error_code,CASE WHEN json_extract(o.result_json,'$.kind')='proxy-check' THEN json_extract(o.result_json,'$.error.code') END,''),COALESCE(r.next_action,CASE WHEN json_extract(o.result_json,'$.kind')='proxy-check' AND json_extract(o.result_json,'$.state') IN ('failed','cancelled') THEN '修正代理或凭据后重新检查；前检不代表浏览器通道或断线保护。' END,'') FROM activities a LEFT JOIN runtime_events r ON r.activity_id=a.id LEFT JOIN operations o ON o.id=a.id ORDER BY a.rowid DESC`)
 	if err != nil {
 		return View{}, err
 	}
@@ -915,6 +961,13 @@ func (s *Service) view() (View, error) {
 	if err != nil {
 		return View{}, err
 	}
+	proxyRecords, err := s.listProxies()
+	if err != nil {
+		return View{}, err
+	}
+	for _, record := range proxyRecords {
+		state.Proxies = append(state.Proxies, map[string]any{"id": record.ID, "name": record.Name, "type": record.Type, "host": record.Host, "port": record.Port, "country": record.Country, "status": record.Status, "username": "", "password": ""})
+	}
 	sessions := map[string]RuntimeSession{}
 	for environmentID, slot := range s.runtimeSlots {
 		sessions[environmentID] = slot.session
@@ -928,5 +981,9 @@ func (s *Service) view() (View, error) {
 			}
 		}
 	}
-	return View{Mode: "native", State: state, KernelRecords: installed, KernelOperations: operations, Fingerprints: profiles, DataReferences: references, RuntimeSessions: sessions}, nil
+	proxyOperations, err := s.listProxyOperations()
+	if err != nil {
+		return View{}, err
+	}
+	return View{Mode: "native", State: state, KernelRecords: installed, KernelOperations: operations, Fingerprints: profiles, DataReferences: references, RuntimeSessions: sessions, NativeProxyRecords: proxyRecords, ProxyOperations: proxyOperations}, nil
 }

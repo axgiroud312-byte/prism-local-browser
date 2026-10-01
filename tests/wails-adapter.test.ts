@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { WailsAdapter, type NativeBridge, type NativeRequest } from "../src/application/wails-adapter.ts";
-import type { ApplicationResult, Operation, OperationEvent, RuntimeSession, WorkspaceView } from "../src/application/contract.ts";
+import type { ApplicationResult, Operation, OperationEvent, RuntimeSession, WorkspaceView, ProxyUpdateRequest, ProxyTargetRequest } from "../src/application/contract.ts";
 import type { Environment } from "../src/domain.ts";
 import { applyFingerprint, demoFingerprint, demoProfile, fingerprintMatchesConfiguration } from "../src/application/fingerprint-model.ts";
 
@@ -252,4 +252,42 @@ test("a temporary storage-pending failure can complete after persistence recover
   const late = await app.getOperation(desired.id);
   assert.ok(late.ok && late.data.state === "completed");
   assert.equal(events.length, 2);
+});
+
+test("native proxy edits explicitly keep, replace or clear secrets without spreading legacy projection fields", async () => {
+  const { app, calls } = fixture(() => rejected);
+  const target = { proxyId: "synthetic-proxy-id", expectedRevision: 3, requestId: "synthetic-edit-request" };
+  const configuration = { name: "合成节点", type: "http" as const, host: "localhost", port: 8080, country: "合成标签", username: "DO_NOT_SPREAD_USERNAME", password: "DO_NOT_SPREAD_PASSWORD", simulateFailure: true, credentialRef: "DO_NOT_SPREAD_REFERENCE" };
+  const untrusted = { ...target, configuration, credentials: { action: "keep", username: "DO_NOT_SPREAD_USERNAME", password: "DO_NOT_SPREAD_PASSWORD" }, mode: "demo", checkReport: { exitIp: "203.0.113.45" } } as unknown as ProxyUpdateRequest;
+  await app.updateProxy(untrusted);
+  assert.deepEqual(calls[0].payload, { ...target, configuration: { name: configuration.name, type: "http", host: "localhost", port: 8080, country: "合成标签" }, credentials: { action: "keep" } });
+  assert.ok(!JSON.stringify(calls).includes("DO_NOT_SPREAD"));
+  await app.updateProxy({ ...target, configuration, credentials: { action: "replace", username: "synthetic-user", password: "synthetic-replacement" } });
+  assert.deepEqual((calls[1].payload as ProxyUpdateRequest).credentials, { action: "replace", username: "synthetic-user", password: "synthetic-replacement" });
+  await app.updateProxy({ ...target, configuration, credentials: { action: "clear" } });
+  assert.deepEqual((calls[2].payload as ProxyUpdateRequest).credentials, { action: "clear" });
+});
+
+test("proxy commit and check do not forward raw input, TLS overrides, target URLs or process credentials", async () => {
+  const { app, calls } = fixture(request => request.method === "Workspace.Read" ? ok(empty()) : rejected);
+  const commit = { previewId: "synthetic-import-preview", selectedRows: [2, 4], requestId: "synthetic-import-request", text: "DO_NOT_FORWARD_RAW_CREDENTIALS", password: "DO_NOT_FORWARD_RAW_CREDENTIALS" };
+  await app.commitProxyImport(commit);
+  const target = { proxyId: "synthetic-proxy", expectedRevision: 1, requestId: "synthetic-check-request", targetUrl: "https://DO_NOT_FORWARD_TARGET.invalid", skipTlsVerify: true, credentialRef: "DO_NOT_FORWARD_REF", pid: 4242 } as ProxyTargetRequest;
+  await app.checkProxy(target); await app.deleteProxy(target);
+  assert.deepEqual(calls[0].payload, { previewId: commit.previewId, selectedRows: [2, 4], requestId: commit.requestId });
+  assert.deepEqual(calls[1].payload, { proxyId: target.proxyId, expectedRevision: 1, requestId: target.requestId });
+  assert.ok(!JSON.stringify(calls).includes("DO_NOT_FORWARD"));
+  assert.ok(!JSON.stringify(calls).includes("4242"));
+});
+
+test("native proxy events recover temporary persistence failure but never accept a nested demo report", async () => {
+  let state: "pending" | "completed" | "demo" = "pending";
+  const operation: Operation = { id: "synthetic-proxy-operation", kind: "proxy-check", proxyId: "synthetic-proxy", state: "completed", total: 1, completedIds: ["synthetic-proxy"], cancelRequested: false };
+  const { app } = fixture(() => ok(state === "pending" ? { ...operation, state: "failed", persistencePending: true, stage: "storage-pending" } : state === "completed" ? operation : { ...operation, proxyReport: { mode: "demo" } }));
+  const events: OperationEvent[] = []; app.subscribeEvents(event => events.push(event));
+  await app.getOperation(operation.id); assert.equal(events[0].type, "OperationProgress");
+  state = "completed"; const completed = await app.getOperation(operation.id);
+  assert.ok(completed.ok && completed.data.state === "completed"); assert.equal(events[1].type, "OperationCompleted");
+  state = "demo"; const rejected = await app.getOperation(operation.id);
+  assert.ok(!rejected.ok && rejected.error.code === "CAPABILITY_UNSUPPORTED"); assert.equal(events.length, 2);
 });

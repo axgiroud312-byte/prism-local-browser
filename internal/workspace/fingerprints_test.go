@@ -28,6 +28,7 @@ func fingerprintFixture(t *testing.T, options Options) (*Service, string, string
 
 func stripFingerprintSchema(t *testing.T, s *Service) {
 	t.Helper()
+	stripProxySchema(t, s)
 	// Convert only this synthetic fixture to the actual v2 shape; merely lowering
 	// user_version on a v3 schema would not be a valid migration regression.
 	for _, statement := range []string{"DROP TABLE runtime_events", "DROP TABLE runtime_sessions", "DROP TRIGGER immutable_fingerprint_revision", "DROP TABLE fingerprint_revisions", "ALTER TABLE fingerprints DROP COLUMN config_revision", "ALTER TABLE environments DROP COLUMN user_data_ref", "PRAGMA user_version=2"} {

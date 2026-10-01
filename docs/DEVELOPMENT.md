@@ -134,6 +134,16 @@ app-data/
 
 当前已选择 fingerprint-chromium。实际接入时将 tag、二进制摘要、平台和适配器版本一起固定；更新默认版本不能自动重写旧环境。官方文档的开关是接入依据，真实生效结论需要在选定构建上记录。[官方参数及源码说明](https://github.com/adryfish/fingerprint-chromium/blob/main/README-ZH.md)
 
+### T08 原生代理增量（已实现，未运行验收）
+
+- SQLite schema5新增 `proxy_config`（配置/修订/当前检查）、`proxy_credentials`（DPAPI密文）、`proxy_request_key`（DPAPI保护的随机HMAC key），旧环境/档案/数据引用不变。普通proxy配置只有受保护引用，用户名和密码都不回显；更新/清除/删除凭据与配置同事务。跨用户恢复不能只拷贝DPAPI密文，见[D009](DECISIONS.md#d009--代理凭据与配置同事务且普通响应不回显2026-10-01)。
+- `Proxy.ParseImport({text})`返回native预览、原行号、安全配置、错误与共享重复组，不返回raw URI或认证。规范URI/兼容文本/IPv6/IDN；同地址仅为候选、不禁止另存。2MiB输入边界仅保护内存，无保存节点配额。预览15分钟清理；新输入/显式Discard/提交/退出清除秘密。
+- `Proxy.CommitImport({previewId,selectedRows,requestId})`只保存服务预览中的所选有效行，同批次事务。`Proxy.Update({proxyId,expectedRevision,configuration,credentials,requestId})`认证需keep/replace/clear，keep不带凭据，replace接受新username/password；旧检查一律失效。被环境引用的代理不能直接Delete，关联busy环境的网络/认证修改被阻止，名称/地区标签允许保存且不换seed。
+- `Proxy.Check({proxyId,expectedRevision,requestId})`受理operation而非成功。固定经该代理CONNECT访问HTTPS出口目标，区分连接/代理TLS/认证请求/目标TLS/目标访问/实际IP与时刻。407、TLS失败、不可达、超时或SOCKS5未支持不直连回退；不跟随重定向、不跳过验证、不将任意peer body/原始error写报告。
+- 网络锁外执行、4并发资源调度和25秒有界；取消/终结关闭本次socket，包括等待CONNECT的资源。会话内报告及任务终态、活动同事务；结果待保存时保留busy/临时覆盖，查询只重试持久化、不重复网络。重开标未完成任务APPLICATION_INTERRUPTED，不自动重发。失败活动关联operation的实际errorCode，不能只存失败文案却标成功。
+- NativeProxyManager单独接入，旧网页demo不变。普通state.proxies只空认证投影供环境绑定；新编辑只读nativeProxyRecords的hasAuthentication，不能从空密码投影回填。原始输入默认mask，未选/错误行可继续修正；秘密不持久化到localStorage，取消/卸载和迟到返回有清理。
+- 所有新增回归仅编写，实际DPAPI/网络/native页面均未验证；[清单](verification/T08.md)。HTTP认证链路无TLS加密，DPAPI不保护传输；HTTPS才提供TLS到代理。本票不是浏览器认证桥接或运行期断线保护，绑定proxy的Start仍阻断。
+
 ## 6 本地应用接口
 
 下表为**完整目标本地服务契约**；T01 环境创建编辑先导见 [contract.ts](../src/application/contract.ts) 与 [demo-adapter.ts](../src/application/demo-adapter.ts)。T02 经 [WailsAdapter](../src/application/wails-adapter.ts) 调 [Go 服务](../internal/workspace/service.go)，绑定负责 UI 与本机服务通信，不开放 HTTP 管理服务。
@@ -193,9 +203,12 @@ SQLite schema v2 事务新增 `kernel_evidence`，保存来源、tag、源码com
 | Runtime.Inspect            | ids → observed runtime sessions                                        | ENV-003          |
 | Runtime.ForceStop          | environmentId、sessionId、requestId → operationId；普通关闭失败后       | ENV-003、DATA-001 |
 | Runtime.Reconcile          | environmentId、sessionId、requestId → operationId；真实身份及锁核对     | ENV-003、DATA-001 |
-| Proxy.ParseImport          | text、format → validRows、invalidRows、duplicates                      | PRX-001          |
-| Proxy.CommitImport         | previewId、selectedRows、requestId → importedIds、failedItems          | PRX-001          |
-| Proxy.Check                | proxyId → operationId；结果包含连接/认证/出口阶段                      | PRX-001          |
+| Proxy.ParseImport          | text → previewId、原行号/安全配置/错误、共享重复组                      | PRX-001          |
+| Proxy.DiscardImport        | previewId → discarded；释放秘密草稿                                     | PRX-001、UX-001  |
+| Proxy.CommitImport         | previewId、selectedRows、requestId → importedIds、importedLines       | PRX-001          |
+| Proxy.Update               | proxyId、expectedRevision、configuration、credentials、requestId → record | PRX-001       |
+| Proxy.Delete               | proxyId、expectedRevision、requestId → deletedId；引用保护              | PRX-001          |
+| Proxy.Check                | proxyId、expectedRevision、requestId → operation；分阶段/实际出口      | PRX-001          |
 | Proxy.Assign               | environmentIds、mapping、expectedRevisions → updatedBindings           | PRX-001          |
 | Kernel.List                | → installed versions、capabilities、usage                              | CORE-001         |
 | Kernel.Install             | source、version、expectedChecksum → operationId                        | CORE-001         |

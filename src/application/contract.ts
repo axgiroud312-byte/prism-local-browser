@@ -36,10 +36,12 @@ export interface WorkspaceView {
   fingerprints?: Record<string, ProfileRevision>;
   dataReferences?: Record<string, string>;
   runtimeSessions?: Record<string, RuntimeSession>;
+  nativeProxyRecords?: NativeProxy[];
+  proxyOperations?: Operation[];
 }
 export interface Operation {
   id: string;
-  kind: "create" | "edit" | "kernel-install" | "kernel-verify" | "kernel-delete" | "runtime-start" | "runtime-stop" | "runtime-force-stop" | "runtime-reconcile";
+  kind: "create" | "edit" | "kernel-install" | "kernel-verify" | "kernel-delete" | "runtime-start" | "runtime-stop" | "runtime-force-stop" | "runtime-reconcile" | "proxy-check";
   state: "accepted" | "running" | "completed" | "cancelled" | "failed";
   total: number;
   completedIds: string[];
@@ -51,6 +53,8 @@ export interface Operation {
   report?: KernelReport;
   environmentId?: string;
   sessionId?: string;
+  proxyId?: string;
+  proxyReport?: ProxyCheckReport;
 }
 export interface OperationEvent {
   mode: ApplicationMode;
@@ -123,6 +127,36 @@ export interface ApplicationService {
   inspectRuntime?(ids: string[]): Promise<ApplicationResult<RuntimeSession[]>>;
   forceStopRuntime?(request: { environmentId: string; sessionId: string; requestId: string }): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
   reconcileRuntime?(request: { environmentId: string; sessionId: string; requestId: string }): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
+  parseProxyImport?(text: string): Promise<ApplicationResult<ProxyImportPreview>>;
+  discardProxyImport?(previewId: string): Promise<ApplicationResult<{ status: "discarded" }>>;
+  commitProxyImport?(request: { previewId: string; selectedRows: number[]; requestId: string }): Promise<ApplicationResult<{ status: "completed"; importedIds: string[]; importedLines: number[] }>>;
+  updateProxy?(request: ProxyUpdateRequest): Promise<ApplicationResult<{ status: "completed"; record: NativeProxy }>>;
+  deleteProxy?(request: ProxyTargetRequest): Promise<ApplicationResult<{ status: "completed"; deletedId: string }>>;
+  checkProxy?(request: ProxyTargetRequest): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
+}
+
+export interface ProxyConfiguration {
+  name: string; type: "http" | "https" | "socks5"; host: string; port: number; country: string;
+}
+export type ProxyCredentialChange =
+  | { action: "keep" | "clear" }
+  | { action: "replace"; username: string; password: string };
+export interface ProxyTargetRequest { proxyId: string; expectedRevision: number; requestId: string }
+export interface ProxyUpdateRequest extends ProxyTargetRequest { configuration: ProxyConfiguration; credentials: ProxyCredentialChange }
+export interface NativeProxy extends ProxyConfiguration {
+  id: string; revision: number; hasAuthentication: boolean; status: "unchecked" | "connected" | "failed";
+  usedBy: string[]; checkReport?: ProxyCheckReport;
+}
+export interface ProxyImportPreview {
+  mode: "native"; previewId: string; expiresAt: string; ignoredLines: number;
+  rows: { line: number; configuration?: ProxyConfiguration; hasAuthentication: boolean; duplicateGroupId?: string; duplicateCount: number; existingCount: number; error?: string }[];
+  duplicateGroups: Record<string, { lines: number[]; existingProxyIds: string[] }>;
+}
+export interface ProxyCheckReport {
+  mode: "native"; adapterVersion: string; proxyId: string; revision: number;
+  startedAt: string; finishedAt: string; durationMs: number; targetOrigin: string;
+  steps: { stage: string; status: "running" | "passed" | "failed" | "unsupported"; time: string; message: string }[];
+  exitIp?: string; error?: ApplicationError;
 }
 
 export interface RuntimeSession {

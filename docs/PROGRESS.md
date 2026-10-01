@@ -1,11 +1,11 @@
 # Goal 当前执行位置
 
-更新时间：2026-10-01 12:50 Asia/Shanghai。
+更新时间：2026-10-01 13:21 Asia/Shanghai。
 
 - Goal：执行中；[规则](GOAL.md)；完成 **4/21**（验收任务计数）。
-- 当前任务：T07 / [Issue #8](https://github.com/axgiroud312-byte/prism-local-browser/issues/8)，已实现待验收；准备本地提交后继续T08。
-- 当前步骤：schema4持久会话/活动、异常监督、重开真实身份/锁及整树Job资源核对、指定Job结束及Wails/App已接。原源码评审问题全部按根因关闭，最后聚焦复核无剩余可信P1/P2；15+3+3条新增回归仅编写。12:50最新生产kernel/workspace静态编译通过，不运行测试、真实浏览器、自动点击、CI或全量，不关闭issue。
-- 现场：`goal/t07-runtime-recovery`，基于本地T06 `ead0bc6`；未提交为T07内核身份核对/状态快照、workspace持久化/监督与恢复、前端下一步、回归和术语/文档。T03证据/旧空库/包与内核ZIP保留，无用户遗留改动；12:38完成必要静态编译后清理本任务GOCACHE约159MiB，C盘当时约297MiB余量，不重复重建。
+- 当前任务：T08 / [Issue #9](https://github.com/axgiroud312-byte/prism-local-browser/issues/9)，已实现待验收，准备本地提交后继续T09。
+- 当前步骤：schema5代理解析/选择提交、DPAPI引用、keep/replace/clear编辑/删保护及HTTP/HTTPS前检与NativeProxyManager已接。共6 P2按根因关闭，最后只读复核无剩余可信P1/P2；13:21最后版静态检查通过。7+7+3条新增回归仅编写，不运行测试/网络/浏览器/点击/CI，不关闭issue。
+- 现场：`goal/t08-native-proxies`，基于T07 `e4e427f`；未提交为proxy解析/DPAPI/前检库、workspace迁移/配置/任务及契约/Wails/独立native页、schema旧夹具与核验脚本/新增回归/文档。T03证据/旧空库/包与内核ZIP保留，无用户遗留改动；复用编译缓存，不完整构建。
 
 ## 任务状态
 
@@ -17,8 +17,8 @@
 | T04 | #5 | 已完成 | 代码`89e94d7`、合入`dc0a148`、[PR #26](https://github.com/axgiroud312-byte/prism-local-browser/pull/26)；[验收](verification/T04.md)/[证据](verification/T04-kernel-acceptance.json)，CI全通过 |
 | T05 | #6 | 已实现待验收 | 本地 `f6e7314`；[验收清单](verification/T05.md)，未推送/PR，最终UI/构建/全量/CI待补 |
 | T06 | #7 | 已实现待验收 | 本地 `ead0bc6`；[验收清单](verification/T06.md)，无推送/PR，原blocking状态保留 |
-| T07 | #8 | 已实现待验收 | 本地检查点；[验收清单](verification/T07.md)，消费本地T06，原blocking #7仍OPEN |
-| T08 | #9 | 待开始 | — |
+| T07 | #8 | 已实现待验收 | 本地 `e4e427f`；[验收清单](verification/T07.md)，原blocking #7仍OPEN，无PR/推送 |
+| T08 | #9 | 已实现待验收 | blocking #3已完成；[验收清单](verification/T08.md)，本地提交准备中，无PR/推送 |
 | T09 | #10 | 待开始 | — |
 | T10 | #11 | 待开始 | — |
 | T11 | #12 | 待开始 | — |
@@ -102,10 +102,14 @@
 - 12:41–12:45：第三轮确认原4个P2路径关闭，指出就绪失败分支手工回填仍可能把临时Pending落盘；已在回填/事务统一清false，重开还收敛旧failed+pending记录。补保护：应用锁释放和主进程死都不能证明子树退出，正常Job使用SID/SYSTEM ACL的全局session资源身份，重开仅QUERY，Job未清空不解锁；诊断保持匿名，不重建pipe、不按PID结束。新增2条服务/1条Job用例，累计15+3+3全部未运行。最新版按低磁盘串行、分包做必要静态编译，kernel阶段发现x/sys未导出JOBOBJECT_BASIC_ACCOUNTING_INFORMATION，尚未编译workspace；将复用实时监督器已有布局，聚焦源码复核中。不生成exe、运行进程/测试/CI。
 - 12:49：最后聚焦只读复核确认临时overlay落盘原路径已关闭、全局named Job的SID ACL/QUERY权限/同名拒绝与资源判定正确接入，范围无剩余可信P1/P2，仅为源码结论。basic accounting编译错误改为复用实时监督器现有已编译布局；低磁盘分包静态编译中，结束后本地提交再继续T08，不补跑测试/CI或浏览器。
 - 12:50：复用原有Windows accounting布局后，最新kernel和workspace生产包按分包/单并发静态编译通过，未执行程序/测试，格式通过；静态问题已修正，不再全量重建。准备本地T07提交，继续T08；已验收仍4/21，#6/#7/#8保持OPEN、无PR/推送/CI。
+- 12:53–12:54：T07本地提交e4e427f，工作树干净后新建T08分支。完整#9重新核对，唯一原生blocking #3 CLOSED且T02成果可用；无承担者/冲突PR。按用户开发优先继续原生代理，T05–T07均保持待验收，不关闭issue或计数，不启动测试/CI。
+- 12:56–13:14：T08实现schema5配置/DPAPI密文引用/受保护HMAC请求key、URI/兼容/IPv6预览、keep/replace/clear与引用/修订保护、固定HTTPS目标经HTTP/HTTPS代理分阶段检查、pending终态事务与重开中断。独立NativeProxyManager保留demo，空认证投影只供环境绑定，原始输入临时mask/清理、错误和未选行保留。首轮3 P2为重复关系平方内存/CONNECT取消error竞态/失败活动假成功；已改共享组和endpoint索引、同步/迟到状态保护+原ctx/自有socket关闭、活动关联真实op错误。6条库/7条服务/3条adapter新增回归未执行，Go测试源码未编译。13:14修复版生产包静态编译、源码/测试TS类型、DB核验脚本语法/格式通过；源码复核中，无网络/程序/点击/CI。
+- 13:17：文档/本地链接/12需求/6路由/3嵌入文档检查通过；C盘此时可用约24.8GiB，外部空间已恢复，不归因本任务删除，也不因此恢复CI/测试/完整构建。只读预读T09 #10，blocking #7/#9仍OPEN，后续按D007消费本地成果；本票收尾后再写T09代码。
+- 13:19–13:21：二轮确认首3项关闭，剩3 P2：原ctx固定拨号丢连接trace阶段、body/排队取消与期限误归因、超大文件未废旧preview。已实际Dial明确发阶段、真实ctx区分取消/超时/响应错误、非空文件先Discard再校验，补body受控回归与连接阶段断言。既有x/net IDNA标direct（不升版本/sum不变），许可注記补齐。13:21最后生产包静态编译、源码/测试TS类型与格式通过；最后聚焦只读复核无剩余可信P1/P2，仅源码结论。7+7+3新增回归未执行，准备本地T08提交，无网络/程序/UI/CI。
 
 ## 恢复资源与 GitHub
 
 - 已有其他 Node/Chrome 进程属于用户现场，不停止。已核对 5173 为本仓库旧 Vite 服务；4173 未监听（纠正初查格式误判）。本 Goal 尚未启动服务，UI 测试用独立端口 5183 和新浏览器上下文。
 - `output/`、`.playwright-cli/`、`dist/`、`node_modules/` 为现有忽略目录；不删除旧成果。新测试输出使用 `output/goal/`，仅保留合成证据。
 - `npx playwright install chromium` 已成功安装本票测试浏览器（仅前端检查，不是 fingerprint-chromium）。测试使用 5183，由 Playwright 启停独立 Vite，首次测试已退出；旧 5173 不动。Serena 本机索引 `.serena/` 已忽略。
-- GitHub：T01–T04已完成同步，#5 CLOSED、PR #26 MERGED；#1保留。T05–T07 #6/#7/#8仍OPEN且无PR，原blocking状态不改；T07只读复核已结束，主代理唯一写入。无本任务UI/测试进程；停止点击与暂停CI已记GOAL/D005/D007，不自动重放界面或完整验证。
+- GitHub：T01–T04已同步，#5 CLOSED、PR #26 MERGED；#1保留。T05–T08 #6/#7/#8/#9仍OPEN且无PR，原blocking不改；T08只读复核已结束，主代理唯一写入。T07已发布准确本地提交/待验收评论，无本任务UI/网络测试进程；停止点击与暂停CI已记GOAL/D005/D007，不自动恢复。

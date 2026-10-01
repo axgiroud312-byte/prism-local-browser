@@ -72,6 +72,12 @@ UX-001、DOC-001 的发布入口在 [安装器](../build/windows/installer/prism
 - UX-001：Wails/App提供明确核对和指定会话结束及确认，显示安全错误/退出码/下一步；待核对即使无PID仍锁关键配置。活动使用environmentId/sessionId，旧记录不能控制后来新开的浏览器；批量关闭不自动强杀。
 - [`15条监督器用例`](../internal/workspace/runtime_supervisor_test.go)、[`3条Windows身份/锁/Job用例`](../internal/kernel/runtime_recovery_windows_test.go)及3条新增adapter回归仅编写，全部未运行；重开须原进程身份/实际锁与QUERY核对的确切Job资源均满足，不能以根退出代替子树退出。没有实际崩溃/重开/强制结束或新页面证据，[清单](verification/T07.md)。
 
+### T08 原生代理配置与前检（已实现，未运行验收）
+
+- PRX-001：[`解析`](../internal/proxy/parse.go)与[`导入/编辑/删除服务`](../internal/workspace/proxies.go)分离；URI/兼容文本/IPv6，原行号/错误和共享重复组，选择有效行提交。schema5及[`受保护存储`](../internal/workspace/proxy_storage.go)的user DPAPI密文引用、HMAC请求去重、事务替换/回滚、修订和引用保护，普通响应无用户名密码，不重生成环境seed。
+- PRX-001、UX-001：[`HTTP/HTTPS前检`](../internal/proxy/check.go)的连接/TLS/隧道认证/目标访问/实际出口与时刻，[`异步终态`](../internal/workspace/proxy_checks.go)的取消/有界资源、结果待保存不重发网络及重开中断；活动关联真实代理operation错误，不把失败文案投影成功。SOCKS5可保存、检查不支持，不跳TLS或静默直连。
+- [`NativeProxyManager`](../src/components/NativeProxyManager.tsx)和Wails安全字段接入native专用路由；keep/replace/clear避免空投影回填认证，错误/未选行保留，清理输入与过期预览，删除确认与引用提示。独立网页原型仍为demo。7条代理库/7条服务/3条adapter回归仅编写未执行，无新UI/实际公共出口证据，[清单](verification/T08.md)。本票不是T09浏览器代理通道或T11断线保护。
+
 以下关联于 2026-09-30 发布，表示计划实现范围，不能据此判断已完成。当前状态与 blocking 依赖以 GitHub 为准；完整顺序见 [开发票据索引](ISSUES.md)，共同范围见 [总规格 Issue](https://github.com/axgiroud312-byte/prism-local-browser/issues/1)。
 
 | 需求 ID  | 实现或专项验证 Issue                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | 整体验收                                                                       |

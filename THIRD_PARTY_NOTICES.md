@@ -38,6 +38,8 @@ T01 新增仅用于测试的 [Playwright Test](https://github.com/microsoft/play
 
 `npm run build:windows` 使用 [collect-go-notices.ps1](scripts/collect-go-notices.ps1) 从固定 Windows production 依赖图提取**实际参与构建**的 Go 模块许可证、NOTICE 与子组件条款（包括 modernc libc 的第三方通知），输出 `build/bin/GO-THIRD-PARTY-NOTICES.txt`。缺少许可文件会使构建步骤失败；分发 exe 时必须同时保留该文件、本文件和本项目 LICENSE。开发 CLI/测试依赖不因此变成产品运行时组件。
 
+T08代理主机名规范化直接使用已有固定 `golang.org/x/net v0.56.0` 的IDNA包（BSD-3-Clause，The Go Authors）；版本与go.sum未升级，分发仍由上述实际依赖图保留相应许可。Windows DPAPI为操作系统接口，不引入额外加密库或复制系统组件。
+
 Windows WebView2 Runtime 为微软单独许可的外部先决条件，T02 使用机器上已安装的 Runtime，没有复制其运行时安装包或将其重新许可为 MIT。后续安装包须说明其检测/安装方式和适用条款。WebView2 是桌面壳，**不是产品指定的 fingerprint-chromium**。
 
 ### Wails 许可证全文

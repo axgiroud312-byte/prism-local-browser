@@ -3,6 +3,7 @@ import type {
   CreateBatchRequest, UpdateEnvironmentRequest, SavedEnvironment, WorkspaceView, Operation, OperationEvent,
   KernelInstallRequest,
   GenerateFingerprintRequest, CommitFingerprintRequest, ProfileRevision, RuntimeSession,
+  ProxyConfiguration, ProxyImportPreview, ProxyUpdateRequest, ProxyTargetRequest, NativeProxy,
 } from "./contract.ts";
 import { mergeOperation, operationIsTerminal } from "./contract.ts";
 
@@ -13,6 +14,8 @@ const projectConfiguration = (c: EnvironmentConfiguration): EnvironmentConfigura
   language: c.language, timezone: c.timezone, cpu: c.cpu, width: c.width, height: c.height,
   urls: c.urls, restoreTabs: c.restoreTabs, fingerprintVersion: c.fingerprintVersion,
 });
+const projectProxy = (c: ProxyConfiguration): ProxyConfiguration => ({ name: c.name, type: c.type, host: c.host, port: c.port, country: c.country });
+const projectProxyTarget = (r: ProxyTargetRequest) => ({ proxyId: r.proxyId, expectedRevision: r.expectedRevision, requestId: r.requestId });
 export class WailsAdapter implements ApplicationService {
   readonly mode = "native" as const;
   private bridge: NativeBridge;
@@ -41,7 +44,7 @@ export class WailsAdapter implements ApplicationService {
   async refresh(): Promise<ApplicationResult<WorkspaceView>> {
     const sequence = ++this.refreshSequence;
     let response = await this.invoke<WorkspaceView>("Workspace.Read", {});
-    if (response.ok && (response.data.mode !== "native" || Object.values(response.data.runtimeSessions ?? {}).some(session => session.mode !== "native"))) response = { ok: false, mode: "native", error: { code: "CAPABILITY_UNSUPPORTED", message: "工作区或运行会话不是原生记录，已拒绝接入；未回退到演示数据。", retryable: false } };
+    if (response.ok && (response.data.mode !== "native" || Object.values(response.data.runtimeSessions ?? {}).some(session => session.mode !== "native") || (response.data.nativeProxyRecords ?? []).some(record => record.checkReport && record.checkReport.mode !== "native") || (response.data.proxyOperations ?? []).some(operation => operation.proxyReport && operation.proxyReport.mode !== "native"))) response = { ok: false, mode: "native", error: { code: "CAPABILITY_UNSUPPORTED", message: "工作区、会话或代理报告不是原生记录，已拒绝接入；未回退演示数据。", retryable: false } };
     if (sequence !== this.refreshSequence) return response;
     if (response.ok) this.view = response.data;
     else this.view = { ...this.view, issue: response.error };
@@ -83,7 +86,8 @@ export class WailsAdapter implements ApplicationService {
   }
   async cancelOperation(operationId: string) { return this.confirmOperation(await this.invoke<Operation>("Operation.Cancel", { operationId })); }
   private confirmOperation(response: ApplicationResult<Operation>): ApplicationResult<Operation> {
-    if (!response.ok || (!response.data.kind.startsWith("kernel-") && !response.data.kind.startsWith("runtime-"))) return response;
+    if (!response.ok || (!response.data.kind.startsWith("kernel-") && !response.data.kind.startsWith("runtime-") && response.data.kind !== "proxy-check")) return response;
+    if (response.data.proxyReport && response.data.proxyReport.mode !== "native") return { ok: false, mode: "native", error: { code: "CAPABILITY_UNSUPPORTED", message: "演示代理报告不能作为真实检查结果。", retryable: false } };
     const previous = this.operations.get(response.data.id);
     const operation = mergeOperation(previous, response.data);
     this.operations.set(operation.id, operation);
@@ -121,5 +125,29 @@ export class WailsAdapter implements ApplicationService {
     const response = await this.invoke<RuntimeSession[]>("Runtime.Inspect", { ids });
     if (response.ok && response.data.some(session => session.mode !== "native")) return { ok: false, mode: "native", error: { code: "CAPABILITY_UNSUPPORTED", message: "演示会话不能作为真实运行结果。", retryable: false } };
     return response;
+  }
+  async parseProxyImport(text: string): Promise<ApplicationResult<ProxyImportPreview>> {
+    const response = await this.invoke<ProxyImportPreview>("Proxy.ParseImport", { text });
+    if (response.ok && response.data.mode !== "native") return { ok: false, mode: "native", error: { code: "CAPABILITY_UNSUPPORTED", message: "演示代理预览不能保存到本机工作区。", retryable: false } };
+    return response;
+  }
+  discardProxyImport(previewId: string) { return this.invoke<{ status: "discarded" }>("Proxy.DiscardImport", { previewId }); }
+  async commitProxyImport(request: { previewId: string; selectedRows: number[]; requestId: string }) {
+    const response = await this.invoke<{ status: "completed"; importedIds: string[]; importedLines: number[] }>("Proxy.CommitImport", { previewId: request.previewId, selectedRows: [...request.selectedRows], requestId: request.requestId });
+    if (response.ok) await this.refresh(); return response;
+  }
+  async updateProxy(request: ProxyUpdateRequest) {
+    const credentials = request.credentials.action === "replace" ? { action: "replace", username: request.credentials.username, password: request.credentials.password } : { action: request.credentials.action };
+    const response = await this.invoke<{ status: "completed"; record: NativeProxy }>("Proxy.Update", { ...projectProxyTarget(request), configuration: projectProxy(request.configuration), credentials });
+    if (response.ok) await this.refresh(); return response;
+  }
+  async deleteProxy(request: ProxyTargetRequest) {
+    const response = await this.invoke<{ status: "completed"; deletedId: string }>("Proxy.Delete", projectProxyTarget(request));
+    if (response.ok) await this.refresh(); return response;
+  }
+  async checkProxy(request: ProxyTargetRequest) {
+    const response = await this.invoke<{ status: "accepted"; operation: Operation }>("Proxy.Check", projectProxyTarget(request));
+    if (response.ok) { const confirmed = this.confirmOperation({ ok: true, mode: "native", data: response.data.operation }); if (!confirmed.ok) return confirmed; }
+    await this.refresh(); return response;
   }
 }

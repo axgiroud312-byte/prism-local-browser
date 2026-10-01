@@ -6,7 +6,7 @@ const db = new DatabaseSync(process.argv[2], { readOnly: true });
 try {
   assert.deepEqual(db.prepare("PRAGMA foreign_key_check").all(), []);
   const schemaVersion = db.prepare("PRAGMA user_version").get().user_version;
-  assert.equal(schemaVersion, 4);
+  assert.equal(schemaVersion, 5);
   const records = db.prepare("SELECT e.id,e.name,e.revision,e.kernel_id,e.user_data_ref,f.seed,f.config_json,f.config_revision,r.profile_json FROM environments e JOIN fingerprints f ON f.id=e.fingerprint_id LEFT JOIN fingerprint_revisions r ON r.fingerprint_id=f.id AND r.revision=f.config_revision").all();
   assert.ok(records.length <= 1, "Native initialized with demo environments or created duplicates");
   for (const record of records) {

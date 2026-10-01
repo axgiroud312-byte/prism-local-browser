@@ -95,7 +95,7 @@ func TestV1MigrationPreservesSavedIdentityAndUnknownVersions(t *testing.T) {
 	}
 	var version int
 	reopened.db.QueryRow("PRAGMA user_version").Scan(&version)
-	if version != 4 {
+	if version != 5 {
 		t.Fatal("schema migration not committed")
 	}
 }

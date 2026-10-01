@@ -394,7 +394,8 @@ h1 {
   gap: 10px;
   padding-top: 10px;
 }
-.button {
+.button,
+.native-proxy-manager .btn {
   display: inline-flex;
   justify-content: center;
   align-items: center;
@@ -410,18 +411,21 @@ h1 {
   font-weight: 500;
   line-height: 1;
 }
-.button:hover {
+.button:hover,
+.native-proxy-manager .btn:hover {
   background: #f6f9ff;
   border-color: #c8d6f4;
   color: #2e5fe1;
 }
-.button.primary {
+.button.primary,
+.native-proxy-manager .btn.primary {
   background: var(--blue);
   border-color: var(--blue);
   color: #fff;
   box-shadow: 0 3px 5px #3568ee16;
 }
-.button.primary:hover {
+.button.primary:hover,
+.native-proxy-manager .btn.primary:hover {
   background: #2454d4;
 }
 .button.soft-primary {
@@ -438,7 +442,8 @@ h1 {
 .button.wide {
   width: 100%;
 }
-.button.danger {
+.button.danger,
+.native-proxy-manager .btn.danger {
   background: #db5156;
   border-color: #db5156;
   color: #fff;

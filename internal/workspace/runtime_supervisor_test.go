@@ -228,6 +228,7 @@ func TestRuntimeV3MigrationPreservesAllFixedProfiles(t *testing.T) {
 	s, root, kernelID := fingerprintFixture(t, Options{})
 	environment := createRuntimeEnvironment(t, s, kernelID, "合成schema3升级")
 	before := view(t, s)
+	stripProxySchema(t, s)
 	for _, statement := range []string{"DROP TABLE runtime_events", "DROP TABLE runtime_sessions", "PRAGMA user_version=3"} {
 		if _, err := s.db.Exec(statement); err != nil {
 			t.Fatal(err)
@@ -242,7 +243,7 @@ func TestRuntimeV3MigrationPreservesAllFixedProfiles(t *testing.T) {
 	}
 	defer reopened.Close()
 	var version int
-	if err := reopened.db.QueryRow("PRAGMA user_version").Scan(&version); err != nil || version != 4 {
+	if err := reopened.db.QueryRow("PRAGMA user_version").Scan(&version); err != nil || version != 5 {
 		t.Fatal("runtime schema migration did not complete")
 	}
 	if !reflect.DeepEqual(before.Fingerprints[environment.ID], view(t, reopened).Fingerprints[environment.ID]) {
