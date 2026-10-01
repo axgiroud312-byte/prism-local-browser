@@ -79,7 +79,7 @@ func (s *Service) completeObservedExit(slot *runtimeSlot, snapshot kernel.Runtim
 		slot.session.State, slot.session.Error = "ready", nil
 		slot.session.NextAction = "已确认本次进程树退出，原浏览数据保持，可使用原档案重开。"
 	}
-	if !runtimeStopPending(slot) {
+	if !runtimeStopPending(slot) && s.cookieTasks[slot.session.EnvironmentID] == nil {
 		delete(s.profileUses, slot.session.EnvironmentID)
 	}
 }
@@ -106,6 +106,7 @@ func (s *Service) forceStopRuntime(input runtimeRequest) Result {
 		return result
 	}
 	slot.session, slot.stop = next, &operation
+	s.cancelRuntimeCookies(input.EnvironmentID)
 	process := slot.process
 	s.workers.Add(1)
 	go func() {
@@ -145,6 +146,9 @@ func kernelProblemExitUnconfirmed() error {
 }
 
 func (s *Service) reconcileRuntime(input runtimeRequest) Result {
+	if s.cookieTasks[input.EnvironmentID] != nil {
+		return failure("PROFILE_BUSY", "本次Cookie任务或观测待保存，核对不能提前释放它的数据预留。", true)
+	}
 	slot := s.runtimeSlots[input.EnvironmentID]
 	if slot == nil || slot.session.SessionID != input.SessionID {
 		return failure("REVISION_CONFLICT", "会话已变更，未重新接管或修改其他会话。", true)

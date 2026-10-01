@@ -171,6 +171,16 @@ app-data/
 
 ## 6 本地应用接口
 
+### T12 指定会话Cookie增量（源码已编写，尚未运行验收）
+
+- `Cookie.ParseImport({environmentId,text})`独立纯解析JSON数组/Netscape，返回环境名称/ID/修订、15分钟previewId和不含value的行/数量。运行时绑定当前session且内部读取现存键；停止时现存冲突未知、不自动启动。输入同键按name/domain点/path/完整分区识别，同键只选一行。`Cookie.DiscardImport({previewId})`或空ID丢弃当前预览/迟到结果，关闭/新输入/超时也清理。
+- `Cookie.CommitImport({previewId,environmentId,expectedRevision,sessionId,selectedRows,policy,requestId})`只用服务内存中的所选值，严格当前revision/准确受控运行session/no stop/no fault，RPC无值、任意CDP或启动策略覆盖。policy为merge默认或明确replace-all；accepted不代表写入。schema5无新表，requests只保存元数据签名；operations/activities只保存安全结果。
+- [`私有pipe`](../internal/kernel/cookies_windows.go)固定Storage.get/set/clearCookies作用于原自有浏览器default context；每一条先读同键，已匹配不重写，否则单条写后完整读回。整个组合持commandGate，未将应用sessionId当CDPcontext，不加URL改变secure。匹配包括真实值/安全属性/SameSite缺省/session/秒expiry/分区；写入未知或读回差异不计verifiedCount。
+- JSON-1/省略expiry为session，JSON0是过期epoch；Netscape0/-1为session。空value合法、过期跳过不续期，未知字段/opaque分区明确错误。分区两成员含false保留，读回opaque字段即使false也不能当普通Cookie。仅接受内核可原样保存的ASCII规范path，拒点段/百分号/URL分隔/空白等；拒双前导点/私有PSL域Cookie/非规范numericURLhost，IPv6Cookie域本票暂不支持。sourceScheme/secure冲突和除-1外负expiry拒绝，不写后才发现改了另一键。
+- [`任务/观测`](../internal/workspace/cookie_worker.go)2分钟、每命令10s；取消保已核对/未知条目，清空须读回空集合；同preview全量清空只受理一次、失败重试合并且先核对。重开未终APPLICATION_INTERRUPTED/unknown不重放秘密；终态与活动同事务，写失败保Cookie lease只重试保存，Runtime退出/核对不能提前释放。
+- [`native导入`](../src/components/NativeCookieImport.tsx)显示目标/统计/域名/hostOnly/分区/逐项结果，raw输入默认隐藏、严格UTF-8文件、预览后清空。需要启动时先明确调用原Runtime.Start：`purpose: cookie-import`与expectedRevision仅抑制本次恢复标签/URLs，不改保存配置/身份；direct确认和proxy门禁保留。关闭后仍可接管迟到任务/取消；新draft不混历史终态报告，CookieReport保存previewId，重试只接同preview的所选失败行。失败新attempt使用新requestId，受理未知才重发旧ID。
+- 14条解析/匹配、2条内核合成pipe、8条服务、3条adapter回归仅编写未运行，Go测试包未编译。固定二进制行为/持久化/A-B隔离/新页面仍未验证，[T12清单](verification/T12.md)、[D013](DECISIONS.md#d013--cookie命令只作用于指定会话重试先核对同键2026-10-01)。原型Demo继续旧行为，native不存示例Cookie。
+
 下表为**完整目标本地服务契约**；T01 环境创建编辑先导见 [contract.ts](../src/application/contract.ts) 与 [demo-adapter.ts](../src/application/demo-adapter.ts)。T02 经 [WailsAdapter](../src/application/wails-adapter.ts) 调 [Go 服务](../internal/workspace/service.go)，绑定负责 UI 与本机服务通信，不开放 HTTP 管理服务。
 
 T02 已实现的原生 RPC 为 `Workspace.Read`、`Environment.Preview`、`Preview.Regenerate/Discard`、单条 `Environment.Create`、`Environment.Update`、`Operation.Read/Cancel`（本票操作为同步已提交终态，取消不回滚完成项）。SQLite schema v1 保存环境/固定档案、内核/代理引用、revision、成功请求去重结果、终态操作与活动；这不是长任务恢复实现。请求仅接受 `mode: native`，配置按白名单转换，预览由当前服务会话管理；成功请求缓存则跨服务重开持久保存。数据库的新建/迁移在事务中提交，未知版本、缺失 schema 和坏配置不自动覆盖或重置。

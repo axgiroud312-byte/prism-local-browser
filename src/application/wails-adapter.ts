@@ -4,6 +4,7 @@ import type {
   KernelInstallRequest,
   GenerateFingerprintRequest, CommitFingerprintRequest, ProfileRevision, RuntimeSession,
   ProxyConfiguration, ProxyImportPreview, ProxyUpdateRequest, ProxyTargetRequest, NativeProxy,
+  CookieCommitRequest, CookieImportPreview, RuntimeStartRequest,
 } from "./contract.ts";
 import { mergeOperation, operationIsTerminal } from "./contract.ts";
 
@@ -16,6 +17,7 @@ const projectConfiguration = (c: EnvironmentConfiguration): EnvironmentConfigura
 });
 const projectProxy = (c: ProxyConfiguration): ProxyConfiguration => ({ name: c.name, type: c.type, host: c.host, port: c.port, country: c.country });
 const projectProxyTarget = (r: ProxyTargetRequest) => ({ proxyId: r.proxyId, expectedRevision: r.expectedRevision, requestId: r.requestId });
+const invalidCookieReport = (operation: Operation) => operation.cookieReport && (operation.cookieReport.mode !== "native" || !operation.cookieReport.previewId || operation.cookieReport.environmentId !== operation.environmentId || operation.cookieReport.sessionId !== operation.sessionId);
 export class WailsAdapter implements ApplicationService {
   readonly mode = "native" as const;
   private bridge: NativeBridge;
@@ -44,7 +46,7 @@ export class WailsAdapter implements ApplicationService {
   async refresh(): Promise<ApplicationResult<WorkspaceView>> {
     const sequence = ++this.refreshSequence;
     let response = await this.invoke<WorkspaceView>("Workspace.Read", {});
-    if (response.ok && (response.data.mode !== "native" || Object.values(response.data.runtimeSessions ?? {}).some(session => session.mode !== "native" || (session.proxyReport && (session.proxyReport.mode !== "native" || session.proxyReport.channelId !== session.proxyChannelId || session.proxyReport.proxyId !== session.proxyId || session.proxyReport.revision !== session.proxyRevision))) || (response.data.nativeProxyRecords ?? []).some(record => record.checkReport && record.checkReport.mode !== "native") || (response.data.proxyOperations ?? []).some(operation => operation.proxyReport && operation.proxyReport.mode !== "native"))) response = { ok: false, mode: "native", error: { code: "CAPABILITY_UNSUPPORTED", message: "工作区、会话或代理报告身份不匹配，已拒绝接入；未回退演示数据。", retryable: false } };
+    if (response.ok && (response.data.mode !== "native" || Object.values(response.data.runtimeSessions ?? {}).some(session => session.mode !== "native" || (session.proxyReport && (session.proxyReport.mode !== "native" || session.proxyReport.channelId !== session.proxyChannelId || session.proxyReport.proxyId !== session.proxyId || session.proxyReport.revision !== session.proxyRevision))) || (response.data.nativeProxyRecords ?? []).some(record => record.checkReport && record.checkReport.mode !== "native") || (response.data.proxyOperations ?? []).some(operation => operation.proxyReport && operation.proxyReport.mode !== "native") || (response.data.cookieOperations ?? []).some(invalidCookieReport))) response = { ok: false, mode: "native", error: { code: "CAPABILITY_UNSUPPORTED", message: "工作区、会话或报告身份不匹配，已拒绝接入；未回退演示数据。", retryable: false } };
     if (sequence !== this.refreshSequence) return response;
     if (response.ok) this.view = response.data;
     else this.view = { ...this.view, issue: response.error };
@@ -86,7 +88,8 @@ export class WailsAdapter implements ApplicationService {
   }
   async cancelOperation(operationId: string) { return this.confirmOperation(await this.invoke<Operation>("Operation.Cancel", { operationId })); }
   private confirmOperation(response: ApplicationResult<Operation>): ApplicationResult<Operation> {
-    if (!response.ok || (!response.data.kind.startsWith("kernel-") && !response.data.kind.startsWith("runtime-") && response.data.kind !== "proxy-check")) return response;
+    if (!response.ok || (!response.data.kind.startsWith("kernel-") && !response.data.kind.startsWith("runtime-") && response.data.kind !== "proxy-check" && response.data.kind !== "cookie-import")) return response;
+    if (invalidCookieReport(response.data)) return { ok: false, mode: "native", error: { code: "CAPABILITY_UNSUPPORTED", message: "Cookie读回报告的环境/会话身份不匹配，不能计为真实写入。", retryable: false } };
     if (response.data.proxyReport && response.data.proxyReport.mode !== "native") return { ok: false, mode: "native", error: { code: "CAPABILITY_UNSUPPORTED", message: "演示代理报告不能作为真实检查结果。", retryable: false } };
     const previous = this.operations.get(response.data.id);
     const operation = mergeOperation(previous, response.data);
@@ -110,8 +113,8 @@ export class WailsAdapter implements ApplicationService {
     await this.refresh();
     return response;
   }
-  startRuntime(request: { environmentId: string; requestId: string; networkPolicy: "direct" | "proxy" }) {
-    return this.runtimeMutation("Runtime.Start", { environmentId: request.environmentId, requestId: request.requestId, networkPolicy: request.networkPolicy });
+  startRuntime(request: RuntimeStartRequest) {
+    return this.runtimeMutation("Runtime.Start", { environmentId: request.environmentId, requestId: request.requestId, networkPolicy: request.networkPolicy, ...(request.purpose ? { purpose: request.purpose, expectedRevision: request.expectedRevision } : {}) });
   }
   stopRuntime(request: { environmentId: string; requestId: string }) {
     return this.runtimeMutation("Runtime.Stop", { environmentId: request.environmentId, requestId: request.requestId });
@@ -149,6 +152,20 @@ export class WailsAdapter implements ApplicationService {
   async checkProxy(request: ProxyTargetRequest) {
     const response = await this.invoke<{ status: "accepted"; operation: Operation }>("Proxy.Check", projectProxyTarget(request));
     if (response.ok) { const confirmed = this.confirmOperation({ ok: true, mode: "native", data: response.data.operation }); if (!confirmed.ok) return confirmed; }
+    await this.refresh(); return response;
+  }
+  async parseCookieImport(environmentId: string, text: string): Promise<ApplicationResult<CookieImportPreview>> {
+    const response = await this.invoke<CookieImportPreview>("Cookie.ParseImport", { environmentId, text });
+    if (response.ok && (response.data.mode !== "native" || response.data.environmentId !== environmentId)) return { ok: false, mode: "native", error: { code: "CAPABILITY_UNSUPPORTED", message: "Cookie预览不是指定原生环境，已拒绝写入。", retryable: false } };
+    return response;
+  }
+  discardCookieImport(previewId: string) { return this.invoke<{ status: "discarded" }>("Cookie.DiscardImport", { previewId }); }
+  async commitCookieImport(request: CookieCommitRequest) {
+    const response = await this.invoke<{ status: "accepted"; operation: Operation }>("Cookie.CommitImport", { previewId: request.previewId, environmentId: request.environmentId, expectedRevision: request.expectedRevision, sessionId: request.sessionId, selectedRows: [...request.selectedRows], policy: request.policy, requestId: request.requestId });
+    if (response.ok) {
+      if (response.data.operation.environmentId !== request.environmentId || response.data.operation.sessionId !== request.sessionId || response.data.operation.cookieReport?.previewId !== request.previewId) return { ok: false as const, mode: "native" as const, error: { code: "CAPABILITY_UNSUPPORTED", message: "导入受理目标或预览不匹配，不能作为指定会话结果。", retryable: false } };
+      const confirmed = this.confirmOperation({ ok: true, mode: "native", data: response.data.operation }); if (!confirmed.ok) return confirmed;
+    }
     await this.refresh(); return response;
   }
 }

@@ -92,6 +92,7 @@ import remarkGfm from "remark-gfm";
 import { NativeKernelManager } from "./components/NativeKernelManager";
 import { NativeProxyManager } from "./components/NativeProxyManager";
 import { NativeRuntimeNetwork } from "./components/NativeRuntimeNetwork";
+import { NativeCookieImport } from "./components/NativeCookieImport";
 import { FingerprintRevisionPanel } from "./components/FingerprintRevisionPanel";
 
 type Route =
@@ -266,6 +267,7 @@ export default function App({ application }: { application: ApplicationService }
   const fingerprintBusy = useRef(false);
   const [dialog, setDialog] = useState<Dialog | null>(null);
   const [nativeProxyImportOpen, setNativeProxyImportOpen] = useState(false);
+  const [nativeCookieEnvironment, setNativeCookieEnvironment] = useState<Environment | null>(null);
   const [formError, setFormError] = useState("");
   const [generating, setGenerating] = useState(false);
   const [savePending, setSavePending] = useState(false);
@@ -774,7 +776,7 @@ export default function App({ application }: { application: ApplicationService }
     }
   }
   function openCookies(e: Environment) {
-    if (nativeMode) { notify("真实 Cookie 写入尚未接入，不会写入示例记录。", true); return; }
+    if (nativeMode) { setNativeCookieEnvironment(e); setMenu(null); return; }
     setDialog({ kind: "cookies", id: e.id });
     setCookieText("");
     setCookieResult(null);
@@ -2500,6 +2502,7 @@ export default function App({ application }: { application: ApplicationService }
           </div>
         </div>
       )}
+      {nativeMode && nativeCookieEnvironment && <NativeCookieImport key={nativeCookieEnvironment.id} application={application} workspace={workspace} environment={nativeCookieEnvironment} onClose={() => setNativeCookieEnvironment(null)} />}
       {dialog && (
         <div className="overlay modal-overlay">
           <div

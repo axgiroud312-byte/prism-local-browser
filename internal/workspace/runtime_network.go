@@ -5,6 +5,7 @@ import (
 	"net/netip"
 	"sync"
 
+	"github.com/axgiroud312-byte/prism-local-browser/internal/cookies"
 	"github.com/axgiroud312-byte/prism-local-browser/internal/kernel"
 	"github.com/axgiroud312-byte/prism-local-browser/internal/proxy"
 )
@@ -121,6 +122,25 @@ type networkRuntimeProcess struct {
 	done          chan struct{}
 	mu            sync.Mutex
 	cleanupFailed bool
+}
+
+func (p *networkRuntimeProcess) ReadCookies(ctx context.Context) ([]cookies.Stored, error) {
+	if transport, ok := p.RuntimeProcess.(cookieTransport); ok {
+		return transport.ReadCookies(ctx)
+	}
+	return nil, &cookies.Error{Code: "COOKIE_CONTROL_UNAVAILABLE", Message: "本次会话未提供Cookie控制能力。", Retryable: false}
+}
+func (p *networkRuntimeProcess) ApplyCookie(ctx context.Context, value cookies.Cookie) (cookies.ApplyResult, error) {
+	if transport, ok := p.RuntimeProcess.(cookieTransport); ok {
+		return transport.ApplyCookie(ctx, value)
+	}
+	return cookies.ApplyResult{}, &cookies.Error{Code: "COOKIE_CONTROL_UNAVAILABLE", Message: "本次会话未提供Cookie控制能力。", Retryable: false}
+}
+func (p *networkRuntimeProcess) ClearCookies(ctx context.Context) error {
+	if transport, ok := p.RuntimeProcess.(cookieTransport); ok {
+		return transport.ClearCookies(ctx)
+	}
+	return &cookies.Error{Code: "COOKIE_CONTROL_UNAVAILABLE", Message: "本次会话未提供Cookie控制能力。", Retryable: false}
 }
 
 func ownRuntimeNetwork(process RuntimeProcess, channel RuntimeProxyChannel) RuntimeProcess {

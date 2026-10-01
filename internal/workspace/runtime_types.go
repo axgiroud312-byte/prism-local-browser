@@ -79,8 +79,10 @@ type RuntimeNetworkFault struct {
 }
 
 type runtimeRequest struct {
-	EnvironmentID string `json:"environmentId"`
-	RequestID     string `json:"requestId"`
-	NetworkPolicy string `json:"networkPolicy,omitempty"`
-	SessionID     string `json:"sessionId,omitempty"`
+	EnvironmentID    string `json:"environmentId"`
+	RequestID        string `json:"requestId"`
+	NetworkPolicy    string `json:"networkPolicy,omitempty"`
+	SessionID        string `json:"sessionId,omitempty"`
+	Purpose          string `json:"purpose,omitempty"`
+	ExpectedRevision int64  `json:"expectedRevision,omitempty"`
 }

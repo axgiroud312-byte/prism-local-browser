@@ -38,10 +38,11 @@ export interface WorkspaceView {
   runtimeSessions?: Record<string, RuntimeSession>;
   nativeProxyRecords?: NativeProxy[];
   proxyOperations?: Operation[];
+  cookieOperations?: Operation[];
 }
 export interface Operation {
   id: string;
-  kind: "create" | "edit" | "kernel-install" | "kernel-verify" | "kernel-delete" | "runtime-start" | "runtime-stop" | "runtime-force-stop" | "runtime-reconcile" | "proxy-check";
+  kind: "create" | "edit" | "kernel-install" | "kernel-verify" | "kernel-delete" | "runtime-start" | "runtime-stop" | "runtime-force-stop" | "runtime-reconcile" | "proxy-check" | "cookie-import";
   state: "accepted" | "running" | "completed" | "cancelled" | "failed";
   total: number;
   completedIds: string[];
@@ -55,6 +56,7 @@ export interface Operation {
   sessionId?: string;
   proxyId?: string;
   proxyReport?: ProxyCheckReport;
+  cookieReport?: CookieImportReport;
 }
 export interface OperationEvent {
   mode: ApplicationMode;
@@ -122,7 +124,7 @@ export interface ApplicationService {
   installKernel?(request: KernelInstallRequest): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
   verifyKernel?(kernelId: string, requestId: string): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
   deleteKernel?(kernelId: string, requestId: string): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
-  startRuntime?(request: { environmentId: string; requestId: string; networkPolicy: "direct" | "proxy" }): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
+  startRuntime?(request: RuntimeStartRequest): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
   stopRuntime?(request: { environmentId: string; requestId: string }): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
   inspectRuntime?(ids: string[]): Promise<ApplicationResult<RuntimeSession[]>>;
   forceStopRuntime?(request: { environmentId: string; sessionId: string; requestId: string }): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
@@ -133,6 +135,37 @@ export interface ApplicationService {
   updateProxy?(request: ProxyUpdateRequest): Promise<ApplicationResult<{ status: "completed"; record: NativeProxy }>>;
   deleteProxy?(request: ProxyTargetRequest): Promise<ApplicationResult<{ status: "completed"; deletedId: string }>>;
   checkProxy?(request: ProxyTargetRequest): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
+  parseCookieImport?(environmentId: string, text: string): Promise<ApplicationResult<CookieImportPreview>>;
+  discardCookieImport?(previewId: string): Promise<ApplicationResult<{ status: "discarded" }>>;
+  commitCookieImport?(request: CookieCommitRequest): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
+}
+
+export interface RuntimeStartRequest { environmentId: string; requestId: string; networkPolicy: "direct" | "proxy"; purpose?: "cookie-import"; expectedRevision?: number }
+export interface CookiePartitionKey { topLevelSite: string; hasCrossSiteAncestor: boolean }
+// Safe projections deliberately do not include value, raw input or CDP data.
+export interface NativeCookieRow {
+  index: number; name?: string; domain?: string; hostOnly: boolean; path?: string; session: boolean;
+  secure: boolean; httpOnly: boolean; sameSite?: "Strict" | "Lax" | "None";
+  expires?: number; partitionKey?: CookiePartitionKey; expired: boolean;
+  conflict: boolean; existingConflict: boolean; errorCode?: string; message?: string;
+}
+export interface CookieImportPreview {
+  mode: "native"; previewId: string; environmentId: string; environmentName: string;
+  expectedRevision: number; sessionId?: string; requiresStart: boolean;
+  format: "json" | "netscape" | ""; expiresAt: string; rows: NativeCookieRow[];
+  total: number; validCount: number; errorCount: number; expiredCount: number; conflictCount: number;
+  existingConflictCount?: number; observationError?: ApplicationError;
+}
+export interface CookieCommitRequest {
+  previewId: string; environmentId: string; expectedRevision: number; sessionId: string;
+  selectedRows: number[]; policy: "merge" | "replace-all"; requestId: string;
+}
+export interface CookieItemResult extends NativeCookieRow { status: "pending" | "verified" | "already-matched" | "failed" | "unknown" | "expired" | "cancelled" }
+export interface CookieImportReport {
+  mode: "native"; previewId: string; environmentId: string; sessionId: string; revision: number; policy: "merge" | "replace-all";
+  clearState: "not-requested" | "pending" | "not-attempted" | "verified-empty" | "unknown";
+  verifiedCount: number; writtenCount: number; alreadyMatchedCount: number; failedCount: number;
+  skippedCount: number; unconfirmedCount: number; finishedAt?: string; items: CookieItemResult[];
 }
 
 export interface ProxyConfiguration {

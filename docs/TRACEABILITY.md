@@ -96,6 +96,13 @@ UX-001、DOC-001 的发布入口在 [安装器](../build/windows/installer/prism
 - ENV-003、UX-001：[`网络根因`](../internal/workspace/runtime_network_fault.go)、持久化/恢复与native说明；network_error及清理阶段、启动含nil process真实闭锁、ForceStop/重开保根因；未终结Stop的预留与error展示分离，终态保存前不能被新Start替换。
 - PRX-001：[`双层门禁`](../internal/kernel/network_protection.go)缺少已验证全路径边界时真实代理Start拒绝，独立检查不解锁。7桥/2内核/9服务/1adapter回归仅编写，[清单](verification/T11.md)。用户许可管理员安装不等于已集成WFP/DNS/崩溃隔离；本票不记完整/验收。
 
+### T12 指定环境Cookie导入（源码已编写，未运行验收）
+
+- CK-001：[`解析`](../internal/cookies/parse.go)与[`安全预览`](../internal/workspace/cookie_import.go)分离；环境/修订/session绑定，空值/JSON-vs-Netscape时间/hostOnly/安全属性/分区/冲突和不支持项明确。写前拒会改变另一键的路径/作用域，现存冲突未知不填0，不持久化秘密。
+- CK-001、DATA-001：[`窄内核控制`](../internal/kernel/cookies_windows.go)单条读→同键matchskip→写→完整读回组合串行，scope为准确私有pipe；不任意CDP/SQL/URL，无结果/属性差异不计verified。明确全量清空才碰无关键；失败重试只合并、重开不自动重放。
+- CK-001、UX-001：[`任务/观测`](../internal/workspace/cookie_worker.go)部分成功/unknown、取消/落盘pending与lease，退出/核对不提前释放；[`native对话框`](../src/components/NativeCookieImport.tsx)明确空白启动原链、不绕代理门禁，隐藏输入/值与安全逐项结果，关闭后可取消。
+- 14解析/2内核/8服务/3adapter回归仅编写未运行，Go测试包未编译；真实写后读回、持久化/分区/expiry/A-B隔离及新UI未验收，[清单](verification/T12.md)。
+
 以下关联于 2026-09-30 发布，表示计划实现范围，不能据此判断已完成。当前状态与 blocking 依赖以 GitHub 为准；完整顺序见 [开发票据索引](ISSUES.md)，共同范围见 [总规格 Issue](https://github.com/axgiroud312-byte/prism-local-browser/issues/1)。
 
 | 需求 ID  | 实现或专项验证 Issue                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | 整体验收                                                                       |

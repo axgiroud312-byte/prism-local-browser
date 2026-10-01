@@ -173,6 +173,16 @@ HTTP经目标流写origin-form，HTTPS经同本机CONNECT透传TLS；SOCKS5本�
 
 ## 请求与返回合同
 
+### T12 窄Cookie控制与固定148语义
+
+[`Cookie能力`](../internal/kernel/cookies_windows.go)仅从原准确ManagedProcess调用自己的匿名pipe，固定Storage.get/set/clearCookies，不开放通用CDP RPC、调试端点、浏览器数据库或任意contextId。根browserpipe的默认context属于该自有浏览器；应用sessionId不能当CDPcontext。每条读取→已匹配则不重写→单条set→完整get组合保持同commandGate，单命令超时后不能假称没有副作用。
+
+读回包含值（仅内部）、domain前导点/路径/分区两成员及Secure/HttpOnly/SameSite缺省/Session/原Unix秒有效期。nonce不可序列化分区可能报告partitionKeyOpaque=false，presence仍排除普通Cookie匹配。原始响应不回显，不截断大集合计成功；2MiB帧上限会明确返回读回失败。
+
+固定源码Storage.setCookies受理不以每条访问结果判成功，约400天等有效期限制导致读回差异不能计完整核对。writer不附URL，因为HTTPS URL会隐式改secure。写前拒绝可被URL规范化改成另一键的非规范path/host，以及多个域前导点、private PSL域Cookie；IPv6 Cookie域暂无闭合writer形态，明确不支持而非显示有效。JSON0与Netscape0时间语义分离，空value/session不改为默认未来时间。[官方依据/边界](verification/T12.md)、[D013](DECISIONS.md#d013--cookie命令只作用于指定会话重试先核对同键2026-10-01)。
+
+明确Cookie启动用途仍在原Runtime.Start链，仅本次不恢复标签和URLs，保保存修订/seed/精确内核/数据引用。T11真实proxy门禁不能因Cookie解锁。清空必须用户明确选择，只作用当前default context且确认空集合；失败重试合并、不重清或恢复其他数据。实际固定二进制写后读取、分区与A-B隔离仍待验收，源码不是证据。
+
 以下均是**面向 UI 的目标外部应用接口示例**，以 [DEVELOPMENT.md 的本地应用接口](DEVELOPMENT.md#6-本地应用接口) 为统一契约；T04/T05/T06实际已接接口以该文档的增量说明及源码为准，T06尚未运行验收。成功返回 `{ ok: true, data, operationId? }`，失败返回 `{ ok: false, error: { code, message, retryable, details? }, operationId? }`。ID 均为虚构示例；应用后端按 ID 解析内核、数据目录与凭据，前端不得提交任意可执行文件路径。
 
 生成预览请求；该调用不保存环境：

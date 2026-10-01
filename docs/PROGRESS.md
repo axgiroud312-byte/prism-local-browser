@@ -1,11 +1,11 @@
 # Goal 当前执行位置
 
-更新时间：2026-10-01 15:41 Asia/Shanghai。
+更新时间：2026-10-01 16:17 Asia/Shanghai。
 
 - Goal：执行中；[规则](GOAL.md)；完成 **4/21**（验收任务计数）。
-- 当前任务：T11 / [Issue #12](https://github.com/axgiroud312-byte/prism-local-browser/issues/12)，部分实现待保存，完整系统隔离受阻；T05–T10待验收，不称T11已完整开发。
-- 当前步骤：故障闭锁/准确Job独立停止、network_error/恢复和门禁已编写，首轮2 P2+2收尾缺口源码闭环，无剩余可信P1/P2。特权WFP独立路径仅是socket候选，委托DNS/崩溃完整边界未解决；用户明确选择保存部分并继续不依赖它的Cookie/批量/备份，门禁不解、无现在提权/改系统。
-- 现场：`goal/t11-fail-closed-network`，基于T10 `88ba61a`；未提交为Bridge/Job故障、服务根因/门禁/恢复/Stop预留、安全字段/native说明、7+2+9+1回归与文档。14:36生产静态/TS类型/格式、15:39最后后端生产编译/格式通过，Go测试包未编译，全回归未执行，无程序/网络/点击/CI/安装构建或系统修改。
+- 当前任务：T12 / [Issue #13](https://github.com/axgiroud312-byte/prism-local-browser/issues/13)，本地实现待保存/待验收；T11部分提交暂缓完整隔离，T05–T10待验收。
+- 当前步骤：首轮4 P1+6 P2/组及后续2 P2全部源码闭环，两项最终只读均无剩余可信P1/P2。16:16最后production包/TS类型/格式通过，准备本地提交，之后进入T13。原proxy门禁不解、值不普通持久化，先match重试不重清。
+- 现场：`goal/t12-native-cookie-import`，基于T11阶段 `d547bb1`；未提交，14解析+2内核+8服务+3adapter回归全未执行，Go测试包未编译；16:16最后静态/TS/格式、16:11文档通过。不运行程序/网络/测试/点击/CI/完整构建或现在提权/系统修改。[T12清单](verification/T12.md)。
 
 ## 任务状态
 
@@ -21,8 +21,8 @@
 | T08 | #9 | 已实现待验收 | 本地 `f020076`；[验收清单](verification/T08.md)，blocking #3 CLOSED，无PR/推送 |
 | T09 | #10 | 已实现待验收 | 本地 `f6ebca1`；[验收清单](verification/T09.md)，原blocking #7/#9仍OPEN，无PR/推送 |
 | T10 | #11 | 已实现待验收 | 本地 `88ba61a`；[验收清单](verification/T10.md)，唯一blocking #10仍OPEN，无PR/推送 |
-| T11 | #12 | 部分实现/系统边界研究 | [清单](verification/T11.md)；普通代理Start被门禁阻止，特权隔离未实现；#11仍OPEN |
-| T12 | #13 | 待开始 | — |
+| T11 | #12 | 部分实现，完整隔离暂缓 | 本地阶段 `d547bb1`；[清单](verification/T11.md)，代理Start门禁保持拒绝；无PR/推送 |
+| T12 | #13 | 已实现待保存/验收 | [清单](verification/T12.md)，唯一blocking #7仍OPEN，按D007消费本地T06 |
 | T13 | #14 | 待开始 | — |
 | T14 | #15 | 待开始 | — |
 | T15 | #16 | 待开始 | — |
@@ -118,6 +118,12 @@
 - 14:36–15:39：修首轮2 P2及后续2缺口：请求ctx/上传source故障不误关会话、启动收尾读取闭锁且不按cleanupIntent丢根因、显式传channel保存nil process故障、未終结Stop独立guard及lease保留防后来Start替换旧slot。最后只读全部源码闭环，无剩余可信P1/P2；7桥/2内核/9服务/1adapter回归未执行，Go测试包未编译。14:36生产静态/TS类型/格式和15:39最后backend生产编译/格式通过。
 - 特权调查结束：ALE_ORIGINAL_APP_ID仅定义重定向原AppID，未保证DnsClient委托归属；独立可信副本+WFP只是socket候选，持久拒绝/服务崩溃/端口回收仍须闭环。用户选择保存T11部分后先开发其他不依赖票，GOAL/D012已记。只读预读T12 #13全文/四项验收，唯一blocking #7 OPEN且本地T06可用；本票保存前未写T12。
 - 15:41：最后35份文档/本地链接/需求/路由/嵌入文档及格式通过；准备保存T11阶段提交，按用户明确选择进入不依赖T11的T12。不推送/开PR，#12仍部分未完成，代理真实启动门禁保持拒绝。
+- 15:41：T11阶段提交d547bb1，干净后切T12分支；完整隔离仍未开发完/未验收，无推送/PR。用户明确暂缓T11的顺序变更已写GOAL/D012；只读预读T12后正式进入，不因顺序调整或部分提交增加4/21计数。
+- T11开发评论已发布：[#12](https://github.com/axgiroud312-byte/prism-local-browser/issues/12#issuecomment-5927031908)，正文output/goal/T11/development-update.md；状态部分未完成，不关闭。
+- 15:42–16:11 T12：固定148官方CDP Cookie语义与现有匿名pipe调查完成；根Storage单条写+完整读回、作用域/时间/分区、短期安全预览、任务取消/存储/重开与native明确空白启动已编写。首轮4 P1+6 P2/组源码闭环，后续2状态P2修preview关联/新attempt/迟到task接管，最后聚焦复核中。14解析+2内核+8服务+3adapter回归全未执行，Go测试包未编译。
+- 15:58及16:07生产static/TS类型/格式、16:11 TS/36份文档/链接等通过；随后previewId关联static继续，不运行程序/测试/网络/浏览器/UI/CI/安装构建。只读预读T13 #14全文与四项验收、blocking #8/#9 OPEN但本地T07/T08可用，无承担者或目标分支PR；保存T12前未写T13代码。
+- 16:16：最后preview关联版production cookies/kernel/workspace编译、源码/测试TS类型和格式通过；4 P1+6 P2/组+2状态P2全源码閉环，两项最终只读无剩余可信P1/P2。本地实现待保存，不推送/开PR或关闭#13，不增加4/21验收计数。
+- 16:17：最后36份文档/本地链接/需求/路由/嵌入文档及格式通过，保存本地T12源码。测试/运行/点击/CI/安装构建仍未执行，Go测试包未编译。
 - 13:19–13:21：二轮确认首3项关闭，剩3 P2：原ctx固定拨号丢连接trace阶段、body/排队取消与期限误归因、超大文件未废旧preview。已实际Dial明确发阶段、真实ctx区分取消/超时/响应错误、非空文件先Discard再校验，补body受控回归与连接阶段断言。既有x/net IDNA标direct（不升版本/sum不变），许可注記补齐。13:21最后生产包静态编译、源码/测试TS类型与格式通过；最后聚焦只读复核无剩余可信P1/P2，仅源码结论。7+7+3新增回归未执行，准备本地T08提交，无网络/程序/UI/CI。
 
 ## 恢复资源与 GitHub

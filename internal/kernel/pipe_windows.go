@@ -249,6 +249,11 @@ func (p *pipeProcess) call(ctx context.Context, method string, params any, sessi
 		return err
 	}
 	defer func() { <-p.commandGate }()
+	return p.callLocked(ctx, method, params, session, output)
+}
+
+// Caller owns commandGate for the entire typed read/write/readback sequence.
+func (p *pipeProcess) callLocked(ctx context.Context, method string, params any, session string, output any) error {
 	id, err := p.sendContext(ctx, method, params, session)
 	if err != nil {
 		return err

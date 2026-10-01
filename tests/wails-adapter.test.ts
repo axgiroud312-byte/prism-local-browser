@@ -1,10 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { WailsAdapter, type NativeBridge, type NativeRequest } from "../src/application/wails-adapter.ts";
-import type { ApplicationResult, Operation, OperationEvent, RuntimeSession, WorkspaceView, ProxyUpdateRequest, ProxyTargetRequest } from "../src/application/contract.ts";
+import type { ApplicationResult, Operation, OperationEvent, RuntimeSession, WorkspaceView, ProxyUpdateRequest, ProxyTargetRequest, CookieCommitRequest, CookieImportPreview, CookieImportReport } from "../src/application/contract.ts";
 import type { Environment } from "../src/domain.ts";
 import { applyFingerprint, demoFingerprint, demoProfile, fingerprintMatchesConfiguration } from "../src/application/fingerprint-model.ts";
 import { proxyResolutionLabel, proxyStageLabel } from "../src/application/proxy-network.ts";
+import { currentCookieOperation } from "../src/application/cookie-import.ts";
 
 const empty = (): WorkspaceView => ({ mode: "native", state: { schemaVersion: 1, environments: [], proxies: [], kernels: [], backups: [], activities: [] } });
 const ok = <T>(data: T): ApplicationResult<T> => ({ ok: true, mode: "native", data });
@@ -20,6 +21,39 @@ const environment: Environment = {
   fingerprintVersion: "windows-desktop-v1", status: "ready", cookies: [], createdAt: "2026-09-30T00:00:00Z",
 };
 const operation: Operation = { id: "synthetic-operation", kind: "create", state: "completed", total: 1, completedIds: [environment.id], cancelRequested: false };
+
+test("native Cookie commit and explicit blank launch project only safe target metadata", async () => {
+  const { app, calls } = fixture(request => request.method === "Workspace.Read" ? ok(empty()) : rejected);
+  await app.commitCookieImport({ previewId: "synthetic-preview", environmentId: environment.id, expectedRevision: 3, sessionId: "synthetic-session", selectedRows: [1], policy: "merge", requestId: "synthetic-cookie-write", value: "SYNTHETIC_PRIVATE_COOKIE_VALUE", cdpEndpoint: "http://127.0.0.1:9999", cookies: [], networkPolicy: "direct" } as CookieCommitRequest);
+  await app.startRuntime({ environmentId: environment.id, expectedRevision: 3, purpose: "cookie-import", networkPolicy: "proxy", requestId: "synthetic-blank-start", allowUnsafeProxy: true, urls: "https://other.test", restoreTabs: true } as Parameters<WailsAdapter["startRuntime"]>[0]);
+  assert.deepEqual(calls.find(call => call.method === "Cookie.CommitImport")?.payload, { previewId: "synthetic-preview", environmentId: environment.id, expectedRevision: 3, sessionId: "synthetic-session", selectedRows: [1], policy: "merge", requestId: "synthetic-cookie-write" });
+  assert.deepEqual(calls.find(call => call.method === "Runtime.Start")?.payload, { environmentId: environment.id, expectedRevision: 3, purpose: "cookie-import", networkPolicy: "proxy", requestId: "synthetic-blank-start" });
+  assert.ok(!JSON.stringify(calls).includes("SYNTHETIC_PRIVATE_COOKIE_VALUE")); assert.ok(!JSON.stringify(calls).includes("allowUnsafeProxy"));
+});
+
+test("Cookie previews and readback reports reject demo or foreign environment/session", async () => {
+  const preview: CookieImportPreview = { mode: "native", previewId: "synthetic-preview", environmentId: "foreign-environment", environmentName: "合成另一个环境", expectedRevision: 1, requiresStart: true, format: "json", expiresAt: "2026-10-01T01:00:00Z", rows: [], total: 0, validCount: 0, errorCount: 0, expiredCount: 0, conflictCount: 0 };
+  const report: CookieImportReport = { mode: "native", previewId: "synthetic-preview", environmentId: environment.id, sessionId: "foreign-session", revision: 1, policy: "merge", clearState: "not-requested", verifiedCount: 1, writtenCount: 1, alreadyMatchedCount: 0, failedCount: 0, skippedCount: 0, unconfirmedCount: 0, items: [] };
+  const cookieOperation: Operation = { ...operation, kind: "cookie-import", environmentId: environment.id, sessionId: "synthetic-session", cookieReport: report };
+  const { app } = fixture(request => request.method === "Cookie.ParseImport" ? ok(preview) : request.method === "Operation.Read" ? ok(cookieOperation) : ok({ ...empty(), cookieOperations: [cookieOperation] }));
+  assert.equal((await app.parseCookieImport(environment.id, "[]")).ok, false);
+  assert.equal((await app.getOperation(cookieOperation.id)).ok, false);
+  assert.equal((await app.refresh()).ok, false);
+});
+
+test("reopened Cookie views adopt later accepted tasks while keeping in-flight observations across stale snapshots", () => {
+  const older: Operation = { ...operation, id: "synthetic-old-cookie", kind: "cookie-import", environmentId: environment.id };
+  const active: Operation = { ...older, id: "synthetic-new-cookie", state: "accepted", completedIds: [] };
+  const foreign: Operation = { ...active, id: "synthetic-foreign-cookie", environmentId: "other-environment" };
+  assert.equal(currentCookieOperation(undefined, [foreign, active, older], environment.id)?.id, active.id);
+  assert.equal(currentCookieOperation(older, [active, older], environment.id)?.id, active.id);
+  assert.equal(currentCookieOperation(active, [older], environment.id)?.id, active.id);
+  assert.equal(currentCookieOperation(older, [{ ...active, state: "completed" }, older], environment.id)?.id, active.id);
+  assert.equal(currentCookieOperation({ ...active, persistencePending: true, state: "failed" }, [active, older], environment.id)?.persistencePending, true);
+  assert.equal(currentCookieOperation(undefined, [older], environment.id, "synthetic-new-preview"), undefined);
+  assert.equal(currentCookieOperation(older, [older], environment.id, "synthetic-new-preview"), undefined);
+  assert.equal(currentCookieOperation(undefined, [active, older], environment.id, "synthetic-new-preview")?.id, active.id);
+});
 
 test("SOCKS5 library checks and runtime starts cannot send local-DNS/auth-downgrade overrides", async () => {
   const { app, calls } = fixture(request => request.method === "Workspace.Read" ? ok(empty()) : rejected);

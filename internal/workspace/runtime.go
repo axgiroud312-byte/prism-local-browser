@@ -29,6 +29,9 @@ type runtimeSlot struct {
 }
 
 func (s *Service) runtimeOwnsProfileUse(environmentID string) bool {
+	if s.cookieTasks[environmentID] != nil {
+		return true
+	}
 	slot := s.runtimeSlots[environmentID]
 	return slot != nil && (slot.process != nil || slot.session.NeedsReconcile || slot.session.PersistencePending || slot.session.State == "starting" || slot.session.State == "stopping")
 }
@@ -152,9 +155,18 @@ func (s *Service) runtimeCall(request Request) Result {
 		return s.reconcileRuntime(input)
 	}
 
+	if input.Purpose != "" && input.Purpose != "cookie-import" || input.Purpose == "cookie-import" && input.ExpectedRevision < 1 {
+		return failure("VALIDATION_FAILED", "启动用途或Cookie目标修订无效，未创建会话。", false)
+	}
 	environment, revision, profileID, err := s.readEnvironment(input.EnvironmentID)
 	if err != nil {
 		return failure("NOT_FOUND", "环境无法读取，未启动。", true)
+	}
+	if input.Purpose == "cookie-import" && revision != input.ExpectedRevision {
+		return failure("REVISION_CONFLICT", "Cookie预览后目标环境修订已变，未启动；请重新预览。", true)
+	}
+	if s.cookieTasks[input.EnvironmentID] != nil {
+		return failure("PROFILE_BUSY", "前一次Cookie操作/观测结果尚未保存，不能替换它的会话。", true)
 	}
 	var proxyRecord *ProxyView
 	var proxyRef string
@@ -229,7 +241,12 @@ func (s *Service) runtimeCall(request Request) Result {
 	s.runtimeSlots[environment.ID] = slot
 	s.profileUses[environment.ID] = true
 	s.workers.Add(1)
-	go s.launchRuntime(ctx, slot, RuntimeLaunch{Root: s.root, EnvironmentID: environment.ID, SessionID: sessionID, DataReference: ref, Kernel: record, Profile: profile.Profile, Configuration: environment.Configuration, Proxy: proxyRecord, ProxyCredentialRef: proxyRef, OnCreated: func(pid int, createdAt string) error {
+	launchConfig := environment.Configuration
+	// Launch-only: leave saved tabs/URLs, identity and network policy unchanged.
+	if input.Purpose == "cookie-import" {
+		launchConfig.RestoreTabs, launchConfig.URLs = false, ""
+	}
+	go s.launchRuntime(ctx, slot, RuntimeLaunch{Root: s.root, EnvironmentID: environment.ID, SessionID: sessionID, DataReference: ref, Kernel: record, Profile: profile.Profile, Configuration: launchConfig, Proxy: proxyRecord, ProxyCredentialRef: proxyRef, OnCreated: func(pid int, createdAt string) error {
 		s.mu.Lock()
 		defer s.mu.Unlock()
 		if s.runtimeSlots[environment.ID] != slot || s.closed || s.closeRequested.Load() || slot.session.State == "stopping" {
@@ -533,7 +550,7 @@ func (s *Service) finishRuntimeStart(slot *runtimeSlot, process RuntimeProcess, 
 		}
 	}
 	_ = s.persistRuntime(slot, &slot.start, "浏览器启动失败")
-	if !slot.session.PersistencePending && !runtimeStopPending(slot) {
+	if !slot.session.PersistencePending && !runtimeStopPending(slot) && s.cookieTasks[slot.session.EnvironmentID] == nil {
 		delete(s.profileUses, slot.session.EnvironmentID)
 	}
 }
@@ -595,6 +612,7 @@ func (s *Service) stopRuntime(input runtimeRequest) Result {
 		return result
 	}
 	slot.stop = &operation
+	s.cancelRuntimeCookies(input.EnvironmentID)
 	slot.session = next
 	slot.cancel()
 	s.workers.Add(1)

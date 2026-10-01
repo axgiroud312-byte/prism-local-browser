@@ -60,22 +60,23 @@ type Preview struct {
 	UserDataRef      string              `json:"userDataRef,omitempty"`
 }
 type Operation struct {
-	ID                 string         `json:"id"`
-	Kind               string         `json:"kind"`
-	State              string         `json:"state"`
-	Total              int            `json:"total"`
-	CompletedIDs       []string       `json:"completedIds"`
-	CancelRequested    bool           `json:"cancelRequested"`
-	Stage              string         `json:"stage,omitempty"`
-	PersistencePending bool           `json:"persistencePending,omitempty"`
-	Error              *Error         `json:"error,omitempty"`
-	KernelID           string         `json:"kernelId,omitempty"`
-	ResourceKey        string         `json:"resourceKey,omitempty"`
-	Report             *kernel.Report `json:"report,omitempty"`
-	EnvironmentID      string         `json:"environmentId,omitempty"`
-	SessionID          string         `json:"sessionId,omitempty"`
-	ProxyID            string         `json:"proxyId,omitempty"`
-	ProxyReport        *proxy.Report  `json:"proxyReport,omitempty"`
+	ID                 string              `json:"id"`
+	Kind               string              `json:"kind"`
+	State              string              `json:"state"`
+	Total              int                 `json:"total"`
+	CompletedIDs       []string            `json:"completedIds"`
+	CancelRequested    bool                `json:"cancelRequested"`
+	Stage              string              `json:"stage,omitempty"`
+	PersistencePending bool                `json:"persistencePending,omitempty"`
+	Error              *Error              `json:"error,omitempty"`
+	KernelID           string              `json:"kernelId,omitempty"`
+	ResourceKey        string              `json:"resourceKey,omitempty"`
+	Report             *kernel.Report      `json:"report,omitempty"`
+	EnvironmentID      string              `json:"environmentId,omitempty"`
+	SessionID          string              `json:"sessionId,omitempty"`
+	ProxyID            string              `json:"proxyId,omitempty"`
+	ProxyReport        *proxy.Report       `json:"proxyReport,omitempty"`
+	CookieReport       *CookieImportReport `json:"cookieReport,omitempty"`
 }
 type Mutation struct {
 	PreviewID        string        `json:"previewId"`
@@ -123,6 +124,7 @@ type View struct {
 	RuntimeSessions    map[string]RuntimeSession  `json:"runtimeSessions"`
 	NativeProxyRecords []ProxyView                `json:"nativeProxyRecords"`
 	ProxyOperations    []Operation                `json:"proxyOperations"`
+	CookieOperations   []Operation                `json:"cookieOperations"`
 }
 type KernelView struct {
 	kernel.Record

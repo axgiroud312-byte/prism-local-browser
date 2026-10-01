@@ -148,7 +148,7 @@ func (s *Service) flushOneRuntimeWrite(pending *runtimePendingWrite) error {
 	}
 	delete(s.runtimePending, slot.session.EnvironmentID)
 	reconciling := slot.reconcile != nil && (slot.reconcile.State == "accepted" || slot.reconcile.State == "running")
-	if slot.process == nil && !slot.session.NeedsReconcile && !reconciling && !runtimeStopPending(slot) && (slot.session.State == "ready" || slot.session.State == "error") {
+	if slot.process == nil && !slot.session.NeedsReconcile && !reconciling && !runtimeStopPending(slot) && s.cookieTasks[slot.session.EnvironmentID] == nil && (slot.session.State == "ready" || slot.session.State == "error") {
 		delete(s.profileUses, slot.session.EnvironmentID)
 	}
 	return nil
@@ -299,7 +299,9 @@ func (s *Service) applyReconciledRuntime(slot *runtimeSlot, recovery kernel.Mana
 			slot.session.State, slot.session.Error = "error", slot.session.NetworkFault.Error
 			slot.session.NextAction = "已核对旧故障会话资源退出，未恢复旧桥；修复后重新检查并启动原档案。"
 		}
-		delete(s.profileUses, slot.session.EnvironmentID)
+		if s.cookieTasks[slot.session.EnvironmentID] == nil {
+			delete(s.profileUses, slot.session.EnvironmentID)
+		}
 	}
 	if operation != nil {
 		operation.State, operation.Stage, operation.CompletedIDs = "completed", "identity-checked", []string{slot.session.EnvironmentID}

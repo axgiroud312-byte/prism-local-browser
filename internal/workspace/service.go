@@ -50,30 +50,35 @@ type draft struct {
 	BaseProfile *DeviceProfile
 }
 type Service struct {
-	mu              sync.Mutex
-	db              *sql.DB
-	drafts          map[string]draft
-	options         Options
-	root            string
-	archives        map[string]string
-	kernelTask      *kernelTask
-	workers         sync.WaitGroup
-	closed          bool
-	profileUses     map[string]bool
-	runtimeSlots    map[string]*runtimeSlot
-	startGate       chan struct{}
-	closeDone       chan struct{}
-	closeError      error
-	closeOnce       sync.Once
-	closeRequested  atomic.Bool
-	runtimePending  map[string]*runtimePendingWrite
-	runtimeResults  map[string]Operation
-	proxyImport     *proxyImportDraft
-	proxyRequestKey []byte
-	proxyChecks     map[string]*proxyCheckTask
-	proxyResults    map[string]Operation
-	proxyPending    map[string]*proxyCheckWrite
-	proxyCheckGate  chan struct{}
+	mu               sync.Mutex
+	db               *sql.DB
+	drafts           map[string]draft
+	options          Options
+	root             string
+	archives         map[string]string
+	kernelTask       *kernelTask
+	workers          sync.WaitGroup
+	closed           bool
+	profileUses      map[string]bool
+	runtimeSlots     map[string]*runtimeSlot
+	startGate        chan struct{}
+	closeDone        chan struct{}
+	closeError       error
+	closeOnce        sync.Once
+	closeRequested   atomic.Bool
+	runtimePending   map[string]*runtimePendingWrite
+	runtimeResults   map[string]Operation
+	proxyImport      *proxyImportDraft
+	proxyRequestKey  []byte
+	proxyChecks      map[string]*proxyCheckTask
+	proxyResults     map[string]Operation
+	proxyPending     map[string]*proxyCheckWrite
+	proxyCheckGate   chan struct{}
+	cookieImport     *cookieImportDraft
+	cookieGeneration uint64
+	cookieTasks      map[string]*cookieImportTask
+	cookieResults    map[string]Operation
+	cookiePending    map[string]Operation
 }
 
 func failure(code, message string, retryable bool) Result {
@@ -125,6 +130,7 @@ func Open(root string, options Options) (*Service, error) {
 	db.SetMaxOpenConns(1)
 	s := &Service{db: db, root: absolute, drafts: map[string]draft{}, archives: map[string]string{}, profileUses: map[string]bool{}, runtimeSlots: map[string]*runtimeSlot{}, startGate: make(chan struct{}, 1), closeDone: make(chan struct{}), runtimePending: map[string]*runtimePendingWrite{}, runtimeResults: map[string]Operation{}, options: options}
 	s.proxyChecks, s.proxyResults, s.proxyPending, s.proxyCheckGate = map[string]*proxyCheckTask{}, map[string]Operation{}, map[string]*proxyCheckWrite{}, make(chan struct{}, 4)
+	s.cookieTasks, s.cookieResults, s.cookiePending = map[string]*cookieImportTask{}, map[string]Operation{}, map[string]Operation{}
 	if err = s.initialize(); err != nil {
 		db.Close()
 		return nil, err
@@ -138,6 +144,10 @@ func Open(root string, options Options) (*Service, error) {
 		return nil, err
 	}
 	if err = s.recoverProxyChecks(); err != nil {
+		db.Close()
+		return nil, err
+	}
+	if err = s.recoverCookieImports(); err != nil {
 		db.Close()
 		return nil, err
 	}
@@ -171,6 +181,10 @@ func (s *Service) beginShutdown() {
 		s.kernelTask.cancel()
 	}
 	s.discardProxyImport()
+	s.discardCookieImport("")
+	for _, task := range s.cookieTasks {
+		task.cancel()
+	}
 	for _, task := range s.proxyChecks {
 		task.cancel()
 	}
@@ -204,6 +218,7 @@ func (s *Service) closeResources(processes []RuntimeProcess, finished chan struc
 	defer s.mu.Unlock()
 	s.flushRuntimePersistence()
 	s.flushProxyPersistence()
+	s.flushCookiePersistence()
 	proxy.Wipe(s.proxyRequestKey)
 	s.proxyRequestKey = nil
 	s.closeError = s.db.Close()
@@ -212,6 +227,9 @@ func (s *Service) closeResources(processes []RuntimeProcess, finished chan struc
 	}
 	if len(s.proxyPending) != 0 {
 		s.closeError = errors.Join(s.closeError, errors.New("proxy check results could not all be persisted before shutdown"))
+	}
+	if len(s.cookiePending) != 0 {
+		s.closeError = errors.Join(s.closeError, errors.New("cookie observations could not all be persisted"))
 	}
 	close(finished)
 }
@@ -393,6 +411,9 @@ func (s *Service) Call(request Request) Result {
 		}
 		return s.selectKernelArchive()
 	}
+	if request.Method == "Cookie.ParseImport" {
+		return s.parseCookieImport(request.Payload)
+	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	if s.closed || s.closeRequested.Load() {
@@ -406,6 +427,12 @@ func (s *Service) Call(request Request) Result {
 	}
 	if strings.HasPrefix(request.Method, "Proxy.") {
 		return s.proxyCall(request)
+	}
+	if request.Method == "Workspace.Read" || strings.HasPrefix(request.Method, "Operation.") || strings.HasPrefix(request.Method, "Cookie.") {
+		s.flushCookiePersistence()
+	}
+	if request.Method == "Cookie.CommitImport" || request.Method == "Cookie.DiscardImport" {
+		return s.cookieCall(request)
 	}
 	switch request.Method {
 	case "Runtime.Start", "Runtime.Stop", "Runtime.Inspect", "Runtime.ForceStop", "Runtime.Reconcile":
@@ -491,6 +518,12 @@ func (s *Service) Call(request Request) Result {
 			}
 			return success(pending, pending.ID)
 		}
+		if pending, exists := s.cookieResults[input.OperationID]; exists {
+			if request.Method == "Operation.Cancel" {
+				return s.cancelCookieOperation(pending)
+			}
+			return success(pending, pending.ID)
+		}
 		if pending, exists := s.runtimeResults[input.OperationID]; exists {
 			return success(pending, input.OperationID)
 		}
@@ -511,6 +544,9 @@ func (s *Service) Call(request Request) Result {
 			}
 		}
 		if request.Method == "Operation.Cancel" {
+			if operation.Kind == "cookie-import" {
+				return s.cancelCookieOperation(operation)
+			}
 			if operation.Kind == "proxy-check" {
 				return s.cancelProxyOperation(operation)
 			}
@@ -931,7 +967,12 @@ func (s *Service) view() (View, error) {
 	if err != nil {
 		return View{}, err
 	}
-	rows, err = s.db.Query(`SELECT a.id,a.created_at,a.action,a.target,a.detail,COALESCE(r.environment_id,''),COALESCE(r.session_id,''),COALESCE(r.error_code,CASE WHEN json_extract(o.result_json,'$.kind')='proxy-check' THEN json_extract(o.result_json,'$.error.code') END,''),COALESCE(r.next_action,CASE WHEN json_extract(o.result_json,'$.kind')='proxy-check' AND json_extract(o.result_json,'$.state') IN ('failed','cancelled') THEN '修正代理或凭据后重新检查；前检不代表浏览器通道或断线保护。' END,'') FROM activities a LEFT JOIN runtime_events r ON r.activity_id=a.id LEFT JOIN operations o ON o.id=a.id ORDER BY a.rowid DESC`)
+	rows, err = s.db.Query(`SELECT a.id,a.created_at,a.action,a.target,a.detail,
+		COALESCE(r.environment_id,CASE WHEN json_extract(o.result_json,'$.kind')='cookie-import' THEN json_extract(o.result_json,'$.environmentId') END,''),
+		COALESCE(r.session_id,CASE WHEN json_extract(o.result_json,'$.kind')='cookie-import' THEN json_extract(o.result_json,'$.sessionId') END,''),
+		COALESCE(r.error_code,CASE WHEN json_extract(o.result_json,'$.kind')='proxy-check' THEN json_extract(o.result_json,'$.error.code') WHEN json_extract(o.result_json,'$.kind')='cookie-import' AND json_extract(o.result_json,'$.state') IN ('failed','cancelled') THEN COALESCE(json_extract(o.result_json,'$.error.code'),'OPERATION_CANCELLED') END,''),
+		COALESCE(r.next_action,CASE WHEN json_extract(o.result_json,'$.kind')='proxy-check' AND json_extract(o.result_json,'$.state') IN ('failed','cancelled') THEN '修正代理或凭据后重新检查；前检不代表浏览器通道或断线保护。' WHEN json_extract(o.result_json,'$.kind')='cookie-import' AND json_extract(o.result_json,'$.state') IN ('failed','cancelled') THEN '查看逐条结果；重新预览后先核对同键再合并重试，不自动清空。' END,'')
+		FROM activities a LEFT JOIN runtime_events r ON r.activity_id=a.id LEFT JOIN operations o ON o.id=a.id ORDER BY a.rowid DESC`)
 	if err != nil {
 		return View{}, err
 	}
@@ -986,5 +1027,9 @@ func (s *Service) view() (View, error) {
 	if err != nil {
 		return View{}, err
 	}
-	return View{Mode: "native", State: state, KernelRecords: installed, KernelOperations: operations, Fingerprints: profiles, DataReferences: references, RuntimeSessions: sessions, NativeProxyRecords: proxyRecords, ProxyOperations: proxyOperations}, nil
+	cookieOperations, err := s.listCookieOperations()
+	if err != nil {
+		return View{}, err
+	}
+	return View{Mode: "native", State: state, KernelRecords: installed, KernelOperations: operations, Fingerprints: profiles, DataReferences: references, RuntimeSessions: sessions, NativeProxyRecords: proxyRecords, ProxyOperations: proxyOperations, CookieOperations: cookieOperations}, nil
 }
