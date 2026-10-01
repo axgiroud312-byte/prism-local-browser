@@ -187,7 +187,10 @@ func (s *Service) savedProxy(proxyID string) (ProxyView, string, error) {
 			record.Status = "failed"
 		}
 	}
-	rows, err := s.db.Query("SELECT id FROM environments WHERE proxy_id=? ORDER BY code", proxyID)
+	if err = s.db.QueryRow("SELECT COUNT(*) FROM environments WHERE proxy_id=?", proxyID).Scan(&record.UsedCount); err != nil {
+		return record, "", err
+	}
+	rows, err := s.db.Query("SELECT id FROM environments WHERE proxy_id=? ORDER BY code LIMIT 100", proxyID)
 	if err != nil {
 		return record, "", err
 	}

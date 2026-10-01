@@ -16,7 +16,7 @@ func (s *Service) flushOneCookieWrite(operation Operation) error {
 		delete(s.cookieTasks, operation.EnvironmentID)
 	}
 	if !s.runtimeOwnsProfileUse(operation.EnvironmentID) {
-		delete(s.profileUses, operation.EnvironmentID)
+		s.releaseProfileUse(operation.EnvironmentID)
 	}
 	return nil
 }
@@ -53,7 +53,10 @@ func (s *Service) commitCookieObservation(operation Operation) error {
 }
 
 func (s *Service) listCookieOperations() ([]Operation, error) {
-	rows, err := s.db.Query("SELECT result_json FROM operations WHERE json_extract(result_json,'$.kind')='cookie-import' ORDER BY rowid DESC")
+	return s.readCookieOperations("SELECT result_json FROM operations WHERE json_extract(result_json,'$.kind')='cookie-import' ORDER BY rowid DESC LIMIT 30")
+}
+func (s *Service) readCookieOperations(query string) ([]Operation, error) {
+	rows, err := s.db.Query(query)
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +80,7 @@ func (s *Service) listCookieOperations() ([]Operation, error) {
 }
 
 func (s *Service) recoverCookieImports() error {
-	operations, err := s.listCookieOperations()
+	operations, err := s.readCookieOperations("SELECT result_json FROM operations WHERE json_extract(result_json,'$.kind')='cookie-import' AND json_extract(result_json,'$.state') IN ('accepted','running') ORDER BY rowid")
 	if err != nil {
 		return err
 	}

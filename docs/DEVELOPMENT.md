@@ -171,6 +171,17 @@ app-data/
 
 ## 6 本地应用接口
 
+### T13 持久批次与服务端分页（源码已编写，未运行验收）
+
+- `Batch.Preview`接受`kind: create`与原生创建草稿/配置/数量，或`clone`与明确sourceIds，或`assign`与逐环境proxyId映射。30分钟计划冻结安全配置/固定档案、源/目标环境修订及节点修订；不接受秘密、任意路径、浏览数据或客户端身份。创建用模板与正JS安全整数count虚拟表示，预览不为所有项分配ID/seed/目录；不是环境总数配额。
+- `Batch.Commit({planId,requestId})`与`Batch.Retry({operationId,requestId})`将受理、去重、当前尝试及计划同事务提交；Retry只接当前失败/取消尝试，索引跳过已完成行，虚拟创建的未物化后缀仍保留。提交结果未知先核对原request/plan/op，确认已落盘才挂原worker一次，无法核对保持acceptance-pending，不换ID重做。重开中断不自动执行；当前终态/观测待存储只重试日志保存，不重复环境或目录副作用。
+- schema6新增`batch_plans`、`batch_items`、`batch_item_events`、预约身份/seed与历史seed/未完成项索引。每项先持久准备新ID/seed/完整档案，再取得[`空目录归属Lease`](../internal/kernel/empty_profile_windows.go)。userdata外marker匹配plan/index/id/ref且持固定句柄；拒外来/无标记/非空目录，绝不清空/覆盖/删除或复制源登录数据。文件系统与SQL不原子，遗留准备目录保持，不悄悄认领；同SID恶意竞争不是本票强隔离承诺。
+- 每项环境副作用、完成/失败、统计及安全事件同事务。创建首项保草稿明确seed，其他创建/所有clone新seed并按原精确构建重新编译；原pending仍不可启动，不新增非法生成器版本。普通创建/档案提交也检查批次seed预约，不能消费另一准备身份。Assign同事务改配置JSON/proxy引用/环境revision，不换seed、不增加档案revision。忙状态用归属明确的独立batch lease保护，旧Runtime.Reconcile/Runtime/Cookie释放不能删除它；提交前重核真实会话与预览修订。
+- `Batch.ReadPage({planId,operationId?,offset,pageSize})`最多100条；不指定尝试查询当前计划，指定旧尝试按其原安全item事件与此前已完成项返回冻结结果，不展示后来准备身份/成功。报告有completed/failed/notExecuted/attemptCompleted/全计划direct/shared/sequence，操作不积累全量CompletedIDs。`Operation.Cancel`只持久取消此批次剩余项，资源不足暂停保已提交项，失败/取消活动不标成功。
+- `Workspace.Read({environmentQuery?:{page,pageSize,search,group,status}})`默认8条；SQL筛选/计数考虑待保存会话观测，环境/档案/ref/session只投影当前页。活动最多100、Cookie和batch尝试最近30、kernel任务20；旧操作可按ID读取，恢复查询独立于展示窗口。关联UsedBy最多100但UsedCount准确，保护检查全部host leases，不用样本裁定。
+- [`native批次页`](../src/components/NativeBatchDialog.tsx)明确整个计划的直连/共享数量、逐目标节点、当前/历史尝试及取消/继续。异步响应按plan/op/页位置/选择代次匹配，终态后独立读最终页；不同页缓存不互挡。跨页启动通过[`精确ID读取`](../src/application/runtime-start-plan.ts)确认每个目标网络策略/环境修订，缺失不当直连；普通Runtime.Start现在也可带expectedRevision并拒旧配置，proxy门禁不变。Demo继续旧契约，不混schema1导入。
+- 服务16条、Windows空目录3条、adapter/模型6条回归仅编写未执行，Go测试包未编译；当前只读复核及必要静态核对不代表真实目录/恢复/规模/UI验收，[T13清单](verification/T13.md)、[D014](DECISIONS.md#d014--批次冻结计划逐项提交与空目录归属2026-10-01)。
+
 ### T12 指定会话Cookie增量（源码已编写，尚未运行验收）
 
 - `Cookie.ParseImport({environmentId,text})`独立纯解析JSON数组/Netscape，返回环境名称/ID/修订、15分钟previewId和不含value的行/数量。运行时绑定当前session且内部读取现存键；停止时现存冲突未知、不自动启动。输入同键按name/domain点/path/完整分区识别，同键只选一行。`Cookie.DiscardImport({previewId})`或空ID丢弃当前预览/迟到结果，关闭/新输入/超时也清理。

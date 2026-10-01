@@ -162,8 +162,11 @@ func (s *Service) runtimeCall(request Request) Result {
 	if err != nil {
 		return failure("NOT_FOUND", "环境无法读取，未启动。", true)
 	}
-	if input.Purpose == "cookie-import" && revision != input.ExpectedRevision {
-		return failure("REVISION_CONFLICT", "Cookie预览后目标环境修订已变，未启动；请重新预览。", true)
+	if input.ExpectedRevision < 0 || input.ExpectedRevision > maxSafeInteger {
+		return failure("VALIDATION_FAILED", "启动修订应为精确正整数或省略，不接受状态覆盖。", false)
+	}
+	if input.ExpectedRevision > 0 && revision != input.ExpectedRevision {
+		return failure("REVISION_CONFLICT", "启动预览后目标环境修订已变，未按旧配置或网络策略启动；请重新读取。", true)
 	}
 	if s.cookieTasks[input.EnvironmentID] != nil {
 		return failure("PROFILE_BUSY", "前一次Cookie操作/观测结果尚未保存，不能替换它的会话。", true)
@@ -551,7 +554,7 @@ func (s *Service) finishRuntimeStart(slot *runtimeSlot, process RuntimeProcess, 
 	}
 	_ = s.persistRuntime(slot, &slot.start, "浏览器启动失败")
 	if !slot.session.PersistencePending && !runtimeStopPending(slot) && s.cookieTasks[slot.session.EnvironmentID] == nil {
-		delete(s.profileUses, slot.session.EnvironmentID)
+		s.releaseProfileUse(slot.session.EnvironmentID)
 	}
 }
 

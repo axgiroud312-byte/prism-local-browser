@@ -302,7 +302,7 @@ func (s *Service) AcquireProfileUse(environmentID string) (func(), error) {
 	}
 	s.profileUses[environmentID] = true
 	var once sync.Once
-	return func() { once.Do(func() { s.mu.Lock(); delete(s.profileUses, environmentID); s.mu.Unlock() }) }, nil
+	return func() { once.Do(func() { s.mu.Lock(); s.releaseProfileUse(environmentID); s.mu.Unlock() }) }, nil
 }
 
 func (s *Service) fingerprintCall(request Request) Result {
@@ -529,25 +529,15 @@ func (s *Service) mutationProfile(tx *sql.Tx, d draft, input Mutation, creating 
 	return profile, Result{OK: true}
 }
 
-func (s *Service) profileViews() (map[string]ProfileRevision, map[string]string, error) {
-	rows, err := s.db.Query("SELECT id,fingerprint_id,user_data_ref FROM environments")
-	if err != nil {
-		return nil, nil, err
-	}
+func (s *Service) profileViews(ids []string) (map[string]ProfileRevision, map[string]string, error) {
 	type reference struct{ environmentID, profileID, ref string }
 	references := []reference{}
-	for rows.Next() {
+	for _, environmentID := range ids {
 		var item reference
-		if err = rows.Scan(&item.environmentID, &item.profileID, &item.ref); err != nil {
-			rows.Close()
+		if err := s.db.QueryRow("SELECT id,fingerprint_id,user_data_ref FROM environments WHERE id=?", environmentID).Scan(&item.environmentID, &item.profileID, &item.ref); err != nil {
 			return nil, nil, err
 		}
 		references = append(references, item)
-	}
-	err = rows.Err()
-	rows.Close()
-	if err != nil {
-		return nil, nil, err
 	}
 	profiles, refs := map[string]ProfileRevision{}, map[string]string{}
 	for _, item := range references {

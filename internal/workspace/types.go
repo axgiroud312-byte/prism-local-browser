@@ -77,6 +77,7 @@ type Operation struct {
 	ProxyID            string              `json:"proxyId,omitempty"`
 	ProxyReport        *proxy.Report       `json:"proxyReport,omitempty"`
 	CookieReport       *CookieImportReport `json:"cookieReport,omitempty"`
+	BatchReport        *BatchReport        `json:"batchReport,omitempty"`
 }
 type Mutation struct {
 	PreviewID        string        `json:"previewId"`
@@ -125,9 +126,12 @@ type View struct {
 	NativeProxyRecords []ProxyView                `json:"nativeProxyRecords"`
 	ProxyOperations    []Operation                `json:"proxyOperations"`
 	CookieOperations   []Operation                `json:"cookieOperations"`
+	BatchOperations    []Operation                `json:"batchOperations"`
+	EnvironmentPage    *EnvironmentPage           `json:"environmentPage,omitempty"`
 }
 type KernelView struct {
 	kernel.Record
-	Status string   `json:"status"`
-	UsedBy []string `json:"usedBy"`
+	Status    string   `json:"status"`
+	UsedBy    []string `json:"usedBy"`
+	UsedCount int64    `json:"usedCount"`
 }

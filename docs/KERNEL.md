@@ -173,6 +173,12 @@ HTTP经目标流写origin-form，HTTPS经同本机CONNECT透传TLS；SOCKS5本�
 
 ## 请求与返回合同
 
+### T13 创建/克隆的空目录准备（源码已实现，未运行验收）
+
+[`PrepareEmptyProfile`](../internal/kernel/empty_profile_windows.go)只消费服务已持久准备的plan/index/环境UUID/规范引用，host内部root不由RPC输入。父到子READ分享目录pins固定路径对象，独占创建/读回userdata外`.prism-batch.json`并Flush、保留同一marker句柄至SQL事务终结；拒reparse/可见硬链接/外来或坏标记，不复制源浏览数据、不创建userdata内runtime锁。既有目录只同journal且空集合才可续作，环境/项完成事务前再次用新枚举句柄核对可见空集合；不清空、覆盖或删除未知/非空目录。
+
+空集合观测不阻止同SID外部创建子文件，Mkdir→pin也不是原子对象绑定；不称恶意本机writer强隔离。新envRoot已建但marker未完整持久时退出会留下准备残留，只保留拒认领，后续垃圾回收需独立规则。配置复制重新编译原精确构建并生成新seed，pending仍不可启动；批次不启动浏览器，不绕T11门禁。真实目录、重开/取消/资源故障证据尚未取得，[T13清单](verification/T13.md)、[D014](DECISIONS.md#d014--批次冻结计划逐项提交与空目录归属2026-10-01)。
+
 ### T12 窄Cookie控制与固定148语义
 
 [`Cookie能力`](../internal/kernel/cookies_windows.go)仅从原准确ManagedProcess调用自己的匿名pipe，固定Storage.get/set/clearCookies，不开放通用CDP RPC、调试端点、浏览器数据库或任意contextId。根browserpipe的默认context属于该自有浏览器；应用sessionId不能当CDPcontext。每条读取→已匹配则不重写→单条set→完整get组合保持同commandGate，单命令超时后不能假称没有副作用。

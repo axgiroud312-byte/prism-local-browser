@@ -113,7 +113,10 @@ func (s *Service) listKernels() ([]KernelView, error) {
 		return nil, err
 	}
 	for index := range records {
-		rows, err = s.db.Query("SELECT id FROM environments WHERE kernel_id=? ORDER BY code", records[index].ID)
+		if err = s.db.QueryRow("SELECT COUNT(*) FROM environments WHERE kernel_id=?", records[index].ID).Scan(&records[index].UsedCount); err != nil {
+			return nil, err
+		}
+		rows, err = s.db.Query("SELECT id FROM environments WHERE kernel_id=? ORDER BY code LIMIT 100", records[index].ID)
 		if err != nil {
 			return nil, err
 		}
@@ -482,7 +485,7 @@ func (s *Service) deleteKernel(record kernel.Record, operation *Operation) error
 }
 
 func (s *Service) recoverKernelOperations() error {
-	rows, err := s.db.Query("SELECT result_json FROM operations")
+	rows, err := s.db.Query("SELECT result_json FROM operations WHERE json_extract(result_json,'$.kind') LIKE 'kernel-%'")
 	if err != nil {
 		return err
 	}

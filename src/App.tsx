@@ -93,6 +93,8 @@ import { NativeKernelManager } from "./components/NativeKernelManager";
 import { NativeProxyManager } from "./components/NativeProxyManager";
 import { NativeRuntimeNetwork } from "./components/NativeRuntimeNetwork";
 import { NativeCookieImport } from "./components/NativeCookieImport";
+import { NativeBatchDialog, type NativeBatchDialogInput } from "./components/NativeBatchDialog";
+import { readRuntimeStartPlan } from "./application/runtime-start-plan";
 import { FingerprintRevisionPanel } from "./components/FingerprintRevisionPanel";
 
 type Route =
@@ -246,6 +248,7 @@ export default function App({ application }: { application: ApplicationService }
   const workspace = useSyncExternalStore(application.subscribe, application.getSnapshot);
   const state = workspace.state;
   const nativeMode = application.mode === "native";
+  const environmentTotal = nativeMode ? workspace.environmentPage?.total ?? state.environments.length : state.environments.length;
   const storageIssue = workspace.issue?.message || "";
   const current = useRef(state);
   current.current = state;
@@ -268,6 +271,8 @@ export default function App({ application }: { application: ApplicationService }
   const [dialog, setDialog] = useState<Dialog | null>(null);
   const [nativeProxyImportOpen, setNativeProxyImportOpen] = useState(false);
   const [nativeCookieEnvironment, setNativeCookieEnvironment] = useState<Environment | null>(null);
+  const [nativeBatchInput, setNativeBatchInput] = useState<NativeBatchDialogInput | null>(null);
+  const [environmentQueryBusy, setEnvironmentQueryBusy] = useState(false);
   const [formError, setFormError] = useState("");
   const [generating, setGenerating] = useState(false);
   const [savePending, setSavePending] = useState(false);
@@ -340,7 +345,7 @@ export default function App({ application }: { application: ApplicationService }
     latestOperationEvent.current = event;
     if (event) setBatch({ label: "创建环境", done: event.operation.completedIds.length, total: event.operation.total });
   }), [application]);
-  const nativeRuntimeActive = nativeMode && Object.values(workspace.runtimeSessions ?? {}).some(session => ["starting", "running", "stopping"].includes(session.state) || !!session.pid || session.needsReconcile || session.persistencePending);
+  const nativeRuntimeActive = nativeMode && (Object.values(workspace.runtimeSessions ?? {}).some(session => ["starting", "running", "stopping"].includes(session.state) || !!session.pid || session.needsReconcile || session.persistencePending) || (workspace.batchOperations ?? []).some(operation => !operationIsTerminal(operation)));
   useEffect(() => {
     if (!nativeRuntimeActive || !application.refresh) return;
     let cancelled = false;
@@ -353,6 +358,18 @@ export default function App({ application }: { application: ApplicationService }
     timer = setTimeout(() => void poll(), 1000);
     return () => { cancelled = true; clearTimeout(timer); };
   }, [application, nativeRuntimeActive]);
+  useEffect(() => {
+    if (!nativeMode || !application.queryEnvironments) return;
+    let cancelled = false;
+    setEnvironmentQueryBusy(true);
+    const timer = setTimeout(() => {
+      void application.queryEnvironments!({ page, pageSize: 8, search, group: group === "全部分组" ? "" : group, status }).then(result => {
+        if (cancelled) return; setEnvironmentQueryBusy(false);
+        if (!result.ok) notify(result.error.message, true);
+      });
+    }, 180);
+    return () => { cancelled = true; clearTimeout(timer); };
+  }, [application, nativeMode, page, search, group, status]);
   useEffect(() => {
     const change = () => {
       const r = location.hash.replace("#/", "") as Route;
@@ -379,6 +396,10 @@ export default function App({ application }: { application: ApplicationService }
   };
   useEffect(() => {
     const key = (e: KeyboardEvent) => {
+      if (nativeBatchInput || nativeCookieEnvironment) {
+        if ((e.ctrlKey || e.metaKey) && e.key === "k") e.preventDefault();
+        return;
+      }
       if ((e.ctrlKey || e.metaKey) && e.key === "k") {
         e.preventDefault();
         searchRef.current?.focus();
@@ -393,7 +414,7 @@ export default function App({ application }: { application: ApplicationService }
     };
     window.addEventListener("keydown", key);
     return () => window.removeEventListener("keydown", key);
-  }, [generating, drawer]);
+  }, [generating, drawer, nativeBatchInput, nativeCookieEnvironment]);
   useEffect(() => {
     if (!drawer && !dialog) return;
     const oldOverflow = document.body.style.overflow;
@@ -434,10 +455,10 @@ export default function App({ application }: { application: ApplicationService }
   const navigate = (r: Route) => {
     location.hash = `/${r}`;
   };
-  const groups = [
+  const groups = nativeMode && workspace.environmentPage ? workspace.environmentPage.groups : [
     ...new Set(state.environments.map((e) => e.group).filter(Boolean)),
   ];
-  const visible = state.environments.filter(
+  const visible = nativeMode ? state.environments : state.environments.filter(
     (e) =>
       (!search ||
         `${e.name} ${e.code} ${e.note}`
@@ -446,15 +467,16 @@ export default function App({ application }: { application: ApplicationService }
       (group === "全部分组" || e.group === group) &&
       (status === "all" || e.status === status),
   );
-  const pageCount = Math.max(1, Math.ceil(visible.length / 8));
-  const pageItems = visible.slice(
+  const filteredTotal = nativeMode ? workspace.environmentPage?.filteredTotal ?? visible.length : visible.length;
+  const pageCount = Math.max(1, Math.ceil(filteredTotal / 8));
+  const pageItems = nativeMode ? visible : visible.slice(
     (Math.min(page, pageCount) - 1) * 8,
     Math.min(page, pageCount) * 8,
   );
-  const running = state.environments.filter(
+  const running = nativeMode ? workspace.environmentPage?.runningCount ?? 0 : state.environments.filter(
     (e) => e.status === "running",
   ).length;
-  const errors = state.environments.filter((e) => e.status === "error").length;
+  const errors = nativeMode ? workspace.environmentPage?.errorCount ?? 0 : state.environments.filter((e) => e.status === "error").length;
   const patchDraft = (value: Partial<Environment>) => {
     if (saving.current) return;
     if (profileBusy && Object.keys(value).some(key => !["name", "group", "note"].includes(key))) return;
@@ -539,6 +561,14 @@ export default function App({ application }: { application: ApplicationService }
         setDrawer(null);
         return;
       }
+      if (nativeMode) {
+        if (!Number.isSafeInteger(quantity) || quantity < 1) { setFormError("数量必须是可精确表示的正整数；没有保存总数产品配额。"); return; }
+        const planned = await application.previewBatch?.({ kind: "create", create: { ...request, count: quantity } });
+        if (drawerRef.current?.previewId !== target) return;
+        if (!planned?.ok) { setFormError(planned && !planned.ok ? planned.error.message : "当前桌面服务未提供持久批次。"); return; }
+        setNativeBatchInput({ kind: "create", initialPage: planned.data }); setDrawer(null); void application.discardPreview(target);
+        return;
+      }
       const accepted = await application.createBatch({ ...request, count: quantity });
       if (drawerRef.current?.previewId !== target) return;
       if (!accepted.ok) { setFormError(accepted.error.message); return; }
@@ -584,21 +614,20 @@ export default function App({ application }: { application: ApplicationService }
       if (!application.startRuntime) { notify("当前桌面版本未接入真实启停。", true); return; }
       const targets = [...new Set(ids)].filter(id => !runtimeActions.current.has(id));
       if (!targets.length) return;
-      const startSnapshot = application.getSnapshot();
-      const policies = new Map(targets.map(id => [id, startSnapshot.state.environments.find(environment => environment.id === id)?.proxyId ? "proxy" as const : "direct" as const]));
-      const directCount = [...policies.values()].filter(policy => policy === "direct").length;
-      const proxyCount = targets.length - directCount;
-      const confirmation = directCount ? `所选${directCount}个未绑定代理的环境将使用本机直连，网站可看到本机出口。${proxyCount ? `另外${proxyCount}个绑定代理的环境只使用各自认证通道，失败不直连。` : ""}确认按以上策略启动？` : "所选环境将各自建立独立认证代理通道；同通道前检失败就阻止启动，不改为直连。运行期全路径断线保护仍待验收。确认启动？";
-      if (!window.confirm(confirmation)) return;
-      for (const id of targets) {
-        if (application.getSnapshot().runtimeSessions?.[id]?.needsReconcile) { notify("此环境的原会话仍待核对，不会新开浏览器或绕过目录保护。", true); continue; }
-        if (!beginRuntimeAction(id)) continue;
-        try {
-          const result = await application.startRuntime({ environmentId: id, requestId: uid("request"), networkPolicy: policies.get(id)! });
+      targets.forEach(beginRuntimeAction);
+      try {
+        const planned = await readRuntimeStartPlan(application, targets);
+        if (!planned.ok) { notify(planned.error.message, true); return; }
+        const directCount = planned.data.filter(item => item.networkPolicy === "direct").length;
+        const proxyCount = planned.data.length - directCount;
+        const confirmation = directCount ? `所选${directCount}个未绑定代理的环境将使用本机直连，网站可看到本机出口。${proxyCount ? `另外${proxyCount}个已绑定代理的环境不会改为直连；当前完整隔离未实现，代理启动将被安全门禁拒绝。` : ""}确认按刚读取的明确ID/修订/策略启动？` : "所选环境均绑定代理；当前完整隔离未实现，启动将被安全门禁拒绝，不改为直连。确认按明确ID/修订/代理策略提交？";
+        if (!window.confirm(confirmation)) return;
+        for (const item of planned.data) {
+          const result = await application.startRuntime({ environmentId: item.environmentId, requestId: uid("request"), networkPolicy: item.networkPolicy, expectedRevision: item.expectedRevision });
           if (!result.ok) { notify(result.error.message, true); continue; }
           notify("启动任务已受理；内核和控制通道就绪后才显示运行中。");
-        } finally { endRuntimeAction(id); }
-      }
+        }
+      } finally { targets.forEach(endRuntimeAction); }
       setMenu(null);
       return;
     }
@@ -829,7 +858,7 @@ export default function App({ application }: { application: ApplicationService }
     <div className="app-shell">
       <aside
         className="sidebar"
-        inert={Boolean(drawer || dialog || storageIssue)}
+        inert={Boolean(drawer || dialog || nativeBatchInput || nativeCookieEnvironment || storageIssue)}
       >
         <a className="brand" href="#/environments">
           <div className="brand-mark">
@@ -865,7 +894,7 @@ export default function App({ application }: { application: ApplicationService }
                   <span>{routeInfo[r].label}</span>
                   {r === "environments" && (
                     <span className="nav-count">
-                      {state.environments.length}
+                      {environmentTotal}
                     </span>
                   )}
                 </a>
@@ -909,7 +938,7 @@ export default function App({ application }: { application: ApplicationService }
       </aside>
       <div
         className="main-shell"
-        inert={Boolean(drawer || dialog || storageIssue)}
+        inert={Boolean(drawer || dialog || nativeBatchInput || nativeCookieEnvironment || storageIssue)}
       >
         <header className="topbar">
           <div className="breadcrumb">
@@ -953,7 +982,7 @@ export default function App({ application }: { application: ApplicationService }
                 {summary.label}
                 {route === "environments" && (
                   <span className="heading-count">
-                    {state.environments.length}
+                    {environmentTotal}
                   </span>
                 )}
               </h1>
@@ -1014,7 +1043,7 @@ export default function App({ application }: { application: ApplicationService }
                   <div>
                     <span>全部环境</span>
                     <strong>
-                      {state.environments.length}
+                      {environmentTotal}
                       <small>个</small>
                     </strong>
                   </div>
@@ -1087,7 +1116,7 @@ export default function App({ application }: { application: ApplicationService }
                       setPage(1);
                     }}
                   >
-                    全部环境<span>{state.environments.length}</span>
+                    全部环境<span>{environmentTotal}</span>
                   </button>
                   <button
                     className={status === "running" ? "selected" : ""}
@@ -1170,6 +1199,7 @@ export default function App({ application }: { application: ApplicationService }
                     {status === "ready" ? "显示全部状态" : "待启动环境"}
                   </Button>
                   <span className="filter-spacer" />
+                  {nativeMode && <Button onClick={() => setNativeBatchInput({ kind: "history" })}><History size={16} />批次与逐项结果</Button>}
                   <button
                     className="icon-button"
                     aria-label="分组管理"
@@ -1195,6 +1225,7 @@ export default function App({ application }: { application: ApplicationService }
                       <Square size={13} />
                       批量关闭
                     </Button>
+                    {nativeMode && <><Button onClick={() => setNativeBatchInput({ kind: "clone", sourceIds: [...selected] })}><Copy size={14} />复制配置（新身份）</Button><Button onClick={() => setNativeBatchInput({ kind: "assign", sourceIds: [...selected] })}><Network size={14} />明确分配代理</Button></>}
                     <Button
                       onClick={() => {
                         setDialog({ kind: "delete", ids: selected });
@@ -1221,6 +1252,7 @@ export default function App({ application }: { application: ApplicationService }
                           <input
                             type="checkbox"
                             aria-label="选择当前页全部环境"
+                            disabled={nativeMode && environmentQueryBusy}
                             checked={
                               pageItems.length > 0 &&
                               pageItems.every((e) => selected.includes(e.id))
@@ -1418,7 +1450,7 @@ export default function App({ application }: { application: ApplicationService }
                                         <Settings2 size={15} />
                                         编辑环境
                                       </button>
-                                      <button onClick={() => openCreate(e)}>
+                                      <button onClick={() => nativeMode ? setNativeBatchInput({ kind: "clone", sourceIds: [e.id] }) : openCreate(e)}>
                                         <Copy size={15} />
                                         按模板新建
                                       </button>
@@ -1471,14 +1503,14 @@ export default function App({ application }: { application: ApplicationService }
                 )}
                 <div className="table-footer">
                   <span>
-                    共 {visible.length} 个环境
+                    共 {filteredTotal} 个环境{nativeMode && environmentQueryBusy ? " · 正在读取分页…" : ""}
                     <span className="footer-separator">·</span>每页 8 条
                   </span>
                   <div className="pagination">
                     <button
                       className="icon-button"
                       aria-label="上一页"
-                      disabled={page <= 1}
+                      disabled={page <= 1 || environmentQueryBusy}
                       onClick={() => setPage((p) => p - 1)}
                     >
                       <ChevronLeft size={16} />
@@ -1488,7 +1520,7 @@ export default function App({ application }: { application: ApplicationService }
                     <button
                       className="icon-button"
                       aria-label="下一页"
-                      disabled={page >= pageCount}
+                      disabled={page >= pageCount || environmentQueryBusy}
                       onClick={() => setPage((p) => p + 1)}
                     >
                       <ChevronRight size={16} />
@@ -2185,7 +2217,7 @@ export default function App({ application }: { application: ApplicationService }
                     {drawer.kind === "create" && (
                       <Field
                         label="创建数量"
-                        hint={nativeMode ? "目前仅接入单条创建；持久批量任务待接入，不是总数配额。" : "每个实例生成独立种子与数据记录"}
+                        hint={nativeMode ? "先查看分页计划，再明确执行；取消/重开保留已完成项，不设保存总数配额。" : "每个实例生成独立种子与数据记录"}
                       >
                         <input
                           aria-label="创建数量"
@@ -2466,7 +2498,7 @@ export default function App({ application }: { application: ApplicationService }
                     <LockKeyhole size={19} />
                     <div>
                       <strong>保留登录数据</strong>
-                      <p>{nativeMode ? "浏览器自身保存本环境数据；管理端 Cookie 导入仍待接入。实际隔离与重开保留待统一验收。" : "关闭窗口和修改代理时保留原有 Cookie。"}</p>
+                      <p>{nativeMode ? "管理端Cookie使用指定会话私有通道写后核对；实际隔离与重开保留仍待统一验收。" : "关闭窗口和修改代理时保留原有 Cookie。"}</p>
                     </div>
                   </div>
                 </>
@@ -2494,7 +2526,7 @@ export default function App({ application }: { application: ApplicationService }
                 >
                   <Check size={16} />
                   {drawer.kind === "create"
-                    ? `创建${quantity > 1 ? ` ${quantity} 个` : ""}环境`
+                    ? nativeMode ? `查看 ${quantity} 项创建计划` : `创建${quantity > 1 ? ` ${quantity} 个` : ""}环境`
                     : "保存配置"}
                 </Button>
               </div>
@@ -2503,6 +2535,7 @@ export default function App({ application }: { application: ApplicationService }
         </div>
       )}
       {nativeMode && nativeCookieEnvironment && <NativeCookieImport key={nativeCookieEnvironment.id} application={application} workspace={workspace} environment={nativeCookieEnvironment} onClose={() => setNativeCookieEnvironment(null)} />}
+      {nativeMode && nativeBatchInput && <NativeBatchDialog key={`${nativeBatchInput.kind}:${nativeBatchInput.initialPage?.planId ?? nativeBatchInput.sourceIds?.join(",") ?? "history"}`} application={application} workspace={workspace} input={nativeBatchInput} onClose={() => { setNativeBatchInput(null); setMenu(null); }} />}
       {dialog && (
         <div className="overlay modal-overlay">
           <div

@@ -5,8 +5,10 @@ import type {
   GenerateFingerprintRequest, CommitFingerprintRequest, ProfileRevision, RuntimeSession,
   ProxyConfiguration, ProxyImportPreview, ProxyUpdateRequest, ProxyTargetRequest, NativeProxy,
   CookieCommitRequest, CookieImportPreview, RuntimeStartRequest,
+  NativeBatchPreviewRequest, NativeBatchPage, NativeEnvironmentQuery,
 } from "./contract.ts";
 import { mergeOperation, operationIsTerminal } from "./contract.ts";
+import { validBatchPage, validBatchReport } from "./batch-model.ts";
 
 export interface NativeRequest { mode: "native"; method: string; payload: unknown }
 export type NativeBridge = <T>(request: NativeRequest) => Promise<ApplicationResult<T>>;
@@ -18,6 +20,7 @@ const projectConfiguration = (c: EnvironmentConfiguration): EnvironmentConfigura
 const projectProxy = (c: ProxyConfiguration): ProxyConfiguration => ({ name: c.name, type: c.type, host: c.host, port: c.port, country: c.country });
 const projectProxyTarget = (r: ProxyTargetRequest) => ({ proxyId: r.proxyId, expectedRevision: r.expectedRevision, requestId: r.requestId });
 const invalidCookieReport = (operation: Operation) => operation.cookieReport && (operation.cookieReport.mode !== "native" || !operation.cookieReport.previewId || operation.cookieReport.environmentId !== operation.environmentId || operation.cookieReport.sessionId !== operation.sessionId);
+const invalidBatchReport = (operation: Operation) => operation.kind.startsWith("batch-") && (!validBatchReport(operation.batchReport) || operation.kind !== `batch-${operation.batchReport?.kind}` || operation.total !== operation.batchReport?.total);
 export class WailsAdapter implements ApplicationService {
   readonly mode = "native" as const;
   private bridge: NativeBridge;
@@ -31,6 +34,7 @@ export class WailsAdapter implements ApplicationService {
   private eventListeners = new Set<(event: OperationEvent) => void>();
   private sequence = 0;
   private refreshSequence = 0;
+  private environmentQuery?: NativeEnvironmentQuery;
   constructor(bridge: NativeBridge) { this.bridge = bridge; }
   getSnapshot = () => this.view;
   subscribe = (listener: () => void) => { this.listeners.add(listener); return () => { this.listeners.delete(listener); }; };
@@ -45,10 +49,16 @@ export class WailsAdapter implements ApplicationService {
   }
   async refresh(): Promise<ApplicationResult<WorkspaceView>> {
     const sequence = ++this.refreshSequence;
-    let response = await this.invoke<WorkspaceView>("Workspace.Read", {});
-    if (response.ok && (response.data.mode !== "native" || Object.values(response.data.runtimeSessions ?? {}).some(session => session.mode !== "native" || (session.proxyReport && (session.proxyReport.mode !== "native" || session.proxyReport.channelId !== session.proxyChannelId || session.proxyReport.proxyId !== session.proxyId || session.proxyReport.revision !== session.proxyRevision))) || (response.data.nativeProxyRecords ?? []).some(record => record.checkReport && record.checkReport.mode !== "native") || (response.data.proxyOperations ?? []).some(operation => operation.proxyReport && operation.proxyReport.mode !== "native") || (response.data.cookieOperations ?? []).some(invalidCookieReport))) response = { ok: false, mode: "native", error: { code: "CAPABILITY_UNSUPPORTED", message: "工作区、会话或报告身份不匹配，已拒绝接入；未回退演示数据。", retryable: false } };
+    let response = await this.invoke<WorkspaceView>("Workspace.Read", this.environmentQuery ? { environmentQuery: { ...this.environmentQuery } } : {});
+    if (response.ok && (response.data.mode !== "native" || Object.values(response.data.runtimeSessions ?? {}).some(session => session.mode !== "native" || (session.proxyReport && (session.proxyReport.mode !== "native" || session.proxyReport.channelId !== session.proxyChannelId || session.proxyReport.proxyId !== session.proxyId || session.proxyReport.revision !== session.proxyRevision))) || (response.data.nativeProxyRecords ?? []).some(record => record.checkReport && record.checkReport.mode !== "native") || (response.data.proxyOperations ?? []).some(operation => operation.proxyReport && operation.proxyReport.mode !== "native") || (response.data.cookieOperations ?? []).some(invalidCookieReport) || (response.data.batchOperations ?? []).some(invalidBatchReport))) response = { ok: false, mode: "native", error: { code: "CAPABILITY_UNSUPPORTED", message: "工作区、会话或报告身份不匹配，已拒绝接入；未回退演示数据。", retryable: false } };
     if (sequence !== this.refreshSequence) return response;
-    if (response.ok) this.view = response.data;
+    if (response.ok) {
+      const batchOperations = response.data.batchOperations?.map(operation => {
+        const merged = mergeOperation(this.operations.get(operation.id), operation);
+        this.operations.set(merged.id, merged); return merged;
+      });
+      this.view = { ...response.data, ...(batchOperations ? { batchOperations } : {}) };
+    }
     else this.view = { ...this.view, issue: response.error };
     this.publish();
     return response;
@@ -84,11 +94,17 @@ export class WailsAdapter implements ApplicationService {
   }
   async getOperation(operationId: string) {
     const response = await this.invoke<Operation>("Operation.Read", { operationId });
+    if (response.ok && response.data.id !== operationId) return { ok: false as const, mode: "native" as const, error: { code: "CAPABILITY_UNSUPPORTED", message: "任务响应不是指定ID，未接管其他任务。", retryable: false } };
     return this.confirmOperation(response);
   }
-  async cancelOperation(operationId: string) { return this.confirmOperation(await this.invoke<Operation>("Operation.Cancel", { operationId })); }
+  async cancelOperation(operationId: string) {
+    const response = await this.invoke<Operation>("Operation.Cancel", { operationId });
+    if (response.ok && response.data.id !== operationId) return { ok: false as const, mode: "native" as const, error: { code: "CAPABILITY_UNSUPPORTED", message: "取消响应不是指定ID，不作为其他任务的取消结果。", retryable: false } };
+    return this.confirmOperation(response);
+  }
   private confirmOperation(response: ApplicationResult<Operation>): ApplicationResult<Operation> {
-    if (!response.ok || (!response.data.kind.startsWith("kernel-") && !response.data.kind.startsWith("runtime-") && response.data.kind !== "proxy-check" && response.data.kind !== "cookie-import")) return response;
+    if (!response.ok || (!response.data.kind.startsWith("kernel-") && !response.data.kind.startsWith("runtime-") && !response.data.kind.startsWith("batch-") && response.data.kind !== "proxy-check" && response.data.kind !== "cookie-import")) return response;
+    if (invalidBatchReport(response.data)) return { ok: false, mode: "native", error: { code: "CAPABILITY_UNSUPPORTED", message: "批次类型或计划身份不匹配，不能计为持久任务结果。", retryable: false } };
     if (invalidCookieReport(response.data)) return { ok: false, mode: "native", error: { code: "CAPABILITY_UNSUPPORTED", message: "Cookie读回报告的环境/会话身份不匹配，不能计为真实写入。", retryable: false } };
     if (response.data.proxyReport && response.data.proxyReport.mode !== "native") return { ok: false, mode: "native", error: { code: "CAPABILITY_UNSUPPORTED", message: "演示代理报告不能作为真实检查结果。", retryable: false } };
     const previous = this.operations.get(response.data.id);
@@ -114,7 +130,7 @@ export class WailsAdapter implements ApplicationService {
     return response;
   }
   startRuntime(request: RuntimeStartRequest) {
-    return this.runtimeMutation("Runtime.Start", { environmentId: request.environmentId, requestId: request.requestId, networkPolicy: request.networkPolicy, ...(request.purpose ? { purpose: request.purpose, expectedRevision: request.expectedRevision } : {}) });
+    return this.runtimeMutation("Runtime.Start", { environmentId: request.environmentId, requestId: request.requestId, networkPolicy: request.networkPolicy, ...(request.purpose ? { purpose: request.purpose } : {}), ...(request.expectedRevision !== undefined ? { expectedRevision: request.expectedRevision } : {}) });
   }
   stopRuntime(request: { environmentId: string; requestId: string }) {
     return this.runtimeMutation("Runtime.Stop", { environmentId: request.environmentId, requestId: request.requestId });
@@ -167,5 +183,38 @@ export class WailsAdapter implements ApplicationService {
       const confirmed = this.confirmOperation({ ok: true, mode: "native", data: response.data.operation }); if (!confirmed.ok) return confirmed;
     }
     await this.refresh(); return response;
+  }
+  async previewBatch(request: NativeBatchPreviewRequest): Promise<ApplicationResult<NativeBatchPage>> {
+    const payload = request.kind === "create" ? { kind: request.kind, create: { previewId: request.create.previewId, configuration: projectConfiguration(request.create.configuration), count: request.create.count, profileHash: request.create.profileHash, requestId: request.create.requestId } }
+      : request.kind === "clone" ? { kind: request.kind, sourceIds: [...request.sourceIds] }
+      : { kind: request.kind, mappings: request.mappings.map(mapping => ({ environmentId: mapping.environmentId, proxyId: mapping.proxyId })) };
+    const response = await this.invoke<NativeBatchPage>("Batch.Preview", payload);
+    if (response.ok && (!validBatchPage(response.data) || response.data.kind !== request.kind)) return { ok: false, mode: "native", error: { code: "CAPABILITY_UNSUPPORTED", message: "批次预览类型、统计或模式不匹配，未提交。", retryable: false } };
+    return response;
+  }
+  async readBatchPage(request: { planId: string; operationId?: string; offset: number; pageSize: number }): Promise<ApplicationResult<NativeBatchPage>> {
+    const response = await this.invoke<NativeBatchPage>("Batch.ReadPage", { planId: request.planId, offset: request.offset, pageSize: request.pageSize, ...(request.operationId ? { operationId: request.operationId } : {}) });
+    if (response.ok && (!validBatchPage(response.data) || response.data.planId !== request.planId || request.operationId && response.data.operationId !== request.operationId || response.data.offset !== request.offset || response.data.pageSize !== request.pageSize)) return { ok: false, mode: "native", error: { code: "CAPABILITY_UNSUPPORTED", message: "批次分页结果不属于指定计划/尝试或页位置，或统计无效。", retryable: false } };
+    return response;
+  }
+  private async batchMutation(method: string, payload: unknown, planId?: string) {
+    let response = await this.invoke<{ status: "accepted"; operation: Operation }>(method, payload);
+    if (response.ok) {
+      if (invalidBatchReport(response.data.operation) || planId && response.data.operation.batchReport?.planId !== planId) return { ok: false as const, mode: "native" as const, error: { code: "CAPABILITY_UNSUPPORTED", message: "批次受理计划身份不匹配，不能作为真实结果。", retryable: false } };
+      const checked = this.confirmOperation({ ok: true, mode: "native", data: response.data.operation }); if (!checked.ok) return checked;
+      response = { ...response, data: { ...response.data, operation: checked.data } };
+    }
+    await this.refresh();
+    if (response.ok) {
+      const latest = this.operations.get(response.data.operation.id);
+      if (latest) response = { ...response, data: { ...response.data, operation: latest } };
+    }
+    return response;
+  }
+  commitBatch(request: { planId: string; requestId: string }) { return this.batchMutation("Batch.Commit", { planId: request.planId, requestId: request.requestId }, request.planId); }
+  retryBatch(request: { operationId: string; requestId: string }) { return this.batchMutation("Batch.Retry", { operationId: request.operationId, requestId: request.requestId }); }
+  queryEnvironments(request: NativeEnvironmentQuery) {
+    this.environmentQuery = { page: request.page, pageSize: request.pageSize, search: request.search, group: request.group, status: request.status };
+    return this.refresh();
   }
 }

@@ -30,6 +30,7 @@ func importProxyFixture(t *testing.T, s *Service, text string) ProxyView {
 }
 func stripProxySchema(t *testing.T, s *Service) {
 	t.Helper()
+	stripBatchSchema(t, s)
 	for _, statement := range []string{"DROP TABLE proxy_config", "DROP TABLE proxy_credentials", "DROP TABLE proxy_request_key"} {
 		if _, err := s.db.Exec(statement); err != nil {
 			t.Fatal(err)
@@ -260,7 +261,7 @@ func TestNativeProxyV4MigrationAndInterruptedCheckRecoveryPreserveEnvironmentIde
 		t.Fatal(err)
 	}
 	var version int
-	if err := reopened.db.QueryRow("PRAGMA user_version").Scan(&version); err != nil || version != 5 || view(t, reopened).State.Environments[0].Seed != e.Seed {
+	if err := reopened.db.QueryRow("PRAGMA user_version").Scan(&version); err != nil || version != 6 || view(t, reopened).State.Environments[0].Seed != e.Seed {
 		t.Fatal("schema4 migration lost fixed identity")
 	}
 	record := importProxyFixture(t, reopened, "localhost:8080")

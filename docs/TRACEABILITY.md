@@ -103,6 +103,14 @@ UX-001、DOC-001 的发布入口在 [安装器](../build/windows/installer/prism
 - CK-001、UX-001：[`任务/观测`](../internal/workspace/cookie_worker.go)部分成功/unknown、取消/落盘pending与lease，退出/核对不提前释放；[`native对话框`](../src/components/NativeCookieImport.tsx)明确空白启动原链、不绕代理门禁，隐藏输入/值与安全逐项结果，关闭后可取消。
 - 14解析/2内核/8服务/3adapter回归仅编写未运行，Go测试包未编译；真实写后读回、持久化/分区/expiry/A-B隔离及新UI未验收，[清单](verification/T12.md)。
 
+### T13 持久创建/复制/代理分配与真实分页（源码已编写，未运行验收）
+
+- ENV-001、ENV-002：[`批次计划`](../internal/workspace/batch_preview.go)、[`逐项worker`](../internal/workspace/batch_worker.go)及schema6，创建大count虚拟预览、不预展开，环境/结果/统计同事务，取消/资源不足保已提交项；重开中断、明确继续索引跳过完成项、不重做身份。提交不明按[`受理核实`](../internal/workspace/batch_acceptance_recovery.go)挂原worker，未核实不调度。
+- ENV-002、FP-001、DATA-001：克隆配置新ID/seed并重新编译原精确构建，独立[`可见空目录`](../internal/kernel/empty_profile_windows.go)与journal归属marker，不复制源Cookie/账号/网站数据、不清空外来目录；普通写入也受[`seed预约`](../internal/workspace/seed_ownership.go)与owner lease保护，不把pins称同SID强隔离。
+- PRX-001：预览冻结明确ID→节点与修订，共享/不绑定总数确认；Assign逐项忙/旧修订冲突、只改proxy绑定/JSON和环境修订，seed/档案不变、不自动轮询复用。proxy网络编辑不以UsedBy展示样本裁定忙状态，T11启动门禁保留。
+- ENV-001、UX-001：[`服务端列表分页`](../internal/workspace/environment_query.go)与[`native批次对话框`](../src/components/NativeBatchDialog.tsx)，统计/筛选来自实际服务、档案/ref/session随一页加载；[`旧尝试明细`](../internal/workspace/batch_history.go)只用原事件和此前完成项，不混后来成功。按plan/op/offset/选择代次处理迟到结果、终态后读最终页、modal键盘保护；跨页启动每个明确ID重新读真实策略/修订，缺失不作直连。
+- 16服务/3目录/6adapter回归源码仅编写未执行，Go测试包未编译；真实规模/目录/取消重开/分页/新UI尚未验收，源码与静态核对不代表通过，[清单](verification/T13.md)。
+
 以下关联于 2026-09-30 发布，表示计划实现范围，不能据此判断已完成。当前状态与 blocking 依赖以 GitHub 为准；完整顺序见 [开发票据索引](ISSUES.md)，共同范围见 [总规格 Issue](https://github.com/axgiroud312-byte/prism-local-browser/issues/1)。
 
 | 需求 ID  | 实现或专项验证 Issue                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | 整体验收                                                                       |

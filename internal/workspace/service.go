@@ -39,10 +39,11 @@ type Options struct {
 	LaunchRuntime  func(context.Context, RuntimeLaunch) (RuntimeProcess, error)
 	InspectRuntime func(RuntimeSession) (kernel.ManagedRecovery, error)
 	// Host-only seams. The desktop always uses Windows user DPAPI and TLS checks.
-	ProtectProxySecret   func(string, []byte) ([]byte, error)
-	UnprotectProxySecret func(string, []byte) ([]byte, error)
-	CheckProxy           func(context.Context, proxy.Configuration, *proxy.Credentials, func(proxy.Step)) proxy.Report
-	OpenProxyChannel     func(proxy.Configuration, *proxy.Credentials, proxy.BridgeOptions) (RuntimeProxyChannel, error)
+	ProtectProxySecret    func(string, []byte) ([]byte, error)
+	UnprotectProxySecret  func(string, []byte) ([]byte, error)
+	CheckProxy            func(context.Context, proxy.Configuration, *proxy.Credentials, func(proxy.Step)) proxy.Report
+	OpenProxyChannel      func(proxy.Configuration, *proxy.Credentials, proxy.BridgeOptions) (RuntimeProxyChannel, error)
+	PrepareBatchDirectory func(BatchDirectoryInput) (BatchDirectoryLease, error)
 }
 type draft struct {
 	Kind        string
@@ -79,6 +80,10 @@ type Service struct {
 	cookieTasks      map[string]*cookieImportTask
 	cookieResults    map[string]Operation
 	cookiePending    map[string]Operation
+	batchTasks       map[string]*batchTask
+	batchUses        map[string]*batchTask
+	batchAcceptances map[string]*batchAcceptance
+	batchGate        chan struct{}
 }
 
 func failure(code, message string, retryable bool) Result {
@@ -131,6 +136,8 @@ func Open(root string, options Options) (*Service, error) {
 	s := &Service{db: db, root: absolute, drafts: map[string]draft{}, archives: map[string]string{}, profileUses: map[string]bool{}, runtimeSlots: map[string]*runtimeSlot{}, startGate: make(chan struct{}, 1), closeDone: make(chan struct{}), runtimePending: map[string]*runtimePendingWrite{}, runtimeResults: map[string]Operation{}, options: options}
 	s.proxyChecks, s.proxyResults, s.proxyPending, s.proxyCheckGate = map[string]*proxyCheckTask{}, map[string]Operation{}, map[string]*proxyCheckWrite{}, make(chan struct{}, 4)
 	s.cookieTasks, s.cookieResults, s.cookiePending = map[string]*cookieImportTask{}, map[string]Operation{}, map[string]Operation{}
+	s.batchTasks, s.batchUses, s.batchGate = map[string]*batchTask{}, map[string]*batchTask{}, make(chan struct{}, 1)
+	s.batchAcceptances = map[string]*batchAcceptance{}
 	if err = s.initialize(); err != nil {
 		db.Close()
 		return nil, err
@@ -148,6 +155,10 @@ func Open(root string, options Options) (*Service, error) {
 		return nil, err
 	}
 	if err = s.recoverCookieImports(); err != nil {
+		db.Close()
+		return nil, err
+	}
+	if err = s.recoverBatchTasks(); err != nil {
 		db.Close()
 		return nil, err
 	}
@@ -185,6 +196,11 @@ func (s *Service) beginShutdown() {
 	for _, task := range s.cookieTasks {
 		task.cancel()
 	}
+	for _, task := range s.batchTasks {
+		if task.cancel != nil {
+			task.cancel()
+		}
+	}
 	for _, task := range s.proxyChecks {
 		task.cancel()
 	}
@@ -219,6 +235,7 @@ func (s *Service) closeResources(processes []RuntimeProcess, finished chan struc
 	s.flushRuntimePersistence()
 	s.flushProxyPersistence()
 	s.flushCookiePersistence()
+	s.flushBatchPersistence()
 	proxy.Wipe(s.proxyRequestKey)
 	s.proxyRequestKey = nil
 	s.closeError = s.db.Close()
@@ -230,6 +247,9 @@ func (s *Service) closeResources(processes []RuntimeProcess, finished chan struc
 	}
 	if len(s.cookiePending) != 0 {
 		s.closeError = errors.Join(s.closeError, errors.New("cookie observations could not all be persisted"))
+	}
+	if len(s.batchTasks) != 0 || len(s.batchAcceptances) != 0 {
+		s.closeError = errors.Join(s.closeError, errors.New("batch journal observations could not all be persisted"))
 	}
 	close(finished)
 }
@@ -249,7 +269,10 @@ func (s *Service) initialize() error {
 	if err := s.checkRuntimeSchema(); err != nil {
 		return err
 	}
-	return s.initializeProxies()
+	if err := s.initializeProxies(); err != nil {
+		return err
+	}
+	return s.initializeBatches()
 }
 
 func (s *Service) initializeProfiles() error {
@@ -257,7 +280,7 @@ func (s *Service) initializeProfiles() error {
 	if err := s.db.QueryRow("PRAGMA user_version").Scan(&version); err != nil {
 		return err
 	}
-	if version > 5 {
+	if version > 6 {
 		return errors.New("unsupported workspace version")
 	}
 	if version >= 3 {
@@ -434,6 +457,12 @@ func (s *Service) Call(request Request) Result {
 	if request.Method == "Cookie.CommitImport" || request.Method == "Cookie.DiscardImport" {
 		return s.cookieCall(request)
 	}
+	if request.Method == "Workspace.Read" || strings.HasPrefix(request.Method, "Operation.") || strings.HasPrefix(request.Method, "Batch.") {
+		s.flushBatchPersistence()
+	}
+	if strings.HasPrefix(request.Method, "Batch.") {
+		return s.batchCall(request)
+	}
 	switch request.Method {
 	case "Runtime.Start", "Runtime.Stop", "Runtime.Inspect", "Runtime.ForceStop", "Runtime.Reconcile":
 		return s.runtimeCall(request)
@@ -442,7 +471,17 @@ func (s *Service) Call(request Request) Result {
 	case "Kernel.Install", "Kernel.Verify", "Kernel.Delete", "Kernel.List":
 		return s.kernelCall(request)
 	case "Workspace.Read":
-		view, err := s.view()
+		var input struct {
+			EnvironmentQuery *EnvironmentQuery `json:"environmentQuery,omitempty"`
+		}
+		if decode(request.Payload, &input) != nil {
+			return failure("VALIDATION_FAILED", "工作区查询只接受环境分页/筛选，不接受路径或模式覆盖。", false)
+		}
+		query := EnvironmentQuery{Page: 1, PageSize: 8, Status: "all"}
+		if input.EnvironmentQuery != nil {
+			query = *input.EnvironmentQuery
+		}
+		view, err := s.viewPage(query)
 		if err != nil {
 			return failure("STORAGE_READ_FAILED", "本地档案读取失败。原数据保留，请检查数据库版本或磁盘。", true)
 		}
@@ -518,6 +557,9 @@ func (s *Service) Call(request Request) Result {
 			}
 			return success(pending, pending.ID)
 		}
+		if pending := s.pendingBatchOperation(input.OperationID); pending != nil {
+			return success(*pending, input.OperationID)
+		}
 		if pending, exists := s.cookieResults[input.OperationID]; exists {
 			if request.Method == "Operation.Cancel" {
 				return s.cancelCookieOperation(pending)
@@ -544,6 +586,9 @@ func (s *Service) Call(request Request) Result {
 			}
 		}
 		if request.Method == "Operation.Cancel" {
+			if strings.HasPrefix(operation.Kind, "batch-") {
+				return s.cancelBatchOperation(operation)
+			}
 			if operation.Kind == "cookie-import" {
 				return s.cancelCookieOperation(operation)
 			}
@@ -558,7 +603,7 @@ func (s *Service) Call(request Request) Result {
 	}
 }
 func (s *Service) newSeed(exclude string) (string, error) {
-	for {
+	for attempt := 0; attempt < 256; attempt++ {
 		value, err := rand.Int(rand.Reader, big.NewInt(2147483647))
 		if err != nil {
 			return "", err
@@ -567,14 +612,15 @@ func (s *Service) newSeed(exclude string) (string, error) {
 		if strconv.FormatInt(candidate, 10) == exclude {
 			continue
 		}
-		var count int
-		if err = s.db.QueryRow("SELECT (SELECT COUNT(*) FROM fingerprints WHERE seed=?)+(SELECT COUNT(*) FROM fingerprint_revisions WHERE json_extract(profile_json,'$.seed')=?)", candidate, strconv.FormatInt(candidate, 10)).Scan(&count); err != nil {
+		available, err := seedAvailable(s.db, strconv.FormatInt(candidate, 10), "", "")
+		if err != nil {
 			return "", err
 		}
-		if count == 0 {
+		if available {
 			return strconv.FormatInt(candidate, 10), nil
 		}
 	}
+	return "", &kernel.Problem{Code: "RESOURCE_EXHAUSTED", Reason: "seed-allocation-contention", Message: "独立seed分配暂时无法完成，已完成项保留；未复用旧身份，也不是实例产品配额。", Retryable: true}
 }
 func (s *Service) readEnvironment(environmentID string) (Environment, int64, string, error) {
 	var e Environment
@@ -736,7 +782,7 @@ func (s *Service) mutate(method string, input Mutation) Result {
 		return failure("VALIDATION_FAILED", "请生成完整的精确内核档案，并按服务预览摘要提交。", false)
 	}
 	if creating && input.Count != 1 {
-		return failure("CAPABILITY_UNSUPPORTED", "持久批量任务尚未接入，请暂用单个创建；这不是产品数量配额。", false)
+		return failure("CAPABILITY_UNSUPPORTED", "此兼容接口只保存单个环境；批量请先查看Batch.Preview再明确Batch.Commit，不是总数产品配额。", false)
 	}
 	config := input.Configuration
 	config.Name = strings.TrimSpace(config.Name)
@@ -818,11 +864,12 @@ func (s *Service) mutate(method string, input Mutation) Result {
 	if count > 0 {
 		return failure("VALIDATION_FAILED", "已有同名环境，请换一个名称。", false)
 	}
-	if err = tx.QueryRow("SELECT COUNT(*) FROM fingerprints WHERE seed=? AND id<>?", config.Seed, profileID).Scan(&count); err != nil {
-		return storageFailure(err)
+	available, seedErr := seedAvailable(tx, config.Seed, profileID, e.ID)
+	if seedErr != nil {
+		return storageFailure(seedErr)
 	}
-	if count > 0 {
-		return failure("VALIDATION_FAILED", "种子重复，请显式生成新档案。", false)
+	if !available {
+		return failure("SEED_CONFLICT", "seed已被其他身份保存、历史使用或批次预约；未占用该身份，请显式生成新档案。", false)
 	}
 	configJSON, _ := json.Marshal(config)
 	if creating {
@@ -914,22 +961,11 @@ func nullable(value string) any {
 	return value
 }
 func (s *Service) view() (View, error) {
+	return s.viewPage(EnvironmentQuery{Page: 1, PageSize: 8, Status: "all"})
+}
+func (s *Service) viewPage(query EnvironmentQuery) (View, error) {
 	state := State{SchemaVersion: 1, Environments: []Environment{}, Proxies: []any{}, Kernels: []Kernel{}, Backups: []any{}, Activities: []Activity{}}
-	rows, err := s.db.Query("SELECT id FROM environments ORDER BY code DESC")
-	if err != nil {
-		return View{}, err
-	}
-	ids := []string{}
-	for rows.Next() {
-		var value string
-		if err = rows.Scan(&value); err != nil {
-			rows.Close()
-			return View{}, err
-		}
-		ids = append(ids, value)
-	}
-	err = rows.Err()
-	rows.Close()
+	ids, page, err := s.environmentIDs(query)
 	if err != nil {
 		return View{}, err
 	}
@@ -940,7 +976,7 @@ func (s *Service) view() (View, error) {
 		}
 		state.Environments = append(state.Environments, e)
 	}
-	rows, err = s.db.Query("SELECT id,version,source,status FROM kernels ORDER BY id")
+	rows, err := s.db.Query("SELECT id,version,source,status FROM kernels ORDER BY id")
 	if err != nil {
 		return View{}, err
 	}
@@ -970,9 +1006,9 @@ func (s *Service) view() (View, error) {
 	rows, err = s.db.Query(`SELECT a.id,a.created_at,a.action,a.target,a.detail,
 		COALESCE(r.environment_id,CASE WHEN json_extract(o.result_json,'$.kind')='cookie-import' THEN json_extract(o.result_json,'$.environmentId') END,''),
 		COALESCE(r.session_id,CASE WHEN json_extract(o.result_json,'$.kind')='cookie-import' THEN json_extract(o.result_json,'$.sessionId') END,''),
-		COALESCE(r.error_code,CASE WHEN json_extract(o.result_json,'$.kind')='proxy-check' THEN json_extract(o.result_json,'$.error.code') WHEN json_extract(o.result_json,'$.kind')='cookie-import' AND json_extract(o.result_json,'$.state') IN ('failed','cancelled') THEN COALESCE(json_extract(o.result_json,'$.error.code'),'OPERATION_CANCELLED') END,''),
-		COALESCE(r.next_action,CASE WHEN json_extract(o.result_json,'$.kind')='proxy-check' AND json_extract(o.result_json,'$.state') IN ('failed','cancelled') THEN '修正代理或凭据后重新检查；前检不代表浏览器通道或断线保护。' WHEN json_extract(o.result_json,'$.kind')='cookie-import' AND json_extract(o.result_json,'$.state') IN ('failed','cancelled') THEN '查看逐条结果；重新预览后先核对同键再合并重试，不自动清空。' END,'')
-		FROM activities a LEFT JOIN runtime_events r ON r.activity_id=a.id LEFT JOIN operations o ON o.id=a.id ORDER BY a.rowid DESC`)
+		COALESCE(r.error_code,CASE WHEN json_extract(o.result_json,'$.kind')='proxy-check' THEN json_extract(o.result_json,'$.error.code') WHEN json_extract(o.result_json,'$.kind')='cookie-import' AND json_extract(o.result_json,'$.state') IN ('failed','cancelled') THEN COALESCE(json_extract(o.result_json,'$.error.code'),'OPERATION_CANCELLED') WHEN json_extract(o.result_json,'$.kind') LIKE 'batch-%' AND json_extract(o.result_json,'$.state') IN ('failed','cancelled') THEN COALESCE(json_extract(o.result_json,'$.error.code'),'BATCH_PARTIAL_FAILED') END,''),
+		COALESCE(r.next_action,CASE WHEN json_extract(o.result_json,'$.kind')='proxy-check' AND json_extract(o.result_json,'$.state') IN ('failed','cancelled') THEN '修正代理或凭据后重新检查；前检不代表浏览器通道或断线保护。' WHEN json_extract(o.result_json,'$.kind')='cookie-import' AND json_extract(o.result_json,'$.state') IN ('failed','cancelled') THEN '查看逐条结果；重新预览后先核对同键再合并重试，不自动清空。' WHEN json_extract(o.result_json,'$.kind') LIKE 'batch-%' AND json_extract(o.result_json,'$.state') IN ('failed','cancelled') THEN '按任务ID查看该次逐项结果；明确继续未完成项，修订冲突需重新预览，已完成项不重做。' END,'')
+		FROM activities a LEFT JOIN runtime_events r ON r.activity_id=a.id LEFT JOIN operations o ON o.id=a.id ORDER BY a.rowid DESC LIMIT 100`)
 	if err != nil {
 		return View{}, err
 	}
@@ -999,7 +1035,7 @@ func (s *Service) view() (View, error) {
 	if err != nil {
 		return View{}, err
 	}
-	profiles, references, err := s.profileViews()
+	profiles, references, err := s.profileViews(ids)
 	if err != nil {
 		return View{}, err
 	}
@@ -1011,8 +1047,10 @@ func (s *Service) view() (View, error) {
 		state.Proxies = append(state.Proxies, map[string]any{"id": record.ID, "name": record.Name, "type": record.Type, "host": record.Host, "port": record.Port, "country": record.Country, "status": record.Status, "username": "", "password": ""})
 	}
 	sessions := map[string]RuntimeSession{}
-	for environmentID, slot := range s.runtimeSlots {
-		sessions[environmentID] = slot.session
+	for _, environmentID := range ids {
+		if slot := s.runtimeSlots[environmentID]; slot != nil {
+			sessions[environmentID] = slot.session
+		}
 	}
 	for index := range state.Environments {
 		if session, ok := sessions[state.Environments[index].ID]; ok {
@@ -1031,5 +1069,9 @@ func (s *Service) view() (View, error) {
 	if err != nil {
 		return View{}, err
 	}
-	return View{Mode: "native", State: state, KernelRecords: installed, KernelOperations: operations, Fingerprints: profiles, DataReferences: references, RuntimeSessions: sessions, NativeProxyRecords: proxyRecords, ProxyOperations: proxyOperations, CookieOperations: cookieOperations}, nil
+	batchOperations, err := s.listBatchOperations()
+	if err != nil {
+		return View{}, err
+	}
+	return View{Mode: "native", State: state, KernelRecords: installed, KernelOperations: operations, Fingerprints: profiles, DataReferences: references, RuntimeSessions: sessions, NativeProxyRecords: proxyRecords, ProxyOperations: proxyOperations, CookieOperations: cookieOperations, BatchOperations: batchOperations, EnvironmentPage: &page}, nil
 }

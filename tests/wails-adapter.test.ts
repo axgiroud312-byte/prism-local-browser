@@ -1,11 +1,13 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { WailsAdapter, type NativeBridge, type NativeRequest } from "../src/application/wails-adapter.ts";
-import type { ApplicationResult, Operation, OperationEvent, RuntimeSession, WorkspaceView, ProxyUpdateRequest, ProxyTargetRequest, CookieCommitRequest, CookieImportPreview, CookieImportReport } from "../src/application/contract.ts";
+import { mergeOperation, type ApplicationResult, type Operation, type OperationEvent, type RuntimeSession, type WorkspaceView, type ProxyUpdateRequest, type ProxyTargetRequest, type CookieCommitRequest, type CookieImportPreview, type CookieImportReport, type NativeBatchReport, type NativeBatchPage, type NativeBatchPreviewRequest } from "../src/application/contract.ts";
 import type { Environment } from "../src/domain.ts";
 import { applyFingerprint, demoFingerprint, demoProfile, fingerprintMatchesConfiguration } from "../src/application/fingerprint-model.ts";
 import { proxyResolutionLabel, proxyStageLabel } from "../src/application/proxy-network.ts";
 import { currentCookieOperation } from "../src/application/cookie-import.ts";
+import { mergeBatchPage, validBatchPage, validBatchReport } from "../src/application/batch-model.ts";
+import { readRuntimeStartPlan } from "../src/application/runtime-start-plan.ts";
 
 const empty = (): WorkspaceView => ({ mode: "native", state: { schemaVersion: 1, environments: [], proxies: [], kernels: [], backups: [], activities: [] } });
 const ok = <T>(data: T): ApplicationResult<T> => ({ ok: true, mode: "native", data });
@@ -21,6 +23,73 @@ const environment: Environment = {
   fingerprintVersion: "windows-desktop-v1", status: "ready", cookies: [], createdAt: "2026-09-30T00:00:00Z",
 };
 const operation: Operation = { id: "synthetic-operation", kind: "create", state: "completed", total: 1, completedIds: [environment.id], cancelRequested: false };
+
+const syntheticBatchReport = (): NativeBatchReport => ({ mode: "native", planId: "synthetic-batch-plan", kind: "create", total: 3, completedCount: 1, failedCount: 0, notExecutedCount: 2, attemptCompletedCount: 1, sharedProxyAssignments: 0, directAssignments: 3, sequence: 4 });
+test("native batch projections exclude identity/credentials and keep an explicit full mapping", async () => {
+  const { app, calls } = fixture(request => request.method === "Workspace.Read" ? ok(empty()) : rejected);
+  await app.previewBatch({ kind: "create", create: { previewId: "synthetic-draft", count: 1000003, requestId: "synthetic-preview-request", configuration: { ...environment, cookies: [{ name: "synthetic-login", value: "SYNTHETIC_BATCH_SECRET" }], parameters: ["--foreign"], userDataRef: "foreign/profile" } } } as NativeBatchPreviewRequest);
+  await app.previewBatch({ kind: "assign", mappings: [{ environmentId: "selected-A", proxyId: "proxy-B", username: "SYNTHETIC_BATCH_SECRET" }, { environmentId: "selected-B", proxyId: "", password: "SYNTHETIC_BATCH_SECRET" }], autoRoundRobin: true } as unknown as NativeBatchPreviewRequest);
+  const payload = calls.filter(request => request.method === "Batch.Preview");
+  assert.equal(JSON.stringify(payload).includes("SYNTHETIC_BATCH_SECRET"), false);
+  assert.deepEqual(payload[1].payload, { kind: "assign", mappings: [{ environmentId: "selected-A", proxyId: "proxy-B" }, { environmentId: "selected-B", proxyId: "" }] });
+  assert.equal((payload[0].payload as { create: { count: number } }).create.count, 1000003);
+});
+test("batch counts/modes are checked and delayed progress/pages never regress another attempt", async () => {
+  const report = syntheticBatchReport(); assert.equal(validBatchReport(report), true);
+  assert.equal(validBatchReport({ ...report, completedCount: 5 }), false);
+  assert.equal(validBatchReport({ ...report, total: Number.MAX_SAFE_INTEGER + 1 }), false);
+  const current: Operation = { ...operation, id: "new-batch-attempt", kind: "batch-create", total: report.total, completedIds: [], state: "running", batchReport: report };
+  const old: Operation = { ...current, id: "old-batch-attempt", state: "failed", batchReport: { ...report, sequence: 2 } };
+  assert.equal(mergeOperation(current, old), current);
+  const page: NativeBatchPage = { ...report, expiresAt: "2026-10-01T02:00:00Z", offset: 0, pageSize: 25, items: [] };
+  assert.equal(mergeBatchPage(page, { ...page, sequence: 2 }), page);
+  const { app } = fixture(request => request.method === "Operation.Read" ? ok({ ...current, batchReport: { ...report, completedCount: 5 } }) : ok({ ...empty(), batchOperations: [{ ...current, batchReport: { ...report, mode: "demo" } }] }));
+  assert.equal((await app.getOperation(current.id)).ok, false); assert.equal((await app.refresh()).ok, false);
+});
+test("server-side environment query persists across refreshes without carrying client records", async () => {
+  const { app, calls } = fixture(() => ok(empty()));
+  await app.queryEnvironments({ page: 7, pageSize: 8, search: "合成", group: "测试", status: "ready", environments: [environment], paths: ["foreign/profile"] } as Parameters<WailsAdapter["queryEnvironments"]>[0]);
+  await app.refresh();
+  for (const request of calls) assert.deepEqual(request.payload, { environmentQuery: { page: 7, pageSize: 8, search: "合成", group: "测试", status: "ready" } });
+});
+
+test("batch page navigation keeps the requested offset and immutable historical attempt", async () => {
+  const report = syntheticBatchReport();
+  const page: NativeBatchPage = { ...report, total: 60, notExecutedCount: 59, expiresAt: "2026-10-01T02:00:00Z", offset: 0, pageSize: 25, items: [], operationId: "synthetic-attempt-A", sequence: 7 };
+  const next = { ...page, offset: 25, sequence: 6 };
+  assert.equal(mergeBatchPage(page, next), next);
+  const historical = { ...page, operationId: "synthetic-old-attempt", history: true, sequence: 2 };
+  assert.equal(mergeBatchPage(page, historical), historical);
+  assert.equal(validBatchPage(page), false, "an empty payload cannot stand in for a full result page");
+  const { app, calls } = fixture(() => ok(page));
+  assert.equal((await app.readBatchPage({ planId: page.planId, operationId: "synthetic-attempt-B", offset: 0, pageSize: 25 })).ok, false);
+  assert.deepEqual(calls[0].payload, { planId: page.planId, operationId: "synthetic-attempt-B", offset: 0, pageSize: 25 });
+});
+
+test("batch acceptance returns merged refresh progress instead of a stale accepted snapshot", async () => {
+  const report = syntheticBatchReport();
+  const accepted: Operation = { ...operation, id: "synthetic-batch-attempt", kind: "batch-create", total: report.total, state: "accepted", completedIds: [], batchReport: { ...report, sequence: 3 } };
+  const running: Operation = { ...accepted, state: "running", batchReport: report };
+  const { app } = fixture(request => request.method === "Workspace.Read" ? ok({ ...empty(), batchOperations: [running] }) : ok({ status: "accepted", operation: accepted }));
+  const response = await app.commitBatch({ planId: report.planId, requestId: "synthetic-acceptance" });
+  assert.equal(response.ok && response.data.operation.state, "running");
+  assert.equal(response.ok && response.data.operation.batchReport?.sequence, 4);
+});
+
+test("cross-page runtime policies are read by exact IDs and missing selections never become direct", async () => {
+  const { app, calls } = fixture(request => request.method === "Preview.Discard" ? ok({ status: "discarded" }) : request.method === "Environment.Preview" ? ok({ previewId: "synthetic-start-preview", environment: { ...environment, id: (request.payload as { sourceId: string }).sourceId, proxyId: "synthetic-hidden-proxy" }, expectedRevision: 9 }) : request.method === "Runtime.Start" ? rejected : ok(empty()));
+  const plan = await readRuntimeStartPlan(app, ["hidden-selected-A", "hidden-selected-B"]);
+  assert.equal(plan.ok && plan.data.length, 2);
+  assert.equal(plan.ok && plan.data.every(item => item.networkPolicy === "proxy" && item.expectedRevision === 9), true);
+  assert.equal(calls.filter(request => request.method === "Preview.Discard").length, 2);
+  assert.equal(calls.some(request => request.method === "Runtime.Start"), false);
+  const unavailable = fixture(() => rejected).app;
+  assert.equal((await readRuntimeStartPlan(unavailable, ["missing-selected"])).ok, false);
+  const foreign = fixture(() => ok({ previewId: "synthetic-wrong-target", environment: { ...environment, id: "other-unselected" }, expectedRevision: 9 })).app;
+  assert.equal((await readRuntimeStartPlan(foreign, ["hidden-selected-A"])).ok, false);
+  await app.startRuntime({ environmentId: "hidden-selected-A", networkPolicy: "proxy", expectedRevision: 9, requestId: "synthetic-start" });
+  assert.deepEqual(calls.find(request => request.method === "Runtime.Start")?.payload, { environmentId: "hidden-selected-A", networkPolicy: "proxy", expectedRevision: 9, requestId: "synthetic-start" });
+});
 
 test("native Cookie commit and explicit blank launch project only safe target metadata", async () => {
   const { app, calls } = fixture(request => request.method === "Workspace.Read" ? ok(empty()) : rejected);

@@ -39,10 +39,12 @@ export interface WorkspaceView {
   nativeProxyRecords?: NativeProxy[];
   proxyOperations?: Operation[];
   cookieOperations?: Operation[];
+  batchOperations?: Operation[];
+  environmentPage?: NativeEnvironmentPage;
 }
 export interface Operation {
   id: string;
-  kind: "create" | "edit" | "kernel-install" | "kernel-verify" | "kernel-delete" | "runtime-start" | "runtime-stop" | "runtime-force-stop" | "runtime-reconcile" | "proxy-check" | "cookie-import";
+  kind: "create" | "edit" | "kernel-install" | "kernel-verify" | "kernel-delete" | "runtime-start" | "runtime-stop" | "runtime-force-stop" | "runtime-reconcile" | "proxy-check" | "cookie-import" | "batch-create" | "batch-clone" | "batch-assign";
   state: "accepted" | "running" | "completed" | "cancelled" | "failed";
   total: number;
   completedIds: string[];
@@ -57,6 +59,7 @@ export interface Operation {
   proxyId?: string;
   proxyReport?: ProxyCheckReport;
   cookieReport?: CookieImportReport;
+  batchReport?: NativeBatchReport;
 }
 export interface OperationEvent {
   mode: ApplicationMode;
@@ -70,7 +73,9 @@ export const operationIsTerminal = (operation: Operation) =>
   !operation.persistencePending && ["completed", "cancelled", "failed"].includes(operation.state);
 
 export function mergeOperation(previous: Operation | undefined, next: Operation): Operation {
+  if (previous?.batchReport && next.batchReport && previous.batchReport.planId === next.batchReport.planId && next.batchReport.sequence < previous.batchReport.sequence) return previous;
   if (!previous || previous.id !== next.id) return next;
+  if (previous.batchReport && next.batchReport && next.batchReport.sequence < previous.batchReport.sequence) return previous;
   if (operationIsTerminal(previous) || (previous.state === "running" && next.state === "accepted")) return previous;
   if (previous.persistencePending && !next.persistencePending && !["completed", "cancelled", "failed"].includes(next.state)) return previous;
   return previous.cancelRequested && !next.cancelRequested ? { ...next, cancelRequested: true } : next;
@@ -138,7 +143,39 @@ export interface ApplicationService {
   parseCookieImport?(environmentId: string, text: string): Promise<ApplicationResult<CookieImportPreview>>;
   discardCookieImport?(previewId: string): Promise<ApplicationResult<{ status: "discarded" }>>;
   commitCookieImport?(request: CookieCommitRequest): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
+  previewBatch?(request: NativeBatchPreviewRequest): Promise<ApplicationResult<NativeBatchPage>>;
+  readBatchPage?(request: { planId: string; operationId?: string; offset: number; pageSize: number }): Promise<ApplicationResult<NativeBatchPage>>;
+  commitBatch?(request: { planId: string; requestId: string }): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
+  retryBatch?(request: { operationId: string; requestId: string }): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
+  queryEnvironments?(request: NativeEnvironmentQuery): Promise<ApplicationResult<WorkspaceView>>;
 }
+
+export type NativeBatchKind = "create" | "clone" | "assign";
+export type NativeBatchPreviewRequest =
+  | { kind: "create"; create: CreateBatchRequest }
+  | { kind: "clone"; sourceIds: string[] }
+  | { kind: "assign"; mappings: { environmentId: string; proxyId: string }[] };
+export interface NativeBatchItem {
+  index: number; name: string; environmentId?: string; sourceId?: string; sourceRevision?: number;
+  expectedRevision?: number; proxyId: string; proxyName: string; newIdentity: boolean;
+  state: "not-executed" | "completed" | "failed"; error?: ApplicationError;
+}
+export interface NativeBatchPage extends NativeBatchReport {
+  offset: number; pageSize: number; expiresAt: string; operationId?: string;
+  currentOperationId?: string; history?: boolean;
+  items: NativeBatchItem[];
+}
+export interface NativeBatchReport {
+  mode: "native"; planId: string; kind: NativeBatchKind; total: number;
+  completedCount: number; failedCount: number; notExecutedCount: number; attemptCompletedCount: number;
+  sharedProxyAssignments: number; finishedAt?: string;
+  directAssignments: number;
+  sequence: number;
+}
+export interface NativeEnvironmentQuery {
+  page: number; pageSize: number; search: string; group: string; status: string;
+}
+export interface NativeEnvironmentPage { page: number; pageSize: number; total: number; filteredTotal: number; groups: string[]; runningCount: number; errorCount: number }
 
 export interface RuntimeStartRequest { environmentId: string; requestId: string; networkPolicy: "direct" | "proxy"; purpose?: "cookie-import"; expectedRevision?: number }
 export interface CookiePartitionKey { topLevelSite: string; hasCrossSiteAncestor: boolean }
@@ -178,7 +215,7 @@ export interface ProxyTargetRequest { proxyId: string; expectedRevision: number;
 export interface ProxyUpdateRequest extends ProxyTargetRequest { configuration: ProxyConfiguration; credentials: ProxyCredentialChange }
 export interface NativeProxy extends ProxyConfiguration {
   id: string; revision: number; hasAuthentication: boolean; status: "unchecked" | "connected" | "failed";
-  usedBy: string[]; checkReport?: ProxyCheckReport;
+  usedBy: string[]; usedCount?: number; checkReport?: ProxyCheckReport;
 }
 export interface ProxyImportPreview {
   mode: "native"; previewId: string; expiresAt: string; ignoredLines: number;
@@ -246,7 +283,7 @@ export interface NativeKernel {
   id: string; version: string; architecture: string;
   source: { kind: "official" | "local"; location: string; tag: string; commit: string | null };
   archiveSha256: string; executableSha256: string; executableRelativePath: string;
-  installPath: string; installedAt: string; status: "verified" | "missing"; usedBy: string[];
+  installPath: string; installedAt: string; status: "verified" | "missing"; usedBy: string[]; usedCount?: number;
   report: KernelReport;
 }
 

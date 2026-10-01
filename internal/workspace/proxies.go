@@ -242,8 +242,14 @@ func (s *Service) updateProxy(input ProxyUpdate, signature string) Result {
 	}
 	affectsNetwork := config.Type != record.Type || config.Host != record.Host || config.Port != record.Port || change.Action != "keep"
 	if affectsNetwork {
-		for _, environmentID := range record.UsedBy {
-			if s.profileUses[environmentID] {
+		// Usage samples are paged; protection checks all host-held leases, not
+		// merely the first 100 linked environments shown to the UI.
+		for environmentID := range s.profileUses {
+			var proxyID sql.NullString
+			if err := s.db.QueryRow("SELECT proxy_id FROM environments WHERE id=?", environmentID).Scan(&proxyID); err != nil {
+				return failure("STORAGE_READ_FAILED", "绑定环境占用状态无法核对，未修改代理。", true)
+			}
+			if proxyID.String == record.ID {
 				return failure("PROFILE_BUSY", "绑定环境仍运行或待核对，请先停止并核对后修改连接或认证。", true)
 			}
 		}
@@ -288,7 +294,7 @@ func (s *Service) deleteProxy(input ProxyTarget, record ProxyView, ref, signatur
 	if s.proxyChecks[record.ID] != nil {
 		return failure("PROFILE_BUSY", "代理检查或结果保存仍在进行，未删除。", true)
 	}
-	if len(record.UsedBy) > 0 {
+	if record.UsedCount > 0 {
 		return failure("PROXY_IN_USE", "该代理被环境引用，不能直接删除；请先修改环境绑定。", false)
 	}
 	tx, err := s.db.Begin()

@@ -14,6 +14,7 @@ type ProxyView struct {
 	HasAuthentication bool          `json:"hasAuthentication"`
 	Status            string        `json:"status"`
 	UsedBy            []string      `json:"usedBy"`
+	UsedCount         int64         `json:"usedCount"`
 	CheckReport       *proxy.Report `json:"checkReport,omitempty"`
 }
 type ProxyImportRow struct {

@@ -80,7 +80,7 @@ func (s *Service) completeObservedExit(slot *runtimeSlot, snapshot kernel.Runtim
 		slot.session.NextAction = "已确认本次进程树退出，原浏览数据保持，可使用原档案重开。"
 	}
 	if !runtimeStopPending(slot) && s.cookieTasks[slot.session.EnvironmentID] == nil {
-		delete(s.profileUses, slot.session.EnvironmentID)
+		s.releaseProfileUse(slot.session.EnvironmentID)
 	}
 }
 
@@ -146,6 +146,9 @@ func kernelProblemExitUnconfirmed() error {
 }
 
 func (s *Service) reconcileRuntime(input runtimeRequest) Result {
+	if s.batchUses[input.EnvironmentID] != nil || s.profileUses[input.EnvironmentID] && !s.runtimeOwnsProfileUse(input.EnvironmentID) {
+		return failure("PROFILE_BUSY", "当前有独立维护/批次租约，旧会话核对不能接管或释放它的保护。", true)
+	}
 	if s.cookieTasks[input.EnvironmentID] != nil {
 		return failure("PROFILE_BUSY", "本次Cookie任务或观测待保存，核对不能提前释放它的数据预留。", true)
 	}
