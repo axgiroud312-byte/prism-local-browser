@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { WailsAdapter, type NativeBridge, type NativeRequest } from "../src/application/wails-adapter.ts";
-import type { ApplicationResult, Operation, OperationEvent, WorkspaceView } from "../src/application/contract.ts";
+import type { ApplicationResult, Operation, OperationEvent, RuntimeSession, WorkspaceView } from "../src/application/contract.ts";
 import type { Environment } from "../src/domain.ts";
 import { applyFingerprint, demoFingerprint, demoProfile, fingerprintMatchesConfiguration } from "../src/application/fingerprint-model.ts";
 
@@ -188,9 +188,9 @@ test("runtime requests only select stored IDs and explicit direct policy, never 
   await app.startRuntime(untrusted);
   await app.stopRuntime(untrusted);
   await app.inspectRuntime([environment.id]);
-  assert.deepEqual(calls.map(call => call.method), ["Runtime.Start", "Runtime.Stop", "Runtime.Inspect"]);
+  assert.deepEqual(calls.map(call => call.method), ["Runtime.Start", "Workspace.Read", "Runtime.Stop", "Workspace.Read", "Runtime.Inspect"]);
   assert.deepEqual(calls[0].payload, { environmentId: environment.id, requestId: untrusted.requestId, networkPolicy: "direct" });
-  assert.deepEqual(calls[1].payload, { environmentId: environment.id, requestId: untrusted.requestId });
+  assert.deepEqual(calls[2].payload, { environmentId: environment.id, requestId: untrusted.requestId });
   assert.ok(!JSON.stringify(calls).includes("SYNTHETIC_PATH"));
   assert.ok(!JSON.stringify(calls).includes("--no-sandbox"));
 });
@@ -212,4 +212,44 @@ test("native refuses a nested demo runtime session without publishing running", 
   assert.equal((await app.refresh()).ok, false);
   assert.deepEqual(app.getSnapshot().state.environments, []);
   assert.equal((await app.inspectRuntime([environment.id])).ok, false);
+});
+
+test("recovery commands only send the exact environment/session and request IDs, never PID or commands", async () => {
+  const { app, calls } = fixture(request => request.method === "Workspace.Read" ? ok(empty()) : rejected);
+  const untrusted = { environmentId: environment.id, sessionId: "synthetic-saved-session", requestId: "synthetic-recovery-request", pid: 4242, executable: "SYNTHETIC_PATH", arguments: ["--no-sandbox"], networkPolicy: "direct" };
+  await app.forceStopRuntime(untrusted);
+  await app.reconcileRuntime(untrusted);
+  assert.deepEqual(calls.map(call => call.method), ["Runtime.ForceStop", "Workspace.Read", "Runtime.Reconcile", "Workspace.Read"]);
+  const expected = { environmentId: environment.id, sessionId: untrusted.sessionId, requestId: untrusted.requestId };
+  assert.deepEqual(calls[0].payload, expected); assert.deepEqual(calls[2].payload, expected);
+  assert.ok(!JSON.stringify(calls).includes("SYNTHETIC_PATH"));
+  assert.ok(!JSON.stringify(calls).includes("4242"));
+});
+
+test("a failed normal close still refreshes the native next step without claiming a forced stop", async () => {
+  const session: RuntimeSession = { mode: "native", environmentId: environment.id, sessionId: "synthetic-session", operationId: "synthetic-start", state: "error", revision: 1, fingerprintRevision: 1, kernelId: environment.coreId, userDataRef: "environments/synthetic/user-data", networkPolicy: "direct", pid: 4242, canControl: false, canForce: true, needsReconcile: false, persistencePending: false, error: { code: "CONTROL_CHANNEL_LOST", message: "合成控制通道失败", retryable: false }, nextAction: "仅可明确结束本次受控会话" };
+  const workspace = { ...empty(), runtimeSessions: { [environment.id]: session } };
+  const { app } = fixture(request => request.method === "Workspace.Read" ? ok(workspace) : rejected);
+  const response = await app.stopRuntime({ environmentId: environment.id, requestId: "synthetic-close-request" });
+  assert.equal(response.ok, false);
+  assert.equal(app.getSnapshot().runtimeSessions?.[environment.id].canForce, true);
+  assert.equal(app.getSnapshot().runtimeSessions?.[environment.id].state, "error");
+});
+
+test("a temporary storage-pending failure can complete after persistence recovery but a real terminal stays final", async () => {
+  const desired: Operation = { id: "synthetic-pending-storage", kind: "runtime-stop", state: "completed", total: 1, completedIds: [environment.id], cancelRequested: false, environmentId: environment.id };
+  let recovering = false;
+  const { app } = fixture(() => ok(recovering ? desired : { ...desired, state: "failed", completedIds: [], persistencePending: true, stage: "storage-pending", error: { code: "STORAGE_WRITE_FAILED", message: "合成结果待保存", retryable: true } }));
+  const events: OperationEvent[] = []; app.subscribeEvents(event => events.push(event));
+  const failed = await app.getOperation(desired.id);
+  assert.ok(failed.ok && failed.data.persistencePending);
+  assert.equal(events[0].type, "OperationProgress");
+  recovering = true;
+  const completed = await app.getOperation(desired.id);
+  assert.ok(completed.ok && completed.data.state === "completed" && !completed.data.persistencePending);
+  assert.equal(events[1].type, "OperationCompleted");
+  recovering = false;
+  const late = await app.getOperation(desired.id);
+  assert.ok(late.ok && late.data.state === "completed");
+  assert.equal(events.length, 2);
 });

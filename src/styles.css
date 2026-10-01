@@ -1252,6 +1252,20 @@ tbody tr.row-selected {
   margin-top: 8px;
   line-height: 1.7;
 }
+.activity-content {
+  min-width: 0;
+  flex: 1;
+  overflow-wrap: anywhere;
+}
+.activity-content .button {
+  margin-top: 8px;
+}
+.runtime-recovery-note {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  max-width: 320px;
+  line-height: 1.5;
+}
 .activity-item time {
   margin-left: auto;
   font-size: 10px;

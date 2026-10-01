@@ -4,7 +4,7 @@ import type {
   KernelInstallRequest,
   GenerateFingerprintRequest, CommitFingerprintRequest, ProfileRevision, RuntimeSession,
 } from "./contract.ts";
-import { mergeOperation } from "./contract.ts";
+import { mergeOperation, operationIsTerminal } from "./contract.ts";
 
 export interface NativeRequest { mode: "native"; method: string; payload: unknown }
 export type NativeBridge = <T>(request: NativeRequest) => Promise<ApplicationResult<T>>;
@@ -91,7 +91,7 @@ export class WailsAdapter implements ApplicationService {
     return { ...response, data: operation };
   }
   private emit(operation: Operation) {
-    const event: OperationEvent = { mode: "native", type: ["completed", "cancelled", "failed"].includes(operation.state) ? "OperationCompleted" : "OperationProgress", operationId: operation.id, sequence: ++this.sequence, time: new Date().toISOString(), operation };
+    const event: OperationEvent = { mode: "native", type: operationIsTerminal(operation) ? "OperationCompleted" : "OperationProgress", operationId: operation.id, sequence: ++this.sequence, time: new Date().toISOString(), operation };
     this.eventListeners.forEach(listener => listener(event));
   }
   selectKernelArchive() { return this.invoke<{ status: "selected" | "cancelled"; archiveToken?: string; name?: string }>("Kernel.SelectArchive", {}); }
@@ -102,7 +102,7 @@ export class WailsAdapter implements ApplicationService {
   deleteKernel(kernelId: string, requestId: string) { return this.invoke<{ status: "accepted"; operation: Operation }>("Kernel.Delete", { kernelId, requestId }); }
   private async runtimeMutation(method: string, payload: unknown) {
     const response = await this.invoke<{ status: "accepted"; operation: Operation }>(method, payload);
-    if (response.ok) await this.refresh();
+    await this.refresh();
     return response;
   }
   startRuntime(request: { environmentId: string; requestId: string; networkPolicy: "direct" }) {
@@ -110,6 +110,12 @@ export class WailsAdapter implements ApplicationService {
   }
   stopRuntime(request: { environmentId: string; requestId: string }) {
     return this.runtimeMutation("Runtime.Stop", { environmentId: request.environmentId, requestId: request.requestId });
+  }
+  forceStopRuntime(request: { environmentId: string; sessionId: string; requestId: string }) {
+    return this.runtimeMutation("Runtime.ForceStop", { environmentId: request.environmentId, sessionId: request.sessionId, requestId: request.requestId });
+  }
+  reconcileRuntime(request: { environmentId: string; sessionId: string; requestId: string }) {
+    return this.runtimeMutation("Runtime.Reconcile", { environmentId: request.environmentId, sessionId: request.sessionId, requestId: request.requestId });
   }
   async inspectRuntime(ids: string[]): Promise<ApplicationResult<RuntimeSession[]>> {
     const response = await this.invoke<RuntimeSession[]>("Runtime.Inspect", { ids });

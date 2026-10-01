@@ -10,7 +10,7 @@ const root = resolve(process.argv[2]);
 const db = new DatabaseSync(join(root, "app.db"), { readOnly: true });
 let view;
 try {
-  assert.equal(db.prepare("PRAGMA user_version").get().user_version, 3);
+  assert.equal(db.prepare("PRAGMA user_version").get().user_version, 4);
   assert.deepEqual(db.prepare("PRAGMA foreign_key_check").all(), []);
   const records = db.prepare("SELECT k.status,e.record_json FROM kernel_evidence e JOIN kernels k ON k.id=e.kernel_id ORDER BY k.rowid DESC").all().map(row => ({ ...JSON.parse(row.record_json), status: row.status }));
   const environments = db.prepare("SELECT e.id,e.kernel_id,e.revision,e.fingerprint_id,e.user_data_ref,f.kernel_id AS fingerprint_kernel_id,f.seed,f.config_json,f.config_revision,r.profile_json FROM environments e JOIN fingerprints f ON f.id=e.fingerprint_id LEFT JOIN fingerprint_revisions r ON r.fingerprint_id=f.id AND r.revision=f.config_revision ORDER BY e.code").all().map(row => {
@@ -35,7 +35,7 @@ try {
     assert.ok(record.report.observations.length >= 3);
     assert.ok(record.report.observations.every(sample => sample.normalExit && sample.browserVersion === record.version));
   }
-  view = { schemaVersion: 3, records, environments, operations };
+  view = { schemaVersion: 4, records, environments, operations };
 } finally { db.close(); }
 
 if (process.argv.includes("--hash")) {

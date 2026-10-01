@@ -64,6 +64,24 @@ func assertRealRootAlive(t *testing.T, session RuntimeSession) {
 	}
 }
 
+// Deliberate fault injection only for the exact root created by this fixture.
+// Production recovery/force commands never accept or terminate a client PID.
+func terminateRealRuntimeFixtureRoot(t *testing.T, session RuntimeSession) {
+	t.Helper()
+	handle, err := windows.OpenProcess(windows.SYNCHRONIZE|windows.PROCESS_QUERY_LIMITED_INFORMATION|windows.PROCESS_TERMINATE, false, uint32(session.PID))
+	if err != nil {
+		t.Fatal("test-owned browser root could not be inspected for fault injection")
+	}
+	defer windows.CloseHandle(handle)
+	var created, exited, kernelTime, userTime windows.Filetime
+	if err = windows.GetProcessTimes(handle, &created, &exited, &kernelTime, &userTime); err != nil || time.Unix(0, created.Nanoseconds()).UTC().Format(time.RFC3339Nano) != session.ProcessCreatedAt {
+		t.Fatal("fault injection identity does not match the fixture's root")
+	}
+	if err = windows.TerminateProcess(handle, 79); err != nil {
+		t.Fatal("test-owned root fault injection failed")
+	}
+}
+
 // Explicit opt-in is necessary: unlike T04/T05 diagnostics this opens real
 // normal browser windows (still no UI clicking). Never runs in default tests.
 func TestRealIndependentBrowserSessions(t *testing.T) {
@@ -234,8 +252,50 @@ func TestRealIndependentBrowserSessions(t *testing.T) {
 		inspect(reopened, name, "read")
 		stop(reopened, name)
 	}
+	recoveryEvidence := map[string]any{"status": "not-run", "applicationCrashRestart": "not-run"}
+	if os.Getenv("PRISM_RECOVERY_VERIFY") == "1" {
+		// This opens additional visible browsers and deliberately kills a root;
+		// the extra switch is required even after T06's explicit opt-in.
+		start(reopened, "A")
+		inspect(reopened, "A", "read")
+		start(reopened, "B")
+		inspect(reopened, "B", "read")
+		beforeCrash := view(t, reopened).RuntimeSessions[environments["A"].ID]
+		independent := view(t, reopened).RuntimeSessions[environments["B"].ID]
+		terminateRealRuntimeFixtureRoot(t, beforeCrash)
+		observed := waitRuntimeObservation(t, reopened, environments["A"].ID, func(session RuntimeSession) bool {
+			return session.Error != nil && session.Error.Code == "PROCESS_CRASHED"
+		})
+		forceUsed := false
+		if observed.PID > 0 {
+			closing := acceptRuntimeTest(t, reopened, "Runtime.Stop", runtimeRequest{EnvironmentID: environments["A"].ID, RequestID: id()})
+			if waitRuntimeReal(t, reopened, closing.ID).State == "failed" {
+				current := view(t, reopened).RuntimeSessions[environments["A"].ID]
+				if !current.CanForce {
+					t.Fatal("real failed normal close did not offer the exact still-owned job")
+				}
+				forced := acceptRuntimeTest(t, reopened, "Runtime.ForceStop", runtimeRequest{EnvironmentID: environments["A"].ID, SessionID: current.SessionID, RequestID: id()})
+				if waitRuntimeReal(t, reopened, forced.ID).State != "completed" {
+					t.Fatal("real force did not confirm the selected owned job's exit")
+				}
+				forceUsed = true
+			}
+		}
+		assertRealRootAlive(t, independent)
+		start(reopened, "A")
+		inspect(reopened, "A", "read")
+		wantError(t, call(reopened, "Runtime.ForceStop", runtimeRequest{EnvironmentID: environments["A"].ID, SessionID: beforeCrash.SessionID, RequestID: id()}), "REVISION_CONFLICT")
+		for _, name := range []string{"A", "B"} {
+			stop(reopened, name)
+			if !reflect.DeepEqual(view(t, reopened).Fingerprints[environments[name].ID].Profile, profiles[name]) {
+				t.Fatal("real fault recovery changed fixed device inputs")
+			}
+		}
+		recoveryEvidence = map[string]any{"status": "observed", "rootFaultInjected": true, "faultExitCode": 79, "crashObservation": observed, "otherRootAlive": true, "sameBrowserStorageAfterRetry": true, "forceStopActuallyUsed": forceUsed, "applicationCrashRestart": "not-run"}
+	}
 	if destination := os.Getenv("PRISM_RUNTIME_EVIDENCE"); destination != "" {
 		evidence := map[string]any{"verifiedAt": timestamp(), "mode": "native", "kernelVersion": record.Version, "archiveSha256": record.ArchiveSHA256, "executableSha256": record.ExecutableSHA256, "profiles": profiles, "dataReferences": refs, "observations": observations, "startedSessions": startedSessions, "stoppedSessions": stoppedSessions, "transport": "inherited-private-pipe", "sandbox": true, "networkPolicy": "explicit-direct-test", "uiClicks": "not-run", "visibleBrowserWindows": true, "independentRootProcesses": true, "controlledJobsExited": true, "sameInputsAfterReopen": true}
+		evidence["recovery"] = recoveryEvidence
 		encoded, err := json.MarshalIndent(evidence, "", "  ")
 		if err != nil {
 			t.Fatal(err)

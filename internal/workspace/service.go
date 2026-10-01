@@ -18,6 +18,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 	_ "time/tzdata"
 
@@ -34,7 +35,8 @@ type Options struct {
 	PrepareKernel func(context.Context, string, kernel.InstallInput, string, kernel.ProbeFunc, kernel.ProgressFunc) (*kernel.Prepared, error)
 	VerifyKernel  func(context.Context, string, kernel.Record, string) (kernel.Report, error)
 	// Test seam only. The desktop always launches the verified real process.
-	LaunchRuntime func(context.Context, RuntimeLaunch) (RuntimeProcess, error)
+	LaunchRuntime  func(context.Context, RuntimeLaunch) (RuntimeProcess, error)
+	InspectRuntime func(RuntimeSession) (kernel.ManagedRecovery, error)
 }
 type draft struct {
 	Kind        string
@@ -42,20 +44,24 @@ type draft struct {
 	BaseProfile *DeviceProfile
 }
 type Service struct {
-	mu           sync.Mutex
-	db           *sql.DB
-	drafts       map[string]draft
-	options      Options
-	root         string
-	archives     map[string]string
-	kernelTask   *kernelTask
-	workers      sync.WaitGroup
-	closed       bool
-	profileUses  map[string]bool
-	runtimeSlots map[string]*runtimeSlot
-	startGate    chan struct{}
-	closeDone    chan struct{}
-	closeError   error
+	mu             sync.Mutex
+	db             *sql.DB
+	drafts         map[string]draft
+	options        Options
+	root           string
+	archives       map[string]string
+	kernelTask     *kernelTask
+	workers        sync.WaitGroup
+	closed         bool
+	profileUses    map[string]bool
+	runtimeSlots   map[string]*runtimeSlot
+	startGate      chan struct{}
+	closeDone      chan struct{}
+	closeError     error
+	closeOnce      sync.Once
+	closeRequested atomic.Bool
+	runtimePending map[string]*runtimePendingWrite
+	runtimeResults map[string]Operation
 }
 
 func failure(code, message string, retryable bool) Result {
@@ -105,12 +111,16 @@ func Open(root string, options Options) (*Service, error) {
 		return nil, err
 	}
 	db.SetMaxOpenConns(1)
-	s := &Service{db: db, root: absolute, drafts: map[string]draft{}, archives: map[string]string{}, profileUses: map[string]bool{}, runtimeSlots: map[string]*runtimeSlot{}, startGate: make(chan struct{}, 1), options: options}
+	s := &Service{db: db, root: absolute, drafts: map[string]draft{}, archives: map[string]string{}, profileUses: map[string]bool{}, runtimeSlots: map[string]*runtimeSlot{}, startGate: make(chan struct{}, 1), closeDone: make(chan struct{}), runtimePending: map[string]*runtimePendingWrite{}, runtimeResults: map[string]Operation{}, options: options}
 	if err = s.initialize(); err != nil {
 		db.Close()
 		return nil, err
 	}
 	if err = s.recoverKernelOperations(); err != nil {
+		db.Close()
+		return nil, err
+	}
+	if err = s.recoverRuntimeSessions(); err != nil {
 		db.Close()
 		return nil, err
 	}
@@ -125,24 +135,8 @@ func (s *Service) Close() error {
 // Cancelling a waiter never abandons cleanup or claims the database is closed.
 // Every caller waits on the same completion; a timed-out close can be retried.
 func (s *Service) CloseContext(ctx context.Context) error {
-	s.mu.Lock()
-	if s.closeDone == nil {
-		s.closeDone = make(chan struct{})
-		s.closed = true
-		if s.kernelTask != nil {
-			s.kernelTask.cancel()
-		}
-		processes := []RuntimeProcess{}
-		for _, slot := range s.runtimeSlots {
-			slot.cancel()
-			if slot.process != nil {
-				processes = append(processes, slot.process)
-			}
-		}
-		go s.closeResources(processes, s.closeDone)
-	}
+	s.closeOnce.Do(func() { s.closeRequested.Store(true); go s.beginShutdown() })
 	finished := s.closeDone
-	s.mu.Unlock()
 	select {
 	case <-finished:
 		s.mu.Lock()
@@ -151,6 +145,23 @@ func (s *Service) CloseContext(ctx context.Context) error {
 	case <-ctx.Done():
 		return errors.New("controlled sessions have not all exited; cleanup continues and its resources are retained")
 	}
+}
+
+func (s *Service) beginShutdown() {
+	s.mu.Lock()
+	s.closed = true
+	if s.kernelTask != nil {
+		s.kernelTask.cancel()
+	}
+	processes := []RuntimeProcess{}
+	for _, slot := range s.runtimeSlots {
+		slot.cancel()
+		if slot.process != nil {
+			processes = append(processes, slot.process)
+		}
+	}
+	s.mu.Unlock()
+	s.closeResources(processes, s.closeDone)
 }
 
 func (s *Service) closeResources(processes []RuntimeProcess, finished chan struct{}) {
@@ -170,18 +181,36 @@ func (s *Service) closeResources(processes []RuntimeProcess, finished chan struc
 	s.workers.Wait()
 	s.mu.Lock()
 	defer s.mu.Unlock()
+	s.flushRuntimePersistence()
 	s.closeError = s.db.Close()
+	if len(s.runtimePending) != 0 {
+		s.closeError = errors.Join(s.closeError, errors.New("runtime observations could not all be persisted before shutdown"))
+	}
 	close(finished)
 }
 func (s *Service) initialize() error {
+	if err := s.initializeProfiles(); err != nil {
+		return err
+	}
 	var version int
 	if err := s.db.QueryRow("PRAGMA user_version").Scan(&version); err != nil {
 		return err
 	}
-	if version > 3 {
+	if version == 3 {
+		return s.migrateRuntimeSessions()
+	}
+	return s.checkRuntimeSchema()
+}
+
+func (s *Service) initializeProfiles() error {
+	var version int
+	if err := s.db.QueryRow("PRAGMA user_version").Scan(&version); err != nil {
+		return err
+	}
+	if version > 4 {
 		return errors.New("unsupported workspace version")
 	}
-	if version == 3 {
+	if version == 3 || version == 4 {
 		return s.checkSchema()
 	}
 	if version == 2 {
@@ -323,6 +352,9 @@ func (s *Service) Call(request Request) Result {
 	if request.Mode != "native" {
 		return failure("CAPABILITY_UNSUPPORTED", "演示输入不能写入真实工作区；请使用桌面原生流程。", false)
 	}
+	if s.closeRequested.Load() {
+		return failure("NATIVE_UNAVAILABLE", "工作区正在关闭，未接受新操作。", true)
+	}
 	if request.Method == "Kernel.SelectArchive" {
 		if decode(request.Payload, &struct{}{}) != nil {
 			return failure("VALIDATION_FAILED", "归档必须由桌面文件选择器选择，不接受客户端路径。", false)
@@ -331,11 +363,14 @@ func (s *Service) Call(request Request) Result {
 	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	if s.closed {
+	if s.closed || s.closeRequested.Load() {
 		return failure("NATIVE_UNAVAILABLE", "工作区已关闭，请重新打开应用。", true)
 	}
+	if request.Method == "Workspace.Read" || request.Method == "Runtime.Inspect" || request.Method == "Operation.Read" || strings.HasPrefix(request.Method, "Runtime.") {
+		s.flushRuntimePersistence()
+	}
 	switch request.Method {
-	case "Runtime.Start", "Runtime.Stop", "Runtime.Inspect":
+	case "Runtime.Start", "Runtime.Stop", "Runtime.Inspect", "Runtime.ForceStop", "Runtime.Reconcile":
 		return s.runtimeCall(request)
 	case "Fingerprint.Generate", "Fingerprint.ListRevisions", "Fingerprint.PreviewRestore":
 		return s.fingerprintCall(request)
@@ -411,6 +446,9 @@ func (s *Service) Call(request Request) Result {
 		}
 		if decode(request.Payload, &input) != nil {
 			return failure("VALIDATION_FAILED", "任务请求无效。", false)
+		}
+		if pending, exists := s.runtimeResults[input.OperationID]; exists {
+			return success(pending, input.OperationID)
 		}
 		var text string
 		if err := s.db.QueryRow("SELECT result_json FROM operations WHERE id=?", input.OperationID).Scan(&text); err != nil {
@@ -846,17 +884,20 @@ func (s *Service) view() (View, error) {
 	if err != nil {
 		return View{}, err
 	}
-	rows, err = s.db.Query("SELECT id,created_at,action,target,detail FROM activities ORDER BY rowid DESC")
+	rows, err = s.db.Query("SELECT a.id,a.created_at,a.action,a.target,a.detail,COALESCE(r.environment_id,''),COALESCE(r.session_id,''),COALESCE(r.error_code,''),COALESCE(r.next_action,'') FROM activities a LEFT JOIN runtime_events r ON r.activity_id=a.id ORDER BY a.rowid DESC")
 	if err != nil {
 		return View{}, err
 	}
 	defer rows.Close()
 	for rows.Next() {
 		var a Activity
-		if err = rows.Scan(&a.ID, &a.Time, &a.Action, &a.Target, &a.Detail); err != nil {
+		if err = rows.Scan(&a.ID, &a.Time, &a.Action, &a.Target, &a.Detail, &a.EnvironmentID, &a.SessionID, &a.ErrorCode, &a.NextAction); err != nil {
 			return View{}, err
 		}
 		a.Result = "success"
+		if a.ErrorCode != "" {
+			a.Result = "error"
+		}
 		state.Activities = append(state.Activities, a)
 	}
 	if err = rows.Err(); err != nil {

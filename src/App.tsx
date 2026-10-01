@@ -259,7 +259,7 @@ export default function App({ application }: { application: ApplicationService }
   const drawerRef = useRef(drawer);
   drawerRef.current = drawer;
   const drawerRuntime = drawer?.kind === "edit" ? workspace.runtimeSessions?.[drawer.environment.id] : undefined;
-  const profileBusy = nativeMode && !!drawerRuntime && (["starting", "running", "stopping"].includes(drawerRuntime.state) || !!drawerRuntime.pid);
+  const profileBusy = nativeMode && !!drawerRuntime && (["starting", "running", "stopping"].includes(drawerRuntime.state) || !!drawerRuntime.pid || drawerRuntime.needsReconcile || drawerRuntime.persistencePending);
   const previewOpenSequence = useRef(0);
   const fingerprintBusy = useRef(false);
   const [dialog, setDialog] = useState<Dialog | null>(null);
@@ -296,6 +296,7 @@ export default function App({ application }: { application: ApplicationService }
   const latestOperationEvent = useRef<OperationEvent | undefined>(undefined);
   const checkingBusy = useRef(false);
   const runtimeActions = useRef(new Set<string>());
+  const [runtimeActionIds, setRuntimeActionIds] = useState<string[]>([]);
   const initialDraft = useRef("");
   const initialFingerprintHash = useRef("");
   const backupFile = useRef<HTMLInputElement>(null);
@@ -334,7 +335,7 @@ export default function App({ application }: { application: ApplicationService }
     latestOperationEvent.current = event;
     if (event) setBatch({ label: "创建环境", done: event.operation.completedIds.length, total: event.operation.total });
   }), [application]);
-  const nativeRuntimeActive = nativeMode && Object.values(workspace.runtimeSessions ?? {}).some(session => ["starting", "running", "stopping"].includes(session.state) || !!session.pid);
+  const nativeRuntimeActive = nativeMode && Object.values(workspace.runtimeSessions ?? {}).some(session => ["starting", "running", "stopping"].includes(session.state) || !!session.pid || session.needsReconcile || session.persistencePending);
   useEffect(() => {
     if (!nativeRuntimeActive || !application.refresh) return;
     let cancelled = false;
@@ -563,19 +564,30 @@ export default function App({ application }: { application: ApplicationService }
       }
     }
   }
+  function beginRuntimeAction(id: string) {
+    if (runtimeActions.current.has(id)) return false;
+    runtimeActions.current.add(id);
+    setRuntimeActionIds([...runtimeActions.current]);
+    return true;
+  }
+  function endRuntimeAction(id: string) {
+    runtimeActions.current.delete(id);
+    setRuntimeActionIds([...runtimeActions.current]);
+  }
   async function launch(ids: string[]) {
     if (nativeMode) {
       if (!application.startRuntime) { notify("当前桌面版本未接入真实启停。", true); return; }
-      const targets = [...new Set(ids)].filter(id => !runtimeActions.current.has(`start:${id}`));
+      const targets = [...new Set(ids)].filter(id => !runtimeActions.current.has(id));
       if (!targets.length) return;
       if (!window.confirm("当前仅支持本机直连，网站可看到本机网络出口。已绑定代理的环境将被阻止，不会绕过代理。确认使用本机直连启动所选环境？")) return;
       for (const id of targets) {
-        runtimeActions.current.add(`start:${id}`);
+        if (application.getSnapshot().runtimeSessions?.[id]?.needsReconcile) { notify("此环境的原会话仍待核对，不会新开浏览器或绕过目录保护。", true); continue; }
+        if (!beginRuntimeAction(id)) continue;
         try {
           const result = await application.startRuntime({ environmentId: id, requestId: uid("request"), networkPolicy: "direct" });
           if (!result.ok) { notify(result.error.message, true); continue; }
           notify("启动任务已受理；内核和控制通道就绪后才显示运行中。");
-        } finally { runtimeActions.current.delete(`start:${id}`); }
+        } finally { endRuntimeAction(id); }
       }
       setMenu(null);
       return;
@@ -638,13 +650,13 @@ export default function App({ application }: { application: ApplicationService }
     if (nativeMode) {
       if (!application.stopRuntime) { notify("当前桌面版本未接入真实停止。", true); return; }
       for (const id of [...new Set(ids)]) {
-        if (runtimeActions.current.has(`stop:${id}`)) continue;
-        runtimeActions.current.add(`stop:${id}`);
+        if (application.getSnapshot().runtimeSessions?.[id]?.needsReconcile) { notify("此环境的会话仍待核对；批量关闭不会自动按PID结束或升级成强制结束。", true); continue; }
+        if (!beginRuntimeAction(id)) continue;
         try {
           const result = await application.stopRuntime({ environmentId: id, requestId: uid("request") });
           if (!result.ok) notify(result.error.message, true);
           else notify("停止任务已受理；等待本次会话退出，不会清除浏览数据。");
-        } finally { runtimeActions.current.delete(`stop:${id}`); }
+        } finally { endRuntimeAction(id); }
       }
       setMenu(null);
       return;
@@ -667,6 +679,22 @@ export default function App({ application }: { application: ApplicationService }
         ),
       }), log("模拟关闭", e.name, "固定指纹和示例 Cookie 已保留。"))) return;
     }
+  }
+  async function handleRuntimeSessionAction(id: string, expectedSessionId: string, action: "force" | "reconcile") {
+    if (!nativeMode) return;
+    const session = application.getSnapshot().runtimeSessions?.[id];
+    if (!session || session.sessionId !== expectedSessionId) { notify("这条记录属于旧会话，未操作现在的浏览器；请重新读取状态。", true); return; }
+    if (action === "force") {
+      if (!application.forceStopRuntime || !session.canForce || session.needsReconcile) { notify("尚未满足指定会话强制结束条件。请先正常关闭；不会按PID结束进程。", true); return; }
+      if (!window.confirm("仅强制结束这份已确认会话，可能丢失尚未保存的网页内容。不会结束其他环境，也不会清空浏览数据。确认强制结束？")) return;
+    } else if (!application.reconcileRuntime) { notify("当前桌面版本未提供会话核对。", true); return; }
+    if (!beginRuntimeAction(id)) return;
+    try {
+      const request = { environmentId: id, sessionId: expectedSessionId, requestId: uid("request") };
+      const result = action === "force" ? await application.forceStopRuntime!(request) : await application.reconcileRuntime!(request);
+      if (!result.ok) notify(result.error.message, true);
+      else notify(action === "force" ? "指定会话结束任务已受理；确认本次Job全部退出后才显示已停止。" : "核对任务已受理；以实际进程身份和目录锁结果为准。");
+    } finally { endRuntimeAction(id); }
   }
   async function checkProxy(ids: string[]) {
     if (nativeMode) { notify("真实代理检查尚未接入，不会返回模拟检测结果。", true); return; }
@@ -1215,6 +1243,8 @@ export default function App({ application }: { application: ApplicationService }
                     <tbody>
                       {pageItems.map((e) => {
                         const p = state.proxies.find((p) => p.id === e.proxyId);
+                        const runtimeSession = nativeMode ? workspace.runtimeSessions?.[e.id] : undefined;
+                        const runtimeActionPending = runtimeActionIds.includes(e.id);
                         const core = state.kernels.find(
                           (k) => k.id === e.coreId,
                         );
@@ -1311,9 +1341,12 @@ export default function App({ application }: { application: ApplicationService }
                                 ) : (
                                   <span className="status-dot" />
                                 )}
-                                 {nativeMode && !state.kernels.find(k => k.id === e.coreId)?.available ? "未就绪" : statusLabels[e.status]}
+                                 {runtimeSession?.needsReconcile ? "待核对" : nativeMode && !core?.available ? "未就绪" : statusLabels[e.status]}
                                </span>
-                               {nativeMode && e.error && <div className="cell-secondary" role="status">{e.error}</div>}
+                               {nativeMode && e.error && <div className="cell-secondary runtime-recovery-note" role="status">{e.error}</div>}
+                               {runtimeSession?.nextAction && <div className="cell-secondary runtime-recovery-note">{runtimeSession.nextAction}</div>}
+                               {runtimeSession?.lastExitCode !== undefined && <div className="cell-secondary">上次退出码：{runtimeSession.lastExitCode}</div>}
+                               {runtimeSession?.reconciledAt && <div className="cell-secondary">核对：{time(runtimeSession.reconciledAt)}</div>}
                             </td>
                             <td>
                               <span className="last-open">
@@ -1322,10 +1355,16 @@ export default function App({ application }: { application: ApplicationService }
                             </td>
                             <td>
                               <div className="row-actions">
-                                {e.status === "running" || (nativeMode && (e.status === "starting" || !!workspace.runtimeSessions?.[e.id]?.pid)) ? (
+                                {runtimeSession?.persistencePending ? (
+                                  <span className="cell-secondary runtime-recovery-note" role="status">结果待保存 · 修复存储后自动核对</span>
+                                ) : runtimeSession?.needsReconcile ? (
+                                  <Button className="soft-primary compact" disabled={runtimeActionPending} onClick={() => void handleRuntimeSessionAction(e.id, runtimeSession.sessionId, "reconcile")}>核对会话</Button>
+                                ) : runtimeSession?.canForce ? (
+                                  <Button className="danger compact" disabled={runtimeActionPending || e.status === "stopping"} onClick={() => void handleRuntimeSessionAction(e.id, runtimeSession.sessionId, "force")}>强制结束</Button>
+                                ) : e.status === "running" || (nativeMode && (e.status === "starting" || !!runtimeSession?.pid)) ? (
                                   <Button
                                      className="stop-button compact"
-                                     disabled={e.status === "stopping"}
+                                     disabled={e.status === "stopping" || runtimeActionPending}
                                     onClick={() => stop([e.id])}
                                   >
                                     <Square size={12} />
@@ -1334,7 +1373,7 @@ export default function App({ application }: { application: ApplicationService }
                                 ) : (
                                   <Button
                                     className="launch-button compact"
-                                    disabled={["starting", "stopping"].includes(
+                                    disabled={runtimeActionPending || ["starting", "stopping"].includes(
                                       e.status,
                                     )}
                                     onClick={() => launch([e.id])}
@@ -1861,7 +1900,10 @@ export default function App({ application }: { application: ApplicationService }
                 </Button>
               </div>
               <div className="activity-list">
-                {state.activities.map((a) => (
+                {state.activities.map((a) => {
+                  const session = a.environmentId ? workspace.runtimeSessions?.[a.environmentId] : undefined;
+                  const currentSession = nativeMode && !!session && session.sessionId === a.sessionId;
+                  return (
                   <div className="activity-item" key={a.id}>
                     <span className={`activity-symbol ${a.result}`}>
                       {a.result === "error" ? (
@@ -1872,16 +1914,20 @@ export default function App({ application }: { application: ApplicationService }
                         <Info size={17} />
                       )}
                     </span>
-                    <div>
+                    <div className="activity-content">
                       <strong>
                         {a.action}
                         <span>{a.target}</span>
                       </strong>
                       <p>{a.detail}</p>
+                      {a.errorCode && <p className="mono">原因：{a.errorCode}</p>}
+                      {a.nextAction && <p>{a.nextAction}</p>}
+                      {currentSession && session.needsReconcile && <Button className="compact" disabled={runtimeActionIds.includes(a.environmentId!)} onClick={() => void handleRuntimeSessionAction(a.environmentId!, session.sessionId, "reconcile")}>核对会话</Button>}
+                      {currentSession && session.canForce && !session.needsReconcile && <Button className="danger compact" disabled={runtimeActionIds.includes(a.environmentId!)} onClick={() => void handleRuntimeSessionAction(a.environmentId!, session.sessionId, "force")}>强制结束此会话</Button>}
                     </div>
                     <time>{time(a.time)}</time>
                   </div>
-                ))}
+                ); })}
               </div>
             </section>
           )}
@@ -2328,7 +2374,7 @@ export default function App({ application }: { application: ApplicationService }
                       </select>
                     </Field>
                   </div>
-                  {profileBusy && <p className="field-hint">环境正在运行或停止，只能保存名称、分组和备注；设备、代理及启动偏好需停止后修改。</p>}
+                  {profileBusy && <p className="field-hint">环境正在运行、停止或等待会话核对，只能保存名称、分组和备注；实际目录空闲确认前不能改设备、代理及启动偏好。</p>}
                   <FingerprintRevisionPanel preview={drawer.fingerprint} history={drawer.history} native={nativeMode} stale={!profileIsFresh && !pendingConfiguration} busy={generating || savePending || profileBusy} canGenerate={canGenerateProfile} dataRef={drawer.userDataRef} onPreview={() => void generateProfile()} onRestore={revision => void previewProfileRestore(revision)} />
                 </>
               )}

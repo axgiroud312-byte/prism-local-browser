@@ -59,19 +59,20 @@ type Preview struct {
 	UserDataRef      string              `json:"userDataRef,omitempty"`
 }
 type Operation struct {
-	ID              string         `json:"id"`
-	Kind            string         `json:"kind"`
-	State           string         `json:"state"`
-	Total           int            `json:"total"`
-	CompletedIDs    []string       `json:"completedIds"`
-	CancelRequested bool           `json:"cancelRequested"`
-	Stage           string         `json:"stage,omitempty"`
-	Error           *Error         `json:"error,omitempty"`
-	KernelID        string         `json:"kernelId,omitempty"`
-	ResourceKey     string         `json:"resourceKey,omitempty"`
-	Report          *kernel.Report `json:"report,omitempty"`
-	EnvironmentID   string         `json:"environmentId,omitempty"`
-	SessionID       string         `json:"sessionId,omitempty"`
+	ID                 string         `json:"id"`
+	Kind               string         `json:"kind"`
+	State              string         `json:"state"`
+	Total              int            `json:"total"`
+	CompletedIDs       []string       `json:"completedIds"`
+	CancelRequested    bool           `json:"cancelRequested"`
+	Stage              string         `json:"stage,omitempty"`
+	PersistencePending bool           `json:"persistencePending,omitempty"`
+	Error              *Error         `json:"error,omitempty"`
+	KernelID           string         `json:"kernelId,omitempty"`
+	ResourceKey        string         `json:"resourceKey,omitempty"`
+	Report             *kernel.Report `json:"report,omitempty"`
+	EnvironmentID      string         `json:"environmentId,omitempty"`
+	SessionID          string         `json:"sessionId,omitempty"`
 }
 type Mutation struct {
 	PreviewID        string        `json:"previewId"`
@@ -90,12 +91,16 @@ type Kernel struct {
 	Note      string `json:"note"`
 }
 type Activity struct {
-	ID     string `json:"id"`
-	Time   string `json:"time"`
-	Action string `json:"action"`
-	Target string `json:"target"`
-	Result string `json:"result"`
-	Detail string `json:"detail"`
+	ID            string `json:"id"`
+	Time          string `json:"time"`
+	Action        string `json:"action"`
+	Target        string `json:"target"`
+	Result        string `json:"result"`
+	Detail        string `json:"detail"`
+	EnvironmentID string `json:"environmentId,omitempty"`
+	SessionID     string `json:"sessionId,omitempty"`
+	ErrorCode     string `json:"errorCode,omitempty"`
+	NextAction    string `json:"nextAction,omitempty"`
 }
 type State struct {
 	SchemaVersion int           `json:"schemaVersion"`

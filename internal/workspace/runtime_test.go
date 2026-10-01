@@ -14,12 +14,16 @@ import (
 
 // This is a host-only lifecycle seam, never fake browser/kernel evidence.
 type syntheticRuntimeProcess struct {
-	done       chan struct{}
-	once       sync.Once
-	mu         sync.Mutex
-	stopError  error
-	closeError error
-	rootExited bool
+	done        chan struct{}
+	once        sync.Once
+	mu          sync.Mutex
+	stopError   error
+	closeError  error
+	rootExited  bool
+	controlLost bool
+	exitCode    uint32
+	closeCalls  atomic.Int32
+	stopPause   <-chan struct{}
 }
 
 func newSyntheticRuntimeProcess() *syntheticRuntimeProcess {
@@ -41,16 +45,39 @@ func (p *syntheticRuntimeProcess) Alive() bool {
 		return true
 	}
 }
-func (p *syntheticRuntimeProcess) Stop(context.Context) error {
+func (p *syntheticRuntimeProcess) Snapshot() kernel.RuntimeSnapshot {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	result := kernel.RuntimeSnapshot{RootAlive: !p.rootExited, ControlReady: !p.controlLost}
+	select {
+	case <-p.done:
+		result.RootAlive, result.ControlReady, result.ResourcesExited = false, false, true
+		result.ExitKnown, result.ExitCode = true, p.exitCode
+	default:
+		if p.rootExited {
+			result.ExitKnown, result.ExitCode = true, p.exitCode
+		}
+	}
+	return result
+}
+func (p *syntheticRuntimeProcess) Stop(ctx context.Context) error {
 	p.mu.Lock()
 	err := p.stopError
 	p.mu.Unlock()
 	if err == nil {
 		p.once.Do(func() { close(p.done) })
+		if p.stopPause != nil {
+			select {
+			case <-p.stopPause:
+			case <-ctx.Done():
+				return ctx.Err()
+			}
+		}
 	}
 	return err
 }
 func (p *syntheticRuntimeProcess) Close() error {
+	p.closeCalls.Add(1)
 	p.mu.Lock()
 	err := p.closeError
 	p.mu.Unlock()

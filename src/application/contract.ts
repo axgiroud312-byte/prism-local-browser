@@ -39,13 +39,14 @@ export interface WorkspaceView {
 }
 export interface Operation {
   id: string;
-  kind: "create" | "edit" | "kernel-install" | "kernel-verify" | "kernel-delete" | "runtime-start" | "runtime-stop";
+  kind: "create" | "edit" | "kernel-install" | "kernel-verify" | "kernel-delete" | "runtime-start" | "runtime-stop" | "runtime-force-stop" | "runtime-reconcile";
   state: "accepted" | "running" | "completed" | "cancelled" | "failed";
   total: number;
   completedIds: string[];
   cancelRequested: boolean;
   error?: ApplicationError;
   stage?: string;
+  persistencePending?: boolean;
   kernelId?: string;
   report?: KernelReport;
   environmentId?: string;
@@ -60,11 +61,12 @@ export interface OperationEvent {
   operation: Operation;
 }
 export const operationIsTerminal = (operation: Operation) =>
-  ["completed", "cancelled", "failed"].includes(operation.state);
+  !operation.persistencePending && ["completed", "cancelled", "failed"].includes(operation.state);
 
 export function mergeOperation(previous: Operation | undefined, next: Operation): Operation {
   if (!previous || previous.id !== next.id) return next;
   if (operationIsTerminal(previous) || (previous.state === "running" && next.state === "accepted")) return previous;
+  if (previous.persistencePending && !next.persistencePending && !["completed", "cancelled", "failed"].includes(next.state)) return previous;
   return previous.cancelRequested && !next.cancelRequested ? { ...next, cancelRequested: true } : next;
 }
 
@@ -119,6 +121,8 @@ export interface ApplicationService {
   startRuntime?(request: { environmentId: string; requestId: string; networkPolicy: "direct" }): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
   stopRuntime?(request: { environmentId: string; requestId: string }): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
   inspectRuntime?(ids: string[]): Promise<ApplicationResult<RuntimeSession[]>>;
+  forceStopRuntime?(request: { environmentId: string; sessionId: string; requestId: string }): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
+  reconcileRuntime?(request: { environmentId: string; sessionId: string; requestId: string }): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
 }
 
 export interface RuntimeSession {
@@ -136,6 +140,14 @@ export interface RuntimeSession {
   processCreatedAt?: string;
   startedAt?: string;
   error?: ApplicationError;
+  rootPid?: number;
+  canControl: boolean;
+  canForce: boolean;
+  needsReconcile: boolean;
+  persistencePending: boolean;
+  nextAction?: string;
+  reconciledAt?: string;
+  lastExitCode?: number;
 }
 
 export interface KernelInstallRequest {

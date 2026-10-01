@@ -63,6 +63,10 @@ export interface Activity {
   target: string;
   result: "success" | "error" | "info";
   detail: string;
+  environmentId?: string;
+  sessionId?: string;
+  errorCode?: string;
+  nextAction?: string;
 }
 export interface Snapshot {
   format: "prism-prototype";

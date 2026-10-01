@@ -1,11 +1,11 @@
 # Goal 当前执行位置
 
-更新时间：2026-10-01 11:56 Asia/Shanghai。
+更新时间：2026-10-01 12:50 Asia/Shanghai。
 
 - Goal：执行中；[规则](GOAL.md)；完成 **4/21**（验收任务计数）。
-- 当前任务：T06 / [Issue #7](https://github.com/axgiroud312-byte/prism-local-browser/issues/7)，实现中；T05已实现待验收。
-- 当前步骤：T06实现与只读安全复核结束，1 P1/7 P2全部按根因关闭；仅必要类型/文档/生产包静态编译通过，全部新增回归和真实用例未运行。准备本地提交检查点再继续T07；不运行浏览器、点击、CI或全量回归，不关闭待验收issue。
-- 现场：`goal/t06-runtime-isolation`，基于本地T05 `f6e7314`；未提交为kernel长期会话/目录锁/串行pipe，workspace运行服务/类型/生命周期接入，应用契约/Wails/App，adapter/Go/目录/真实隔离用例及T06/进度文档。T03证据/旧空库/包与内核ZIP保留，无用户遗留改动；本任务缓存与可重建exe已清理。
+- 当前任务：T07 / [Issue #8](https://github.com/axgiroud312-byte/prism-local-browser/issues/8)，已实现待验收；准备本地提交后继续T08。
+- 当前步骤：schema4持久会话/活动、异常监督、重开真实身份/锁及整树Job资源核对、指定Job结束及Wails/App已接。原源码评审问题全部按根因关闭，最后聚焦复核无剩余可信P1/P2；15+3+3条新增回归仅编写。12:50最新生产kernel/workspace静态编译通过，不运行测试、真实浏览器、自动点击、CI或全量，不关闭issue。
+- 现场：`goal/t07-runtime-recovery`，基于本地T06 `ead0bc6`；未提交为T07内核身份核对/状态快照、workspace持久化/监督与恢复、前端下一步、回归和术语/文档。T03证据/旧空库/包与内核ZIP保留，无用户遗留改动；12:38完成必要静态编译后清理本任务GOCACHE约159MiB，C盘当时约297MiB余量，不重复重建。
 
 ## 任务状态
 
@@ -16,8 +16,8 @@
 | T03 | #4 | 已完成 | 代码`62dae8e`、合入`99c6a36`；[验收](verification/T03.md)、[PR #25](https://github.com/axgiroud312-byte/prism-local-browser/pull/25)，Windows11/干净runner闭环与CI全通过 |
 | T04 | #5 | 已完成 | 代码`89e94d7`、合入`dc0a148`、[PR #26](https://github.com/axgiroud312-byte/prism-local-browser/pull/26)；[验收](verification/T04.md)/[证据](verification/T04-kernel-acceptance.json)，CI全通过 |
 | T05 | #6 | 已实现待验收 | 本地 `f6e7314`；[验收清单](verification/T05.md)，未推送/PR，最终UI/构建/全量/CI待补 |
-| T06 | #7 | 实现中 | [验收清单](verification/T06.md)；按D007消费本地T05前置，原blocking状态保留 |
-| T07 | #8 | 待开始 | — |
+| T06 | #7 | 已实现待验收 | 本地 `ead0bc6`；[验收清单](verification/T06.md)，无推送/PR，原blocking状态保留 |
+| T07 | #8 | 已实现待验收 | 本地检查点；[验收清单](verification/T07.md)，消费本地T06，原blocking #7仍OPEN |
 | T08 | #9 | 待开始 | — |
 | T09 | #10 | 待开始 | — |
 | T10 | #11 | 待开始 | — |
@@ -96,10 +96,16 @@
 - 11:34–11:43：新增Runtime.Start/Stop/Inspect持久任务/请求去重与会话、单昂贵启动门控（不限制保持运行数）、固定档案/精确构建检查、运行中仅安全元数据可编辑。kernel长期会话持有规范化独立目录锁与文件pins，拒绝RPC路径/参数、junction及硬链接锁文件；私有pipe串行、有界写和自有Job全树退出后释放。Wails刷新真实状态、直连确认、取消启动/停止和关键字段锁定已接。5条workspace生命周期、2条目录锁、3条adapter及实际A/B存储隔离/重开用例仅编写，全部未运行；后者额外要求明确开关且会开正常可见窗口，当前不执行。只读源码安全评审在进行，主代理补验证入口和文档，不重复运行CI/构建/程序。
 - 11:45–11:52：源码评审发现1 P1/7 P2（启动typed-nil、忙状态旧回滚修订、目录原地reparse、数据hardlink共享、主进程退出被Job未清空掩盖、写端丢失假重试、关闭超时假完成/漏关库、元数据响应假ready），已按根因修复，补5条生命周期/2条目录回归，累计10+4条，仅编写未运行。typecheck/30文档通过；生产kernel/workspace静态编译首次通过，修复版首次因WAIT_TIMEOUT为Errno失败，显式uint32后通过。编译不生成桌面exe、不执行测试/进程，缓存复用避免重新完整构建。只读复核正在进行，主代理仅完善测试/文档；CI/真实窗口/全量仍未运行。
 - 11:56：只读复核确认原8项全部源码层面关闭且无新增可信P1/P2；修复后静态生产包编译与格式通过，新增fixture未执行。GitHub仅发布#6/#7准确开发评论，没有PR/推送/触发CI，不更改OPEN或blocking。#8目标和唯一blocking #7已读，后续消费本地T06实现继续T07，不把静态结果统计为功能验收。
+- 11:56–12:08：T06本地提交ead0bc6，不推送/PR。T07加入schema4会话和活动关联、根进程/控制通道/Job全树分开观察、退出原因/退出码、重开身份和实际锁核对、指定会话ForceStop/Reconcile及前端可执行下一步。类型与生产kernel/workspace静态编译通过；初7条监督器/2条adapter回归仅编写。
+- 12:08–12:26：首轮评审2 P1/4 P2：旧停止worker迟到覆盖新会话/删除新busy、PID0在创建未落盘窗口误解锁、Reconcile全局锁内I/O、终态存储失败吞掉、就绪超时误归因断管、主动清理误报crash。已加current-slot与持久CAS/停止终态保留租约、OnCreated及LaunchStage/metadata核对、锁外I/O/Close有界等待、事务终态/待写结果overlay与查询重试、deadline/完整性分类和cleanupIntent。新增4条服务与2条身份锁回归，仅编写；12:24生产包静态编译通过，后续小修待最终静态检查。只读二次复核中，主代理仅补tests/docs；没有测试执行、CI或真实进程。
+- 12:26–12:38：二轮复核确认原两个P1/锁外I/O关闭，剩余旧pending盖新受理、末尾合成Cancelled与首个Problem优先级、原始启动原因被存储overlay覆盖、Wails临时failed缓存四个P2。已加前序写完才受理/核对在途保护、实际ctx原因和完整错误树、不可变startupError、临时操作persistencePending及真实终态不回退；补2条服务/1条adapter回归，累计13+2+3未运行。扩展真实A/B测试为另需显式RECOVERY开关的准确根故障/其他环境不受影响/原数据重试，当前不执行且应用自身崩溃仍未覆盖。12:38生产包静态编译、源码/测试TS类型与格式通过；随后仅清理本任务GOCACHE约159MiB，余297MiB，旧文件/证据不动。第三轮只读复核中，无CI/程序/测试。
+- 12:41–12:45：第三轮确认原4个P2路径关闭，指出就绪失败分支手工回填仍可能把临时Pending落盘；已在回填/事务统一清false，重开还收敛旧failed+pending记录。补保护：应用锁释放和主进程死都不能证明子树退出，正常Job使用SID/SYSTEM ACL的全局session资源身份，重开仅QUERY，Job未清空不解锁；诊断保持匿名，不重建pipe、不按PID结束。新增2条服务/1条Job用例，累计15+3+3全部未运行。最新版按低磁盘串行、分包做必要静态编译，kernel阶段发现x/sys未导出JOBOBJECT_BASIC_ACCOUNTING_INFORMATION，尚未编译workspace；将复用实时监督器已有布局，聚焦源码复核中。不生成exe、运行进程/测试/CI。
+- 12:49：最后聚焦只读复核确认临时overlay落盘原路径已关闭、全局named Job的SID ACL/QUERY权限/同名拒绝与资源判定正确接入，范围无剩余可信P1/P2，仅为源码结论。basic accounting编译错误改为复用实时监督器现有已编译布局；低磁盘分包静态编译中，结束后本地提交再继续T08，不补跑测试/CI或浏览器。
+- 12:50：复用原有Windows accounting布局后，最新kernel和workspace生产包按分包/单并发静态编译通过，未执行程序/测试，格式通过；静态问题已修正，不再全量重建。准备本地T07提交，继续T08；已验收仍4/21，#6/#7/#8保持OPEN、无PR/推送/CI。
 
 ## 恢复资源与 GitHub
 
 - 已有其他 Node/Chrome 进程属于用户现场，不停止。已核对 5173 为本仓库旧 Vite 服务；4173 未监听（纠正初查格式误判）。本 Goal 尚未启动服务，UI 测试用独立端口 5183 和新浏览器上下文。
 - `output/`、`.playwright-cli/`、`dist/`、`node_modules/` 为现有忽略目录；不删除旧成果。新测试输出使用 `output/goal/`，仅保留合成证据。
 - `npx playwright install chromium` 已成功安装本票测试浏览器（仅前端检查，不是 fingerprint-chromium）。测试使用 5183，由 Playwright 启停独立 Vite，首次测试已退出；旧 5173 不动。Serena 本机索引 `.serena/` 已忽略。
-- GitHub：T01–T04已完成同步，#5 CLOSED、PR #26 MERGED；#1保留。T05 #6仍OPEN且无PR；T06 #7无承担者/PR，原生blocking #6保持真实状态。两个只读评审均结束，失败无头命令已结束，无本任务UI或测试进程。停止点击与暂停CI指示已记GOAL/D005/D007，不自动重放任何界面或完整验证。
+- GitHub：T01–T04已完成同步，#5 CLOSED、PR #26 MERGED；#1保留。T05–T07 #6/#7/#8仍OPEN且无PR，原blocking状态不改；T07只读复核已结束，主代理唯一写入。无本任务UI/测试进程；停止点击与暂停CI已记GOAL/D005/D007，不自动重放界面或完整验证。

@@ -2,7 +2,7 @@
 
 本项目选择 [fingerprint-chromium](https://github.com/adryfish/fingerprint-chromium/blob/main/README-ZH.md) 作为 Windows 桌面版的内核方向。本文定义配置生成、内核管理、独立环境启动和代理接入的实现边界，供后续桌面后端开发使用。
 
-**网页原型与 native 能力分别记录。**T04 精确安装、校验和受控148 Windows x64探测已验收；T05固定档案、预览和历史回滚已实现，保存档案无头回读有实际证据，但新增页面与完整收尾验收未完成。T06正常会话/独立目录开发中，未运行验收。原型里的 GPU、指纹摘要、连接结果和启动状态均是演示数据，不能标成内核探测结果。本合同中代理、正常进程和完整恢复的未验收项不因内核诊断通过而自动完成，实时结果见 [T04记录](verification/T04.md)、[T05记录](verification/T05.md)、[T06记录](verification/T06.md) 与 [当前进度](PROGRESS.md)。
+**网页原型与native能力分别记录。**T04精确安装、校验和受控148 Windows x64探测已验收；T05固定档案/历史回滚、T06正常会话及T07异常监督/重开核对已本地实现待验收，未运行故障验收。原型里的GPU、指纹摘要、连接结果和启动状态均是演示数据，不能标成内核探测结果。本合同中代理、正常进程和完整恢复的未验收项不因内核诊断通过而自动完成，实时结果见 [T04](verification/T04.md)、[T05](verification/T05.md)、[T06](verification/T06.md)、[T07](verification/T07.md) 与 [当前进度](PROGRESS.md)。
 
 核实日期：2026-09-30。Ant-Browser 仅作为架构参考，本项目不复制其源码；旧比特浏览器材料仅用于理解交互与字段关系，不作为本项目内核、算法或资源池来源。
 
@@ -135,6 +135,14 @@ CDP 默认不开启。需要身份探测或本机自动化时，优先采用本�
 [`pipe`](../internal/kernel/pipe_windows.go)串行整个请求/响应并支持有界写，正常会话控制仅内部使用，不向UI开放任意CDP。短期启动context不控制已经就绪会话；就绪前单独核对主进程存活，不以Job尚未清空代替浏览器活着。正常停止先Browser.close，只有确认Job ActiveProcesses==0才释放pins/锁并报告完成。等待退出超时可重试，控制写端断开则返回不可正常重试的CONTROL_CHANNEL_LOST，不谎称通道可恢复。超时或清理未确认仍保持busy与目标身份，应用退出/失败启动只能终止本次自有Job。不以主PID退出、CreateProcess成功或UI状态作为全树退出/实际隔离证据。
 
 以上为已编写实现，尚未运行正常窗口/目录/网络验收。已有T04/T05无头样本不能证明T06。A/B受控本地站点的真实Cookie/LocalStorage/IndexedDB隔离和重开持久用例保留在 [`runtime_real_test.go`](../internal/workspace/runtime_real_test.go)，需单独明确开关；用户暂停CI/完整回归/桌面操作期间不执行。
+
+### T07 异常与重开的实际开发边界
+
+监督器区分根存活、私有pipe可用及Job资源全部退出；根死亡不释放仍被子进程占用的目录，退出码/崩溃/断管/就绪与停止超时分别记录。主动失败清理有独立意图，保留原始原因。会话状态、任务终态和安全活动以schema4事务保存，存储失败保留保护和待写结果，不重复外部操作。
+
+[`身份核对`](../internal/kernel/runtime_recovery_windows.go)只核对旧PID创建时间、session元数据、实际锁及[`指定Job资源`](../internal/kernel/runtime_job_windows.go)，不获取跨应用pipe，不按PID结束，不依靠锁文件年龄。正常Job使用仅当前SID/SYSTEM可访问的全局session身份、句柄不继承；重开仅取QUERY权，已有同名对象不接管。全局标识避免同用户不同Windows登录会话的Local命名空间差异；仅ActiveProcesses==0或对象确认已经销毁才通过树资源退出检查，主进程已死/应用锁空闲都不能代替。创建及销毁依据[Win32 Job合同](https://learn.microsoft.com/en-us/windows/win32/api/jobapi2/nf-jobapi2-createjobobjectw)，实际实测仍待补。
+
+进入启动阶段但数据库PID0时读取锁元数据确认是否已创建；只有确实未创建才能使用安全中断分支。应用异常退出的kill-on-close不能代替重开后的实际核对；资源版本缺失、查询未知或尚未退出仍busy。指定强制结束只用于当前仍持有的Job、普通关闭已失败的会话；迟到worker结果与持久UPDATE须匹配session。源码及用例存在不代表Windows杀进程/崩溃恢复通过，[待验收](verification/T07.md)。
 
 ## 请求与返回合同
 

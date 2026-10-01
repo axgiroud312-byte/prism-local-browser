@@ -36,9 +36,14 @@ type pipeProcess struct {
 	closeOnce   sync.Once
 	commandGate chan struct{}
 	writeLost   atomic.Bool
+	readEnded   chan struct{}
 }
 
 func startPipe(executable string, args []string) (_ *pipeProcess, resultErr error) {
+	return startPipeWithSession(executable, args, "")
+}
+
+func startPipeWithSession(executable string, args []string, sessionID string) (_ *pipeProcess, resultErr error) {
 	childRead, parentWrite, err := os.Pipe()
 	if err != nil {
 		return nil, err
@@ -62,7 +67,7 @@ func startPipe(executable string, args []string) (_ *pipeProcess, resultErr erro
 			return nil, err
 		}
 	}
-	job, err := windows.CreateJobObject(nil, nil)
+	job, err := createManagedJob(sessionID)
 	if err != nil {
 		return nil, err
 	}
@@ -107,7 +112,7 @@ func startPipe(executable string, args []string) (_ *pipeProcess, resultErr erro
 		windows.CloseHandle(info.Process)
 		return nil, err
 	}
-	p := &pipeProcess{process: info.Process, job: job, read: parentRead, write: parentWrite, pid: info.ProcessId, createdAt: time.Unix(0, created.Nanoseconds()).UTC().Format(time.RFC3339Nano), responses: make(chan pipeReply, 16), stopped: make(chan struct{}), commandGate: make(chan struct{}, 1)}
+	p := &pipeProcess{process: info.Process, job: job, read: parentRead, write: parentWrite, pid: info.ProcessId, createdAt: time.Unix(0, created.Nanoseconds()).UTC().Format(time.RFC3339Nano), responses: make(chan pipeReply, 16), stopped: make(chan struct{}), commandGate: make(chan struct{}, 1), readEnded: make(chan struct{})}
 	go p.readLoop()
 	return p, nil
 }
@@ -123,6 +128,7 @@ func (p *pipeProcess) close() {
 	})
 }
 func (p *pipeProcess) readLoop() {
+	defer close(p.readEnded)
 	defer close(p.responses)
 	reader := bufio.NewReader(p.read)
 	for {
@@ -239,7 +245,7 @@ func (p *pipeProcess) call(ctx context.Context, method string, params any, sessi
 			return ctx.Err()
 		case reply, open := <-p.responses:
 			if !open {
-				return errors.New("diagnostic pipe closed")
+				return &Problem{Code: "CONTROL_CHANNEL_LOST", Reason: "control-read-ended", Message: "本次私有控制通道已断开，无法确认命令完成；仍保护原浏览数据。", Retryable: false}
 			}
 			if reply.ID != id {
 				continue

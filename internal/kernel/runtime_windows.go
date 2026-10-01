@@ -27,29 +27,57 @@ type ManagedProfile struct {
 	Width, Height int
 	RestoreTabs   bool
 	URLs          []string
+	OnCreated     func(int, string) error
 }
 
 type ManagedProcess struct {
-	pipe     *pipeProcess
-	done     chan struct{}
-	release  func()
-	stopGate chan struct{}
-	mu       sync.Mutex
+	pipe         *pipeProcess
+	done         chan struct{}
+	release      func()
+	stopGate     chan struct{}
+	mu           sync.Mutex
+	lastSnapshot RuntimeSnapshot
+}
+
+// Root death, control loss, and complete resource exit are distinct facts.
+type RuntimeSnapshot struct {
+	RootAlive       bool
+	ControlReady    bool
+	ResourcesExited bool
+	ExitKnown       bool
+	ExitCode        uint32
 }
 
 func (process *ManagedProcess) PID() int              { return int(process.pipe.pid) }
 func (process *ManagedProcess) CreatedAt() string     { return process.pipe.createdAt }
 func (process *ManagedProcess) Done() <-chan struct{} { return process.done }
 func (process *ManagedProcess) Alive() bool {
+	return process.Snapshot().RootAlive
+}
+
+func (process *ManagedProcess) Snapshot() RuntimeSnapshot {
 	process.mu.Lock()
 	defer process.mu.Unlock()
 	select {
 	case <-process.done:
-		return false
+		return process.lastSnapshot
 	default:
 	}
+	return process.snapshotLocked()
+}
+
+func (process *ManagedProcess) snapshotLocked() RuntimeSnapshot {
 	state, err := windows.WaitForSingleObject(process.pipe.process, 0)
-	return err == nil && state == uint32(windows.WAIT_TIMEOUT)
+	result := RuntimeSnapshot{RootAlive: err == nil && state == uint32(windows.WAIT_TIMEOUT), ControlReady: !process.pipe.writeLost.Load()}
+	select {
+	case <-process.pipe.readEnded:
+		result.ControlReady = false
+	default:
+	}
+	if err == nil && state == windows.WAIT_OBJECT_0 {
+		result.ExitKnown = windows.GetExitCodeProcess(process.pipe.process, &result.ExitCode) == nil
+	}
+	return result
 }
 
 // The accounting structure must remain alive while the Job handle is open.
@@ -72,6 +100,8 @@ func (process *ManagedProcess) observeExit() {
 		if err == nil && state == windows.WAIT_OBJECT_0 {
 			count, err := process.pipe.activeProcesses()
 			if err == nil && count == 0 {
+				process.lastSnapshot = process.snapshotLocked()
+				process.lastSnapshot.RootAlive, process.lastSnapshot.ControlReady, process.lastSnapshot.ResourcesExited = false, false, true
 				process.pipe.close()
 				process.release()
 				close(process.done)
@@ -199,7 +229,7 @@ func LaunchManagedProfile(ctx context.Context, root string, record Record, profi
 	}
 	args = append(args, parameters...)
 	args = append(args, "about:blank")
-	p, err := startPipe(executable, args)
+	p, err := startPipeWithSession(executable, args, profile.SessionID)
 	if err != nil {
 		release()
 		return nil, problem("PROCESS_START_FAILED", "native-start-failed", "所选真实内核未能启动，未关闭沙箱或尝试其他内核。")
@@ -216,6 +246,11 @@ func LaunchManagedProfile(ctx context.Context, root string, record Record, profi
 	}()
 	if err = lock.record(profile.EnvironmentID, profile.SessionID, p.pid, p.createdAt); err != nil {
 		return process, err
+	}
+	if profile.OnCreated != nil {
+		if err = profile.OnCreated(int(p.pid), p.createdAt); err != nil {
+			return process, err
+		}
 	}
 	var browser struct {
 		Product string `json:"product"`
@@ -255,7 +290,10 @@ func LaunchManagedProfile(ctx context.Context, root string, record Record, profi
 		}
 	}
 	if !stopStartup() || ctx.Err() != nil {
-		return process, context.Canceled
+		if err := ctx.Err(); err != nil {
+			return process, err
+		}
+		return process, problem("PROCESS_START_FAILED", "startup-cleanup-already-began", "本次启动清理已经开始，未报告运行中。")
 	}
 	if !process.Alive() {
 		return process, problem("PROCESS_START_FAILED", "exited-before-ready", "浏览器主进程在就绪前已退出，未报告运行中；子进程资源仍按本次Job保护。")

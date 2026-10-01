@@ -16,17 +16,20 @@ import (
 )
 
 type runtimeSlot struct {
-	session    RuntimeSession
-	start      Operation
-	stop       *Operation
-	process    RuntimeProcess
-	cancel     context.CancelFunc
-	launchDone chan struct{}
+	session       RuntimeSession
+	start         Operation
+	stop          *Operation
+	process       RuntimeProcess
+	cancel        context.CancelFunc
+	launchDone    chan struct{}
+	reconcile     *Operation
+	cleanupIntent bool
+	startupError  *Error
 }
 
 func (s *Service) runtimeOwnsProfileUse(environmentID string) bool {
 	slot := s.runtimeSlots[environmentID]
-	return slot != nil && (slot.process != nil || slot.session.State == "starting" || slot.session.State == "stopping")
+	return slot != nil && (slot.process != nil || slot.session.NeedsReconcile || slot.session.PersistencePending || slot.session.State == "starting" || slot.session.State == "stopping")
 }
 
 func runtimeSignature(method string, input runtimeRequest) string {
@@ -57,6 +60,10 @@ func (s *Service) priorRuntime(method string, input runtimeRequest) (Result, boo
 // Acceptance and request deduplication are persisted together before a worker
 // can create a process. An accepted operation is never a running assertion.
 func (s *Service) acceptRuntime(method string, input runtimeRequest, operation Operation) Result {
+	return s.acceptRuntimeRecord(method, input, operation, nil)
+}
+
+func (s *Service) acceptRuntimeRecord(method string, input runtimeRequest, operation Operation, session *RuntimeSession) Result {
 	result := success(map[string]any{"status": "accepted", "operation": operation}, operation.ID)
 	opJSON, _ := json.Marshal(operation)
 	resultJSON, _ := json.Marshal(result)
@@ -65,11 +72,21 @@ func (s *Service) acceptRuntime(method string, input runtimeRequest, operation O
 		return storageFailure(err)
 	}
 	defer tx.Rollback()
+	if session != nil {
+		if err = saveRuntimeSession(tx, *session, method == "Runtime.Start"); err != nil {
+			return storageFailure(err)
+		}
+	}
 	if _, err = tx.Exec("INSERT INTO operations(id,result_json) VALUES(?,?) ON CONFLICT(id) DO NOTHING", operation.ID, string(opJSON)); err != nil {
 		return storageFailure(err)
 	}
 	if _, err = tx.Exec("INSERT INTO requests(id,signature,result_json) VALUES(?,?,?)", input.RequestID, runtimeSignature(method, input), string(resultJSON)); err != nil {
 		return storageFailure(err)
+	}
+	if s.options.BeforeCommit != nil {
+		if err = s.options.BeforeCommit(); err != nil {
+			return storageFailure(err)
+		}
 	}
 	if err = tx.Commit(); err != nil {
 		return storageFailure(err)
@@ -112,11 +129,26 @@ func (s *Service) runtimeCall(request Request) Result {
 	if request.Method == "Runtime.Stop" && input.NetworkPolicy != "" {
 		return failure("VALIDATION_FAILED", "停止请求不接受网络或启动覆盖项。", false)
 	}
+	if (request.Method == "Runtime.Start" || request.Method == "Runtime.Stop") && input.SessionID != "" {
+		return failure("VALIDATION_FAILED", "普通启停不接受客户端会话身份覆盖。", false)
+	}
+	if (request.Method == "Runtime.ForceStop" || request.Method == "Runtime.Reconcile") && (input.NetworkPolicy != "" || input.SessionID == "") {
+		return failure("VALIDATION_FAILED", "会话恢复操作必须指定当前会话标识，不能覆盖网络、路径或PID。", false)
+	}
 	if result, exists := s.priorRuntime(request.Method, input); exists {
 		return result
 	}
+	if pending := s.runtimePending[input.EnvironmentID]; pending != nil {
+		return failure("STORAGE_WRITE_FAILED", "前一个实际运行结果尚未保存，未受理新操作；修复存储后重新读取并重试，不会重复外部启停。", true)
+	}
 	if request.Method == "Runtime.Stop" {
 		return s.stopRuntime(input)
+	}
+	if request.Method == "Runtime.ForceStop" {
+		return s.forceStopRuntime(input)
+	}
+	if request.Method == "Runtime.Reconcile" {
+		return s.reconcileRuntime(input)
 	}
 
 	environment, revision, profileID, err := s.readEnvironment(input.EnvironmentID)
@@ -166,21 +198,30 @@ func (s *Service) runtimeCall(request Request) Result {
 	}
 	sessionID := id()
 	operation := Operation{ID: id(), Kind: "runtime-start", State: "accepted", Stage: "queued", Total: 1, CompletedIDs: []string{}, EnvironmentID: environment.ID, SessionID: sessionID, KernelID: record.ID}
-	result := s.acceptRuntime(request.Method, input, operation)
+	session := RuntimeSession{Mode: "native", EnvironmentID: environment.ID, SessionID: sessionID, OperationID: operation.ID, State: "starting", Revision: revision, FingerprintRevision: profile.Profile.ConfigRevision, KernelID: record.ID, UserDataRef: ref, NetworkPolicy: "direct", ResourceVersion: kernel.ManagedRuntimeVersion, LaunchStage: "queued", NextAction: "正在核验固定档案与实际进程，受理不代表已经运行。"}
+	result := s.acceptRuntimeRecord(request.Method, input, operation, &session)
 	if !result.OK {
 		return result
 	}
 	ctx, cancel := context.WithCancel(context.Background())
-	slot := &runtimeSlot{session: RuntimeSession{Mode: "native", EnvironmentID: environment.ID, SessionID: sessionID, OperationID: operation.ID, State: "starting", Revision: revision, FingerprintRevision: profile.Profile.ConfigRevision, KernelID: record.ID, UserDataRef: ref, NetworkPolicy: "direct"}, start: operation, cancel: cancel, launchDone: make(chan struct{})}
+	slot := &runtimeSlot{session: session, start: operation, cancel: cancel, launchDone: make(chan struct{})}
 	s.runtimeSlots[environment.ID] = slot
 	s.profileUses[environment.ID] = true
 	s.workers.Add(1)
-	go s.launchRuntime(ctx, slot, RuntimeLaunch{Root: s.root, EnvironmentID: environment.ID, SessionID: sessionID, DataReference: ref, Kernel: record, Profile: profile.Profile, Configuration: environment.Configuration})
+	go s.launchRuntime(ctx, slot, RuntimeLaunch{Root: s.root, EnvironmentID: environment.ID, SessionID: sessionID, DataReference: ref, Kernel: record, Profile: profile.Profile, Configuration: environment.Configuration, OnCreated: func(pid int, createdAt string) error {
+		s.mu.Lock()
+		defer s.mu.Unlock()
+		if s.runtimeSlots[environment.ID] != slot || s.closed || s.closeRequested.Load() || slot.session.State == "stopping" {
+			return context.Canceled
+		}
+		slot.session.PID, slot.session.RootPID, slot.session.ProcessCreatedAt, slot.session.LaunchStage = pid, pid, createdAt, "process-created"
+		return s.persistRuntime(slot, &slot.start, "")
+	}})
 	return result
 }
 
 func launchManagedRuntime(ctx context.Context, input RuntimeLaunch) (RuntimeProcess, error) {
-	process, err := kernel.LaunchManagedProfile(ctx, input.Root, input.Kernel, kernel.ManagedProfile{EnvironmentID: input.EnvironmentID, SessionID: input.SessionID, UserDataRef: input.DataReference, Fingerprint: profileInput(input.Profile), Width: input.Configuration.Width, Height: input.Configuration.Height, RestoreTabs: input.Configuration.RestoreTabs, URLs: strings.Fields(input.Configuration.URLs)})
+	process, err := kernel.LaunchManagedProfile(ctx, input.Root, input.Kernel, kernel.ManagedProfile{EnvironmentID: input.EnvironmentID, SessionID: input.SessionID, UserDataRef: input.DataReference, Fingerprint: profileInput(input.Profile), Width: input.Configuration.Width, Height: input.Configuration.Height, RestoreTabs: input.Configuration.RestoreTabs, URLs: strings.Fields(input.Configuration.URLs), OnCreated: input.OnCreated})
 	// A typed nil pointer becomes a non-nil interface. Normalize it before
 	// failure cleanup; missing kernels/locked directories must never panic.
 	if process == nil {
@@ -189,13 +230,16 @@ func launchManagedRuntime(ctx context.Context, input RuntimeLaunch) (RuntimeProc
 	return process, err
 }
 
-func (s *Service) runtimeStage(slot *runtimeSlot, stage string) {
+func (s *Service) runtimeStage(slot *runtimeSlot, stage string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	slot.start.State, slot.start.Stage = "running", stage
-	if s.storeOperation(slot.start) != nil {
+	slot.session.LaunchStage = stage
+	if err := s.persistRuntime(slot, &slot.start, ""); err != nil {
 		slot.cancel()
+		return err
 	}
+	return nil
 }
 
 func (s *Service) launchRuntime(ctx context.Context, slot *runtimeSlot, input RuntimeLaunch) {
@@ -208,14 +252,21 @@ func (s *Service) launchRuntime(ctx context.Context, slot *runtimeSlot, input Ru
 		s.finishRuntimeStart(slot, nil, ctx.Err())
 		return
 	}
-	s.runtimeStage(slot, "verifying-and-starting")
+	if err := s.runtimeStage(slot, "verifying-and-starting"); err != nil {
+		s.finishRuntimeStart(slot, nil, err)
+		return
+	}
 	launcher := s.options.LaunchRuntime
 	if launcher == nil {
 		launcher = launchManagedRuntime
 	}
 	startup, cancel := context.WithTimeout(ctx, 45*time.Second)
 	process, err := launcher(startup, input)
+	deadlineErr := startup.Err()
 	cancel()
+	if errors.Is(deadlineErr, context.DeadlineExceeded) {
+		err = errors.Join(err, deadlineErr)
+	}
 	if err == nil && process == nil {
 		err = errors.New("launcher did not return a controlled process")
 	}
@@ -235,47 +286,98 @@ func (s *Service) launchRuntime(ctx context.Context, slot *runtimeSlot, input Ru
 		}
 	}
 	if ctx.Err() != nil {
-		err = ctx.Err()
+		err = errors.Join(err, ctx.Err())
 	}
 	s.finishRuntimeStart(slot, process, err)
 }
 
 func runtimeError(err error) *Error {
-	var problem *kernel.Problem
-	if errors.As(err, &problem) {
-		return kernelFailure(err).Error
+	if integrity := runtimeIntegrityProblem(err); integrity != nil {
+		return kernelFailure(integrity).Error
 	}
-	if errors.Is(err, context.Canceled) {
-		return &Error{Code: "OPERATION_CANCELLED", Message: "本次启动已取消，原浏览数据保持。", Retryable: true}
+	var persistence *runtimePersistenceFailure
+	if errors.As(err, &persistence) {
+		return storageFailure(err).Error
 	}
 	if errors.Is(err, context.DeadlineExceeded) {
 		return &Error{Code: "PROCESS_READY_TIMEOUT", Message: "进程或控制通道未在时限内就绪，未报告运行中。", Retryable: true}
 	}
+	if errors.Is(err, context.Canceled) {
+		return &Error{Code: "OPERATION_CANCELLED", Message: "本次启动已取消，原浏览数据保持。", Retryable: true}
+	}
+	var problem *kernel.Problem
+	_ = errors.As(err, &problem)
+	if problem != nil {
+		return kernelFailure(err).Error
+	}
 	return &Error{Code: "PROCESS_START_FAILED", Message: "真实进程或安全控制通道无法启动，原数据保持。", Retryable: true}
+}
+
+// errors.As returns only the first matching Problem in errors.Join. Integrity
+// facts anywhere in the tree must survive cancellation and cleanup failures.
+func runtimeIntegrityProblem(err error) *kernel.Problem {
+	if problem, ok := err.(*kernel.Problem); ok && (problem.Code == "KERNEL_INTEGRITY_FAILED" || problem.Code == "PATH_OUTSIDE_ROOT") {
+		return problem
+	}
+	if joined, ok := err.(interface{ Unwrap() []error }); ok {
+		for _, cause := range joined.Unwrap() {
+			if found := runtimeIntegrityProblem(cause); found != nil {
+				return found
+			}
+		}
+	} else if wrapped, ok := err.(interface{ Unwrap() error }); ok {
+		return runtimeIntegrityProblem(wrapped.Unwrap())
+	}
+	return nil
 }
 
 func (s *Service) finishRuntimeStart(slot *runtimeSlot, process RuntimeProcess, taskErr error) {
 	s.mu.Lock()
-	if s.closed || slot.session.State == "stopping" {
-		taskErr = context.Canceled
+	if s.runtimeSlots[slot.session.EnvironmentID] != slot {
+		s.mu.Unlock()
+		if process != nil {
+			_ = process.Close()
+		}
+		return
+	}
+	if s.closed || s.closeRequested.Load() || slot.session.State == "stopping" {
+		taskErr = errors.Join(taskErr, context.Canceled)
 	}
 	if taskErr == nil && !process.Alive() {
 		taskErr = errors.New("browser root exited before readiness publication")
 	}
 	if taskErr == nil {
 		slot.start.State, slot.start.Stage, slot.start.CompletedIDs = "completed", "ready", []string{slot.session.EnvironmentID}
-		if err := s.storeOperation(slot.start); err != nil {
+		slot.session.State, slot.session.PID, slot.session.RootPID, slot.session.ProcessCreatedAt, slot.session.StartedAt = "running", process.PID(), process.PID(), process.CreatedAt(), timestamp()
+		slot.session.CanControl, slot.session.NextAction = true, "可正常关闭；设备、代理和数据替换需确认本次进程树退出后执行。"
+		slot.session.LaunchStage = "ready"
+		if err := s.persistRuntime(slot, &slot.start, "浏览器就绪"); err != nil {
 			taskErr = err
+			// A storage retry must not publish running after this launch has
+			// already been selected for failure cleanup.
+			slot.session.State, slot.session.CanControl = "starting", false
+			slot.start.State, slot.start.Stage, slot.start.Error = "failed", "storage-pending", runtimeError(err)
+			if pending := s.runtimePending[slot.session.EnvironmentID]; pending != nil {
+				pending.Session = slot.session
+				pending.Session.PersistencePending = false
+				wanted := slot.start
+				wanted.PersistencePending = false
+				pending.Operations[slot.start.ID] = wanted
+				if last := len(pending.Events) - 1; last >= 0 && pending.Events[last].Action == "浏览器就绪" {
+					pending.Events = pending.Events[:last]
+				}
+			}
 		}
 	}
 	if taskErr == nil {
 		slot.process = process
-		slot.session.State, slot.session.PID, slot.session.ProcessCreatedAt, slot.session.StartedAt = "running", process.PID(), process.CreatedAt(), timestamp()
 		s.workers.Add(1)
 		s.mu.Unlock()
 		go s.watchRuntime(slot, process)
 		return
 	}
+	slot.cleanupIntent = true
+	slot.startupError = runtimeError(taskErr)
 	s.mu.Unlock()
 	var cleanupErr error
 	if process != nil {
@@ -291,41 +393,68 @@ func (s *Service) finishRuntimeStart(slot *runtimeSlot, process RuntimeProcess, 
 	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	slot.start.State, slot.start.Stage, slot.start.Error = "failed", "failed", runtimeError(taskErr)
-	if errors.Is(taskErr, context.Canceled) {
+	if s.runtimeSlots[slot.session.EnvironmentID] != slot {
+		return
+	}
+	slot.start.State, slot.start.Stage, slot.start.Error = "failed", "failed", slot.startupError
+	if slot.startupError.Code == "OPERATION_CANCELLED" {
 		slot.start.State, slot.start.Stage, slot.start.CancelRequested = "cancelled", "cancelled", true
 	}
-	_ = s.storeOperation(slot.start)
 	if cleanupErr != nil {
 		// Failed cleanup must keep its process identity and busy lease. Do not
 		// permit an overlapping writer just because startup never became ready.
 		slot.process = process
-		slot.session.State, slot.session.PID, slot.session.ProcessCreatedAt = "error", process.PID(), process.CreatedAt()
+		slot.session.State, slot.session.PID, slot.session.RootPID, slot.session.ProcessCreatedAt = "error", process.PID(), process.PID(), process.CreatedAt()
 		slot.session.Error = &Error{Code: "PROCESS_STOP_TIMEOUT", Message: "启动失败后本次进程树退出尚未确认，目录与档案锁仍保留；可重试停止。", Retryable: true}
+		slot.session.CanControl, slot.session.NextAction = process.Snapshot().ControlReady, "请先尝试正常关闭本次会话；未确认退出前不能启动或替换数据。"
+		_ = s.persistRuntime(slot, &slot.start, "启动失败，清理未确认")
 		s.workers.Add(1)
 		go s.watchRuntime(slot, process)
 		return
 	}
 	if slot.session.State != "stopping" {
-		slot.session.State, slot.session.Error = "error", slot.start.Error
+		slot.session.State, slot.session.Error = "error", slot.startupError
 	}
-	delete(s.profileUses, slot.session.EnvironmentID)
+	if process == nil {
+		slot.session.LaunchStage = "no-process-created"
+	}
+	slot.session.NextAction = "本次启动未完成且资源已退出，可修复所示原因后使用原档案重试。"
+	_ = s.persistRuntime(slot, &slot.start, "浏览器启动失败")
+	if !slot.session.PersistencePending {
+		delete(s.profileUses, slot.session.EnvironmentID)
+	}
 }
 
 func (s *Service) watchRuntime(slot *runtimeSlot, process RuntimeProcess) {
 	defer s.workers.Done()
-	<-process.Done()
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	if s.runtimeSlots[slot.session.EnvironmentID] != slot {
-		return
+	ticker := time.NewTicker(250 * time.Millisecond)
+	defer ticker.Stop()
+	for {
+		select {
+		case <-process.Done():
+			s.mu.Lock()
+			if s.runtimeSlots[slot.session.EnvironmentID] == slot && slot.process == process {
+				if slot.stop != nil && (slot.stop.State == "accepted" || slot.stop.State == "running") {
+					// Keep the generation/busy reservation until the stop worker's
+					// terminal result is applied; a later start cannot overtake it.
+					slot.session.PID, slot.session.CanControl = 0, false
+				} else {
+					forced := slot.stop != nil && slot.stop.Kind == "runtime-force-stop"
+					s.completeObservedExit(slot, process.Snapshot(), forced)
+					_ = s.persistRuntime(slot, nil, "浏览器会话退出")
+				}
+			}
+			s.mu.Unlock()
+			return
+		case <-ticker.C:
+			snapshot := process.Snapshot()
+			s.mu.Lock()
+			if s.runtimeSlots[slot.session.EnvironmentID] == slot && slot.process == process {
+				s.applyRuntimeFault(slot, snapshot)
+			}
+			s.mu.Unlock()
+		}
 	}
-	slot.process = nil
-	slot.session.PID = 0
-	if slot.session.State != "stopping" {
-		slot.session.State, slot.session.Error = "ready", nil
-	}
-	delete(s.profileUses, slot.session.EnvironmentID)
 }
 
 func (s *Service) stopRuntime(input runtimeRequest) Result {
@@ -333,6 +462,9 @@ func (s *Service) stopRuntime(input runtimeRequest) Result {
 		return failure("NOT_FOUND", "所选环境不存在，没有停止其他进程。", false)
 	}
 	slot := s.runtimeSlots[input.EnvironmentID]
+	if slot != nil && slot.session.NeedsReconcile {
+		return failure("SESSION_IDENTITY_UNCONFIRMED", "这份会话没有当前受控Job和私有通道，不能按PID结束；请正常关闭原浏览器后核对会话。", false)
+	}
 	if slot != nil && slot.stop != nil && (slot.stop.State == "accepted" || slot.stop.State == "running") {
 		return s.acceptRuntime("Runtime.Stop", input, *slot.stop)
 	}
@@ -340,18 +472,17 @@ func (s *Service) stopRuntime(input runtimeRequest) Result {
 	if slot == nil || (slot.process == nil && slot.session.State != "starting" && slot.session.State != "stopping") {
 		operation.State, operation.Stage, operation.CompletedIDs = "completed", "no-controlled-session", []string{input.EnvironmentID}
 		result := s.acceptRuntime("Runtime.Stop", input, operation)
-		if result.OK && slot != nil {
-			slot.session.State, slot.session.Error = "ready", nil
-		}
 		return result
 	}
 	operation.SessionID, operation.KernelID = slot.session.SessionID, slot.session.KernelID
-	result := s.acceptRuntime("Runtime.Stop", input, operation)
+	next := slot.session
+	next.State, next.CanForce, next.NextAction = "stopping", false, "正在正常关闭，仅确认本次Job全部退出后释放目录。"
+	result := s.acceptRuntimeRecord("Runtime.Stop", input, operation, &next)
 	if !result.OK {
 		return result
 	}
 	slot.stop = &operation
-	slot.session.State = "stopping"
+	slot.session = next
 	slot.cancel()
 	s.workers.Add(1)
 	go s.closeRuntime(slot)
@@ -380,6 +511,9 @@ func (s *Service) closeRuntime(slot *runtimeSlot) {
 	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
+	if s.runtimeSlots[slot.session.EnvironmentID] != slot {
+		return
+	}
 	if taskErr != nil {
 		slot.stop.State, slot.stop.Stage = "failed", "close-timeout"
 		slot.stop.Error = &Error{Code: "PROCESS_STOP_TIMEOUT", Message: "本次会话尚未确认退出，仍保留目录和档案锁；没有强制结束其他进程。可重试停止。", Retryable: true}
@@ -391,13 +525,21 @@ func (s *Service) closeRuntime(slot *runtimeSlot) {
 			}
 		}
 		slot.session.State, slot.session.Error = "error", slot.stop.Error
+		slot.session.CanForce = process != nil
+		if process != nil {
+			snapshot := process.Snapshot()
+			slot.session.CanControl = snapshot.RootAlive && snapshot.ControlReady
+		}
+		slot.session.NextAction = "正常关闭未成功，可重试允许的正常关闭，或明确确认仅强制结束这份会话；未确认退出仍保护目录。"
 	} else {
 		slot.stop.State, slot.stop.Stage, slot.stop.CompletedIDs = "completed", "exited", []string{slot.session.EnvironmentID}
-		slot.session.State, slot.session.Error, slot.session.PID = "ready", nil, 0
-		slot.process = nil
-		delete(s.profileUses, slot.session.EnvironmentID)
+		if process != nil {
+			s.completeObservedExit(slot, process.Snapshot(), false)
+		} else {
+			s.completeObservedExit(slot, kernel.RuntimeSnapshot{ResourcesExited: true}, false)
+		}
 	}
-	if err := s.storeOperation(*slot.stop); err != nil {
+	if err := s.persistRuntime(slot, slot.stop, "正常关闭会话"); err != nil {
 		slot.stop.State, slot.stop.Error = "failed", storageFailure(err).Error
 		slot.session.State, slot.session.Error = "error", slot.stop.Error
 	}

@@ -156,7 +156,7 @@ SQLite schema v2 事务新增 `kernel_evidence`，保存来源、tag、源码com
 - host-only `AcquireProfileUse` 是供T06监督器复用的忙租约，持有期间拒绝关键档案及代理修改；不通过RPC接收伪造running/ready。T05自身未实现正常启动，不能把此租约的契约测试说成真实运行验收。
 - Demo仅在 `_application.fingerprintRevisions` 记录演示历史，checksum带 `demo-`，无真实内核证据；localStorage写成功才发布。`prism-prototype` schemaVersion 1不增加必需字段，旧记录可读。外层/嵌套模式均与Wails隔离。[实际测试与剩余边界](verification/T05.md)。
 
-### T06 真实会话增量（开发中，尚未运行验收）
+### T06 真实会话增量（已实现，尚未运行验收）
 
 - `Runtime.Start({ environmentId, requestId, networkPolicy: "direct" })` 只消费已保存配置。要求当前 `proxyId==""`，且每次启动由用户明确确认直连；已有代理绑定返回 `PROXY_UNSUPPORTED`，不能由直连确认覆盖。客户端路径、参数、PID、状态和临时档案一律拒绝。`requestId`与受理操作同事务登记，重复启动返回原operation；昂贵启动一次一条只是资源门控，不限制环境/保持运行数量。
 - worker读取固定档案/构建证据、规范化独立引用，kernel核对实际文件清单与PE，取得环境目录独占锁。目录链拒绝WRITE/DELETE访问、防原地reparse转换，句柄属性复核；既有浏览文件的hardlink共享拒绝。元数据记录environmentId/sessionId/PID/创建时间，锁不按年龄删除；内核文件pins和根目录锁持有至本次Job的全部进程退出。浏览文件本身仍可正常写入/重命名，不声称防同用户运行期恶意新增文件别名。窗口偏好与参数来自保存档案，不生成新seed，实际目录为 `environments/<uuid>/user-data`，停止/启动失败不删除浏览数据。
@@ -164,6 +164,16 @@ SQLite schema v2 事务新增 `kernel_evidence`，保存来源、tag、源码com
 - `Runtime.Stop({ environmentId, requestId })` 正常Browser.close并等待Job全树退出；pending启动则取消本次准备。重复停止复用原任务，等待退出超时保持明确error与忙锁、不擅自强杀其他进程；控制写端永久断开则单独返回不可正常重试的 `CONTROL_CHANNEL_LOST`，不虚报“可重试停止”。仅失败启动/应用退出使用该会话的自有Job清理；无法确认清空不得释放租约。应用关闭在服务mutex外停止会话，所有Close调用共享真实完成信号；单次等待超时不放弃后台清理，进程资源退出后关库，再次等待可得到真正完成结果。复杂崩溃/重开/强制选择属于T07。
 - `Runtime.Inspect({ ids })`及Workspace投影只返回native的环境/会话ID、实际状态、保存修订、相对数据引用、PID与创建时间等安全字段；不返回pipe端点、任意控制方法或真实Cookie。Wails/App按真实查询刷新，不从模拟兼容层写running。活跃会话只能保存名称、分组、备注，提交响应同样投影实际运行状态；关键配置/启动偏好仍拒绝，事务中还须确认完整档案hash不变，同输入的旧回滚预览也不能在忙状态追加修订。原型旧模拟流程保留。
 - [生命周期回归](../internal/workspace/runtime_test.go)、[目录锁回归](../internal/kernel/profile_lock_windows_test.go)及[实际A/B存储用例](../internal/workspace/runtime_real_test.go)已编写未运行，代码存在不代表验收通过。真实用例需要明确 `PRISM_RUNTIME_VERIFY=1`，会开正常窗口，当前不自动执行；完整状态见 [T06](verification/T06.md)。
+
+### T07 异常监督与恢复增量（已实现，未运行验收）
+
+- SQLite schema4新增 `runtime_sessions` / `runtime_events`，旧档案与数据引用不变；启动、停止、强制结束、核对以environmentId/sessionId关联。启动受理、进入创建阶段、实际PID/创建时间、最终就绪分开持久记录。进入启动阶段的PID0必须核对目录元数据，不解释为从未创建进程。
+- 就绪超时、浏览器崩溃、控制通道丢失及停止超时分开投影；退出码仅来自实际进程观察。根退出不等于Job全树退出，退出未确认或存储失败仍保护档案和目录。启动失败主动清理记录意图，不覆盖原始错误为crash；停止结果迟到须匹配当前slot，持久UPDATE还比较sessionId，不能释放后来新会话的租约。
+- 会话/任务终态/脱敏活动同事务提交。失败保留 `persistencePending` 与待落盘终态，在后续查询重试持久化，不重复外部启停动作；前序仍有待写状态时拒绝新受理，不能用旧ready覆盖新核对租约。临时失败操作不是不可变终态，前端在保存恢复后可接真实完成，真正终态仍不回退。关闭等待超时不弃后台清理，未保存观察在退出结果明确报告。
+- 重开核对PID+创建时间+实际session元数据+独占目录锁，以及带资源版本的确切Job。正常Job是当前SID/SYSTEM限定的全局session标识、句柄不继承；重开只取QUERY权限，资源ActiveProcesses==0或对象已销毁才算树退出，不能由主进程死/应用锁已释放推导子树退出。匿名pipe不跨应用重建；原身份仍存活、锁占用、资源版本缺失或核对未知时 `needsReconcile=true`，保留关键配置保护。只有原进程退出/ctime复用、树资源退出且目录空闲、元数据对应才允许原档案重试；PID复用不取得控制权。[D008](DECISIONS.md#d008--重开只核对不按pid接管2026-10-01)。
+- `Runtime.Reconcile({ environmentId, sessionId, requestId })`只检查保存身份，锁外执行进程/目录I/O，晚返回前核对会话。`Runtime.ForceStop`同样只收这三个ID，普通Stop失败且当前持有确切Job才可受理；不能按客户端PID/名称强杀。查询返回 `canControl/canForce/needsReconcile/nextAction/reconciledAt/lastExitCode` 等安全字段，无控制通道或Cookie。
+- Wails/App的表格与活动提供明确核对/指定会话结束，强制动作再次确认且不由批量关闭隐式升级；旧活动须匹配当前sessionId。待核对无PID或待存储结果仍锁关键配置，仅名称/分组/备注可保存。术语见[领域用语](../GLOSSARY.md)，未运行证据见[T07](verification/T07.md)。
+- A/B真实用例的故障部分另需 `PRISM_RECOVERY_VERIFY=1`，会实际打开窗口并终止自身创建的准确根进程。证据区分“实际用到指定Job强制结束”与“根/Job自行退出”，不涵盖应用自身崩溃；当前暂停期不执行、不自动开关。
 
 当前 ApplicationService 统一 `{ ok, mode, data/error, operationId? }`、预览 ID、requestId、expectedRevision 与 Operation 事件。创建返回 `status: accepted`，需查询/事件确认 `completed/cancelled/failed`；编辑仅在存储写入成功后返回 `status: completed`。只提交配置白名单，不能从草稿修改 ID、Cookie 或运行状态。UI 按操作 ID、模式、序号和终态过滤迟到事件。demo 的预览、幂等请求缓存和 Operation 在当前服务会话有效，不宣称任务重开续作；revision 用额外存储元数据持久保存，旧 v1 演示记录可显式读取且快照类型不变。其他页经 demo-only compatibility 逐步接入；native 不可使用该兼容入口。
 
@@ -178,9 +188,11 @@ SQLite schema v2 事务新增 `kernel_evidence`，保存来源、tag、源码com
 | Profile.Delete             | ids、stopPolicy、requestId → operationId                               | DATA-001         |
 | Fingerprint.Generate       | kernelId、templateId、overrides → previewProfile、capabilityReport     | FP-001、FP-002   |
 | Fingerprint.CommitRevision | environmentId、preview、expectedRevision → newRevision                 | FP-001           |
-| Runtime.Start              | environmentId、requestId → operationId                                 | ENV-003          |
-| Runtime.Stop               | environmentId、gracefulTimeout、requestId → operationId                | ENV-003          |
+| Runtime.Start              | environmentId、requestId、明确networkPolicy → operationId             | ENV-003          |
+| Runtime.Stop               | environmentId、requestId → operationId；服务固定正常退出时限           | ENV-003          |
 | Runtime.Inspect            | ids → observed runtime sessions                                        | ENV-003          |
+| Runtime.ForceStop          | environmentId、sessionId、requestId → operationId；普通关闭失败后       | ENV-003、DATA-001 |
+| Runtime.Reconcile          | environmentId、sessionId、requestId → operationId；真实身份及锁核对     | ENV-003、DATA-001 |
 | Proxy.ParseImport          | text、format → validRows、invalidRows、duplicates                      | PRX-001          |
 | Proxy.CommitImport         | previewId、selectedRows、requestId → importedIds、failedItems          | PRX-001          |
 | Proxy.Check                | proxyId → operationId；结果包含连接/认证/出口阶段                      | PRX-001          |

@@ -161,7 +161,7 @@ func lockManagedProfile(root, environmentID, reference string) (*managedProfileL
 }
 
 func (lock *managedProfileLock) record(environmentID, sessionID string, pid uint32, createdAt string) error {
-	data, err := json.Marshal(map[string]any{"environmentId": environmentID, "sessionId": sessionID, "pid": pid, "processCreatedAt": createdAt})
+	data, err := json.Marshal(map[string]any{"environmentId": environmentID, "sessionId": sessionID, "pid": pid, "processCreatedAt": createdAt, "resourceVersion": ManagedRuntimeVersion})
 	if err != nil {
 		return err
 	}
