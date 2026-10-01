@@ -205,14 +205,20 @@ func validateSavedRuntime(session RuntimeSession, environmentID string) error {
 		return err == nil && parsed.String() == value
 	}
 	ref, err := dataReference(environmentID)
-	if err != nil || session.Mode != "native" || session.EnvironmentID != environmentID || !parseID(session.SessionID) || !parseID(session.OperationID) || session.UserDataRef != ref || session.NetworkPolicy != "direct" || session.Revision < 1 || session.FingerprintRevision < 1 || session.PID < 0 || session.RootPID < 0 {
+	if err != nil || session.Mode != "native" || session.EnvironmentID != environmentID || !parseID(session.SessionID) || !parseID(session.OperationID) || session.UserDataRef != ref || (session.NetworkPolicy != "direct" && session.NetworkPolicy != "proxy") || session.Revision < 1 || session.FingerprintRevision < 1 || session.PID < 0 || session.RootPID < 0 {
 		return errors.New("invalid saved runtime identity")
+	}
+	if session.NetworkPolicy == "proxy" && (!parseID(session.ProxyID) || !parseID(session.ProxyChannelID) || session.ProxyRevision < 1) || session.NetworkPolicy == "direct" && (session.ProxyID != "" || session.ProxyChannelID != "" || session.ProxyReport != nil) {
+		return errors.New("invalid saved proxy channel identity")
+	}
+	if report := session.ProxyReport; report != nil && (report.Mode != "native" || report.ChannelID != session.ProxyChannelID || report.ProxyID != session.ProxyID || report.Revision != session.ProxyRevision) {
+		return errors.New("saved preflight does not match the proxy session")
 	}
 	if session.State != "ready" && session.State != "starting" && session.State != "running" && session.State != "stopping" && session.State != "error" {
 		return errors.New("invalid saved runtime state")
 	}
 	if session.RootPID > 0 {
-		if _, err := time.Parse(time.RFC3339Nano, session.ProcessCreatedAt); err != nil {
+		if _, err := time.Parse(time.RFC3339Nano, session.ProcessCreatedAt); err != nil && !(session.ProcessCreatedAt == "" && session.LaunchStage == "identity-unconfirmed") {
 			return errors.New("invalid saved process creation time")
 		}
 	}
@@ -229,7 +235,7 @@ func (s *Service) inspectSavedRuntime(session RuntimeSession) (kernel.ManagedRec
 	if session.ResourceVersion != kernel.ManagedRuntimeVersion {
 		return kernel.ManagedRecovery{ProcessState: "unconfirmed"}, &kernel.Problem{Code: "SESSION_IDENTITY_UNCONFIRMED", Message: "旧记录没有可核对的进程树身份，暂不解除数据保护；未接管或结束任何进程。", Retryable: true}
 	}
-	return kernel.InspectManagedProfile(s.root, session.EnvironmentID, session.SessionID, session.UserDataRef, session.RootPID, session.ProcessCreatedAt, session.LaunchStage == "queued" || session.LaunchStage == "no-process-created")
+	return kernel.InspectManagedProfile(s.root, session.EnvironmentID, session.SessionID, session.UserDataRef, session.RootPID, session.ProcessCreatedAt, session.LaunchStage == "queued" || session.LaunchStage == "proxy-preflight" || session.LaunchStage == "no-process-created")
 }
 
 func (s *Service) reconcileRuntimeSlot(slot *runtimeSlot) error {
@@ -243,6 +249,9 @@ func (s *Service) applyReconciledRuntime(slot *runtimeSlot, recovery kernel.Mana
 	}
 	if recovery.RootPID > 0 {
 		slot.session.RootPID, slot.session.ProcessCreatedAt = recovery.RootPID, recovery.ProcessCreatedAt
+		if recovery.ProcessCreatedAt == "" {
+			slot.session.LaunchStage = "identity-unconfirmed"
+		}
 	}
 	slot.session.CanControl, slot.session.CanForce = false, false
 	slot.session.ReconciledAt = timestamp()

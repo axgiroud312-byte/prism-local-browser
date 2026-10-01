@@ -291,3 +291,23 @@ test("native proxy events recover temporary persistence failure but never accept
   state = "demo"; const rejected = await app.getOperation(operation.id);
   assert.ok(!rejected.ok && rejected.error.code === "CAPABILITY_UNSUPPORTED"); assert.equal(events.length, 2);
 });
+
+test("native runtime proxy starts forward only explicit policy and never private endpoint or credentials", async () => {
+  const { app, calls } = fixture(request => request.method === "Workspace.Read" ? ok(empty()) : rejected);
+  const request = { environmentId: "synthetic-environment", requestId: "synthetic-proxy-start", networkPolicy: "proxy" as const, proxyEndpoint: "DO_NOT_FORWARD_LOOPBACK_ENDPOINT", proxyPassword: "DO_NOT_FORWARD_SECRET", bypass: "DIRECT", skipTlsVerify: true };
+  await app.startRuntime(request);
+  assert.deepEqual(calls[0].payload, { environmentId: request.environmentId, requestId: request.requestId, networkPolicy: "proxy" });
+  assert.ok(!JSON.stringify(calls).includes("DO_NOT_FORWARD")); assert.ok(!JSON.stringify(calls).includes("DIRECT"));
+});
+
+test("runtime session proxy reports must match native channel identity and saved revision", async () => {
+  const session: RuntimeSession = { mode: "native", environmentId: "synthetic-environment", sessionId: "synthetic-session", operationId: "synthetic-operation", state: "running", revision: 1, fingerprintRevision: 1, kernelId: "synthetic-kernel", userDataRef: "synthetic-reference", networkPolicy: "proxy", proxyId: "synthetic-proxy", proxyRevision: 3, proxyChannelId: "synthetic-channel", canControl: true, canForce: false, needsReconcile: false, persistencePending: false, proxyReport: { mode: "native", adapterVersion: "synthetic-host-only", channelId: "synthetic-channel", proxyId: "synthetic-proxy", revision: 3, startedAt: "2026-10-01T00:00:00Z", finishedAt: "2026-10-01T00:00:01Z", durationMs: 1000, targetOrigin: "https://synthetic-target.invalid", steps: [], exitIp: "203.0.113.81" } };
+  const { app } = fixture(request => request.method === "Workspace.Read" ? ok({ ...empty(), runtimeSessions: { [session.environmentId]: session } }) : ok([session]));
+  assert.ok((await app.refresh()).ok);
+  assert.ok((await app.inspectRuntime([session.environmentId])).ok);
+  session.proxyReport!.channelId = "unrelated-channel";
+  const refresh = await app.refresh(); const inspect = await app.inspectRuntime([session.environmentId]);
+  assert.ok(!refresh.ok && refresh.error.code === "CAPABILITY_UNSUPPORTED"); assert.ok(!inspect.ok && inspect.error.code === "CAPABILITY_UNSUPPORTED");
+  session.proxyReport!.channelId = session.proxyChannelId; session.proxyReport!.revision = 2;
+  assert.ok(!(await app.inspectRuntime([session.environmentId])).ok);
+});

@@ -91,6 +91,7 @@ const Markdown = lazy(() => import("react-markdown"));
 import remarkGfm from "remark-gfm";
 import { NativeKernelManager } from "./components/NativeKernelManager";
 import { NativeProxyManager } from "./components/NativeProxyManager";
+import { NativeRuntimeNetwork } from "./components/NativeRuntimeNetwork";
 import { FingerprintRevisionPanel } from "./components/FingerprintRevisionPanel";
 
 type Route =
@@ -581,12 +582,17 @@ export default function App({ application }: { application: ApplicationService }
       if (!application.startRuntime) { notify("当前桌面版本未接入真实启停。", true); return; }
       const targets = [...new Set(ids)].filter(id => !runtimeActions.current.has(id));
       if (!targets.length) return;
-      if (!window.confirm("当前仅支持本机直连，网站可看到本机网络出口。已绑定代理的环境将被阻止，不会绕过代理。确认使用本机直连启动所选环境？")) return;
+      const startSnapshot = application.getSnapshot();
+      const policies = new Map(targets.map(id => [id, startSnapshot.state.environments.find(environment => environment.id === id)?.proxyId ? "proxy" as const : "direct" as const]));
+      const directCount = [...policies.values()].filter(policy => policy === "direct").length;
+      const proxyCount = targets.length - directCount;
+      const confirmation = directCount ? `所选${directCount}个未绑定代理的环境将使用本机直连，网站可看到本机出口。${proxyCount ? `另外${proxyCount}个绑定代理的环境只使用各自认证通道，失败不直连。` : ""}确认按以上策略启动？` : "所选环境将各自建立独立认证代理通道；同通道前检失败就阻止启动，不改为直连。运行期全路径断线保护仍待验收。确认启动？";
+      if (!window.confirm(confirmation)) return;
       for (const id of targets) {
         if (application.getSnapshot().runtimeSessions?.[id]?.needsReconcile) { notify("此环境的原会话仍待核对，不会新开浏览器或绕过目录保护。", true); continue; }
         if (!beginRuntimeAction(id)) continue;
         try {
-          const result = await application.startRuntime({ environmentId: id, requestId: uid("request"), networkPolicy: "direct" });
+          const result = await application.startRuntime({ environmentId: id, requestId: uid("request"), networkPolicy: policies.get(id)! });
           if (!result.ok) { notify(result.error.message, true); continue; }
           notify("启动任务已受理；内核和控制通道就绪后才显示运行中。");
         } finally { endRuntimeAction(id); }
@@ -1316,10 +1322,11 @@ export default function App({ application }: { application: ApplicationService }
                                     已明确选择直连
                                   </div>
                                 </>
-                              )}
-                            </td>
-                            <td>
-                              <span className="device-line">
+                               )}
+                               {nativeMode && runtimeSession && <NativeRuntimeNetwork session={runtimeSession} />}
+                             </td>
+                             <td>
+                               <span className="device-line">
                                 <Monitor size={14} />
                                 Windows · Chromium{" "}
                                 {core?.version.split(".")[0] || "—"}
@@ -2075,7 +2082,7 @@ export default function App({ application }: { application: ApplicationService }
             <span>
               <Monitor size={13} />
               Windows 本地版<span className="footer-separator">·</span>
-              {nativeMode ? "SQLite 本机持久化 · 真实启停开发中，待验收 · 仅直连" : "仅供交互验收，请勿输入真实凭据"}
+              {nativeMode ? "SQLite 本机持久化 · 直连/独立认证代理代码已接 · 实机验收待补" : "仅供交互验收，请勿输入真实凭据"}
             </span>
             <button
               onClick={() => {

@@ -142,7 +142,16 @@ app-data/
 - `Proxy.Check({proxyId,expectedRevision,requestId})`受理operation而非成功。固定经该代理CONNECT访问HTTPS出口目标，区分连接/代理TLS/认证请求/目标TLS/目标访问/实际IP与时刻。407、TLS失败、不可达、超时或SOCKS5未支持不直连回退；不跟随重定向、不跳过验证、不将任意peer body/原始error写报告。
 - 网络锁外执行、4并发资源调度和25秒有界；取消/终结关闭本次socket，包括等待CONNECT的资源。会话内报告及任务终态、活动同事务；结果待保存时保留busy/临时覆盖，查询只重试持久化、不重复网络。重开标未完成任务APPLICATION_INTERRUPTED，不自动重发。失败活动关联operation的实际errorCode，不能只存失败文案却标成功。
 - NativeProxyManager单独接入，旧网页demo不变。普通state.proxies只空认证投影供环境绑定；新编辑只读nativeProxyRecords的hasAuthentication，不能从空密码投影回填。原始输入默认mask，未选/错误行可继续修正；秘密不持久化到localStorage，取消/卸载和迟到返回有清理。
-- 所有新增回归仅编写，实际DPAPI/网络/native页面均未验证；[清单](verification/T08.md)。HTTP认证链路无TLS加密，DPAPI不保护传输；HTTPS才提供TLS到代理。本票不是浏览器认证桥接或运行期断线保护，绑定proxy的Start仍阻断。
+- 所有新增回归仅编写，实际DPAPI/网络/native页面均未验证；[清单](verification/T08.md)。HTTP认证链路無TLS加密，DPAPI不保护传输；HTTPS才提供TLS到代理。T08提交时绑定proxy的Start阻断，T09随后接独立浏览器通道；独立前检不代替运行期断线保护。
+
+### T09 每环境认证通道（已实现，未运行验收）
+
+- [`Bridge`](../internal/proxy/bridge.go)为每次运行session建独立TCP4 loopback监听，仅向固定HTTP/HTTPS上游拨号。标准HTTP转发与CONNECT分开；HTTPS上游先校验TLS，不跳验证，认证只给上游。临时响应继续读最终状态、流式正文刷新；明文HTTP Upgrade明确阻断，TLS隧道字节透传。
+- [`准入`](../internal/kernel/proxy_guard_windows.go)将loopback与身份核对分离：前检需hostTCP caller和私有token；正常浏览器需准确Job成员进程句柄、反向TCP tuple和二次新鲜查询。QUERY副本创建前绑定、与本次channel/进程同生命周期，不按裸PID/进程名放行；边界[D010](DECISIONS.md#d010--每会话代理通道只接纳其受控调用进程2026-10-01)，普通用户/沙箱兼容性未实测。
+- `Runtime.Start`的networkPolicy允许direct/proxy，必须匹配已保存绑定；proxy不能降direct，SOCKS5不支持。受理并预留busy后，锁内只读受保护密文、锁外解密/建桥；同监听instance前检与安全报告事务保存成功后才启动真实浏览器。网络端点/token/上游秘密不进入RPC/日志/进程参数；只返回安全ChannelID/配置修订及阶段。
+- schema5表不变，runtime session JSON增加代理ID/修订/channelID/安全报告。取消/失败/Job全树退出/应用关闭收敛对应通道；Done含桥接和进程资源，存储重试不重复网络，重开仅核对不恢复桥。创建后时间观测失败仍保留原始句柄/Job并观察全树退出，空时间特殊记录不猜PID；恢复同时核对精确Job、实际锁和原session元数据。
+- 前端[`NativeRuntimeNetwork`](../src/components/NativeRuntimeNetwork.tsx)显示启动前的同通道阶段与本次/历史IP，不把它叫持续网页出口；待核对原PID只能展示历史报告，明确当前未接管/重建旧桥。未绑定环境仍显式确认直连，已绑定按proxy策略；Wails拒绝演示报告与channel/配置修订错配。
+- 所有新增回归仅编写，没有实际Windows/API准入/公共网络/真实浏览器或新页面验收，[清单](verification/T09.md)。代理参数及QUIC/WebRTC UDP限制不是全路径无泄漏证据，T11运行期故障/隔离与恢复仍待实现验收。
 
 ## 6 本地应用接口
 

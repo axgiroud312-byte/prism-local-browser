@@ -64,7 +64,24 @@ func (s *Service) runProxyCheck(ctx context.Context, task *proxyCheckTask, recor
 		return
 	}
 	s.mu.Lock()
-	credentials, err := s.storedProxyCredentials(ref)
+	protected, err := s.readProtectedProxyCredentials(ref)
+	s.mu.Unlock()
+	var credentials *proxy.Credentials
+	if err == nil {
+		credentials, err = s.decodeProtectedProxyCredentials(ref, protected)
+	}
+	if credentials != nil {
+		defer func() { credentials.Username, credentials.Password = "", "" }()
+	}
+	if ctx.Err() != nil {
+		observed := &proxy.CheckError{Code: "OPERATION_CANCELLED", Message: "本次检查在读取受保护凭据期间取消，未发起网络请求。", Retryable: true}
+		if errors.Is(ctx.Err(), context.DeadlineExceeded) {
+			observed.Code, observed.Message = "PROXY_CHECK_TIMEOUT", "本次检查在读取凭据期间超过时限，未发起网络请求。"
+		}
+		s.finishProxyCheck(task, proxy.Report{Mode: "native", AdapterVersion: proxy.CheckVersion, StartedAt: timestamp(), FinishedAt: timestamp(), Steps: []proxy.Step{}, Error: observed})
+		return
+	}
+	s.mu.Lock()
 	if err == nil {
 		task.operation.State, task.operation.Stage = "running", "validation"
 		s.proxyResults[task.operation.ID] = task.operation

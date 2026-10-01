@@ -166,6 +166,9 @@ func probeOneArguments(ctx context.Context, executable, staging, url string, see
 	args = append(args, "about:blank")
 	p, err := startPipe(executable, args)
 	if err != nil {
+		if p != nil {
+			p.close()
+		}
 		return Observation{}, problem("PROCESS_START_FAILED", "diagnostic-start-failed", "隔离诊断进程无法启动；未关闭沙箱或尝试其他内核。")
 	}
 	defer p.close()

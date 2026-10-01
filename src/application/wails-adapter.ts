@@ -44,7 +44,7 @@ export class WailsAdapter implements ApplicationService {
   async refresh(): Promise<ApplicationResult<WorkspaceView>> {
     const sequence = ++this.refreshSequence;
     let response = await this.invoke<WorkspaceView>("Workspace.Read", {});
-    if (response.ok && (response.data.mode !== "native" || Object.values(response.data.runtimeSessions ?? {}).some(session => session.mode !== "native") || (response.data.nativeProxyRecords ?? []).some(record => record.checkReport && record.checkReport.mode !== "native") || (response.data.proxyOperations ?? []).some(operation => operation.proxyReport && operation.proxyReport.mode !== "native"))) response = { ok: false, mode: "native", error: { code: "CAPABILITY_UNSUPPORTED", message: "工作区、会话或代理报告不是原生记录，已拒绝接入；未回退演示数据。", retryable: false } };
+    if (response.ok && (response.data.mode !== "native" || Object.values(response.data.runtimeSessions ?? {}).some(session => session.mode !== "native" || (session.proxyReport && (session.proxyReport.mode !== "native" || session.proxyReport.channelId !== session.proxyChannelId || session.proxyReport.proxyId !== session.proxyId || session.proxyReport.revision !== session.proxyRevision))) || (response.data.nativeProxyRecords ?? []).some(record => record.checkReport && record.checkReport.mode !== "native") || (response.data.proxyOperations ?? []).some(operation => operation.proxyReport && operation.proxyReport.mode !== "native"))) response = { ok: false, mode: "native", error: { code: "CAPABILITY_UNSUPPORTED", message: "工作区、会话或代理报告身份不匹配，已拒绝接入；未回退演示数据。", retryable: false } };
     if (sequence !== this.refreshSequence) return response;
     if (response.ok) this.view = response.data;
     else this.view = { ...this.view, issue: response.error };
@@ -106,10 +106,11 @@ export class WailsAdapter implements ApplicationService {
   deleteKernel(kernelId: string, requestId: string) { return this.invoke<{ status: "accepted"; operation: Operation }>("Kernel.Delete", { kernelId, requestId }); }
   private async runtimeMutation(method: string, payload: unknown) {
     const response = await this.invoke<{ status: "accepted"; operation: Operation }>(method, payload);
+    if (response.ok && response.data.operation.proxyReport && response.data.operation.proxyReport.mode !== "native") return { ok: false as const, mode: "native" as const, error: { code: "CAPABILITY_UNSUPPORTED", message: "演示代理报告不能作为原生启动受理结果。", retryable: false } };
     await this.refresh();
     return response;
   }
-  startRuntime(request: { environmentId: string; requestId: string; networkPolicy: "direct" }) {
+  startRuntime(request: { environmentId: string; requestId: string; networkPolicy: "direct" | "proxy" }) {
     return this.runtimeMutation("Runtime.Start", { environmentId: request.environmentId, requestId: request.requestId, networkPolicy: request.networkPolicy });
   }
   stopRuntime(request: { environmentId: string; requestId: string }) {
@@ -123,7 +124,7 @@ export class WailsAdapter implements ApplicationService {
   }
   async inspectRuntime(ids: string[]): Promise<ApplicationResult<RuntimeSession[]>> {
     const response = await this.invoke<RuntimeSession[]>("Runtime.Inspect", { ids });
-    if (response.ok && response.data.some(session => session.mode !== "native")) return { ok: false, mode: "native", error: { code: "CAPABILITY_UNSUPPORTED", message: "演示会话不能作为真实运行结果。", retryable: false } };
+    if (response.ok && response.data.some(session => session.mode !== "native" || (session.proxyReport && (session.proxyReport.mode !== "native" || session.proxyReport.channelId !== session.proxyChannelId || session.proxyReport.proxyId !== session.proxyId || session.proxyReport.revision !== session.proxyRevision)))) return { ok: false, mode: "native", error: { code: "CAPABILITY_UNSUPPORTED", message: "会话和代理通道报告身份不匹配，不能作为真实运行结果。", retryable: false } };
     return response;
   }
   async parseProxyImport(text: string): Promise<ApplicationResult<ProxyImportPreview>> {

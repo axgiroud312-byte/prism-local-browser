@@ -124,7 +124,7 @@ T05实际增量以 [应用接口](DEVELOPMENT.md#t05-固定档案增量已实现
 
 上游 `--proxy-server` 明确不支持密码验证，因此本地桥接是本项目需要开发并验证的部分，不能宣称选定内核已经解决认证。每个环境有独立桥接生命周期；桥接崩溃、上游断线和认证过期进入阻断状态，停止或隔离浏览器网络并提示恢复。
 
-T08已编写原生代理配置/Windows DPAPI引用和[`独立前检`](../internal/proxy/check.go)，只有所选HTTP/HTTPS代理接受CONNECT、TLS和目标访问、合法实际出口才报告本次成功；不跳验证、407不回退直连，SOCKS5检查未支持。输入认证不进入浏览器命令行/活动或普通响应。**该前检尚未验收，也不是正常浏览器的代理桥接通道；绑定代理的Start仍阻断，T09/T11边界不变。** HTTP认证链路仍未加密，HTTPS才提供TLS到代理；[T08清单](verification/T08.md)。
+T08已编写原生代理配置/DPAPI引用和[`独立前检`](../internal/proxy/check.go)，不跳验证、407不回退直连，SOCKS5检查未支持。T09随后接[`每会话桥接`](../internal/proxy/bridge.go)，正常启动重新经同监听instance前检，不拿T08历史成功代替；上游认证不进参数或普通响应。**两票均未实际验收，T11全路径运行期断线保护不因此通过。** HTTP认证链路不加密，HTTPS才提供TLS到代理；[T08](verification/T08.md)、[T09](verification/T09.md)。
 
 **断线不直连是待验收要求。**单个代理参数、启动前测试或前端状态变化都不证明断线保护已实现。正式验收必须覆盖代理进程退出、上游断网、DNS、IPv6、WebRTC、UDP/QUIC、WebSocket 与重连；观察实际出口，确认不会切换到本机直连。若某网络路径无法满足该要求，应在后端关闭该路径或阻止环境运行，并准确报告限制。
 
@@ -132,7 +132,7 @@ CDP 默认不开启。需要身份探测或本机自动化时，优先采用本�
 
 ### T06 正常会话的实际开发边界
 
-[`长期会话`](../internal/kernel/runtime_windows.go)与[`目录锁`](../internal/kernel/profile_lock_windows.go)不复用探测临时profile，不删除正常浏览数据。当前仅显式direct可启动，保存的proxyId非空则阻断；真实代理/泄漏保护仍待后票。实际目录按服务派生的UUID引用逐级创建并固定，目录链拒绝WRITE/DELETE、防原地junction转换，复核句柄重解析属性、最终规范化根内归属以及锁文件类型/硬链接；既有浏览数据文件hardlink共享拒绝，分享模式为0的实际锁覆盖重复目录打开。浏览文件正常写入/重命名保留，不声称防同用户恶意运行期新增别名。
+[`长期会话`](../internal/kernel/runtime_windows.go)与[`目录锁`](../internal/kernel/profile_lock_windows.go)不复用探测临时profile，不删除正常浏览数据。T06提交时仅显式direct且阻断绑定代理；T09随后接认证桥，实际代理/泄漏保护验收仍待补。实际目录按服务派生UUID引用逐级创建并固定，目录链拒绝WRITE/DELETE、防原地junction转换，复核句柄重解析属性、最终规范化根内归属及锁文件类型/硬链接；既有浏览文件hardlink共享拒绝，分享模式0的实际锁覆盖重复目录打开，不声称防同用户恶意新增别名。
 
 [`pipe`](../internal/kernel/pipe_windows.go)串行整个请求/响应并支持有界写，正常会话控制仅内部使用，不向UI开放任意CDP。短期启动context不控制已经就绪会话；就绪前单独核对主进程存活，不以Job尚未清空代替浏览器活着。正常停止先Browser.close，只有确认Job ActiveProcesses==0才释放pins/锁并报告完成。等待退出超时可重试，控制写端断开则返回不可正常重试的CONTROL_CHANNEL_LOST，不谎称通道可恢复。超时或清理未确认仍保持busy与目标身份，应用退出/失败启动只能终止本次自有Job。不以主PID退出、CreateProcess成功或UI状态作为全树退出/实际隔离证据。
 
@@ -145,6 +145,14 @@ CDP 默认不开启。需要身份探测或本机自动化时，优先采用本�
 [`身份核对`](../internal/kernel/runtime_recovery_windows.go)只核对旧PID创建时间、session元数据、实际锁及[`指定Job资源`](../internal/kernel/runtime_job_windows.go)，不获取跨应用pipe，不按PID结束，不依靠锁文件年龄。正常Job使用仅当前SID/SYSTEM可访问的全局session身份、句柄不继承；重开仅取QUERY权，已有同名对象不接管。全局标识避免同用户不同Windows登录会话的Local命名空间差异；仅ActiveProcesses==0或对象确认已经销毁才通过树资源退出检查，主进程已死/应用锁空闲都不能代替。创建及销毁依据[Win32 Job合同](https://learn.microsoft.com/en-us/windows/win32/api/jobapi2/nf-jobapi2-createjobobjectw)，实际实测仍待补。
 
 进入启动阶段但数据库PID0时读取锁元数据确认是否已创建；只有确实未创建才能使用安全中断分支。应用异常退出的kill-on-close不能代替重开后的实际核对；资源版本缺失、查询未知或尚未退出仍busy。指定强制结束只用于当前仍持有的Job、普通关闭已失败的会话；迟到worker结果与持久UPDATE须匹配session。源码及用例存在不代表Windows杀进程/崩溃恢复通过，[待验收](verification/T07.md)。
+
+### T09 认证通道的实际开发边界
+
+独立TCP4 loopback监听不当作认证。内部前检同时验证当前host的TCP caller与随机token；浏览器用[`反向TCP四元组与准确Job`](../internal/kernel/proxy_guard_windows.go)判定客户端。QUERY副本在CreateProcess前绑定、句柄不继承，不泄漏副本影响kill-on-close；先收敛本次桥接/连接，再关闭副本并释放pins/实际目录，查询失败不改为放行或关闭沙箱。[D010边界](DECISIONS.md#d010--每会话代理通道只接纳其受控调用进程2026-10-01)不声称抵御管理员/恶意同SID注入或主动加入Job。
+
+正常启动固定 `--proxy-server=http://127.0.0.1:<private-port>`、`--proxy-bypass-list=<-loopback>`，没有上游凭据/token或DIRECT备选；QUIC和非代理WebRTC UDP受限，但不能以参数替代T11实际泄漏验证。标准HTTP、CONNECT、HTTPS到代理TLS分别处理，明文HTTP Upgrade拒绝；同桥前检持久成功后才创建/报告进程就绪。
+
+创建成功而首次时间读取失败也返回准确Job所有者和资源，不能只关原Job句柄就释放锁。记录实际PID及明确空时间异常；未确认全树退出仍busy。重开空时间不打开/控制barePID，只在Job空、实际锁空闲且原session元数据对应时证明旧树已退。当前均源码结论，[T09待验收](verification/T09.md)，没有实际API/普通用户/网络/浏览器证据。
 
 ## 请求与返回合同
 

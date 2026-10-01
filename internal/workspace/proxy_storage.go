@@ -231,12 +231,28 @@ func (s *Service) listProxies() ([]ProxyView, error) {
 	return records, nil
 }
 func (s *Service) storedProxyCredentials(ref string) (*proxy.Credentials, error) {
+	protected, err := s.readProtectedProxyCredentials(ref)
+	if err != nil {
+		return nil, err
+	}
+	return s.decodeProtectedProxyCredentials(ref, protected)
+}
+
+// Read under the workspace lock; decode the returned bytes outside it so
+// Windows key-service delays cannot block unrelated queries or Stop commands.
+func (s *Service) readProtectedProxyCredentials(ref string) ([]byte, error) {
 	if ref == "" {
 		return nil, nil
 	}
 	var protected []byte
 	if err := s.db.QueryRow("SELECT protected FROM proxy_credentials WHERE ref=?", ref).Scan(&protected); err != nil {
 		return nil, err
+	}
+	return protected, nil
+}
+func (s *Service) decodeProtectedProxyCredentials(ref string, protected []byte) (*proxy.Credentials, error) {
+	if ref == "" {
+		return nil, nil
 	}
 	plain, err := s.unprotectProxySecret(ref, protected)
 	if err != nil {

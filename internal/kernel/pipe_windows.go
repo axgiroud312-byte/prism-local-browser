@@ -44,6 +44,11 @@ func startPipe(executable string, args []string) (_ *pipeProcess, resultErr erro
 }
 
 func startPipeWithSession(executable string, args []string, sessionID string) (_ *pipeProcess, resultErr error) {
+	return startPipeWithBinding(executable, args, sessionID, nil)
+}
+
+func startPipeWithBinding(executable string, args []string, sessionID string, bindJob func(windows.Handle) error) (_ *pipeProcess, resultErr error) {
+	resourcesTransferred := false
 	childRead, parentWrite, err := os.Pipe()
 	if err != nil {
 		return nil, err
@@ -56,7 +61,7 @@ func startPipeWithSession(executable string, args []string, sessionID string) (_
 	}
 	defer childWrite.Close()
 	defer func() {
-		if resultErr != nil {
+		if resultErr != nil && !resourcesTransferred {
 			parentWrite.Close()
 			parentRead.Close()
 		}
@@ -72,7 +77,7 @@ func startPipeWithSession(executable string, args []string, sessionID string) (_
 		return nil, err
 	}
 	defer func() {
-		if resultErr != nil {
+		if resultErr != nil && !resourcesTransferred {
 			windows.CloseHandle(job)
 		}
 	}()
@@ -80,6 +85,11 @@ func startPipeWithSession(executable string, args []string, sessionID string) (_
 	limits.BasicLimitInformation.LimitFlags = windows.JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE
 	if _, err = windows.SetInformationJobObject(job, windows.JobObjectExtendedLimitInformation, uintptr(unsafe.Pointer(&limits)), uint32(unsafe.Sizeof(limits))); err != nil {
 		return nil, err
+	}
+	if bindJob != nil {
+		if err = bindJob(job); err != nil {
+			return nil, err
+		}
 	}
 	attributes, err := windows.NewProcThreadAttributeList(2)
 	if err != nil {
@@ -107,13 +117,17 @@ func startPipeWithSession(executable string, args []string, sessionID string) (_
 		return nil, err
 	}
 	windows.CloseHandle(info.Thread)
+	p := &pipeProcess{process: info.Process, job: job, read: parentRead, write: parentWrite, pid: info.ProcessId, responses: make(chan pipeReply, 16), stopped: make(chan struct{}), commandGate: make(chan struct{}, 1), readEnded: make(chan struct{})}
+	// Once CreateProcess succeeds, transfer EVERY handle even if identity
+	// observation fails. The managed owner must confirm the whole Job exit;
+	// closing a Job handle is not synchronous resource-exit confirmation.
+	resourcesTransferred = true
+	go p.readLoop()
 	var created, exit, kernelTime, userTime windows.Filetime
 	if err = windows.GetProcessTimes(info.Process, &created, &exit, &kernelTime, &userTime); err != nil {
-		windows.CloseHandle(info.Process)
-		return nil, err
+		return p, problem("PROCESS_IDENTITY_UNAVAILABLE", "creation-time-unavailable", "进程已创建，但实际创建时间无法读取；仅清理本次Job，未释放仍占用的目录。")
 	}
-	p := &pipeProcess{process: info.Process, job: job, read: parentRead, write: parentWrite, pid: info.ProcessId, createdAt: time.Unix(0, created.Nanoseconds()).UTC().Format(time.RFC3339Nano), responses: make(chan pipeReply, 16), stopped: make(chan struct{}), commandGate: make(chan struct{}, 1), readEnded: make(chan struct{})}
-	go p.readLoop()
+	p.createdAt = time.Unix(0, created.Nanoseconds()).UTC().Format(time.RFC3339Nano)
 	return p, nil
 }
 func (p *pipeProcess) close() {

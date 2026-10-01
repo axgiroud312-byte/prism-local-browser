@@ -1,11 +1,11 @@
 # Goal 当前执行位置
 
-更新时间：2026-10-01 13:21 Asia/Shanghai。
+更新时间：2026-10-01 13:49 Asia/Shanghai。
 
 - Goal：执行中；[规则](GOAL.md)；完成 **4/21**（验收任务计数）。
-- 当前任务：T08 / [Issue #9](https://github.com/axgiroud312-byte/prism-local-browser/issues/9)，已实现待验收，准备本地提交后继续T09。
-- 当前步骤：schema5代理解析/选择提交、DPAPI引用、keep/replace/clear编辑/删保护及HTTP/HTTPS前检与NativeProxyManager已接。共6 P2按根因关闭，最后只读复核无剩余可信P1/P2；13:21最后版静态检查通过。7+7+3条新增回归仅编写，不运行测试/网络/浏览器/点击/CI，不关闭issue。
-- 现场：`goal/t08-native-proxies`，基于T07 `e4e427f`；未提交为proxy解析/DPAPI/前检库、workspace迁移/配置/任务及契约/Wails/独立native页、schema旧夹具与核验脚本/新增回归/文档。T03证据/旧空库/包与内核ZIP保留，无用户遗留改动；复用编译缓存，不完整构建。
+- 当前任务：T09 / [Issue #10](https://github.com/axgiroud312-byte/prism-local-browser/issues/10)，已实现待验收，准备本地提交后继续T10。
+- 当前步骤：每会话认证桥、同通道前检与启动、Windows准确Job/TCP caller准入、NativeRuntimeNetwork已接。共5 P2源码闭环，最后聚焦无剩余可信P1/P2；13:42最终生产proxy/kernel/workspace静态编译，13:49最后前端TS类型/33份文档/格式通过。6+3+8+2回归仅编写，T11全路径保护未实现验收，不运行测试/网络/浏览器/点击/CI或完整构建。
+- 现场：`goal/t09-authenticated-proxy-channels`，基于T08 `f020076`；未提交为proxy桥/前检、kernel准入/参数/资源责任与workspace启停接入、前端安全策略/报告、新回归和文档。旧证据/安装包/内核保留，无用户遗留改动，不因C盘空间恢复重跑完整构建。
 
 ## 任务状态
 
@@ -18,8 +18,8 @@
 | T05 | #6 | 已实现待验收 | 本地 `f6e7314`；[验收清单](verification/T05.md)，未推送/PR，最终UI/构建/全量/CI待补 |
 | T06 | #7 | 已实现待验收 | 本地 `ead0bc6`；[验收清单](verification/T06.md)，无推送/PR，原blocking状态保留 |
 | T07 | #8 | 已实现待验收 | 本地 `e4e427f`；[验收清单](verification/T07.md)，原blocking #7仍OPEN，无PR/推送 |
-| T08 | #9 | 已实现待验收 | blocking #3已完成；[验收清单](verification/T08.md)，本地提交准备中，无PR/推送 |
-| T09 | #10 | 待开始 | — |
+| T08 | #9 | 已实现待验收 | 本地 `f020076`；[验收清单](verification/T08.md)，blocking #3 CLOSED，无PR/推送 |
+| T09 | #10 | 已实现待验收 | [验收清单](verification/T09.md)；准备本地提交，原blocking #7/#9仍OPEN，无PR/推送 |
 | T10 | #11 | 待开始 | — |
 | T11 | #12 | 待开始 | — |
 | T12 | #13 | 待开始 | — |
@@ -105,6 +105,10 @@
 - 12:53–12:54：T07本地提交e4e427f，工作树干净后新建T08分支。完整#9重新核对，唯一原生blocking #3 CLOSED且T02成果可用；无承担者/冲突PR。按用户开发优先继续原生代理，T05–T07均保持待验收，不关闭issue或计数，不启动测试/CI。
 - 12:56–13:14：T08实现schema5配置/DPAPI密文引用/受保护HMAC请求key、URI/兼容/IPv6预览、keep/replace/clear与引用/修订保护、固定HTTPS目标经HTTP/HTTPS代理分阶段检查、pending终态事务与重开中断。独立NativeProxyManager保留demo，空认证投影只供环境绑定，原始输入临时mask/清理、错误和未选行保留。首轮3 P2为重复关系平方内存/CONNECT取消error竞态/失败活动假成功；已改共享组和endpoint索引、同步/迟到状态保护+原ctx/自有socket关闭、活动关联真实op错误。6条库/7条服务/3条adapter新增回归未执行，Go测试源码未编译。13:14修复版生产包静态编译、源码/测试TS类型、DB核验脚本语法/格式通过；源码复核中，无网络/程序/点击/CI。
 - 13:17：文档/本地链接/12需求/6路由/3嵌入文档检查通过；C盘此时可用约24.8GiB，外部空间已恢复，不归因本任务删除，也不因此恢复CI/测试/完整构建。只读预读T09 #10，blocking #7/#9仍OPEN，后续按D007消费本地成果；本票收尾后再写T09代码。
+- 13:24：T08本地提交f020076，工作树干净后新建T09分支，无推送/PR。T09从本地前置开始开发，保留原blocking和未验收状态；已验收仍4/21。新阶段不会运行CI/测试/网络/浏览器或自动点击。
+- 13:24–13:42：T09接每会话独立认证桥接和同instance前检，HTTP/HTTPS上游、CONNECT与TLS分开；Windows反向TCP tuple/PID句柄/准确Job及二次新鲜查询准入，创建前QUERY副本绑定，同生命周期关闭。运行服务锁外网络/解密、前检报告持久成功后才启动；策略严格匹配绑定，不降direct。新UI显示同通道启动前修订/时刻/IP，不冒充持续网页采样。首轮4 P2为临时HTTP响应、SSE缓冲、DPAPI全局锁、创建成功后time失败提前释放锁；已修循环最终响应/逐块刷新、锁内只读密文锁外解密+代际ctx核对、资源立即转移给准确Job监督器并保留unknown-time特例到全树确认。13:42修复版生产包静态编译/源码测试TS类型/格式通过；6+3+8+2条回归未执行，复核中，无网络/程序/点击/CI。
+- 13:46：33份文档/本地链接/需求/路由/嵌入文档检查通过。二轮只读确认原4 P2闭环，新发现needsReconcile的历史PID被UI标当前通道；已不按PID判断，在历史详情明确当前未接管或重建桥接，最后聚焦复核中。
+- 最后聚焦确认历史报告P2已源码关闭，无剩余可信P1/P2；不等于实际验收。只读预读T10 #11全文、四项验收及blocking #10 OPEN，后续按D007消费本地T09成果；本票提交前不写T10。
 - 13:19–13:21：二轮确认首3项关闭，剩3 P2：原ctx固定拨号丢连接trace阶段、body/排队取消与期限误归因、超大文件未废旧preview。已实际Dial明确发阶段、真实ctx区分取消/超时/响应错误、非空文件先Discard再校验，补body受控回归与连接阶段断言。既有x/net IDNA标direct（不升版本/sum不变），许可注記补齐。13:21最后生产包静态编译、源码/测试TS类型与格式通过；最后聚焦只读复核无剩余可信P1/P2，仅源码结论。7+7+3新增回归未执行，准备本地T08提交，无网络/程序/UI/CI。
 
 ## 恢复资源与 GitHub

@@ -22,6 +22,8 @@ func (s *Service) applyRuntimeFault(slot *runtimeSlot, snapshot kernel.RuntimeSn
 		}
 	} else if !snapshot.ControlReady {
 		observed = &Error{Code: "CONTROL_CHANNEL_LOST", Message: "浏览器仍在，但私有控制通道已断开；不假报停止或重新生成身份。", Retryable: false}
+	} else if snapshot.ProxyError != nil {
+		observed = &Error{Code: snapshot.ProxyError.Code, Message: snapshot.ProxyError.Message, Retryable: snapshot.ProxyError.Retryable}
 	}
 	if observed == nil {
 		return

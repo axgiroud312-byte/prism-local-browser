@@ -5,6 +5,7 @@ package kernel
 import (
 	"context"
 	"errors"
+	"net"
 	"net/url"
 	"path/filepath"
 	"strconv"
@@ -13,12 +14,19 @@ import (
 	"time"
 	"unsafe"
 
+	"github.com/axgiroud312-byte/prism-local-browser/internal/proxy"
 	"github.com/google/uuid"
 	"golang.org/x/sys/windows"
 )
 
-// ManagedProfile is internal, not an RPC argument. The only supported network
-// policy here is explicitly selected direct; the workspace blocks proxy IDs.
+// ManagedProfile is host-only. A bound proxy MUST supply a private channel;
+// no upstream credential or endpoint override is accepted by the RPC.
+type ManagedNetwork interface {
+	Endpoint() string
+	BindBrowser(func(net.Conn) bool) error
+	Close() error
+	Fault() *proxy.CheckError
+}
 type ManagedProfile struct {
 	EnvironmentID string
 	SessionID     string
@@ -28,6 +36,7 @@ type ManagedProfile struct {
 	RestoreTabs   bool
 	URLs          []string
 	OnCreated     func(int, string) error
+	Network       ManagedNetwork
 }
 
 type ManagedProcess struct {
@@ -37,6 +46,7 @@ type ManagedProcess struct {
 	stopGate     chan struct{}
 	mu           sync.Mutex
 	lastSnapshot RuntimeSnapshot
+	network      ManagedNetwork
 }
 
 // Root death, control loss, and complete resource exit are distinct facts.
@@ -46,6 +56,7 @@ type RuntimeSnapshot struct {
 	ResourcesExited bool
 	ExitKnown       bool
 	ExitCode        uint32
+	ProxyError      *proxy.CheckError
 }
 
 func (process *ManagedProcess) PID() int              { return int(process.pipe.pid) }
@@ -69,6 +80,9 @@ func (process *ManagedProcess) Snapshot() RuntimeSnapshot {
 func (process *ManagedProcess) snapshotLocked() RuntimeSnapshot {
 	state, err := windows.WaitForSingleObject(process.pipe.process, 0)
 	result := RuntimeSnapshot{RootAlive: err == nil && state == uint32(windows.WAIT_TIMEOUT), ControlReady: !process.pipe.writeLost.Load()}
+	if process.network != nil {
+		result.ProxyError = process.network.Fault()
+	}
 	select {
 	case <-process.pipe.readEnded:
 		result.ControlReady = false
@@ -212,7 +226,17 @@ func LaunchManagedProfile(ctx context.Context, root string, record Record, profi
 		lock.release()
 		return nil, err
 	}
-	release := func() { releaseFiles(); lock.release() }
+	var networkGuard *proxyJobGuard
+	release := func() {
+		if profile.Network != nil {
+			_ = profile.Network.Close()
+		}
+		if networkGuard != nil {
+			networkGuard.close()
+		}
+		releaseFiles()
+		lock.release()
+	}
 	if err = VerifyFiles(directory, record.Files); err != nil {
 		release()
 		return nil, err
@@ -223,19 +247,46 @@ func LaunchManagedProfile(ctx context.Context, root string, record Record, profi
 		release()
 		return nil, problem("KERNEL_INTEGRITY_FAILED", "version-mismatch", "固定内核的实际PE版本不匹配，未改用其他构建。")
 	}
-	args := []string{"--no-first-run", "--no-default-browser-check", "--no-proxy-server", "--user-data-dir=" + lock.path, "--window-size=" + strconv.Itoa(profile.Width) + "," + strconv.Itoa(profile.Height)}
+	endpoint := ""
+	if profile.Network != nil {
+		endpoint = profile.Network.Endpoint()
+	}
+	networkArgs, err := managedNetworkArguments(endpoint)
+	if err != nil {
+		release()
+		return nil, err
+	}
+	args := []string{"--no-first-run", "--no-default-browser-check", "--user-data-dir=" + lock.path, "--window-size=" + strconv.Itoa(profile.Width) + "," + strconv.Itoa(profile.Height)}
+	args = append(args, networkArgs...)
 	if profile.RestoreTabs {
 		args = append(args, "--restore-last-session")
 	}
 	args = append(args, parameters...)
 	args = append(args, "about:blank")
-	p, err := startPipeWithSession(executable, args, profile.SessionID)
-	if err != nil {
+	var bindJob func(windows.Handle) error
+	if profile.Network != nil {
+		bindJob = func(job windows.Handle) error {
+			guard, err := newProxyJobGuard(job)
+			if err != nil {
+				return problem("PROXY_BRIDGE_UNAVAILABLE", "caller-guard-unavailable", "本次代理调用进程无法安全核对，未关闭沙箱或切为直连。")
+			}
+			networkGuard = guard
+			return profile.Network.BindBrowser(guard.allow)
+		}
+	}
+	p, err := startPipeWithBinding(executable, args, profile.SessionID, bindJob)
+	if p == nil {
 		release()
+		var networkProblem *proxy.CheckError
+		var nativeProblem *Problem
+		if errors.As(err, &networkProblem) || errors.As(err, &nativeProblem) {
+			return nil, err
+		}
 		return nil, problem("PROCESS_START_FAILED", "native-start-failed", "所选真实内核未能启动，未关闭沙箱或尝试其他内核。")
 	}
+	identityErr := err
 	var releaseOnce sync.Once
-	process := &ManagedProcess{pipe: p, done: make(chan struct{}), release: func() { releaseOnce.Do(release) }, stopGate: make(chan struct{}, 1)}
+	process := &ManagedProcess{pipe: p, done: make(chan struct{}), release: func() { releaseOnce.Do(release) }, stopGate: make(chan struct{}, 1), network: profile.Network}
 	go process.observeExit()
 	stopStartup := context.AfterFunc(ctx, func() { _ = process.Close() })
 	defer func() {
@@ -251,6 +302,9 @@ func LaunchManagedProfile(ctx context.Context, root string, record Record, profi
 		if err = profile.OnCreated(int(p.pid), p.createdAt); err != nil {
 			return process, err
 		}
+	}
+	if identityErr != nil {
+		return process, identityErr
 	}
 	var browser struct {
 		Product string `json:"product"`

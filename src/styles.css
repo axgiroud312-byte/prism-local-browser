@@ -448,6 +448,11 @@ h1 {
   border-color: #db5156;
   color: #fff;
 }
+
+.native-runtime-network-details { white-space: normal; font-size: 12px; max-width: 420px; margin-top: 6px; }
+.native-runtime-network-details summary { cursor: pointer; color: var(--blue); }
+.native-runtime-network-details p { color: var(--muted); line-height: 1.6; overflow-wrap: anywhere; }
+.native-runtime-network-details ul { padding-left: 18px; line-height: 1.6; }
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));

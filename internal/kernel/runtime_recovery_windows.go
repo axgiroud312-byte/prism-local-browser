@@ -33,32 +33,36 @@ func InspectManagedProfile(root, environmentID, sessionID, reference string, pid
 		return result, problem("VALIDATION_FAILED", "invalid-process-identity", "保存的进程身份无效，未操作任何进程。")
 	}
 	if pid > 0 {
-		if _, err := time.Parse(time.RFC3339Nano, createdAt); err != nil {
+		if _, err := time.Parse(time.RFC3339Nano, createdAt); err != nil && createdAt != "" {
 			return result, problem("VALIDATION_FAILED", "invalid-process-time", "保存的进程创建时间无法核对，未操作任何进程。")
 		}
-		handle, err := windows.OpenProcess(windows.SYNCHRONIZE|windows.PROCESS_QUERY_LIMITED_INFORMATION, false, uint32(pid))
-		if err != nil {
+		if createdAt == "" {
 			result.ProcessState = "unconfirmed"
-			if errors.Is(err, windows.ERROR_INVALID_PARAMETER) {
-				result.ProcessState = "exited"
-			}
 		} else {
-			var created, exited, kernelTime, userTime windows.Filetime
-			if err := windows.GetProcessTimes(handle, &created, &exited, &kernelTime, &userTime); err != nil {
+			handle, err := windows.OpenProcess(windows.SYNCHRONIZE|windows.PROCESS_QUERY_LIMITED_INFORMATION, false, uint32(pid))
+			if err != nil {
 				result.ProcessState = "unconfirmed"
-			} else if time.Unix(0, created.Nanoseconds()).UTC().Format(time.RFC3339Nano) != createdAt {
-				result.ProcessState = "reused"
-			} else {
-				state, err := windows.WaitForSingleObject(handle, 0)
-				result.ProcessState = "unconfirmed"
-				if err == nil && state == uint32(windows.WAIT_TIMEOUT) {
-					result.ProcessState = "alive"
-				}
-				if err == nil && state == windows.WAIT_OBJECT_0 {
+				if errors.Is(err, windows.ERROR_INVALID_PARAMETER) {
 					result.ProcessState = "exited"
 				}
+			} else {
+				var created, exited, kernelTime, userTime windows.Filetime
+				if err := windows.GetProcessTimes(handle, &created, &exited, &kernelTime, &userTime); err != nil {
+					result.ProcessState = "unconfirmed"
+				} else if time.Unix(0, created.Nanoseconds()).UTC().Format(time.RFC3339Nano) != createdAt {
+					result.ProcessState = "reused"
+				} else {
+					state, err := windows.WaitForSingleObject(handle, 0)
+					result.ProcessState = "unconfirmed"
+					if err == nil && state == uint32(windows.WAIT_TIMEOUT) {
+						result.ProcessState = "alive"
+					}
+					if err == nil && state == windows.WAIT_OBJECT_0 {
+						result.ProcessState = "exited"
+					}
+				}
+				_ = windows.CloseHandle(handle)
 			}
-			_ = windows.CloseHandle(handle)
 		}
 	}
 	lock, err := lockManagedProfile(root, environmentID, reference)
@@ -103,6 +107,12 @@ func InspectManagedProfile(root, environmentID, sessionID, reference string, pid
 		return result, problem("SESSION_IDENTITY_UNCONFIRMED", "invalid-lock-record", "目录会话记录包含额外内容，未清除或覆盖原记录。")
 	}
 	result.SessionMatches = metadata.EnvironmentID == environmentID && metadata.SessionID == sessionID && metadata.PID == pid && metadata.CreatedAt == createdAt && metadata.ResourceVersion == ManagedRuntimeVersion
+	// For a failed initial time observation, never guess/control a bare PID.
+	// Only the exact session Job being empty AND the real directory unlocked
+	// AND its retained session metadata matching can prove its tree has gone.
+	if pid > 0 && createdAt == "" && result.SessionMatches && result.ResourcesExited {
+		result.ProcessState = "exited"
+	}
 	if pid == 0 {
 		if metadata.EnvironmentID != environmentID || metadata.SessionID != sessionID || metadata.PID < 1 || metadata.ResourceVersion != ManagedRuntimeVersion {
 			return result, nil

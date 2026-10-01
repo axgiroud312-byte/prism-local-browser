@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/axgiroud312-byte/prism-local-browser/internal/kernel"
+	"github.com/axgiroud312-byte/prism-local-browser/internal/proxy"
 )
 
 type runtimeSlot struct {
@@ -123,8 +124,8 @@ func (s *Service) runtimeCall(request Request) Result {
 	if decode(request.Payload, &input) != nil || input.EnvironmentID == "" || strings.TrimSpace(input.RequestID) == "" || len(input.RequestID) > 128 {
 		return failure("VALIDATION_FAILED", "运行请求仅接受环境标识和请求标识；不能覆盖路径、参数或状态。", false)
 	}
-	if request.Method == "Runtime.Start" && input.NetworkPolicy != "direct" {
-		return failure("VALIDATION_FAILED", "当前仅支持用户明确确认的本机直连；未启动。", false)
+	if request.Method == "Runtime.Start" && input.NetworkPolicy != "direct" && input.NetworkPolicy != "proxy" {
+		return failure("VALIDATION_FAILED", "启动需明确选择直连或已绑定代理策略；不能自动回退。", false)
 	}
 	if request.Method == "Runtime.Stop" && input.NetworkPolicy != "" {
 		return failure("VALIDATION_FAILED", "停止请求不接受网络或启动覆盖项。", false)
@@ -155,8 +156,25 @@ func (s *Service) runtimeCall(request Request) Result {
 	if err != nil {
 		return failure("NOT_FOUND", "环境无法读取，未启动。", true)
 	}
+	var proxyRecord *ProxyView
+	var proxyRef string
 	if environment.ProxyID != "" {
-		return failure("PROXY_UNSUPPORTED", "此阶段尚未接入已绑定代理，环境未启动；不会绕过代理改为直连。", false)
+		if input.NetworkPolicy != "proxy" {
+			return failure("PROXY_POLICY_MISMATCH", "环境已绑定代理，拒绝直连启动；请明确使用已绑定代理。", false)
+		}
+		record, ref, err := s.savedProxy(environment.ProxyID)
+		if err != nil {
+			return failure("PROXY_UNAVAILABLE", "已绑定代理配置不存在或无法读取，未启动或改为直连。", true)
+		}
+		if record.Type != "http" && record.Type != "https" {
+			return failure("PROXY_UNSUPPORTED", "该代理协议的浏览器通道未支持，未启动或改为直连。", false)
+		}
+		if s.proxyChecks[record.ID] != nil && s.proxyPending[s.proxyChecks[record.ID].operation.ID] != nil {
+			return failure("STORAGE_WRITE_FAILED", "该代理前一个观测结果尚未保存，未启动；请先修复存储。", true)
+		}
+		proxyRecord, proxyRef = &record, ref
+	} else if input.NetworkPolicy != "direct" {
+		return failure("PROXY_POLICY_MISMATCH", "此环境没有绑定代理，不能将代理启动自动降为直连。", false)
 	}
 	if slot := s.runtimeSlots[input.EnvironmentID]; slot != nil && (slot.process != nil || slot.session.State == "starting" || slot.session.State == "stopping") {
 		if slot.session.State == "error" {
@@ -197,8 +215,11 @@ func (s *Service) runtimeCall(request Request) Result {
 		return failure("PATH_OUTSIDE_ROOT", "环境数据引用不在受管理的独立目录，未启动。", false)
 	}
 	sessionID := id()
-	operation := Operation{ID: id(), Kind: "runtime-start", State: "accepted", Stage: "queued", Total: 1, CompletedIDs: []string{}, EnvironmentID: environment.ID, SessionID: sessionID, KernelID: record.ID}
-	session := RuntimeSession{Mode: "native", EnvironmentID: environment.ID, SessionID: sessionID, OperationID: operation.ID, State: "starting", Revision: revision, FingerprintRevision: profile.Profile.ConfigRevision, KernelID: record.ID, UserDataRef: ref, NetworkPolicy: "direct", ResourceVersion: kernel.ManagedRuntimeVersion, LaunchStage: "queued", NextAction: "正在核验固定档案与实际进程，受理不代表已经运行。"}
+	operation := Operation{ID: id(), Kind: "runtime-start", State: "accepted", Stage: "queued", Total: 1, CompletedIDs: []string{}, EnvironmentID: environment.ID, SessionID: sessionID, KernelID: record.ID, ProxyID: environment.ProxyID}
+	session := RuntimeSession{Mode: "native", EnvironmentID: environment.ID, SessionID: sessionID, OperationID: operation.ID, State: "starting", Revision: revision, FingerprintRevision: profile.Profile.ConfigRevision, KernelID: record.ID, UserDataRef: ref, NetworkPolicy: input.NetworkPolicy, ResourceVersion: kernel.ManagedRuntimeVersion, LaunchStage: "queued", NextAction: "正在核验固定档案、网络通道与实际进程，受理不代表已经运行。"}
+	if proxyRecord != nil {
+		session.ProxyID, session.ProxyRevision, session.ProxyChannelID = proxyRecord.ID, proxyRecord.Revision, id()
+	}
 	result := s.acceptRuntimeRecord(request.Method, input, operation, &session)
 	if !result.OK {
 		return result
@@ -208,20 +229,26 @@ func (s *Service) runtimeCall(request Request) Result {
 	s.runtimeSlots[environment.ID] = slot
 	s.profileUses[environment.ID] = true
 	s.workers.Add(1)
-	go s.launchRuntime(ctx, slot, RuntimeLaunch{Root: s.root, EnvironmentID: environment.ID, SessionID: sessionID, DataReference: ref, Kernel: record, Profile: profile.Profile, Configuration: environment.Configuration, OnCreated: func(pid int, createdAt string) error {
+	go s.launchRuntime(ctx, slot, RuntimeLaunch{Root: s.root, EnvironmentID: environment.ID, SessionID: sessionID, DataReference: ref, Kernel: record, Profile: profile.Profile, Configuration: environment.Configuration, Proxy: proxyRecord, ProxyCredentialRef: proxyRef, OnCreated: func(pid int, createdAt string) error {
 		s.mu.Lock()
 		defer s.mu.Unlock()
 		if s.runtimeSlots[environment.ID] != slot || s.closed || s.closeRequested.Load() || slot.session.State == "stopping" {
 			return context.Canceled
 		}
 		slot.session.PID, slot.session.RootPID, slot.session.ProcessCreatedAt, slot.session.LaunchStage = pid, pid, createdAt, "process-created"
+		if createdAt == "" {
+			slot.session.LaunchStage = "identity-unconfirmed"
+		}
 		return s.persistRuntime(slot, &slot.start, "")
 	}})
 	return result
 }
 
 func launchManagedRuntime(ctx context.Context, input RuntimeLaunch) (RuntimeProcess, error) {
-	process, err := kernel.LaunchManagedProfile(ctx, input.Root, input.Kernel, kernel.ManagedProfile{EnvironmentID: input.EnvironmentID, SessionID: input.SessionID, UserDataRef: input.DataReference, Fingerprint: profileInput(input.Profile), Width: input.Configuration.Width, Height: input.Configuration.Height, RestoreTabs: input.Configuration.RestoreTabs, URLs: strings.Fields(input.Configuration.URLs), OnCreated: input.OnCreated})
+	if input.Configuration.ProxyID != "" && input.Network == nil {
+		return nil, &proxy.CheckError{Code: "PROXY_BRIDGE_UNAVAILABLE", Message: "代理通道没有就绪，未用直连参数启动。", Retryable: true}
+	}
+	process, err := kernel.LaunchManagedProfile(ctx, input.Root, input.Kernel, kernel.ManagedProfile{EnvironmentID: input.EnvironmentID, SessionID: input.SessionID, UserDataRef: input.DataReference, Fingerprint: profileInput(input.Profile), Width: input.Configuration.Width, Height: input.Configuration.Height, RestoreTabs: input.Configuration.RestoreTabs, URLs: strings.Fields(input.Configuration.URLs), OnCreated: input.OnCreated, Network: input.Network})
 	// A typed nil pointer becomes a non-nil interface. Normalize it before
 	// failure cleanup; missing kernels/locked directories must never panic.
 	if process == nil {
@@ -252,7 +279,23 @@ func (s *Service) launchRuntime(ctx context.Context, slot *runtimeSlot, input Ru
 		s.finishRuntimeStart(slot, nil, ctx.Err())
 		return
 	}
+	var network RuntimeProxyChannel
+	if input.Proxy != nil {
+		var err error
+		network, err = s.prepareRuntimeNetwork(ctx, slot, input)
+		if err != nil {
+			if network != nil {
+				_ = network.Close()
+			}
+			s.finishRuntimeStart(slot, nil, err)
+			return
+		}
+		input.Network = network
+	}
 	if err := s.runtimeStage(slot, "verifying-and-starting"); err != nil {
+		if network != nil {
+			_ = network.Close()
+		}
 		s.finishRuntimeStart(slot, nil, err)
 		return
 	}
@@ -262,6 +305,16 @@ func (s *Service) launchRuntime(ctx context.Context, slot *runtimeSlot, input Ru
 	}
 	startup, cancel := context.WithTimeout(ctx, 45*time.Second)
 	process, err := launcher(startup, input)
+	if network != nil {
+		if process != nil {
+			process = ownRuntimeNetwork(process, network)
+		} else {
+			_ = network.Close()
+		}
+		if err == nil && network.Fault() != nil {
+			err = network.Fault()
+		}
+	}
 	deadlineErr := startup.Err()
 	cancel()
 	if errors.Is(deadlineErr, context.DeadlineExceeded) {
@@ -298,6 +351,10 @@ func runtimeError(err error) *Error {
 	var persistence *runtimePersistenceFailure
 	if errors.As(err, &persistence) {
 		return storageFailure(err).Error
+	}
+	var networkError *proxy.CheckError
+	if errors.As(err, &networkError) {
+		return &Error{Code: networkError.Code, Message: networkError.Message, Retryable: networkError.Retryable}
 	}
 	if errors.Is(err, context.DeadlineExceeded) {
 		return &Error{Code: "PROCESS_READY_TIMEOUT", Message: "进程或控制通道未在时限内就绪，未报告运行中。", Retryable: true}
@@ -405,6 +462,9 @@ func (s *Service) finishRuntimeStart(slot *runtimeSlot, process RuntimeProcess, 
 		// permit an overlapping writer just because startup never became ready.
 		slot.process = process
 		slot.session.State, slot.session.PID, slot.session.RootPID, slot.session.ProcessCreatedAt = "error", process.PID(), process.PID(), process.CreatedAt()
+		if process.CreatedAt() == "" {
+			slot.session.LaunchStage = "identity-unconfirmed"
+		}
 		slot.session.Error = &Error{Code: "PROCESS_STOP_TIMEOUT", Message: "启动失败后本次进程树退出尚未确认，目录与档案锁仍保留；可重试停止。", Retryable: true}
 		slot.session.CanControl, slot.session.NextAction = process.Snapshot().ControlReady, "请先尝试正常关闭本次会话；未确认退出前不能启动或替换数据。"
 		_ = s.persistRuntime(slot, &slot.start, "启动失败，清理未确认")
@@ -417,6 +477,16 @@ func (s *Service) finishRuntimeStart(slot *runtimeSlot, process RuntimeProcess, 
 	}
 	if process == nil {
 		slot.session.LaunchStage = "no-process-created"
+	} else {
+		slot.session.PID, slot.session.CanControl, slot.session.CanForce = 0, false, false
+		slot.session.RootPID, slot.session.ProcessCreatedAt = process.PID(), process.CreatedAt()
+		if process.CreatedAt() == "" {
+			slot.session.LaunchStage = "identity-unconfirmed"
+		}
+		if snapshot := process.Snapshot(); snapshot.ExitKnown {
+			code := snapshot.ExitCode
+			slot.session.LastExitCode = &code
+		}
 	}
 	slot.session.NextAction = "本次启动未完成且资源已退出，可修复所示原因后使用原档案重试。"
 	_ = s.persistRuntime(slot, &slot.start, "浏览器启动失败")

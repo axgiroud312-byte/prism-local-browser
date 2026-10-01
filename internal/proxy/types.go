@@ -27,6 +27,9 @@ type CheckError struct {
 	Message   string `json:"message"`
 	Retryable bool   `json:"retryable"`
 }
+
+func (err *CheckError) Error() string { return err.Code + ": " + err.Message }
+
 type Step struct {
 	Stage   string `json:"stage"`
 	Status  string `json:"status"`
@@ -34,6 +37,7 @@ type Step struct {
 	Message string `json:"message"`
 }
 type Report struct {
+	ChannelID      string      `json:"channelId,omitempty"`
 	Mode           string      `json:"mode"`
 	AdapterVersion string      `json:"adapterVersion"`
 	ProxyID        string      `json:"proxyId"`

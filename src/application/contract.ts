@@ -122,7 +122,7 @@ export interface ApplicationService {
   installKernel?(request: KernelInstallRequest): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
   verifyKernel?(kernelId: string, requestId: string): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
   deleteKernel?(kernelId: string, requestId: string): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
-  startRuntime?(request: { environmentId: string; requestId: string; networkPolicy: "direct" }): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
+  startRuntime?(request: { environmentId: string; requestId: string; networkPolicy: "direct" | "proxy" }): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
   stopRuntime?(request: { environmentId: string; requestId: string }): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
   inspectRuntime?(ids: string[]): Promise<ApplicationResult<RuntimeSession[]>>;
   forceStopRuntime?(request: { environmentId: string; sessionId: string; requestId: string }): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
@@ -153,6 +153,7 @@ export interface ProxyImportPreview {
   duplicateGroups: Record<string, { lines: number[]; existingProxyIds: string[] }>;
 }
 export interface ProxyCheckReport {
+	channelId?: string;
   mode: "native"; adapterVersion: string; proxyId: string; revision: number;
   startedAt: string; finishedAt: string; durationMs: number; targetOrigin: string;
   steps: { stage: string; status: "running" | "passed" | "failed" | "unsupported"; time: string; message: string }[];
@@ -169,7 +170,11 @@ export interface RuntimeSession {
   fingerprintRevision: number;
   kernelId: string;
   userDataRef: string;
-  networkPolicy: "direct";
+  networkPolicy: "direct" | "proxy";
+  proxyId?: string;
+  proxyRevision?: number;
+  proxyChannelId?: string;
+  proxyReport?: ProxyCheckReport;
   pid?: number;
   processCreatedAt?: string;
   startedAt?: string;

@@ -42,6 +42,7 @@ type Options struct {
 	ProtectProxySecret   func(string, []byte) ([]byte, error)
 	UnprotectProxySecret func(string, []byte) ([]byte, error)
 	CheckProxy           func(context.Context, proxy.Configuration, *proxy.Credentials, func(proxy.Step)) proxy.Report
+	OpenProxyChannel     func(proxy.Configuration, *proxy.Credentials, proxy.BridgeOptions) (RuntimeProxyChannel, error)
 }
 type draft struct {
 	Kind        string

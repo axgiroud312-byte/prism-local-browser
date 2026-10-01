@@ -117,7 +117,7 @@ export function NativeProxyManager({ application, workspace, importOpen, onImpor
   }
 
   return <div className="native-proxy-manager">
-    <div className="info-strip"><ShieldCheck size={19} /><div><strong>本机凭据保护，真实分阶段检查</strong><p>HTTP / HTTPS支持认证检查和实际出口读取，TLS校验不能跳过。SOCKS5可保存但暂不支持检查。代理保存或前检成功不代表浏览器代理通道与断线保护已接入；当前绑定代理的环境仍不能启动。</p></div></div>
+    <div className="info-strip"><ShieldCheck size={19} /><div><strong>本机凭据保护，独立环境通道</strong><p>HTTP / HTTPS支持认证检查，TLS校验不能跳过。环境启动会重新建立独立认证通道并做同通道前检，不凭历史成功启动。SOCKS5暂不支持检查或启动；浏览器代理通道代码已接，实际验收与运行期全路径断线保护仍待补。</p></div></div>
     {importOpen && <section className="work-card native-proxy-form" aria-labelledby="native-proxy-import-title">
       <h2 id="native-proxy-import-title">导入代理 · 先预览再保存</h2>
       <p>每行一条：<code>http://user:password@host:port</code>、<code>https://host:port</code>或<code>host:port:user:password</code>。IPv6使用<code>socks5://[2001:db8::1]:1080</code>；凭据中的分隔符使用URI编码。预览不回显认证；HTTP到代理不加密认证，HTTPS才提供TLS保护。</p>

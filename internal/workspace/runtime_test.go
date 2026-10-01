@@ -195,7 +195,7 @@ func TestRuntimeRequiresExplicitDirectAndNeverBypassesBoundProxy(t *testing.T) {
 	p := preview(t, s, "edit", environment.ID)
 	p.Environment.ProxyID = "synthetic-proxy"
 	value[map[string]any](t, call(s, "Environment.Update", Mutation{PreviewID: p.PreviewID, Configuration: p.Environment.Configuration, ExpectedRevision: p.ExpectedRevision, RequestID: id()}))
-	wantError(t, call(s, "Runtime.Start", runtimeRequest{EnvironmentID: environment.ID, RequestID: id(), NetworkPolicy: "direct"}), "PROXY_UNSUPPORTED")
+	wantError(t, call(s, "Runtime.Start", runtimeRequest{EnvironmentID: environment.ID, RequestID: id(), NetworkPolicy: "direct"}), "PROXY_POLICY_MISMATCH")
 	if launches.Load() != 0 {
 		t.Fatal("unsupported policy executed a process")
 	}

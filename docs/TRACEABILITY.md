@@ -78,6 +78,12 @@ UX-001、DOC-001 的发布入口在 [安装器](../build/windows/installer/prism
 - PRX-001、UX-001：[`HTTP/HTTPS前检`](../internal/proxy/check.go)的连接/TLS/隧道认证/目标访问/实际出口与时刻，[`异步终态`](../internal/workspace/proxy_checks.go)的取消/有界资源、结果待保存不重发网络及重开中断；活动关联真实代理operation错误，不把失败文案投影成功。SOCKS5可保存、检查不支持，不跳TLS或静默直连。
 - [`NativeProxyManager`](../src/components/NativeProxyManager.tsx)和Wails安全字段接入native专用路由；keep/replace/clear避免空投影回填认证，错误/未选行保留，清理输入与过期预览，删除确认与引用提示。独立网页原型仍为demo。7条代理库/7条服务/3条adapter回归仅编写未执行，无新UI/实际公共出口证据，[清单](verification/T08.md)。本票不是T09浏览器代理通道或T11断线保护。
 
+### T09 独立认证代理通道（已实现，未运行验收）
+
+- PRX-001、ENV-003：[`桥接`](../internal/proxy/bridge.go)、[`同通道前检`](../internal/proxy/bridge_check.go)、[`运行接入`](../internal/workspace/runtime_network.go)；固定HTTP/HTTPS上游、独立session监听/生命周期，HTTP转发、HTTPS目标CONNECT与代理TLS分开，失败不直接拨号目标。报告仅安全ChannelID/修订/阶段/时间，秘密不进入参数/RPC。
+- PRX-001、DATA-001：[`Windows调用进程核对`](../internal/kernel/proxy_guard_windows.go)和创建前QUERY副本绑定；仅当前host+token前检或准确Job客户端，其他进程拒绝。创建后身份读取失败仍保留准确Job/目录资源直到全树确认，锁外解密不阻塞其他查询/停止；重开只核对不复活桥。
+- UX-001、ENV-003：[`NativeRuntimeNetwork`](../src/components/NativeRuntimeNetwork.tsx)和App固定direct/proxy策略、未绑定确认直连；安全报告与会话channel/修订错配拒绝。6条桥接/3条内核/8条服务/2条adapter回归仅编写未执行，实际Windows/普通用户沙箱/API/网络/新页面未验证；[清单](verification/T09.md)，T11不因参数或前检通过。
+
 以下关联于 2026-09-30 发布，表示计划实现范围，不能据此判断已完成。当前状态与 blocking 依赖以 GitHub 为准；完整顺序见 [开发票据索引](ISSUES.md)，共同范围见 [总规格 Issue](https://github.com/axgiroud312-byte/prism-local-browser/issues/1)。
 
 | 需求 ID  | 实现或专项验证 Issue                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | 整体验收                                                                       |
