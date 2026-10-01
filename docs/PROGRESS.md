@@ -1,11 +1,11 @@
 # Goal 当前执行位置
 
-更新时间：2026-10-01 11:25 Asia/Shanghai。
+更新时间：2026-10-01 11:56 Asia/Shanghai。
 
 - Goal：执行中；[规则](GOAL.md)；完成 **4/21**（验收任务计数）。
-- 当前任务：T05 / [Issue #6](https://github.com/axgiroud312-byte/prism-local-browser/issues/6)，进行中。
-- 当前步骤：T05实现/三项P2修复已完成，文档与真实旧样本已同步。最终复验遇C盘不足；用户改为清理无用产物、暂停CI/完整回归、先开发完。准备本地保存T05开发检查点，再继续T06实现；新增界面、最终构建及收尾验收仍待补，不关闭#6。
-- 现场：`goal/t05-fingerprint-revisions`，记录提交`61d663f`；未提交为kernel编译/冻结输入诊断、workspace/schema3与测试、应用契约/Demo/Wails、档案面板/页面、CI、只读数据库验收器及进度文档。T03全部证据/旧空库保留，无用户遗留改动。
+- 当前任务：T06 / [Issue #7](https://github.com/axgiroud312-byte/prism-local-browser/issues/7)，实现中；T05已实现待验收。
+- 当前步骤：T06实现与只读安全复核结束，1 P1/7 P2全部按根因关闭；仅必要类型/文档/生产包静态编译通过，全部新增回归和真实用例未运行。准备本地提交检查点再继续T07；不运行浏览器、点击、CI或全量回归，不关闭待验收issue。
+- 现场：`goal/t06-runtime-isolation`，基于本地T05 `f6e7314`；未提交为kernel长期会话/目录锁/串行pipe，workspace运行服务/类型/生命周期接入，应用契约/Wails/App，adapter/Go/目录/真实隔离用例及T06/进度文档。T03证据/旧空库/包与内核ZIP保留，无用户遗留改动；本任务缓存与可重建exe已清理。
 
 ## 任务状态
 
@@ -15,8 +15,8 @@
 | T02 | #3 | 已完成 | 代码 `134dc66`、记录 `fc4aa47`、合入 `44517c5`；[记录](verification/T02.md)；[PR #24](https://github.com/axgiroud312-byte/prism-local-browser/pull/24)，最终 CI 全通过 |
 | T03 | #4 | 已完成 | 代码`62dae8e`、合入`99c6a36`；[验收](verification/T03.md)、[PR #25](https://github.com/axgiroud312-byte/prism-local-browser/pull/25)，Windows11/干净runner闭环与CI全通过 |
 | T04 | #5 | 已完成 | 代码`89e94d7`、合入`dc0a148`、[PR #26](https://github.com/axgiroud312-byte/prism-local-browser/pull/26)；[验收](verification/T04.md)/[证据](verification/T04-kernel-acceptance.json)，CI全通过 |
-| T05 | #6 | 已实现待验收 | [验收清单](verification/T05.md)；相关回归/真实旧样本通过，最终UI/构建/全量/CI待补 |
-| T06 | #7 | 待开始 | — |
+| T05 | #6 | 已实现待验收 | 本地 `f6e7314`；[验收清单](verification/T05.md)，未推送/PR，最终UI/构建/全量/CI待补 |
+| T06 | #7 | 实现中 | [验收清单](verification/T06.md)；按D007消费本地T05前置，原blocking状态保留 |
 | T07 | #8 | 待开始 | — |
 | T08 | #9 | 待开始 | — |
 | T09 | #10 | 待开始 | — |
@@ -91,7 +91,11 @@
 - 23:28–23:45：真实148安装后消费SQLite保存档案做三次无头读取：修订1 seed1055482829/PID64024、重生成修订2 seed546308099/PID69548、回滚并重开修订3 seed1055482829/PID10924；实际版本148.0.7778.215、CPU8/de-DE/Berlin一致，三PID正常退出。编译器未下发未验收的菜单语言、GPU/字体/屏幕参数；网站语言在不下发lang的条件下实际回读通过。合成已有数据文件和引用不变、诊断目录清空。相关kernel/workspace测试通过；新增3条Demo档案回归先红后绿，32项JS通过。扩展能力system类型首次导致旧内核页标签缺类型，补明确标签后typecheck通过。新增面板/历史/变更预览/过期草稿阻断已接入，但未启动UI或点击，未记真实页面验收。
 - 2026-10-01 10:49–10:59：只读评审发现Demo旧预览可用最新expectedRevision追加重复档案修订、相同提交并发重试缓存交叉，以及Go特殊空/Local时区不是冻结IANA输入。各补失败回归先红后绿，Demo统一同步写入且各RPC独占幂等缓存，检查原预览基线/hash/连续修订；编译器与旧API统一拒绝特殊时区。37项application/Wails测试、typecheck与全部kernel/workspace Go通过；前端只读复核确认两项关闭且无新增可信阻断，后端时区修复由实际回归核对。保存/生成互锁、pending兼容说明及普通内核切换锁定已补；无页面点击。旧UIA脚本只维护schema3/显式预览步骤，不执行。下一步票末后台检查、最终实际无头读值、Windows构建，再提交推送/CI；#6与新增UI验收保持未完成。
 - 11:00–11:25：最终保存档案无头复验在安装阶段返回STORAGE_WRITE_FAILED；C盘仅约190MB，而ZIP181MiB+解包424.6MiB不可完成。询问临时目录后用户改为先清理无用构建、不要继续CI测试、先开发完。已按授权清理仅本项目GOCACHE与build/bin两个可重建exe，释放约485MiB，C盘约670MiB空闲；没有删除源码、内核、T03包/旧数据库或证据，没有创建D盘目录。暂停后续CI/完整回归/真实复验，不开PR或推main触发CI。D007与GOAL记录开发优先覆盖旧单票验收节奏，待验收票不计数；T05真实旧样本已公开并保留原时间/版本边界，合同/追踪/验收记录同步。T06 #7全文已读，原生blocking #6仍OPEN，本地前置实现可用；先保存T05本地提交再继续后票开发。
-- 11:27：仅必要静态核对通过：typecheck、29文档/链接、两个只读数据库脚本node --check、gofmt与git diff --check。没有运行CI、全量回归、构建或真实进程/页面测试。
+- 11:25：仅必要静态核对通过：typecheck、29文档/链接、两个只读数据库脚本node --check、gofmt与git diff --check。没有运行CI、全量回归、构建或真实进程/页面测试。
+- 11:25–11:31：T05实现/证据/规则本地提交f6e7314，工作树当时干净，无推送/PR。创建本地T06分支；#7目标/5项验收和唯一blocking #6全文已核对，按D007继续开发且不改其未验收状态。新增运行应用接口、ID/direct白名单、明确直连确认、原生状态刷新与三个adapter回归（未运行）；只读代理仅查内核pipe/锁/Job复用，主代理写前端，不并行实施其他票。
+- 11:34–11:43：新增Runtime.Start/Stop/Inspect持久任务/请求去重与会话、单昂贵启动门控（不限制保持运行数）、固定档案/精确构建检查、运行中仅安全元数据可编辑。kernel长期会话持有规范化独立目录锁与文件pins，拒绝RPC路径/参数、junction及硬链接锁文件；私有pipe串行、有界写和自有Job全树退出后释放。Wails刷新真实状态、直连确认、取消启动/停止和关键字段锁定已接。5条workspace生命周期、2条目录锁、3条adapter及实际A/B存储隔离/重开用例仅编写，全部未运行；后者额外要求明确开关且会开正常可见窗口，当前不执行。只读源码安全评审在进行，主代理补验证入口和文档，不重复运行CI/构建/程序。
+- 11:45–11:52：源码评审发现1 P1/7 P2（启动typed-nil、忙状态旧回滚修订、目录原地reparse、数据hardlink共享、主进程退出被Job未清空掩盖、写端丢失假重试、关闭超时假完成/漏关库、元数据响应假ready），已按根因修复，补5条生命周期/2条目录回归，累计10+4条，仅编写未运行。typecheck/30文档通过；生产kernel/workspace静态编译首次通过，修复版首次因WAIT_TIMEOUT为Errno失败，显式uint32后通过。编译不生成桌面exe、不执行测试/进程，缓存复用避免重新完整构建。只读复核正在进行，主代理仅完善测试/文档；CI/真实窗口/全量仍未运行。
+- 11:56：只读复核确认原8项全部源码层面关闭且无新增可信P1/P2；修复后静态生产包编译与格式通过，新增fixture未执行。GitHub仅发布#6/#7准确开发评论，没有PR/推送/触发CI，不更改OPEN或blocking。#8目标和唯一blocking #7已读，后续消费本地T06实现继续T07，不把静态结果统计为功能验收。
 
 ## 恢复资源与 GitHub
 

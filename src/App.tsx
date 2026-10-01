@@ -258,6 +258,8 @@ export default function App({ application }: { application: ApplicationService }
   const [drawer, setDrawer] = useState<Drawer | null>(null);
   const drawerRef = useRef(drawer);
   drawerRef.current = drawer;
+  const drawerRuntime = drawer?.kind === "edit" ? workspace.runtimeSessions?.[drawer.environment.id] : undefined;
+  const profileBusy = nativeMode && !!drawerRuntime && (["starting", "running", "stopping"].includes(drawerRuntime.state) || !!drawerRuntime.pid);
   const previewOpenSequence = useRef(0);
   const fingerprintBusy = useRef(false);
   const [dialog, setDialog] = useState<Dialog | null>(null);
@@ -293,6 +295,7 @@ export default function App({ application }: { application: ApplicationService }
   const creationOperation = useRef<string | null>(null);
   const latestOperationEvent = useRef<OperationEvent | undefined>(undefined);
   const checkingBusy = useRef(false);
+  const runtimeActions = useRef(new Set<string>());
   const initialDraft = useRef("");
   const initialFingerprintHash = useRef("");
   const backupFile = useRef<HTMLInputElement>(null);
@@ -331,6 +334,19 @@ export default function App({ application }: { application: ApplicationService }
     latestOperationEvent.current = event;
     if (event) setBatch({ label: "创建环境", done: event.operation.completedIds.length, total: event.operation.total });
   }), [application]);
+  const nativeRuntimeActive = nativeMode && Object.values(workspace.runtimeSessions ?? {}).some(session => ["starting", "running", "stopping"].includes(session.state) || !!session.pid);
+  useEffect(() => {
+    if (!nativeRuntimeActive || !application.refresh) return;
+    let cancelled = false;
+    let timer: ReturnType<typeof setTimeout>;
+    const poll = async () => {
+      if (cancelled) return;
+      await application.refresh?.();
+      if (!cancelled) timer = setTimeout(() => void poll(), 1000);
+    };
+    timer = setTimeout(() => void poll(), 1000);
+    return () => { cancelled = true; clearTimeout(timer); };
+  }, [application, nativeRuntimeActive]);
   useEffect(() => {
     const change = () => {
       const r = location.hash.replace("#/", "") as Route;
@@ -435,6 +451,7 @@ export default function App({ application }: { application: ApplicationService }
   const errors = state.environments.filter((e) => e.status === "error").length;
   const patchDraft = (value: Partial<Environment>) => {
     if (saving.current) return;
+    if (profileBusy && Object.keys(value).some(key => !["name", "group", "note"].includes(key))) return;
     setFormError("");
     setDrawer((d) =>
       d ? { ...d, requestId: uid("request"), environment: { ...d.environment, ...value } } : d,
@@ -476,7 +493,7 @@ export default function App({ application }: { application: ApplicationService }
     });
   }
   async function generateProfile(regenerate = false) {
-    if (!drawer || fingerprintBusy.current || saving.current) return;
+    if (!drawer || fingerprintBusy.current || saving.current || profileBusy) return;
     const target = drawer.previewId;
     fingerprintBusy.current = true;
     setGenerating(true);
@@ -489,7 +506,7 @@ export default function App({ application }: { application: ApplicationService }
     } finally { fingerprintBusy.current = false; setGenerating(false); }
   }
   async function previewProfileRestore(revision: number) {
-    if (!drawer || fingerprintBusy.current || saving.current) return;
+    if (!drawer || fingerprintBusy.current || saving.current || profileBusy) return;
     const target = drawer.previewId;
     fingerprintBusy.current = true; setGenerating(true); setFormError("");
     try {
@@ -547,7 +564,22 @@ export default function App({ application }: { application: ApplicationService }
     }
   }
   async function launch(ids: string[]) {
-    if (nativeMode) { notify("真实浏览器启动尚未接入，未安装内核时不能启动。", true); return; }
+    if (nativeMode) {
+      if (!application.startRuntime) { notify("当前桌面版本未接入真实启停。", true); return; }
+      const targets = [...new Set(ids)].filter(id => !runtimeActions.current.has(`start:${id}`));
+      if (!targets.length) return;
+      if (!window.confirm("当前仅支持本机直连，网站可看到本机网络出口。已绑定代理的环境将被阻止，不会绕过代理。确认使用本机直连启动所选环境？")) return;
+      for (const id of targets) {
+        runtimeActions.current.add(`start:${id}`);
+        try {
+          const result = await application.startRuntime({ environmentId: id, requestId: uid("request"), networkPolicy: "direct" });
+          if (!result.ok) { notify(result.error.message, true); continue; }
+          notify("启动任务已受理；内核和控制通道就绪后才显示运行中。");
+        } finally { runtimeActions.current.delete(`start:${id}`); }
+      }
+      setMenu(null);
+      return;
+    }
     if (batchBusy.current) {
       notify("请等待当前批次完成，或先取消剩余任务。", true);
       return;
@@ -603,7 +635,20 @@ export default function App({ application }: { application: ApplicationService }
     setBatch(null);
   }
   async function stop(ids: string[]) {
-    if (nativeMode) { notify("真实浏览器进程尚未接入，没有执行模拟关闭。", true); return; }
+    if (nativeMode) {
+      if (!application.stopRuntime) { notify("当前桌面版本未接入真实停止。", true); return; }
+      for (const id of [...new Set(ids)]) {
+        if (runtimeActions.current.has(`stop:${id}`)) continue;
+        runtimeActions.current.add(`stop:${id}`);
+        try {
+          const result = await application.stopRuntime({ environmentId: id, requestId: uid("request") });
+          if (!result.ok) notify(result.error.message, true);
+          else notify("停止任务已受理；等待本次会话退出，不会清除浏览数据。");
+        } finally { runtimeActions.current.delete(`stop:${id}`); }
+      }
+      setMenu(null);
+      return;
+    }
     batchCancelled.current = true;
     for (const id of ids) {
       const e = current.current.environments.find((i) => i.id === id);
@@ -741,7 +786,7 @@ export default function App({ application }: { application: ApplicationService }
   // Selecting an installed build still requires a complete matching preview.
   const pendingConfiguration = nativeMode && drawer?.environment.coreId === "kernel-pending";
   const canSaveProfile = pendingConfiguration || profileIsFresh;
-  const canConfigureProfileField = (field: string) => !nativeMode || !!selectedKernelRecord?.report.capabilities.some(capability => capability.field === field && capability.status === "configurable" && capability.source === "observed");
+  const canConfigureProfileField = (field: string) => !profileBusy && (!nativeMode || !!selectedKernelRecord?.report.capabilities.some(capability => capability.field === field && capability.status === "configurable" && capability.source === "observed"));
   return (
     <div className="app-shell">
       <aside
@@ -950,7 +995,7 @@ export default function App({ application }: { application: ApplicationService }
                   </div>
                   <span className="stat-foot">
                     <span className="status-dot green-dot" />
-                    {nativeMode ? "环境真实启停尚未接入" : "模拟运行状态"}
+                    {nativeMode ? "本机真实会话 · 仅明确直连" : "模拟运行状态"}
                   </span>
                 </div>
                 <div className="stat-card">
@@ -1266,8 +1311,9 @@ export default function App({ application }: { application: ApplicationService }
                                 ) : (
                                   <span className="status-dot" />
                                 )}
-                                {nativeMode && !state.kernels.find(k => k.id === e.coreId)?.available ? "未就绪" : statusLabels[e.status]}
-                              </span>
+                                 {nativeMode && !state.kernels.find(k => k.id === e.coreId)?.available ? "未就绪" : statusLabels[e.status]}
+                               </span>
+                               {nativeMode && e.error && <div className="cell-secondary" role="status">{e.error}</div>}
                             </td>
                             <td>
                               <span className="last-open">
@@ -1276,13 +1322,14 @@ export default function App({ application }: { application: ApplicationService }
                             </td>
                             <td>
                               <div className="row-actions">
-                                {e.status === "running" ? (
+                                {e.status === "running" || (nativeMode && (e.status === "starting" || !!workspace.runtimeSessions?.[e.id]?.pid)) ? (
                                   <Button
-                                    className="stop-button compact"
+                                     className="stop-button compact"
+                                     disabled={e.status === "stopping"}
                                     onClick={() => stop([e.id])}
                                   >
                                     <Square size={12} />
-                                    关闭
+                                     {e.status === "starting" ? "取消启动" : "关闭"}
                                   </Button>
                                 ) : (
                                   <Button
@@ -1979,7 +2026,7 @@ export default function App({ application }: { application: ApplicationService }
             <span>
               <Monitor size={13} />
               Windows 本地版<span className="footer-separator">·</span>
-              {nativeMode ? "SQLite 本机持久化 · 精确内核可核验，环境启停待接入" : "仅供交互验收，请勿输入真实凭据"}
+              {nativeMode ? "SQLite 本机持久化 · 真实启停开发中，待验收 · 仅直连" : "仅供交互验收，请勿输入真实凭据"}
             </span>
             <button
               onClick={() => {
@@ -2111,6 +2158,7 @@ export default function App({ application }: { application: ApplicationService }
                   >
                     <select
                       aria-label="绑定代理"
+                      disabled={profileBusy || savePending}
                       value={drawer.environment.proxyId}
                       onChange={(e) => patchDraft({ proxyId: e.target.value })}
                     >
@@ -2142,7 +2190,7 @@ export default function App({ application }: { application: ApplicationService }
                   <Field label="固定内核版本">
                     <select
                       aria-label="固定内核版本"
-                      disabled={generating || savePending || (drawer.kind === "edit" && (!nativeMode || state.environments.find(environment => environment.id === drawer.environment.id)?.coreId !== "kernel-pending"))}
+                      disabled={generating || savePending || profileBusy || (drawer.kind === "edit" && (!nativeMode || state.environments.find(environment => environment.id === drawer.environment.id)?.coreId !== "kernel-pending"))}
                       value={drawer.environment.coreId}
                       onChange={(e) => patchDraft({ coreId: e.target.value })}
                     >
@@ -2171,7 +2219,7 @@ export default function App({ application }: { application: ApplicationService }
                     </div>
                     <Button
                       className="soft-primary"
-                      disabled={generating || savePending || !canGenerateProfile}
+                      disabled={generating || savePending || profileBusy || !canGenerateProfile}
                       onClick={() => void generateProfile(true)}
                     >
                       {generating ? (
@@ -2280,7 +2328,8 @@ export default function App({ application }: { application: ApplicationService }
                       </select>
                     </Field>
                   </div>
-                  <FingerprintRevisionPanel preview={drawer.fingerprint} history={drawer.history} native={nativeMode} stale={!profileIsFresh && !pendingConfiguration} busy={generating || savePending} canGenerate={canGenerateProfile} dataRef={drawer.userDataRef} onPreview={() => void generateProfile()} onRestore={revision => void previewProfileRestore(revision)} />
+                  {profileBusy && <p className="field-hint">环境正在运行或停止，只能保存名称、分组和备注；设备、代理及启动偏好需停止后修改。</p>}
+                  <FingerprintRevisionPanel preview={drawer.fingerprint} history={drawer.history} native={nativeMode} stale={!profileIsFresh && !pendingConfiguration} busy={generating || savePending || profileBusy} canGenerate={canGenerateProfile} dataRef={drawer.userDataRef} onPreview={() => void generateProfile()} onRestore={revision => void previewProfileRestore(revision)} />
                 </>
               )}
               {drawer.tab === "preferences" && (
@@ -2296,6 +2345,7 @@ export default function App({ application }: { application: ApplicationService }
                     <textarea
                       rows={4}
                       aria-label="启动网址"
+                      disabled={profileBusy || savePending}
                       value={drawer.environment.urls}
                       onChange={(e) => patchDraft({ urls: e.target.value })}
                       placeholder="https://example.com"
@@ -2304,7 +2354,7 @@ export default function App({ application }: { application: ApplicationService }
                   <div className="field-row">
                     <Field label="窗口宽度">
                       <input
-                        disabled={generating || savePending}
+                        disabled={generating || savePending || profileBusy}
                         type="number"
                         value={drawer.environment.width}
                         onChange={(e) =>
@@ -2314,7 +2364,7 @@ export default function App({ application }: { application: ApplicationService }
                     </Field>
                     <Field label="窗口高度">
                       <input
-                        disabled={generating || savePending}
+                        disabled={generating || savePending || profileBusy}
                         type="number"
                         value={drawer.environment.height}
                         onChange={(e) =>
@@ -2337,6 +2387,7 @@ export default function App({ application }: { application: ApplicationService }
                     <input
                       type="checkbox"
                       checked={drawer.environment.restoreTabs}
+                      disabled={profileBusy || savePending}
                       onChange={(e) =>
                         patchDraft({ restoreTabs: e.target.checked })
                       }
@@ -2350,14 +2401,14 @@ export default function App({ application }: { application: ApplicationService }
                     <ShieldCheck size={19} />
                     <div>
                       <strong>独立数据目录</strong>
-                      <p>{nativeMode ? "真实浏览器目录将在首次受控启动时分配；当前未接入启动。" : "桌面版为此环境分配独立浏览器目录。"}</p>
+                      <p>{nativeMode ? "首次启动创建本环境独立目录；停止与档案修改保留数据，不与其他环境共享。" : "桌面版为此环境分配独立浏览器目录。"}</p>
                     </div>
                   </div>
                   <div className="policy-item">
                     <LockKeyhole size={19} />
                     <div>
                       <strong>保留登录数据</strong>
-                      <p>{nativeMode ? "当前只保存环境配置；尚无真实 Cookie 或登录数据。" : "关闭窗口和修改代理时保留原有 Cookie。"}</p>
+                      <p>{nativeMode ? "浏览器自身保存本环境数据；管理端 Cookie 导入仍待接入。实际隔离与重开保留待统一验收。" : "关闭窗口和修改代理时保留原有 Cookie。"}</p>
                     </div>
                   </div>
                 </>

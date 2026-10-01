@@ -60,6 +60,12 @@ UX-001、DOC-001 的发布入口在 [安装器](../build/windows/installer/prism
 - [`服务回归`](../internal/workspace/fingerprints_test.go)、[`Demo回归`](../tests/application.test.ts)及[`Wails模式/白名单`](../tests/wails-adapter.test.ts)覆盖事务失败/重试/幂等、原预览冲突、同内核限制、特殊时区拒绝和历史重开。37项相关JS、类型与kernel/workspace Go通过；三项评审P2已修复。
 - [`真实保存档案回读`](../internal/workspace/fingerprints_real_test.go)与[实际样本](verification/T05-saved-profile-observations.json)证明已保存→重生成→回滚→服务重开仍复用原输入，合成文件/引用保持、诊断进程正常退出。样本是2026-09-30评审前工作树结果，不能冒充最终版本全量通过；真实Cookie与正常目录会话未验收。2026-10-01最终复验因C盘不足失败，随后用户要求先开发、停止CI/完整回归；新增UI仍未操作，[逐票记录](verification/T05.md)。
 
+### T06 正常会话与独立目录（开发中，未运行验收）
+
+- ENV-003、CORE-001：[`运行服务`](../internal/workspace/runtime.go)读取固定档案/实际构建与数据引用，持久受理/去重，串行昂贵启动。客户端仅环境ID/requestId和明确direct；已绑定代理阻断，不接受路径/参数/PID覆盖。进程/控制通道就绪才running，真实状态经Wails/App刷新；正常停止只作用于本次自有Job，超时/清理未确认保留busy。
+- DATA-001：[`长期内核会话`](../internal/kernel/runtime_windows.go)、[`实际目录锁`](../internal/kernel/profile_lock_windows.go)持有实际目录与不可变文件pins，拒绝非法/链接路径及硬链接锁文件，Job全树退出才释放。不删除正常profile；停止/重开保持保存seed与数据引用，当前未以运行证据核验此结论。
+- 新增[`服务回归`](../internal/workspace/runtime_test.go)、[`目录用例`](../internal/kernel/profile_lock_windows_test.go)、adapter回归与[`A/B真实Cookie/LocalStorage/IndexedDB及重开`](../internal/workspace/runtime_real_test.go)仅编写，尚未运行。该真实用例需要独立开关，会打开可见窗口，当前不自动执行。用户先开发的规则与[剩余验收](verification/T06.md)保留，不能据源码入口声称#7已完成。
+
 以下关联于 2026-09-30 发布，表示计划实现范围，不能据此判断已完成。当前状态与 blocking 依赖以 GitHub 为准；完整顺序见 [开发票据索引](ISSUES.md)，共同范围见 [总规格 Issue](https://github.com/axgiroud312-byte/prism-local-browser/issues/1)。
 
 | 需求 ID  | 实现或专项验证 Issue                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | 整体验收                                                                       |

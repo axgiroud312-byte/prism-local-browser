@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"os"
 	"sync"
+	"sync/atomic"
 	"time"
 	"unsafe"
 
@@ -33,6 +34,8 @@ type pipeProcess struct {
 	responses   chan pipeReply
 	stopped     chan struct{}
 	closeOnce   sync.Once
+	commandGate chan struct{}
+	writeLost   atomic.Bool
 }
 
 func startPipe(executable string, args []string) (_ *pipeProcess, resultErr error) {
@@ -104,7 +107,7 @@ func startPipe(executable string, args []string) (_ *pipeProcess, resultErr erro
 		windows.CloseHandle(info.Process)
 		return nil, err
 	}
-	p := &pipeProcess{process: info.Process, job: job, read: parentRead, write: parentWrite, pid: info.ProcessId, createdAt: time.Unix(0, created.Nanoseconds()).UTC().Format(time.RFC3339Nano), responses: make(chan pipeReply, 16), stopped: make(chan struct{})}
+	p := &pipeProcess{process: info.Process, job: job, read: parentRead, write: parentWrite, pid: info.ProcessId, createdAt: time.Unix(0, created.Nanoseconds()).UTC().Format(time.RFC3339Nano), responses: make(chan pipeReply, 16), stopped: make(chan struct{}), commandGate: make(chan struct{}, 1)}
 	go p.readLoop()
 	return p, nil
 }
@@ -152,21 +155,81 @@ func (p *pipeProcess) readLoop() {
 		}
 	}
 }
-func (p *pipeProcess) send(method string, params any, session string) (int, error) {
+func (p *pipeProcess) packet(method string, params any, session string) (int, []byte, error) {
 	p.sequence++
-	request := map[string]any{"id": p.sequence, "method": method, "params": params}
+	id := p.sequence
+	request := map[string]any{"id": id, "method": method, "params": params}
 	if session != "" {
 		request["sessionId"] = session
 	}
 	bytes, err := json.Marshal(request)
 	if err != nil {
+		return 0, nil, err
+	}
+	return id, append(bytes, 0), nil
+}
+func (p *pipeProcess) send(method string, params any, session string) (int, error) {
+	id, packet, err := p.packet(method, params, session)
+	if err != nil {
 		return 0, err
 	}
-	_, err = p.write.Write(append(bytes, 0))
-	return p.sequence, err
+	_, err = p.write.Write(packet)
+	return id, err
+}
+func (p *pipeProcess) beginCommand(ctx context.Context) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+	if p.writeLost.Load() {
+		return controlWriteLost()
+	}
+	select {
+	case p.commandGate <- struct{}{}:
+		return nil
+	case <-ctx.Done():
+		return ctx.Err()
+	case <-p.stopped:
+		return errors.New("private pipe closed")
+	}
+}
+func (p *pipeProcess) sendContext(ctx context.Context, method string, params any, session string) (int, error) {
+	if err := ctx.Err(); err != nil {
+		return 0, err
+	}
+	if p.writeLost.Load() {
+		return 0, controlWriteLost()
+	}
+	id, packet, err := p.packet(method, params, session)
+	if err != nil {
+		return 0, err
+	}
+	completed := make(chan error, 1)
+	go func() { _, err := p.write.Write(packet); completed <- err }()
+	select {
+	case err := <-completed:
+		if err != nil {
+			p.writeLost.Store(true)
+			return 0, controlWriteLost()
+		}
+		return id, nil
+	case <-ctx.Done():
+		// A bounded command must not hang forever in a synchronous Windows pipe
+		// write. A lost control channel is not re-used or published as ready.
+		_ = windows.CancelIoEx(windows.Handle(p.write.Fd()), nil)
+		p.writeLost.Store(true)
+		_ = p.write.Close()
+		return 0, errors.Join(ctx.Err(), controlWriteLost())
+	}
+}
+func controlWriteLost() error {
+	return &Problem{Code: "CONTROL_CHANNEL_LOST", Reason: "control-write-unavailable", Message: "本次私有控制通道已断开，不能重试正常关闭；仍保留会话和数据锁，没有结束其他进程。", Retryable: false}
 }
 func (p *pipeProcess) call(ctx context.Context, method string, params any, session string, output any) error {
-	id, err := p.send(method, params, session)
+	if err := p.beginCommand(ctx); err != nil {
+		return err
+	}
+	defer func() { <-p.commandGate }()
+	id, err := p.sendContext(ctx, method, params, session)
 	if err != nil {
 		return err
 	}
@@ -192,7 +255,13 @@ func (p *pipeProcess) call(ctx context.Context, method string, params any, sessi
 	}
 }
 func (p *pipeProcess) normalClose() bool {
-	if _, err := p.send("Browser.close", map[string]any{}, ""); err != nil {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := p.beginCommand(ctx); err != nil {
+		return false
+	}
+	defer func() { <-p.commandGate }()
+	if _, err := p.sendContext(ctx, "Browser.close", map[string]any{}, ""); err != nil {
 		return false
 	}
 	state, err := windows.WaitForSingleObject(p.process, 5000)

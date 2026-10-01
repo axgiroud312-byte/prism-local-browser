@@ -153,8 +153,17 @@ SQLite schema v2 事务新增 `kernel_evidence`，保存来源、tag、源码com
 - `Fingerprint.ListRevisions({ environmentId })` 返回倒序历史；`Fingerprint.PreviewRestore({ previewId, revision })` 只预览同一精确内核的旧设备输入。保存后追加新的单调档案修订，不倒退编号、不恢复旧名称/代理、不清空浏览数据；pending或跨内核恢复拒绝。
 - SQLite schema3增加 `fingerprint_revisions`、当前档案 `config_revision` 和环境 `user_data_ref`。历史禁止UPDATE，保持原 `fingerprint_id`，避免为历史复制受当前seed唯一约束的行。v1/v2升级事务保留原ID、seed、展开字段和旧生成器版本；未知版本/坏输入阻断，不悄悄重生成。管理引用为 `environments/<environment-id>/user-data`，本票只建立引用、不自动创建或打开真实浏览目录。
 - 固定档案保存模板/生成器/独立档案schema版本、语言顺序、明确IANA时区、CPU/窗口偏好、真实内核身份/摘要、适配器/能力版本和能力编译的参数。空时区和 `Local` 拒绝。规范化SHA-256基于固定字段顺序的JSON（`configHash`置空）；包含档案修订，不包含名称、代理和网页Cookie。
-- host-only `AcquireProfileUse` 是供T06监督器复用的忙租约，持有期间拒绝关键档案及代理修改；不通过RPC接收伪造running/ready。当前未实现正常启动，不能把此租约的契约测试说成真实运行验收。
+- host-only `AcquireProfileUse` 是供T06监督器复用的忙租约，持有期间拒绝关键档案及代理修改；不通过RPC接收伪造running/ready。T05自身未实现正常启动，不能把此租约的契约测试说成真实运行验收。
 - Demo仅在 `_application.fingerprintRevisions` 记录演示历史，checksum带 `demo-`，无真实内核证据；localStorage写成功才发布。`prism-prototype` schemaVersion 1不增加必需字段，旧记录可读。外层/嵌套模式均与Wails隔离。[实际测试与剩余边界](verification/T05.md)。
+
+### T06 真实会话增量（开发中，尚未运行验收）
+
+- `Runtime.Start({ environmentId, requestId, networkPolicy: "direct" })` 只消费已保存配置。要求当前 `proxyId==""`，且每次启动由用户明确确认直连；已有代理绑定返回 `PROXY_UNSUPPORTED`，不能由直连确认覆盖。客户端路径、参数、PID、状态和临时档案一律拒绝。`requestId`与受理操作同事务登记，重复启动返回原operation；昂贵启动一次一条只是资源门控，不限制环境/保持运行数量。
+- worker读取固定档案/构建证据、规范化独立引用，kernel核对实际文件清单与PE，取得环境目录独占锁。目录链拒绝WRITE/DELETE访问、防原地reparse转换，句柄属性复核；既有浏览文件的hardlink共享拒绝。元数据记录environmentId/sessionId/PID/创建时间，锁不按年龄删除；内核文件pins和根目录锁持有至本次Job的全部进程退出。浏览文件本身仍可正常写入/重命名，不声称防同用户运行期恶意新增文件别名。窗口偏好与参数来自保存档案，不生成新seed，实际目录为 `environments/<uuid>/user-data`，停止/启动失败不删除浏览数据。
+- 默认可见浏览器，不带headless/incognito/no-sandbox或探测死代理；直连显式 `--no-proxy-server`。身份/seed/地区/CPU由能力编译器输出，私有pipe只继承两条限定句柄、进程原子归属本次Job；不开放调试TCP、通用CDP RPC或完整路径。Browser.getVersion和page target可响应、固定字节复核完成且主进程仍活着才发布running；主进程存活与Job资源退出信号分开，受理和创建进程均不等于就绪。
+- `Runtime.Stop({ environmentId, requestId })` 正常Browser.close并等待Job全树退出；pending启动则取消本次准备。重复停止复用原任务，等待退出超时保持明确error与忙锁、不擅自强杀其他进程；控制写端永久断开则单独返回不可正常重试的 `CONTROL_CHANNEL_LOST`，不虚报“可重试停止”。仅失败启动/应用退出使用该会话的自有Job清理；无法确认清空不得释放租约。应用关闭在服务mutex外停止会话，所有Close调用共享真实完成信号；单次等待超时不放弃后台清理，进程资源退出后关库，再次等待可得到真正完成结果。复杂崩溃/重开/强制选择属于T07。
+- `Runtime.Inspect({ ids })`及Workspace投影只返回native的环境/会话ID、实际状态、保存修订、相对数据引用、PID与创建时间等安全字段；不返回pipe端点、任意控制方法或真实Cookie。Wails/App按真实查询刷新，不从模拟兼容层写running。活跃会话只能保存名称、分组、备注，提交响应同样投影实际运行状态；关键配置/启动偏好仍拒绝，事务中还须确认完整档案hash不变，同输入的旧回滚预览也不能在忙状态追加修订。原型旧模拟流程保留。
+- [生命周期回归](../internal/workspace/runtime_test.go)、[目录锁回归](../internal/kernel/profile_lock_windows_test.go)及[实际A/B存储用例](../internal/workspace/runtime_real_test.go)已编写未运行，代码存在不代表验收通过。真实用例需要明确 `PRISM_RUNTIME_VERIFY=1`，会开正常窗口，当前不自动执行；完整状态见 [T06](verification/T06.md)。
 
 当前 ApplicationService 统一 `{ ok, mode, data/error, operationId? }`、预览 ID、requestId、expectedRevision 与 Operation 事件。创建返回 `status: accepted`，需查询/事件确认 `completed/cancelled/failed`；编辑仅在存储写入成功后返回 `status: completed`。只提交配置白名单，不能从草稿修改 ID、Cookie 或运行状态。UI 按操作 ID、模式、序号和终态过滤迟到事件。demo 的预览、幂等请求缓存和 Operation 在当前服务会话有效，不宣称任务重开续作；revision 用额外存储元数据持久保存，旧 v1 演示记录可显式读取且快照类型不变。其他页经 demo-only compatibility 逐步接入；native 不可使用该兼容入口。
 

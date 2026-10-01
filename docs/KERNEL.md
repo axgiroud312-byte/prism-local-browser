@@ -2,7 +2,7 @@
 
 本项目选择 [fingerprint-chromium](https://github.com/adryfish/fingerprint-chromium/blob/main/README-ZH.md) 作为 Windows 桌面版的内核方向。本文定义配置生成、内核管理、独立环境启动和代理接入的实现边界，供后续桌面后端开发使用。
 
-**网页原型与 native 能力分别记录。**T04 精确安装、校验和受控148 Windows x64探测已验收；T05固定档案、预览和历史回滚已实现，保存档案无头回读有实际证据，但新增页面与完整收尾验收未完成。正常环境启停仍待T06。原型里的 GPU、指纹摘要、连接结果和启动状态均是演示数据，不能标成内核探测结果。本合同中代理、正常进程和完整恢复的未交付项不因内核诊断通过而自动完成，实时结果见 [T04记录](verification/T04.md)、[T05记录](verification/T05.md) 与 [当前进度](PROGRESS.md)。
+**网页原型与 native 能力分别记录。**T04 精确安装、校验和受控148 Windows x64探测已验收；T05固定档案、预览和历史回滚已实现，保存档案无头回读有实际证据，但新增页面与完整收尾验收未完成。T06正常会话/独立目录开发中，未运行验收。原型里的 GPU、指纹摘要、连接结果和启动状态均是演示数据，不能标成内核探测结果。本合同中代理、正常进程和完整恢复的未验收项不因内核诊断通过而自动完成，实时结果见 [T04记录](verification/T04.md)、[T05记录](verification/T05.md)、[T06记录](verification/T06.md) 与 [当前进度](PROGRESS.md)。
 
 核实日期：2026-09-30。Ant-Browser 仅作为架构参考，本项目不复制其源码；旧比特浏览器材料仅用于理解交互与字段关系，不作为本项目内核、算法或资源池来源。
 
@@ -128,9 +128,17 @@ T05实际增量以 [应用接口](DEVELOPMENT.md#t05-固定档案增量已实现
 
 CDP 默认不开启。需要身份探测或本机自动化时，优先采用本地 pipe；采用 TCP 时仅允许 `127.0.0.1`，使用短生命周期动态端口并验证实际监听地址，不向局域网开放。loopback 不等于认证，控制接口还需限制本机调用方；CDP 地址不进入普通列表、日志和公开导出。无法核实绑定范围对外返回 `PROCESS_START_FAILED`，在 `error.details.reason` 中记录 `debug-endpoint-unsafe`。
 
+### T06 正常会话的实际开发边界
+
+[`长期会话`](../internal/kernel/runtime_windows.go)与[`目录锁`](../internal/kernel/profile_lock_windows.go)不复用探测临时profile，不删除正常浏览数据。当前仅显式direct可启动，保存的proxyId非空则阻断；真实代理/泄漏保护仍待后票。实际目录按服务派生的UUID引用逐级创建并固定，目录链拒绝WRITE/DELETE、防原地junction转换，复核句柄重解析属性、最终规范化根内归属以及锁文件类型/硬链接；既有浏览数据文件hardlink共享拒绝，分享模式为0的实际锁覆盖重复目录打开。浏览文件正常写入/重命名保留，不声称防同用户恶意运行期新增别名。
+
+[`pipe`](../internal/kernel/pipe_windows.go)串行整个请求/响应并支持有界写，正常会话控制仅内部使用，不向UI开放任意CDP。短期启动context不控制已经就绪会话；就绪前单独核对主进程存活，不以Job尚未清空代替浏览器活着。正常停止先Browser.close，只有确认Job ActiveProcesses==0才释放pins/锁并报告完成。等待退出超时可重试，控制写端断开则返回不可正常重试的CONTROL_CHANNEL_LOST，不谎称通道可恢复。超时或清理未确认仍保持busy与目标身份，应用退出/失败启动只能终止本次自有Job。不以主PID退出、CreateProcess成功或UI状态作为全树退出/实际隔离证据。
+
+以上为已编写实现，尚未运行正常窗口/目录/网络验收。已有T04/T05无头样本不能证明T06。A/B受控本地站点的真实Cookie/LocalStorage/IndexedDB隔离和重开持久用例保留在 [`runtime_real_test.go`](../internal/workspace/runtime_real_test.go)，需单独明确开关；用户暂停CI/完整回归/桌面操作期间不执行。
+
 ## 请求与返回合同
 
-以下均是**面向 UI 的目标外部应用接口示例**，以 [DEVELOPMENT.md 的本地应用接口](DEVELOPMENT.md#6-本地应用接口) 为统一契约；T04/T05实际已接接口以该文档的增量说明及源码为准，正常启动仍未实现。成功返回 `{ ok: true, data, operationId? }`，失败返回 `{ ok: false, error: { code, message, retryable, details? }, operationId? }`。ID 均为虚构示例；应用后端按 ID 解析内核、数据目录与凭据，前端不得提交任意可执行文件路径。
+以下均是**面向 UI 的目标外部应用接口示例**，以 [DEVELOPMENT.md 的本地应用接口](DEVELOPMENT.md#6-本地应用接口) 为统一契约；T04/T05/T06实际已接接口以该文档的增量说明及源码为准，T06尚未运行验收。成功返回 `{ ok: true, data, operationId? }`，失败返回 `{ ok: false, error: { code, message, retryable, details? }, operationId? }`。ID 均为虚构示例；应用后端按 ID 解析内核、数据目录与凭据，前端不得提交任意可执行文件路径。
 
 生成预览请求；该调用不保存环境：
 

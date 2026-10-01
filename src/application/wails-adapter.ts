@@ -2,7 +2,7 @@ import type {
   ApplicationResult, ApplicationService, EnvironmentConfiguration, EnvironmentPreview,
   CreateBatchRequest, UpdateEnvironmentRequest, SavedEnvironment, WorkspaceView, Operation, OperationEvent,
   KernelInstallRequest,
-  GenerateFingerprintRequest, CommitFingerprintRequest, ProfileRevision,
+  GenerateFingerprintRequest, CommitFingerprintRequest, ProfileRevision, RuntimeSession,
 } from "./contract.ts";
 import { mergeOperation } from "./contract.ts";
 
@@ -36,12 +36,12 @@ export class WailsAdapter implements ApplicationService {
       const response = await this.bridge<T>({ mode: "native", method, payload });
       if (response.mode !== "native") return { ok: false, mode: "native", error: { code: "CAPABILITY_UNSUPPORTED", message: "服务返回了演示记录，已拒绝接入真实工作区。", retryable: false } };
       return response;
-    } catch { return { ok: false, mode: "native", error: { code: "NATIVE_UNAVAILABLE", message: "本地服务连接失败，未确认保存成功。请重新打开应用核对记录。", retryable: true } }; }
+    } catch { return { ok: false, mode: "native", error: { code: "NATIVE_UNAVAILABLE", message: "本地服务连接失败，本次操作结果尚未确认。请重新读取工作区核对；不会改为演示成功。", retryable: true } }; }
   }
   async refresh(): Promise<ApplicationResult<WorkspaceView>> {
     const sequence = ++this.refreshSequence;
     let response = await this.invoke<WorkspaceView>("Workspace.Read", {});
-    if (response.ok && response.data.mode !== "native") response = { ok: false, mode: "native", error: { code: "CAPABILITY_UNSUPPORTED", message: "工作区不是原生记录，已拒绝接入；未回退到演示数据。", retryable: false } };
+    if (response.ok && (response.data.mode !== "native" || Object.values(response.data.runtimeSessions ?? {}).some(session => session.mode !== "native"))) response = { ok: false, mode: "native", error: { code: "CAPABILITY_UNSUPPORTED", message: "工作区或运行会话不是原生记录，已拒绝接入；未回退到演示数据。", retryable: false } };
     if (sequence !== this.refreshSequence) return response;
     if (response.ok) this.view = response.data;
     else this.view = { ...this.view, issue: response.error };
@@ -83,7 +83,7 @@ export class WailsAdapter implements ApplicationService {
   }
   async cancelOperation(operationId: string) { return this.confirmOperation(await this.invoke<Operation>("Operation.Cancel", { operationId })); }
   private confirmOperation(response: ApplicationResult<Operation>): ApplicationResult<Operation> {
-    if (!response.ok || !response.data.kind.startsWith("kernel-")) return response;
+    if (!response.ok || (!response.data.kind.startsWith("kernel-") && !response.data.kind.startsWith("runtime-"))) return response;
     const previous = this.operations.get(response.data.id);
     const operation = mergeOperation(previous, response.data);
     this.operations.set(operation.id, operation);
@@ -100,4 +100,20 @@ export class WailsAdapter implements ApplicationService {
   }
   verifyKernel(kernelId: string, requestId: string) { return this.invoke<{ status: "accepted"; operation: Operation }>("Kernel.Verify", { kernelId, requestId }); }
   deleteKernel(kernelId: string, requestId: string) { return this.invoke<{ status: "accepted"; operation: Operation }>("Kernel.Delete", { kernelId, requestId }); }
+  private async runtimeMutation(method: string, payload: unknown) {
+    const response = await this.invoke<{ status: "accepted"; operation: Operation }>(method, payload);
+    if (response.ok) await this.refresh();
+    return response;
+  }
+  startRuntime(request: { environmentId: string; requestId: string; networkPolicy: "direct" }) {
+    return this.runtimeMutation("Runtime.Start", { environmentId: request.environmentId, requestId: request.requestId, networkPolicy: request.networkPolicy });
+  }
+  stopRuntime(request: { environmentId: string; requestId: string }) {
+    return this.runtimeMutation("Runtime.Stop", { environmentId: request.environmentId, requestId: request.requestId });
+  }
+  async inspectRuntime(ids: string[]): Promise<ApplicationResult<RuntimeSession[]>> {
+    const response = await this.invoke<RuntimeSession[]>("Runtime.Inspect", { ids });
+    if (response.ok && response.data.some(session => session.mode !== "native")) return { ok: false, mode: "native", error: { code: "CAPABILITY_UNSUPPORTED", message: "演示会话不能作为真实运行结果。", retryable: false } };
+    return response;
+  }
 }

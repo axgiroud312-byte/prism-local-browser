@@ -43,11 +43,13 @@ type Configuration struct {
 }
 type Environment struct {
 	Configuration
-	ID        string `json:"id"`
-	Code      string `json:"code"`
-	Status    string `json:"status"`
-	Cookies   []any  `json:"cookies"`
-	CreatedAt string `json:"createdAt"`
+	ID         string `json:"id"`
+	Code       string `json:"code"`
+	Status     string `json:"status"`
+	Error      string `json:"error,omitempty"`
+	Cookies    []any  `json:"cookies"`
+	CreatedAt  string `json:"createdAt"`
+	LastOpened string `json:"lastOpened,omitempty"`
 }
 type Preview struct {
 	PreviewID        string              `json:"previewId"`
@@ -68,6 +70,8 @@ type Operation struct {
 	KernelID        string         `json:"kernelId,omitempty"`
 	ResourceKey     string         `json:"resourceKey,omitempty"`
 	Report          *kernel.Report `json:"report,omitempty"`
+	EnvironmentID   string         `json:"environmentId,omitempty"`
+	SessionID       string         `json:"sessionId,omitempty"`
 }
 type Mutation struct {
 	PreviewID        string        `json:"previewId"`
@@ -108,6 +112,7 @@ type View struct {
 	KernelOperations []Operation                `json:"kernelOperations"`
 	Fingerprints     map[string]ProfileRevision `json:"fingerprints"`
 	DataReferences   map[string]string          `json:"dataReferences"`
+	RuntimeSessions  map[string]RuntimeSession  `json:"runtimeSessions"`
 }
 type KernelView struct {
 	kernel.Record

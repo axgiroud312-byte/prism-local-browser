@@ -33,6 +33,8 @@ type Options struct {
 	// Test seam only; the desktop always uses kernel.Prepare and a real probe.
 	PrepareKernel func(context.Context, string, kernel.InstallInput, string, kernel.ProbeFunc, kernel.ProgressFunc) (*kernel.Prepared, error)
 	VerifyKernel  func(context.Context, string, kernel.Record, string) (kernel.Report, error)
+	// Test seam only. The desktop always launches the verified real process.
+	LaunchRuntime func(context.Context, RuntimeLaunch) (RuntimeProcess, error)
 }
 type draft struct {
 	Kind        string
@@ -40,16 +42,20 @@ type draft struct {
 	BaseProfile *DeviceProfile
 }
 type Service struct {
-	mu          sync.Mutex
-	db          *sql.DB
-	drafts      map[string]draft
-	options     Options
-	root        string
-	archives    map[string]string
-	kernelTask  *kernelTask
-	workers     sync.WaitGroup
-	closed      bool
-	profileUses map[string]bool
+	mu           sync.Mutex
+	db           *sql.DB
+	drafts       map[string]draft
+	options      Options
+	root         string
+	archives     map[string]string
+	kernelTask   *kernelTask
+	workers      sync.WaitGroup
+	closed       bool
+	profileUses  map[string]bool
+	runtimeSlots map[string]*runtimeSlot
+	startGate    chan struct{}
+	closeDone    chan struct{}
+	closeError   error
 }
 
 func failure(code, message string, retryable bool) Result {
@@ -99,7 +105,7 @@ func Open(root string, options Options) (*Service, error) {
 		return nil, err
 	}
 	db.SetMaxOpenConns(1)
-	s := &Service{db: db, root: absolute, drafts: map[string]draft{}, archives: map[string]string{}, profileUses: map[string]bool{}, options: options}
+	s := &Service{db: db, root: absolute, drafts: map[string]draft{}, archives: map[string]string{}, profileUses: map[string]bool{}, runtimeSlots: map[string]*runtimeSlot{}, startGate: make(chan struct{}, 1), options: options}
 	if err = s.initialize(); err != nil {
 		db.Close()
 		return nil, err
@@ -111,20 +117,61 @@ func Open(root string, options Options) (*Service, error) {
 	return s, nil
 }
 func (s *Service) Close() error {
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+	return s.CloseContext(ctx)
+}
+
+// Cancelling a waiter never abandons cleanup or claims the database is closed.
+// Every caller waits on the same completion; a timed-out close can be retried.
+func (s *Service) CloseContext(ctx context.Context) error {
 	s.mu.Lock()
-	if s.closed {
-		s.mu.Unlock()
-		return nil
+	if s.closeDone == nil {
+		s.closeDone = make(chan struct{})
+		s.closed = true
+		if s.kernelTask != nil {
+			s.kernelTask.cancel()
+		}
+		processes := []RuntimeProcess{}
+		for _, slot := range s.runtimeSlots {
+			slot.cancel()
+			if slot.process != nil {
+				processes = append(processes, slot.process)
+			}
+		}
+		go s.closeResources(processes, s.closeDone)
 	}
-	s.closed = true
-	if s.kernelTask != nil {
-		s.kernelTask.cancel()
-	}
+	finished := s.closeDone
 	s.mu.Unlock()
+	select {
+	case <-finished:
+		s.mu.Lock()
+		defer s.mu.Unlock()
+		return s.closeError
+	case <-ctx.Done():
+		return errors.New("controlled sessions have not all exited; cleanup continues and its resources are retained")
+	}
+}
+
+func (s *Service) closeResources(processes []RuntimeProcess, finished chan struct{}) {
+	var shutdown sync.WaitGroup
+	for _, process := range processes {
+		shutdown.Add(1)
+		go func(process RuntimeProcess) {
+			defer shutdown.Done()
+			ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
+			_ = process.Stop(ctx)
+			cancel()
+			// App shutdown releases only our owned Job tree, never a PID/name search.
+			_ = process.Close()
+		}(process)
+	}
+	shutdown.Wait()
 	s.workers.Wait()
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	return s.db.Close()
+	s.closeError = s.db.Close()
+	close(finished)
 }
 func (s *Service) initialize() error {
 	var version int
@@ -288,6 +335,8 @@ func (s *Service) Call(request Request) Result {
 		return failure("NATIVE_UNAVAILABLE", "工作区已关闭，请重新打开应用。", true)
 	}
 	switch request.Method {
+	case "Runtime.Start", "Runtime.Stop", "Runtime.Inspect":
+		return s.runtimeCall(request)
 	case "Fingerprint.Generate", "Fingerprint.ListRevisions", "Fingerprint.PreviewRestore":
 		return s.fingerprintCall(request)
 	case "Kernel.Install", "Kernel.Verify", "Kernel.Delete", "Kernel.List":
@@ -379,6 +428,9 @@ func (s *Service) Call(request Request) Result {
 				return storageFailure(err)
 			}
 		}
+		if request.Method == "Operation.Cancel" {
+			return s.cancelRuntimeOperation(operation)
+		}
 		return success(operation, operation.ID)
 	default:
 		return failure("CAPABILITY_UNSUPPORTED", "此功能尚未接入真实桌面服务，未修改本地数据。", false)
@@ -463,7 +515,7 @@ func (s *Service) preview(kind, sourceID string) Result {
 	p := Preview{PreviewID: id(), Environment: e, ExpectedRevision: revision}
 	d := draft{Kind: kind, Preview: p}
 	if kind == "edit" {
-		if s.profileUses[e.ID] {
+		if s.profileUses[e.ID] && !s.runtimeOwnsProfileUse(e.ID) {
 			return failure("PROFILE_BUSY", "请先停止该环境，再编辑关键配置。", true)
 		}
 		_, _, profileID, err := s.readEnvironment(e.ID)
@@ -546,7 +598,15 @@ func (s *Service) mutate(method string, input Mutation) Result {
 		return failure("VALIDATION_FAILED", "预览与提交类型不一致。", false)
 	}
 	if !creating && s.profileUses[d.Preview.Environment.ID] {
-		return failure("PROFILE_BUSY", "环境正被运行或维护使用，未提交设备档案或修改目录。", true)
+		current, _, _, err := s.readEnvironment(d.Preview.Environment.ID)
+		if err != nil {
+			return failure("STORAGE_READ_FAILED", "当前档案无法读取，未保存。", true)
+		}
+		safe := current.Configuration
+		safe.Name, safe.Group, safe.Note = input.Configuration.Name, input.Configuration.Group, input.Configuration.Note
+		if !s.runtimeOwnsProfileUse(current.ID) || safe != input.Configuration {
+			return failure("PROFILE_BUSY", "环境正在运行或维护；只能保存名称、分组和备注，关键配置未修改。", true)
+		}
 	}
 	if method == "Fingerprint.CommitRevision" && input.EnvironmentID != d.Preview.Environment.ID {
 		return failure("VALIDATION_FAILED", "预览不属于所选环境。", false)
@@ -627,6 +687,9 @@ func (s *Service) mutate(method string, input Mutation) Result {
 		if profile.ConfigHash != current.Profile.ConfigHash && profile.ConfigRevision != current.Profile.ConfigRevision+1 {
 			return failure("REVISION_CONFLICT", "档案修订序号不连续，未保存。", true)
 		}
+		if s.profileUses[e.ID] && profile.ConfigHash != current.Profile.ConfigHash {
+			return failure("PROFILE_BUSY", "环境仍在使用当前设备档案，旧的生成或回滚预览不能追加新修订。请停止后重新预览。", true)
+		}
 	}
 	if err = tx.QueryRow("SELECT COUNT(*) FROM environments WHERE name=? AND id<>?", config.Name, e.ID).Scan(&count); err != nil {
 		return storageFailure(err)
@@ -686,6 +749,12 @@ func (s *Service) mutate(method string, input Mutation) Result {
 	e.Configuration = config
 	e.Code = fmt.Sprintf("%03d", code)
 	e.Status = "ready"
+	if slot := s.runtimeSlots[e.ID]; slot != nil {
+		e.Status, e.LastOpened = slot.session.State, slot.session.StartedAt
+		if slot.session.Error != nil {
+			e.Error = slot.session.Error.Message
+		}
+	}
 	e.Cookies = []any{}
 	operation := Operation{ID: id(), Kind: map[bool]string{true: "create", false: "edit"}[creating], State: "completed", Total: 1, CompletedIDs: []string{e.ID}}
 	operationJSON, _ := json.Marshal(operation)
@@ -805,5 +874,18 @@ func (s *Service) view() (View, error) {
 	if err != nil {
 		return View{}, err
 	}
-	return View{Mode: "native", State: state, KernelRecords: installed, KernelOperations: operations, Fingerprints: profiles, DataReferences: references}, nil
+	sessions := map[string]RuntimeSession{}
+	for environmentID, slot := range s.runtimeSlots {
+		sessions[environmentID] = slot.session
+	}
+	for index := range state.Environments {
+		if session, ok := sessions[state.Environments[index].ID]; ok {
+			state.Environments[index].Status = session.State
+			state.Environments[index].LastOpened = session.StartedAt
+			if session.Error != nil {
+				state.Environments[index].Error = session.Error.Message
+			}
+		}
+	}
+	return View{Mode: "native", State: state, KernelRecords: installed, KernelOperations: operations, Fingerprints: profiles, DataReferences: references, RuntimeSessions: sessions}, nil
 }

@@ -35,10 +35,11 @@ export interface WorkspaceView {
   kernelOperations?: Operation[];
   fingerprints?: Record<string, ProfileRevision>;
   dataReferences?: Record<string, string>;
+  runtimeSessions?: Record<string, RuntimeSession>;
 }
 export interface Operation {
   id: string;
-  kind: "create" | "edit" | "kernel-install" | "kernel-verify" | "kernel-delete";
+  kind: "create" | "edit" | "kernel-install" | "kernel-verify" | "kernel-delete" | "runtime-start" | "runtime-stop";
   state: "accepted" | "running" | "completed" | "cancelled" | "failed";
   total: number;
   completedIds: string[];
@@ -47,6 +48,8 @@ export interface Operation {
   stage?: string;
   kernelId?: string;
   report?: KernelReport;
+  environmentId?: string;
+  sessionId?: string;
 }
 export interface OperationEvent {
   mode: ApplicationMode;
@@ -113,6 +116,26 @@ export interface ApplicationService {
   installKernel?(request: KernelInstallRequest): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
   verifyKernel?(kernelId: string, requestId: string): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
   deleteKernel?(kernelId: string, requestId: string): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
+  startRuntime?(request: { environmentId: string; requestId: string; networkPolicy: "direct" }): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
+  stopRuntime?(request: { environmentId: string; requestId: string }): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
+  inspectRuntime?(ids: string[]): Promise<ApplicationResult<RuntimeSession[]>>;
+}
+
+export interface RuntimeSession {
+  mode: "native";
+  environmentId: string;
+  sessionId: string;
+  operationId: string;
+  state: Environment["status"];
+  revision: number;
+  fingerprintRevision: number;
+  kernelId: string;
+  userDataRef: string;
+  networkPolicy: "direct";
+  pid?: number;
+  processCreatedAt?: string;
+  startedAt?: string;
+  error?: ApplicationError;
 }
 
 export interface KernelInstallRequest {

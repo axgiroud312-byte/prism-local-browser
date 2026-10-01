@@ -181,3 +181,35 @@ test("applying a delayed device preview keeps unsaved names/proxy/URLs and detec
   assert.equal(fingerprintMatchesConfiguration(profile, next), true);
   assert.equal(fingerprintMatchesConfiguration(profile, { ...next, height: 900 }), false);
 });
+
+test("runtime requests only select stored IDs and explicit direct policy, never client launch overrides", async () => {
+  const { app, calls } = fixture(() => rejected);
+  const untrusted = { environmentId: environment.id, requestId: "runtime-request", networkPolicy: "direct" as const, executable: "SYNTHETIC_PATH", userDataDir: "SYNTHETIC_OTHER_PROFILE", arguments: ["--no-sandbox"], state: "running" };
+  await app.startRuntime(untrusted);
+  await app.stopRuntime(untrusted);
+  await app.inspectRuntime([environment.id]);
+  assert.deepEqual(calls.map(call => call.method), ["Runtime.Start", "Runtime.Stop", "Runtime.Inspect"]);
+  assert.deepEqual(calls[0].payload, { environmentId: environment.id, requestId: untrusted.requestId, networkPolicy: "direct" });
+  assert.deepEqual(calls[1].payload, { environmentId: environment.id, requestId: untrusted.requestId });
+  assert.ok(!JSON.stringify(calls).includes("SYNTHETIC_PATH"));
+  assert.ok(!JSON.stringify(calls).includes("--no-sandbox"));
+});
+
+test("accepted runtime starts refresh real state but never emit a false completion", async () => {
+  const task: Operation = { id: "synthetic-runtime-op", kind: "runtime-start", state: "accepted", total: 1, completedIds: [], cancelRequested: false, environmentId: environment.id };
+  const workspace = empty(); workspace.state.environments = [{ ...environment, status: "starting" }];
+  const { app } = fixture(request => request.method === "Workspace.Read" ? ok(workspace) : ok({ status: "accepted", operation: task }));
+  const events: OperationEvent[] = []; app.subscribeEvents(event => events.push(event));
+  await app.startRuntime({ environmentId: environment.id, requestId: "runtime-accept", networkPolicy: "direct" });
+  assert.equal(app.getSnapshot().state.environments[0].status, "starting");
+  assert.equal(events.length, 0);
+});
+
+test("native refuses a nested demo runtime session without publishing running", async () => {
+  const session = { mode: "demo", environmentId: environment.id, state: "running" };
+  const workspace = { ...empty(), runtimeSessions: { [environment.id]: session } };
+  const { app } = fixture(request => request.method === "Workspace.Read" ? ok(workspace) : ok([session]));
+  assert.equal((await app.refresh()).ok, false);
+  assert.deepEqual(app.getSnapshot().state.environments, []);
+  assert.equal((await app.inspectRuntime([environment.id])).ok, false);
+});
