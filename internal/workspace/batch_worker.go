@@ -296,7 +296,7 @@ func assignBatchEnvironment(tx *sql.Tx, snapshot batchSnapshot) (*Error, error) 
 	var configJSON string
 	var revision int64
 	var profileID string
-	if err := tx.QueryRow(`SELECT f.config_json,e.revision,e.fingerprint_id FROM environments e JOIN fingerprints f ON f.id=e.fingerprint_id WHERE e.id=?`, snapshot.SourceID).Scan(&configJSON, &revision, &profileID); err != nil {
+	if err := tx.QueryRow(`SELECT f.config_json,e.revision,e.fingerprint_id FROM environments e JOIN fingerprints f ON f.id=e.fingerprint_id WHERE e.id=? AND NOT EXISTS(SELECT 1 FROM environment_trash WHERE environment_id=e.id)`, snapshot.SourceID).Scan(&configJSON, &revision, &profileID); err != nil {
 		return nil, err
 	}
 	if revision != snapshot.ExpectedRevision {

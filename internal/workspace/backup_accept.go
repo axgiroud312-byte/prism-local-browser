@@ -16,6 +16,12 @@ import (
 )
 
 func (s *Service) selectBackupDestination() Result {
+	s.mu.Lock()
+	blocked := s.recycleTask != nil
+	s.mu.Unlock()
+	if blocked {
+		return failure("RECYCLE_INCOMPLETE", "请先完成原回收任务。", true)
+	}
 	if s.options.ChooseBackupDestination == nil {
 		return failure("CAPABILITY_UNSUPPORTED", "本机保存对话框尚不可用，未生成任何备份。", false)
 	}
@@ -32,7 +38,7 @@ func (s *Service) selectBackupDestination() Result {
 	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	if s.closed || s.closeRequested.Load() {
+	if s.closed || s.closeRequested.Load() || s.recycleTask != nil {
 		return failure("NATIVE_UNAVAILABLE", "工作区正在退出，未保存选择。", true)
 	}
 	for key, value := range s.backupDestinations {
@@ -98,7 +104,7 @@ func (s *Service) acceptBackup(input BackupExportRequest) Result {
 	}
 	ids := append([]string(nil), input.EnvironmentIDs...)
 	if input.Scope == "all" {
-		rows, err := s.db.Query("SELECT id FROM environments ORDER BY code")
+		rows, err := s.db.Query("SELECT id FROM environments WHERE NOT EXISTS(SELECT 1 FROM environment_trash WHERE environment_id=environments.id) ORDER BY code")
 		if err != nil {
 			return storageFailure(err)
 		}

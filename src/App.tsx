@@ -96,6 +96,7 @@ import { NativeCookieImport } from "./components/NativeCookieImport";
 import { NativeBatchDialog, type NativeBatchDialogInput } from "./components/NativeBatchDialog";
 import { readRuntimeStartPlan } from "./application/runtime-start-plan";
 import { NativeBackupManager } from "./components/NativeBackupManager";
+import { NativeRecycleManager } from "./components/NativeRecycleManager";
 import { FingerprintRevisionPanel } from "./components/FingerprintRevisionPanel";
 
 type Route =
@@ -274,6 +275,7 @@ export default function App({ application }: { application: ApplicationService }
   const [nativeCookieEnvironment, setNativeCookieEnvironment] = useState<Environment | null>(null);
   const [nativeBatchInput, setNativeBatchInput] = useState<NativeBatchDialogInput | null>(null);
   const [nativeBackupSelection, setNativeBackupSelection] = useState<string[]>([]);
+  const [nativeRecycleSelection, setNativeRecycleSelection] = useState<string[] | null>(null);
   const [environmentQueryBusy, setEnvironmentQueryBusy] = useState(false);
   const [formError, setFormError] = useState("");
   const [generating, setGenerating] = useState(false);
@@ -347,7 +349,7 @@ export default function App({ application }: { application: ApplicationService }
     latestOperationEvent.current = event;
     if (event) setBatch({ label: "创建环境", done: event.operation.completedIds.length, total: event.operation.total });
   }), [application]);
-  const nativeRuntimeActive = nativeMode && (!!workspace.maintenance || (workspace.restoreOperations ?? []).some(operation => !operationIsTerminal(operation)) || Object.values(workspace.runtimeSessions ?? {}).some(session => ["starting", "running", "stopping"].includes(session.state) || !!session.pid || session.needsReconcile || session.persistencePending) || (workspace.batchOperations ?? []).some(operation => !operationIsTerminal(operation)));
+  const nativeRuntimeActive = nativeMode && (!!workspace.maintenance || !!workspace.recycleMaintenance || (workspace.restoreOperations ?? []).some(operation => !operationIsTerminal(operation)) || Object.values(workspace.runtimeSessions ?? {}).some(session => ["starting", "running", "stopping"].includes(session.state) || !!session.pid || session.needsReconcile || session.persistencePending) || (workspace.batchOperations ?? []).some(operation => !operationIsTerminal(operation)));
   useEffect(() => {
     if (!nativeRuntimeActive || !application.refresh) return;
     let cancelled = false;
@@ -398,7 +400,7 @@ export default function App({ application }: { application: ApplicationService }
   };
   useEffect(() => {
     const key = (e: KeyboardEvent) => {
-      if (nativeBatchInput || nativeCookieEnvironment) {
+      if (nativeBatchInput || nativeCookieEnvironment || nativeRecycleSelection) {
         if ((e.ctrlKey || e.metaKey) && e.key === "k") e.preventDefault();
         return;
       }
@@ -416,7 +418,7 @@ export default function App({ application }: { application: ApplicationService }
     };
     window.addEventListener("keydown", key);
     return () => window.removeEventListener("keydown", key);
-  }, [generating, drawer, nativeBatchInput, nativeCookieEnvironment]);
+  }, [generating, drawer, nativeBatchInput, nativeCookieEnvironment, nativeRecycleSelection]);
   useEffect(() => {
     if (!drawer && !dialog) return;
     const oldOverflow = document.body.style.overflow;
@@ -823,6 +825,7 @@ export default function App({ application }: { application: ApplicationService }
   }
   function removeEnvironments() {
     if (dialog?.kind !== "delete") return;
+    if (nativeMode) { setNativeRecycleSelection([...dialog.ids]); setDialog(null); return; }
     if (
       state.environments.some(
         (e) =>
@@ -860,7 +863,7 @@ export default function App({ application }: { application: ApplicationService }
     <div className="app-shell">
       <aside
         className="sidebar"
-        inert={Boolean(drawer || dialog || nativeBatchInput || nativeCookieEnvironment || storageIssue)}
+        inert={Boolean(drawer || dialog || nativeBatchInput || nativeCookieEnvironment || nativeRecycleSelection || storageIssue)}
       >
         <a className="brand" href="#/environments">
           <div className="brand-mark">
@@ -940,7 +943,7 @@ export default function App({ application }: { application: ApplicationService }
       </aside>
       <div
         className="main-shell"
-        inert={Boolean(drawer || dialog || nativeBatchInput || nativeCookieEnvironment || storageIssue)}
+        inert={Boolean(drawer || dialog || nativeBatchInput || nativeCookieEnvironment || nativeRecycleSelection || storageIssue)}
       >
         <header className="topbar">
           <div className="breadcrumb">
@@ -1038,6 +1041,7 @@ export default function App({ application }: { application: ApplicationService }
           </div>
           {route === "environments" && (
             <>
+              {nativeMode && <div className="prototype-notice"><span>{workspace.recycleMaintenance ? "回收维护保护中，请查看原任务。" : "已移除环境可在本机回收区找回。"}</span><Button onClick={() => setNativeRecycleSelection([])}>打开回收区</Button></div>}
               <section className="stats-grid" aria-label="环境概览">
                 <div className="stat-card">
                   <div className="stat-icon blue">
@@ -1231,6 +1235,7 @@ export default function App({ application }: { application: ApplicationService }
                     {nativeMode && <><Button onClick={() => setNativeBatchInput({ kind: "clone", sourceIds: [...selected] })}><Copy size={14} />复制配置（新身份）</Button><Button onClick={() => setNativeBatchInput({ kind: "assign", sourceIds: [...selected] })}><Network size={14} />明确分配代理</Button><Button onClick={() => { setNativeBackupSelection([...selected]); navigate("backups"); }}><HardDrive size={14} />完整备份所选</Button></>}
                     <Button
                       onClick={() => {
+                        if (nativeMode) { setNativeRecycleSelection([...selected]); return; }
                         setDialog({ kind: "delete", ids: selected });
                         setFormError("");
                         setDeleteData(false);
@@ -1464,6 +1469,7 @@ export default function App({ application }: { application: ApplicationService }
                                       <button
                                         className="danger-text"
                                         onClick={() => {
+                                          if (nativeMode) { setNativeRecycleSelection([e.id]); setMenu(null); return; }
                                           setDialog({
                                             kind: "delete",
                                             ids: [e.id],
@@ -2538,6 +2544,7 @@ export default function App({ application }: { application: ApplicationService }
         </div>
       )}
       {nativeMode && nativeCookieEnvironment && <NativeCookieImport key={nativeCookieEnvironment.id} application={application} workspace={workspace} environment={nativeCookieEnvironment} onClose={() => setNativeCookieEnvironment(null)} />}
+      {nativeMode && nativeRecycleSelection && <NativeRecycleManager application={application} workspace={workspace} selectedIds={nativeRecycleSelection} onClose={() => { setNativeRecycleSelection(null); setSelected([]); void application.refresh?.(); }} />}
       {nativeMode && nativeBatchInput && <NativeBatchDialog key={`${nativeBatchInput.kind}:${nativeBatchInput.initialPage?.planId ?? nativeBatchInput.sourceIds?.join(",") ?? "history"}`} application={application} workspace={workspace} input={nativeBatchInput} onClose={() => { setNativeBatchInput(null); setMenu(null); }} />}
       {dialog && (
         <div className="overlay modal-overlay">

@@ -44,7 +44,7 @@ func validateConfigurationSchema(ctx context.Context, db *sql.DB) error {
 	if err = template.initialize(); err != nil {
 		return err
 	}
-	if _, err = trusted.Exec("DROP TABLE restore_jobs; PRAGMA user_version=7"); err != nil {
+	if _, err = trusted.Exec(nativeV1SchemaProjection); err != nil {
 		return err
 	}
 	want, err := configurationSchema(ctx, trusted)
@@ -139,7 +139,7 @@ func (s *Service) readRestoreConfiguration(ctx context.Context, file string, man
 		if err = ctx.Err(); err != nil {
 			return data, err
 		}
-		e, revision, profileID, err := reader.readEnvironment(m.ID)
+		e, revision, profileID, err := reader.readStoredEnvironment(m.ID)
 		if err != nil || revision != m.Revision || profileID != m.FingerprintID || e.Seed != m.Seed || e.ProxyID != m.ProxyID || e.CoreID != m.KernelID {
 			return data, restoreInvalid("configuration-environment-mismatch")
 		}

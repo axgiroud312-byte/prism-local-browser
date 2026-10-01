@@ -27,6 +27,13 @@
 
 ## 已发布的桌面开发任务
 
+### T19 回收与找回（本地源码，未运行验收）
+
+- DATA-001、ENV-001：[`schema9/回收日志`](../internal/workspace/recycle_storage.go)、[`明确ID影响/确认`](../internal/workspace/recycle_api.go)、[`逐项事务`](../internal/workspace/recycle_commit.go)和[`目录worker`](../internal/workspace/recycle_worker.go)；回收配置保原身份与引用，正常业务只取active，找回推进环境修订阻旧任务ABA。
+- DATA-001、FP-001、CORE-001：原目录对象/清单随同卷移动，找回保seed、档案revision/hash、精确内核和数据引用；永久删除仅授权回收树，未知路径/文件、重解析、硬链接、占用和delete-pending保持保护，共享内核/代理及备份不删。
+- UX-001：[`原生回收界面`](../src/components/NativeRecycleManager.tsx)提供分页、具体ID、数据/备份影响、明确永久删除、取消与原任务核实；[`重开`](../internal/workspace/recycle_recovery.go)先核对唯一writer，再完成其余启动加载，失败不假报已停止或解锁。
+- [测试/待验收清单](verification/T19.md)：服务、目录、adapter、十切点硬退出及真实浏览器组合入口均仅编写；必要生产静态/类型不代替实际能力验收。
+
 ### T18 中断恢复（开发中，未运行验收）
 
 - BKP-001、ENV-003：[`journal启动恢复`](../internal/workspace/restore_recovery.go)、[`配置原/新摘要`](../internal/workspace/restore_consistency.go)及[`目录收尾`](../internal/workspace/restore_worker.go)从DB标记选择完整侧；其他启动记录恢复完之前保全局维护保护，不自动读取原包或开启浏览器。

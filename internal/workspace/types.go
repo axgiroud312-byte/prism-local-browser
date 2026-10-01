@@ -80,6 +80,7 @@ type Operation struct {
 	BatchReport        *BatchReport        `json:"batchReport,omitempty"`
 	BackupReport       *BackupReport       `json:"backupReport,omitempty"`
 	RestoreReport      *RestoreReport      `json:"restoreReport,omitempty"`
+	RecycleReport      *RecycleReport      `json:"recycleReport,omitempty"`
 }
 type Mutation struct {
 	PreviewID        string        `json:"previewId"`
@@ -132,6 +133,8 @@ type View struct {
 	BackupOperations   []Operation                `json:"backupOperations"`
 	NativeBackups      []BackupRecord             `json:"nativeBackups"`
 	RestoreOperations  []Operation                `json:"restoreOperations"`
+	RecycleOperations  []Operation                `json:"recycleOperations"`
+	RecycleMaintenance *Operation                 `json:"recycleMaintenance,omitempty"`
 	Maintenance        *Operation                 `json:"maintenance,omitempty"`
 	EnvironmentPage    *EnvironmentPage           `json:"environmentPage,omitempty"`
 }

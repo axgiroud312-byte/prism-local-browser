@@ -48,6 +48,7 @@ type Options struct {
 	ChooseBackupSource      func() (string, error)
 	AppVersion              string
 	RestoreCheckpoint       func(string) error // host-only failure injection, never RPC
+	RecycleCheckpoint       func(string) error // host-only failure injection, never RPC
 }
 type draft struct {
 	Kind        string
@@ -97,6 +98,8 @@ type Service struct {
 	restorePreflight   *restorePreflight
 	restoreScratch     string
 	restoreTask        *restoreTask
+	recycleDraft       *recycleDraft
+	recycleTask        *recycleTask
 }
 
 func failure(code, message string, retryable bool) Result {
@@ -165,6 +168,14 @@ func Open(root string, options Options) (*Service, error) {
 		}
 		return nil, &Error{Code: "RESTORE_INCOMPLETE", Message: "未完成恢复日志无法完整读取或匹配原请求，未自动移动目录；请保留全部数据与日志，核对存储和完整副本后重开。", Retryable: true}
 	}
+	if err = s.loadInterruptedRecycle(); err != nil {
+		db.Close()
+		return nil, &Error{Code: "RECYCLE_INCOMPLETE", Message: "回收日志不完整或存在多个目录维护任务；原目录与配置保留，请修复原日志后重开。", Retryable: true}
+	}
+	if s.recycleTask != nil {
+		s.startRecycle(s.recycleTask, true)
+		return s, nil
+	}
 	if s.restoreTask != nil {
 		s.startInterruptedRestore(s.restoreTask)
 		return s, nil
@@ -229,6 +240,10 @@ func (s *Service) beginShutdown() {
 		s.restoreTask.bootstrapCancel()
 	}
 	s.restorePreview = nil
+	if s.recycleTask != nil && s.recycleTask.cancel != nil {
+		s.recycleTask.cancel()
+	}
+	s.recycleDraft = nil
 	if s.kernelTask != nil {
 		s.kernelTask.cancel()
 	}
@@ -284,6 +299,7 @@ func (s *Service) closeResources(processes []RuntimeProcess, finished chan struc
 	s.flushBatchPersistence()
 	s.flushBackupPersistence()
 	s.flushRestorePersistence()
+	s.flushRecyclePersistence()
 	proxy.Wipe(s.proxyRequestKey)
 	s.proxyRequestKey = nil
 	s.closeError = s.db.Close()
@@ -304,6 +320,9 @@ func (s *Service) closeResources(processes []RuntimeProcess, finished chan struc
 	}
 	if s.restoreTask != nil {
 		s.closeError = errors.Join(s.closeError, errors.New("restore outcome remains protected or could not be persisted"))
+	}
+	if s.recycleTask != nil {
+		s.closeError = errors.Join(s.closeError, errors.New("recycle outcome remains protected or could not be persisted"))
 	}
 	close(finished)
 }
@@ -332,7 +351,10 @@ func (s *Service) initialize() error {
 	if err := s.initializeBackups(); err != nil {
 		return err
 	}
-	return s.initializeRestores()
+	if err := s.initializeRestores(); err != nil {
+		return err
+	}
+	return s.initializeRecycle()
 }
 
 func (s *Service) initializeProfiles() error {
@@ -340,7 +362,7 @@ func (s *Service) initializeProfiles() error {
 	if err := s.db.QueryRow("PRAGMA user_version").Scan(&version); err != nil {
 		return err
 	}
-	if version > 8 {
+	if version > 9 {
 		return errors.New("unsupported workspace version")
 	}
 	if version >= 3 {
@@ -515,6 +537,15 @@ func (s *Service) Call(request Request) Result {
 	if request.Method == "Workspace.Read" || request.Method == "Operation.Read" || request.Method == "Backup.ApplyRestore" || request.Method == "Backup.RecoverRestore" {
 		s.flushRestorePersistence()
 	}
+	if request.Method == "Workspace.Read" || request.Method == "Operation.Read" || strings.HasPrefix(request.Method, "Recycle.") {
+		s.flushRecyclePersistence()
+	}
+	if s.recycleTask != nil && request.Method != "Workspace.Read" && request.Method != "Operation.Read" && request.Method != "Operation.Cancel" && request.Method != "Recycle.ReadPage" && request.Method != "Recycle.Commit" && request.Method != "Recycle.Recover" && request.Method != "Runtime.Inspect" && request.Method != "Runtime.Stop" {
+		return failure("RECYCLE_INCOMPLETE", "回收维护中，配置与目录保持保护；请读取或核对原任务。", true)
+	}
+	if s.recycleTask != nil && s.recycleTask.startup && !s.recycleTask.bootstrapReady && (request.Method == "Runtime.Stop" || request.Method == "Runtime.Inspect") {
+		return failure("RECYCLE_INCOMPLETE", "启动恢复尚未加载原会话，不能认定环境已经停止；请先核对回收任务。", true)
+	}
 	if s.restoreTask != nil && request.Method != "Workspace.Read" && request.Method != "Operation.Read" && request.Method != "Operation.Cancel" && request.Method != "Runtime.Inspect" && request.Method != "Runtime.Stop" && request.Method != "Backup.ApplyRestore" && request.Method != "Backup.RecoverRestore" {
 		return failure("RESTORE_INCOMPLETE", "完整恢复维护中，配置与目录切换保持保护；请读取恢复任务结果。", true)
 	}
@@ -533,6 +564,9 @@ func (s *Service) Call(request Request) Result {
 			return failure("VALIDATION_FAILED", "请选择原恢复任务。", false)
 		}
 		return s.retryRestoreFinalization(input.OperationID)
+	}
+	if strings.HasPrefix(request.Method, "Recycle.") {
+		return s.recycleCall(request)
 	}
 	if request.Method == "Workspace.Read" || request.Method == "Runtime.Inspect" || request.Method == "Operation.Read" || strings.HasPrefix(request.Method, "Runtime.") {
 		s.flushRuntimePersistence()
@@ -659,6 +693,12 @@ func (s *Service) Call(request Request) Result {
 			}
 			return success(copyRestoreOperation(task.operation), task.operation.ID)
 		}
+		if task := s.recycleTask; task != nil && task.operation.ID == input.OperationID {
+			if request.Method == "Operation.Cancel" {
+				return s.cancelRecycle(task)
+			}
+			return success(copyRecycleOperation(task.operation), task.operation.ID)
+		}
 		if task := s.backupTasks[input.OperationID]; task != nil {
 			if request.Method == "Operation.Cancel" {
 				return s.cancelBackupOperation(task)
@@ -737,6 +777,18 @@ func (s *Service) newSeed(exclude string) (string, error) {
 	return "", &kernel.Problem{Code: "RESOURCE_EXHAUSTED", Reason: "seed-allocation-contention", Message: "独立seed分配暂时无法完成，已完成项保留；未复用旧身份，也不是实例产品配额。", Retryable: true}
 }
 func (s *Service) readEnvironment(environmentID string) (Environment, int64, string, error) {
+	var trashed bool
+	if err := s.db.QueryRow("SELECT EXISTS(SELECT 1 FROM environment_trash WHERE environment_id=?)", environmentID).Scan(&trashed); err != nil {
+		return Environment{}, 0, "", err
+	}
+	if trashed {
+		return Environment{}, 0, "", sql.ErrNoRows
+	}
+	return s.readStoredEnvironment(environmentID)
+}
+
+// Used only by validated schema7 packages and the managed recycle journal.
+func (s *Service) readStoredEnvironment(environmentID string) (Environment, int64, string, error) {
 	var e Environment
 	var configJSON, profileID, name, kernelID, profileKernelID, proxyID, seed, dataRef string
 	var revision int64
@@ -949,7 +1001,7 @@ func (s *Service) mutate(method string, input Mutation) Result {
 			return storageFailure(err)
 		}
 	} else {
-		if err = tx.QueryRow("SELECT fingerprint_id,revision,code FROM environments WHERE id=?", e.ID).Scan(&profileID, &revision, &code); err != nil {
+		if err = tx.QueryRow("SELECT fingerprint_id,revision,code FROM environments WHERE id=? AND NOT EXISTS(SELECT 1 FROM environment_trash WHERE environment_id=environments.id)", e.ID).Scan(&profileID, &revision, &code); err != nil {
 			return failure("NOT_FOUND", "环境已不存在，请重新读取。", true)
 		}
 		if input.ExpectedRevision != revision {
@@ -1198,10 +1250,19 @@ func (s *Service) viewPage(query EnvironmentQuery) (View, error) {
 	if err != nil {
 		return View{}, err
 	}
+	recycles, err := s.listRecycleOperations()
+	if err != nil {
+		return View{}, err
+	}
+	var recycleMaintenance *Operation
+	if s.recycleTask != nil {
+		op := copyRecycleOperation(s.recycleTask.operation)
+		recycleMaintenance = &op
+	}
 	var maintenance *Operation
 	if s.restoreTask != nil {
 		op := copyRestoreOperation(s.restoreTask.operation)
 		maintenance = &op
 	}
-	return View{Mode: "native", State: state, KernelRecords: installed, KernelOperations: operations, Fingerprints: profiles, DataReferences: references, RuntimeSessions: sessions, NativeProxyRecords: proxyRecords, ProxyOperations: proxyOperations, CookieOperations: cookieOperations, BatchOperations: batchOperations, BackupOperations: backupOperations, NativeBackups: backups, RestoreOperations: restores, Maintenance: maintenance, EnvironmentPage: &page}, nil
+	return View{Mode: "native", State: state, KernelRecords: installed, KernelOperations: operations, Fingerprints: profiles, DataReferences: references, RuntimeSessions: sessions, NativeProxyRecords: proxyRecords, ProxyOperations: proxyOperations, CookieOperations: cookieOperations, BatchOperations: batchOperations, BackupOperations: backupOperations, NativeBackups: backups, RestoreOperations: restores, Maintenance: maintenance, RecycleOperations: recycles, RecycleMaintenance: recycleMaintenance, EnvironmentPage: &page}, nil
 }

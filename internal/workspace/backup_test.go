@@ -152,6 +152,31 @@ func TestBackupAllScopeDoesNotUseCurrentPagedViewAndKeepsUninitializedExplicit(t
 	}
 }
 
+func TestBackupCanPublishToWorkspaceAncestorAfterSourceValidation(t *testing.T) {
+	parent := t.TempDir()
+	root := filepath.Join(parent, "workspace")
+	s, err := Open(root, Options{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer s.Close()
+	e, dir := recycleFixture(t, s, root, "合成父目录备份")
+	path := filepath.Join(parent, "synthetic-ancestor.prismbackup")
+	token := backupDestinationFixture(t, s, path)
+	op := waitBackupFixture(t, s, acceptBackupFixture(t, s, BackupExportRequest{Scope: "selected", EnvironmentIDs: []string{e.ID}, DestinationToken: token, StopRunning: true, RequestID: id()}).ID)
+	if op.State != "completed" || !op.BackupReport.Published {
+		t.Fatal("valid ancestor destination could not publish", op)
+	}
+	manifest, entries := readPackageFixture(t, path)
+	ref, _ := dataReference(e.ID)
+	if len(manifest.Environments) != 1 || string(entries[ref+"/Cookies"]) != "SYNTHETIC_RECYCLE_"+e.ID {
+		t.Fatal("ancestor export lost source bytes")
+	}
+	if data, err := os.ReadFile(filepath.Join(dir, "Cookies")); err != nil || string(data) != string(entries[ref+"/Cookies"]) {
+		t.Fatal("source changed during ancestor publication", err)
+	}
+}
+
 func TestBackupMaintenanceReservationSurvivesRuntimeReleaseAndRejectsReconcile(t *testing.T) {
 	s, _ := fixture(t, Options{})
 	environment, _ := create(t, s, "合成备份维护")

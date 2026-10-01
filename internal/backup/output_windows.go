@@ -11,7 +11,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"unsafe"
 
 	"github.com/axgiroud312-byte/prism-local-browser/internal/desktopbase"
 	"github.com/google/uuid"
@@ -24,6 +23,7 @@ type Output struct {
 	Destination string
 	release     func()
 	published   bool
+	parent      windows.Handle
 }
 
 func OutputPaths(root, destination, operationID string) (string, string, error) {
@@ -55,7 +55,7 @@ func NewOutput(root, destination, operationID string) (_ *Output, resultErr erro
 		return nil, err
 	}
 	parent := filepath.Dir(destination)
-	release, err := pinDirectoryChain(parent)
+	parentHandle, release, err := pinRenameParents(parent, parent)
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +64,7 @@ func NewOutput(root, destination, operationID string) (_ *Output, resultErr erro
 			release()
 		}
 	}()
-	actualParent, err := actualDirectory(parent)
+	actualParent, err := actualDirectoryHandle(parentHandle)
 	if err != nil {
 		return nil, err
 	}
@@ -78,15 +78,11 @@ func NewOutput(root, destination, operationID string) (_ *Output, resultErr erro
 	if _, err = os.Lstat(destination); err == nil || !os.IsNotExist(err) {
 		return nil, errors.New("destination already exists or cannot be confirmed absent")
 	}
-	name, err := windows.UTF16PtrFromString(temporary)
+	handle, err := createFileAt(parentHandle, filepath.Base(temporary))
 	if err != nil {
 		return nil, err
 	}
-	handle, err := windows.CreateFile(name, windows.GENERIC_READ|windows.GENERIC_WRITE|windows.DELETE, 0, nil, windows.CREATE_NEW, windows.FILE_ATTRIBUTE_NORMAL|windows.FILE_FLAG_OPEN_REPARSE_POINT, 0)
-	if err != nil {
-		return nil, err
-	}
-	return &Output{File: os.NewFile(uintptr(handle), temporary), Temporary: temporary, Destination: destination, release: release}, nil
+	return &Output{File: os.NewFile(uintptr(handle), temporary), Temporary: temporary, Destination: destination, release: release, parent: parentHandle}, nil
 }
 
 func (o *Output) Digest(ctx context.Context) (string, error) {
@@ -112,23 +108,7 @@ func (o *Output) Publish() error {
 	if err := o.File.Sync(); err != nil {
 		return err
 	}
-	name, err := windows.UTF16FromString(o.Destination)
-	if err != nil {
-		return err
-	}
-	type renameInfo struct {
-		Replace uint32
-		Root    windows.Handle
-		Length  uint32
-		Name    uint16
-	}
-	var layout renameInfo
-	offset := int(unsafe.Offsetof(layout.Name))
-	buffer := make([]byte, offset+len(name)*2)
-	info := (*renameInfo)(unsafe.Pointer(&buffer[0]))
-	info.Length = uint32((len(name) - 1) * 2) // Win32 name remains NUL terminated.
-	copy(unsafe.Slice((*uint16)(unsafe.Pointer(&buffer[offset])), len(name)), name)
-	if err = windows.SetFileInformationByHandle(windows.Handle(o.File.Fd()), windows.FileRenameInfo, &buffer[0], uint32(len(buffer))); err != nil {
+	if err := renameAt(windows.Handle(o.File.Fd()), o.parent, filepath.Base(o.Destination)); err != nil {
 		return err
 	}
 	o.published = true
@@ -191,8 +171,12 @@ func actualDirectory(path string) (string, error) {
 		return "", err
 	}
 	defer file.Close()
+	return actualDirectoryHandle(windows.Handle(file.Fd()))
+}
+
+func actualDirectoryHandle(handle windows.Handle) (string, error) {
 	buffer := make([]uint16, 32768)
-	n, err := windows.GetFinalPathNameByHandle(windows.Handle(file.Fd()), &buffer[0], uint32(len(buffer)), 0)
+	n, err := windows.GetFinalPathNameByHandle(handle, &buffer[0], uint32(len(buffer)), 0)
 	if err != nil || n == 0 || n >= uint32(len(buffer)) {
 		return "", errors.New("actual directory unavailable")
 	}

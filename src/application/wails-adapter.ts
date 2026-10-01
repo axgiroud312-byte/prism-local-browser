@@ -6,11 +6,13 @@ import type {
   ProxyConfiguration, ProxyImportPreview, ProxyUpdateRequest, ProxyTargetRequest, NativeProxy,
   CookieCommitRequest, CookieImportPreview, RuntimeStartRequest,
   NativeBatchPreviewRequest, NativeBatchPage, NativeEnvironmentQuery, NativeBackupExportRequest, NativeBackupPending, NativeRestorePreview, NativeRestorePage, NativeRestoreRequest,
+  NativeRecycleAction, NativeRecyclePage, NativeRecyclePageRequest, NativeRecycleRequest,
 } from "./contract.ts";
 import { mergeOperation, operationIsTerminal } from "./contract.ts";
 import { validBatchPage, validBatchReport } from "./batch-model.ts";
 import { confirmsBackupRequest, invalidBackupOperation } from "./backup-model.ts";
 import { confirmsRestoreRequest, invalidRestoreOperation } from "./restore-model.ts";
+import { confirmsRecycleRequest, invalidRecycleOperation, validRecyclePage } from "./recycle-model.ts";
 
 export interface NativeRequest { mode: "native"; method: string; payload: unknown }
 export type NativeBridge = <T>(request: NativeRequest) => Promise<ApplicationResult<T>>;
@@ -40,6 +42,8 @@ export class WailsAdapter implements ApplicationService {
   private pendingBackup?: NativeBackupPending;
   private pendingRestore?: { request: NativeRestoreRequest; operationId?: string };
   private restoreRefusal?: string;
+  private pendingRecycle?: { request: NativeRecycleRequest; operationId?: string };
+  private recycleRefusal?: string;
   constructor(bridge: NativeBridge) { this.bridge = bridge; }
   getSnapshot = () => this.view;
   subscribe = (listener: () => void) => { this.listeners.add(listener); return () => { this.listeners.delete(listener); }; };
@@ -49,6 +53,7 @@ export class WailsAdapter implements ApplicationService {
     try {
       const response = await this.bridge<T>({ mode: "native", method, payload });
       if (response.mode !== "native") {
+        if (method === "Recycle.Commit") return { ok: false, mode: "native", operationId: response.operationId, error: { code: "RECYCLE_RESULT_UNCONFIRMED", message: "回收响应模式不符，原请求仍待核实。", retryable: true } };
         if (method === "Backup.ApplyRestore") return { ok: false, mode: "native", operationId: response.operationId, error: { code: "RESTORE_RESULT_UNCONFIRMED", message: "恢复响应模式不符；原请求保持待核实，不能另建恢复。", retryable: true } };
         if (method === "Backup.Export") return { ok: false, mode: "native", operationId: response.operationId, error: { code: "BACKUP_RESULT_UNCONFIRMED", message: "返回模式不符，已拒绝演示结果；这不证明后台未受理，原备份请求保留，请核实。", retryable: true } };
         return { ok: false, mode: "native", error: { code: "CAPABILITY_UNSUPPORTED", message: "服务返回了演示记录，已拒绝接入真实工作区。", retryable: false } };
@@ -59,6 +64,7 @@ export class WailsAdapter implements ApplicationService {
   async refresh(): Promise<ApplicationResult<WorkspaceView>> {
     const sequence = ++this.refreshSequence;
     let response = await this.invoke<WorkspaceView>("Workspace.Read", this.environmentQuery ? { environmentQuery: { ...this.environmentQuery } } : {});
+    if (response.ok && ((response.data.recycleOperations ?? []).some(invalidRecycleOperation) || response.data.recycleMaintenance && (response.data.recycleMaintenance.kind !== "recycle" || invalidRecycleOperation(response.data.recycleMaintenance)))) response = { ok: false, mode: "native", error: { code: "RECYCLE_RESULT_UNCONFIRMED", message: "回收任务状态尚未核实，未接入为完成。", retryable: true } };
     if (response.ok && ((response.data.restoreOperations ?? []).some(invalidRestoreOperation) || response.data.maintenance && (response.data.maintenance.kind !== "backup-restore" || invalidRestoreOperation(response.data.maintenance)))) response = { ok: false, mode: "native", error: { code: "RESTORE_RESULT_UNCONFIRMED", message: "恢复报告身份或完整性未核实，未接入为成功。", retryable: true } };
     if (response.ok && (response.data.mode !== "native" || Object.values(response.data.runtimeSessions ?? {}).some(session => session.mode !== "native" || (session.proxyReport && (session.proxyReport.mode !== "native" || session.proxyReport.channelId !== session.proxyChannelId || session.proxyReport.proxyId !== session.proxyId || session.proxyReport.revision !== session.proxyRevision))) || (response.data.nativeProxyRecords ?? []).some(record => record.checkReport && record.checkReport.mode !== "native") || (response.data.proxyOperations ?? []).some(operation => operation.proxyReport && operation.proxyReport.mode !== "native") || (response.data.cookieOperations ?? []).some(invalidCookieReport) || (response.data.batchOperations ?? []).some(invalidBatchReport) || (response.data.backupOperations ?? []).some(invalidBackupOperation))) response = { ok: false, mode: "native", error: { code: "CAPABILITY_UNSUPPORTED", message: "工作区、会话或报告身份不匹配，已拒绝接入；未回退演示数据。", retryable: false } };
     if (sequence !== this.refreshSequence) return response;
@@ -75,7 +81,11 @@ export class WailsAdapter implements ApplicationService {
         const merged = mergeOperation(this.operations.get(operation.id), operation);
         this.operations.set(merged.id, merged); this.confirmPendingRestore(merged); return merged;
       });
-      this.view = { ...response.data, ...(batchOperations ? { batchOperations } : {}), ...(backupOperations ? { backupOperations } : {}), ...(restoreOperations ? { restoreOperations } : {}) };
+      const recycleOperations = response.data.recycleOperations?.map(operation => {
+        const merged = mergeOperation(this.operations.get(operation.id), operation);
+        this.operations.set(merged.id, merged); this.confirmPendingRecycle(merged); return merged;
+      });
+      this.view = { ...response.data, ...(batchOperations ? { batchOperations } : {}), ...(backupOperations ? { backupOperations } : {}), ...(restoreOperations ? { restoreOperations } : {}), ...(recycleOperations ? { recycleOperations } : {}) };
     }
     else this.view = { ...this.view, issue: response.error };
     this.publish();
@@ -121,7 +131,8 @@ export class WailsAdapter implements ApplicationService {
     return this.confirmOperation(response);
   }
   private confirmOperation(response: ApplicationResult<Operation>): ApplicationResult<Operation> {
-    if (!response.ok || (!response.data.kind.startsWith("kernel-") && !response.data.kind.startsWith("runtime-") && !response.data.kind.startsWith("batch-") && response.data.kind !== "proxy-check" && response.data.kind !== "cookie-import" && response.data.kind !== "backup-export" && response.data.kind !== "backup-restore")) return response;
+    if (!response.ok || (!response.data.kind.startsWith("kernel-") && !response.data.kind.startsWith("runtime-") && !response.data.kind.startsWith("batch-") && response.data.kind !== "proxy-check" && response.data.kind !== "cookie-import" && response.data.kind !== "backup-export" && response.data.kind !== "backup-restore" && response.data.kind !== "recycle")) return response;
+    if (invalidRecycleOperation(response.data)) return { ok: false, mode: "native", operationId: response.data.id, error: { code: "RECYCLE_RESULT_UNCONFIRMED", message: "回收任务报告尚未核实，保留原请求和目录保护。", retryable: true } };
     if (invalidRestoreOperation(response.data)) return { ok: false, mode: "native", operationId: response.data.id, error: { code: "RESTORE_RESULT_UNCONFIRMED", message: "恢复报告未核实；保留原任务ID，不重复切换。", retryable: true } };
     if (invalidBackupOperation(response.data)) return { ok: false, mode: "native", operationId: response.data.id, error: { code: "BACKUP_RESULT_UNCONFIRMED", message: "备份格式、统计或发布状态未核实；已知任务ID保留，不证明未受理，不重新导出。", retryable: true } };
     if (invalidBatchReport(response.data)) return { ok: false, mode: "native", error: { code: "CAPABILITY_UNSUPPORTED", message: "批次类型或计划身份不匹配，不能计为持久任务结果。", retryable: false } };
@@ -132,6 +143,7 @@ export class WailsAdapter implements ApplicationService {
     this.operations.set(operation.id, operation);
     this.confirmPendingBackup(operation);
     this.confirmPendingRestore(operation);
+    this.confirmPendingRecycle(operation);
     if (operation !== previous) this.emit(operation);
     return { ...response, data: operation };
   }
@@ -321,5 +333,51 @@ export class WailsAdapter implements ApplicationService {
   queryEnvironments(request: NativeEnvironmentQuery) {
     this.environmentQuery = { page: request.page, pageSize: request.pageSize, search: request.search, group: request.group, status: request.status };
     return this.refresh();
+  }
+  async previewRecycle(action: NativeRecycleAction, ids: string[]): Promise<ApplicationResult<NativeRecyclePage>> {
+    const result = await this.invoke<NativeRecyclePage>("Recycle.Preview", { action, ids: [...ids] });
+    if (result.ok && (!validRecyclePage(result.data) || result.data.preview?.action !== action || result.data.total !== new Set(ids).size)) return { ok: false, mode: "native", error: { code: "RECYCLE_RESULT_UNCONFIRMED", message: "影响预览与选中范围不符，没有执行。", retryable: true } };
+    return result;
+  }
+  async readRecyclePage(request: NativeRecyclePageRequest): Promise<ApplicationResult<NativeRecyclePage>> {
+    const result = await this.invoke<NativeRecyclePage>("Recycle.ReadPage", { offset: request.offset, pageSize: request.pageSize, ...(request.previewId ? { previewId: request.previewId } : {}), ...(request.operationId ? { operationId: request.operationId } : {}) });
+    if (result.ok && !validRecyclePage(result.data, request)) return { ok: false, mode: "native", error: { code: "RECYCLE_RESULT_UNCONFIRMED", message: "回收分页身份或范围不符，未替换当前列表。", retryable: true } };
+    if (result.ok && result.data.operation) this.confirmOperation({ ok: true, mode: "native", data: result.data.operation });
+    return result;
+  }
+  getPendingRecycle() { return this.pendingRecycle ? { ...this.pendingRecycle, request: { ...this.pendingRecycle.request } } : undefined; }
+  wasRecycleNotAccepted(requestId: string) { return this.recycleRefusal === requestId; }
+  private confirmPendingRecycle(operation: Operation) {
+    if (confirmsRecycleRequest(operation, this.pendingRecycle?.request)) this.pendingRecycle = undefined;
+  }
+  async commitRecycle(request: NativeRecycleRequest) {
+    const projected = { previewId: request.previewId, confirm: request.confirm, requestId: request.requestId };
+    if (this.pendingRecycle && JSON.stringify(this.pendingRecycle.request) !== JSON.stringify(projected)) return { ok: false as const, mode: "native" as const, operationId: this.pendingRecycle.operationId, error: { code: "RECYCLE_RESULT_UNCONFIRMED", message: "原回收请求尚未核实；请查询或重发原请求。", retryable: true } };
+    const owner = this.pendingRecycle ??= { request: projected };
+    let result = await this.invoke<{ status: "accepted"; operation: Operation }>("Recycle.Commit", projected);
+    if (result.ok) {
+      const operationId = result.data.operation.id || result.operationId;
+      if (this.pendingRecycle === owner && operationId) owner.operationId = operationId;
+      if (result.data.status !== "accepted" || !confirmsRecycleRequest(result.data.operation, projected)) result = { ok: false, mode: "native", operationId, error: { code: "RECYCLE_RESULT_UNCONFIRMED", message: "原请求受理结果尚未核实，不重新执行回收或删除。", retryable: true } };
+      else { const checked = this.confirmOperation({ ok: true, mode: "native", data: result.data.operation }); result = checked.ok ? { ...result, data: { ...result.data, operation: checked.data } } : checked; }
+    } else if (this.pendingRecycle === owner) {
+      if (result.operationId) owner.operationId = result.operationId;
+      else if (["VALIDATION_FAILED", "PREVIEW_EXPIRED", "NOT_FOUND", "REVISION_CONFLICT", "PROFILE_BUSY", "RECYCLE_NOT_ACCEPTED", "REQUEST_ID_REUSED"].includes(result.error.code)) {
+        this.recycleRefusal = projected.requestId; this.pendingRecycle = undefined;
+        if (result.error.code === "RECYCLE_NOT_ACCEPTED" && owner.operationId) this.operations.delete(owner.operationId);
+      }
+    }
+    await this.refresh();
+    const known = [...this.operations.values()].find(op => confirmsRecycleRequest(op, projected));
+    return known ? { ok: true as const, mode: "native" as const, operationId: known.id, data: { status: "accepted" as const, operation: known } } : result;
+  }
+  async recoverRecycle(operationId: string) {
+    const owner = this.pendingRecycle;
+    const result = await this.invoke<Operation>("Recycle.Recover", { operationId });
+    if (!result.ok && result.error.code === "RECYCLE_NOT_ACCEPTED" && owner && owner.operationId === operationId && this.pendingRecycle === owner) {
+      this.recycleRefusal = owner.request.requestId; this.pendingRecycle = undefined; this.operations.delete(operationId);
+    }
+    if (result.ok && (result.data.id !== operationId || result.data.kind !== "recycle")) return { ok: false as const, mode: "native" as const, error: { code: "RECYCLE_RESULT_UNCONFIRMED", message: "不是原回收任务的结果。", retryable: true } };
+    const checked = this.confirmOperation(result); await this.refresh(); return checked;
   }
 }

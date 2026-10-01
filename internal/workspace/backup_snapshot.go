@@ -99,7 +99,7 @@ func (s *Service) createBackupSnapshot(ctx context.Context, input backupExecutio
 	defer tx.Rollback()
 	// Native v1 configuration remains schema7. New runtime journals are local
 	// control state, never exported or executed when restoring a package.
-	if _, err = tx.ExecContext(ctx, "DROP TABLE IF EXISTS restore_jobs; PRAGMA user_version=7"); err != nil {
+	if _, err = tx.ExecContext(ctx, nativeV1SchemaProjection); err != nil {
 		return backup.Manifest{}, err
 	}
 	for _, statement := range []string{

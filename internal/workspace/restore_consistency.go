@@ -38,6 +38,11 @@ func restoreAffectedBaseline(query interface {
 		{"SELECT proxy_id,config_json,revision FROM proxy_config WHERE proxy_id IN (" + e + ") ORDER BY proxy_id", string(proxiesJSON)},
 		{"SELECT ref,hex(protected) FROM proxy_credentials WHERE ref IN (SELECT credential_ref FROM proxies WHERE id IN (" + e + ")) ORDER BY ref", string(proxiesJSON)},
 	}
+	// Preserve v2 interrupted journals across schema9 migration. Only new plans
+	// include recycle membership in their versioned configuration digest.
+	if plan.JournalVersion >= 3 {
+		queries = append(queries, struct{ sql, arg string }{"SELECT environment_id,trash_id,entry_json FROM environment_trash WHERE environment_id IN (" + e + ") ORDER BY environment_id", string(environmentsJSON)})
+	}
 	h := sha256.New()
 	for _, q := range queries {
 		h.Write([]byte(q.sql))

@@ -41,7 +41,7 @@ func (s *Service) environmentIDs(query EnvironmentQuery) ([]string, EnvironmentP
 		}
 		cte = "WITH observed(environment_id,record_json) AS (VALUES " + strings.Join(values, ",") + ") "
 	}
-	from := ` FROM environments e JOIN fingerprints f ON f.id=e.fingerprint_id LEFT JOIN runtime_sessions r ON r.environment_id=e.id LEFT JOIN observed v ON v.environment_id=e.id `
+	from := ` FROM (SELECT * FROM environments WHERE NOT EXISTS(SELECT 1 FROM environment_trash WHERE environment_id=environments.id)) e JOIN fingerprints f ON f.id=e.fingerprint_id LEFT JOIN runtime_sessions r ON r.environment_id=e.id LEFT JOIN observed v ON v.environment_id=e.id `
 	status := `COALESCE(json_extract(v.record_json,'$.state'),json_extract(r.record_json,'$.state'),'ready')`
 	if err := s.db.QueryRow(cte+"SELECT COUNT(*),COALESCE(SUM("+status+"='running'),0),COALESCE(SUM("+status+"='error'),0)"+from, args...).Scan(&page.Total, &page.RunningCount, &page.ErrorCount); err != nil {
 		return nil, page, err
@@ -80,7 +80,7 @@ func (s *Service) environmentIDs(query EnvironmentQuery) ([]string, EnvironmentP
 	if err != nil {
 		return nil, page, err
 	}
-	rows, err = s.db.Query(`SELECT DISTINCT json_extract(f.config_json,'$.group') FROM fingerprints f JOIN environments e ON e.fingerprint_id=f.id WHERE json_extract(f.config_json,'$.group')<>'' ORDER BY 1`)
+	rows, err = s.db.Query(`SELECT DISTINCT json_extract(f.config_json,'$.group') FROM fingerprints f JOIN environments e ON e.fingerprint_id=f.id WHERE json_extract(f.config_json,'$.group')<>'' AND NOT EXISTS(SELECT 1 FROM environment_trash WHERE environment_id=e.id) ORDER BY 1`)
 	if err != nil {
 		return nil, page, err
 	}

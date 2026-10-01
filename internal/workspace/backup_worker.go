@@ -170,7 +170,11 @@ func (s *Service) runBackup(ctx context.Context, task *backupTask, input backupE
 		cause = err
 		return
 	}
-	defer freezeStage()
+	defer func() {
+		if freezeStage != nil {
+			freezeStage()
+		}
+	}()
 	snapshotPath := filepath.Join(s.root, filepath.FromSlash(stageRef), "configuration.sqlite")
 	if _, err = os.Lstat(snapshotPath); !os.IsNotExist(err) {
 		cause = errors.New("snapshot staging file already exists")
@@ -239,6 +243,18 @@ func (s *Service) runBackup(ctx context.Context, task *backupTask, input backupE
 			return
 		}
 	}
+	// The validated package owns its bytes now. Release source path pins before
+	// publication: an allowed output parent can be an ancestor of the workspace,
+	// and native rename needs write sharing on that directory. Logical maintenance
+	// reservations remain held; no further source-path operations occur.
+	for _, profile := range profiles {
+		if cause = profile.Close(); cause != nil {
+			return
+		}
+	}
+	profiles = nil
+	freezeStage()
+	freezeStage = nil
 	archiveHash, err := output.Digest(ctx)
 	if err != nil {
 		cause = err

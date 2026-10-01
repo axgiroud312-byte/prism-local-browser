@@ -11,8 +11,12 @@ import { readRuntimeStartPlan } from "../src/application/runtime-start-plan.ts";
 import { confirmsBackupRequest, validBackupReport } from "../src/application/backup-model.ts";
 import type { NativeBackupReport, NativeBackupExportRequest, NativeRestorePreview, NativeRestoreRequest } from "../src/application/contract.ts";
 import { invalidRestoreOperation } from "../src/application/restore-model.ts";
+import { invalidRecycleOperation, validRecyclePage } from "../src/application/recycle-model.ts";
+import type { NativeRecycleRequest, NativeRecyclePage } from "../src/application/contract.ts";
 
 const empty = (): WorkspaceView => ({ mode: "native", state: { schemaVersion: 1, environments: [], proxies: [], kernels: [], backups: [], activities: [] } });
+const recycleRequest = (): NativeRecycleRequest => ({ previewId: "synthetic-recycle-preview", confirm: true, requestId: "synthetic-recycle-request" });
+const recycleOperation = (): Operation => ({ id: "synthetic-recycle-operation", kind: "recycle", state: "running", stage: "prepared", cancelRequested: false, completedIds: [], total: 1, persistencePending: true, recycleReport: { mode: "native", action: "purge", requestId: "synthetic-recycle-request", previewId: "synthetic-recycle-preview", sequence: 2, completed: 0, failed: 0, notExecuted: 1, protected: true } });
 const ok = <T>(data: T): ApplicationResult<T> => ({ ok: true, mode: "native", data });
 const rejected: ApplicationResult<never> = { ok: false, mode: "native", error: { code: "STORAGE_WRITE_FAILED", message: "本次未保存", retryable: true } };
 function fixture(handler: (request: NativeRequest) => ApplicationResult<unknown> | Promise<ApplicationResult<unknown>>) {
@@ -34,6 +38,72 @@ const restorePreview = (): NativeRestorePreview => ({ mode: "native", previewId:
 
 const restoreRequest = (): NativeRestoreRequest => ({ previewId: "synthetic-preview", archiveSha256: "a".repeat(64), confirmOverwrite: true, acknowledgeCredentials: true, stopRunning: true, requestId: "synthetic-restore-request" });
 const restoreOperation = (): Operation => ({ id: "synthetic-restore-operation", kind: "backup-restore", state: "running", stage: "prepared", cancelRequested: false, completedIds: [], total: 1, restoreReport: { mode: "native", requestId: "synthetic-restore-request", previewId: "synthetic-preview", archiveSha256: "a".repeat(64), sequence: 2, environmentCount: 1, switchedCount: 0, credentialReentryCount: 0, committed: false, rolledBack: false, protected: true } });
+
+test("recycle commit projects explicit original confirmation without paths or client identities", async () => {
+  const task = recycleOperation();
+  const { app, calls } = fixture(r => r.method === "Workspace.Read" ? ok({ ...empty(), recycleOperations: [task], recycleMaintenance: task }) : ok({ status: "accepted", operation: task }));
+  const result = await app.commitRecycle({ ...recycleRequest(), path: "SYNTHETIC_PRIVATE_PATH", ids: ["unselected"], seed: "999" } as NativeRecycleRequest);
+  assert.ok(result.ok); assert.deepEqual(calls[0].payload, recycleRequest()); assert.equal(app.getPendingRecycle(), undefined);
+  assert.equal(app.getSnapshot().recycleMaintenance?.id, task.id);
+});
+test("unknown recycle acceptance keeps original request and forbids a new deletion until verified", async () => {
+  const task = recycleOperation();
+  const { app, calls } = fixture(r => r.method === "Workspace.Read" ? ok(empty()) : r.method === "Operation.Read" ? ok(task) : { ok: false, mode: "native", operationId: task.id, error: { code: "RECYCLE_INCOMPLETE", message: "unknown", retryable: true } });
+  assert.equal((await app.commitRecycle(recycleRequest())).ok, false);
+  assert.deepEqual(app.getPendingRecycle(), { request: recycleRequest(), operationId: task.id });
+  const count = calls.length;
+  assert.equal((await app.commitRecycle({ ...recycleRequest(), requestId: "another-delete" })).ok, false); assert.equal(calls.length, count);
+  assert.ok((await app.getOperation(task.id)).ok); assert.equal(app.getPendingRecycle(), undefined);
+});
+test("late old recycle refusal cannot release a newer unresolved request", async () => {
+  let deliver!: (r: ApplicationResult<unknown>) => void; let first = true;
+  const { app } = fixture(r => r.method === "Workspace.Read" ? ok(empty()) : r.method === "Operation.Read" ? ok(recycleOperation()) : first ? (first = false, new Promise(resolve => { deliver = resolve; })) : rejected);
+  const old = app.commitRecycle(recycleRequest()); await app.getOperation(recycleOperation().id);
+  const next = { ...recycleRequest(), previewId: "new-preview", requestId: "new-request" }; await app.commitRecycle(next);
+  deliver({ ok: false, mode: "native", error: { code: "PREVIEW_EXPIRED", message: "old", retryable: true } }); await old;
+  assert.deepEqual(app.getPendingRecycle()?.request, next);
+});
+test("invalid recycle completion or mismatched request never releases deletion ownership", async () => {
+  for (const bad of [{ ...recycleOperation(), state: "completed" }, { ...recycleOperation(), recycleReport: { ...recycleOperation().recycleReport, requestId: "other" } }, { ...recycleOperation(), recycleReport: { ...recycleOperation().recycleReport, mode: "demo" } }]) {
+    const { app } = fixture(r => r.method === "Workspace.Read" ? ok(empty()) : ok({ status: "accepted", operation: bad }));
+    assert.equal((await app.commitRecycle(recycleRequest())).ok, false); assert.ok(app.getPendingRecycle());
+  }
+});
+test("recycle final storage retry preserves monotonic counts and accepts only confirmed completion", () => {
+  const task = recycleOperation();
+  const pending: Operation = { ...task, state: "failed", stage: "storage-pending", recycleReport: { ...task.recycleReport!, sequence: 8, completed: 1, notExecuted: 0 } };
+  const done: Operation = { ...pending, state: "completed", stage: "finished", persistencePending: false, recycleReport: { ...pending.recycleReport!, protected: false } };
+  assert.equal(invalidRecycleOperation(pending), false); assert.equal(invalidRecycleOperation(done), false);
+  assert.equal(mergeOperation(pending, done), done); assert.equal(mergeOperation(done, task), done);
+  assert.equal(invalidRecycleOperation({ ...done, recycleReport: { ...done.recycleReport!, completed: 0 } }), true);
+});
+test("recycle page validates original preview or operation instead of accepting unrelated results", () => {
+  const page: NativeRecyclePage = { mode: "native", offset: 0, pageSize: 25, total: 1, items: [{ id: "synthetic-trash", environmentId: "synthetic-environment", name: "合成回收", seed: "123", kernelId: "kernel-pending", revision: 2, dataPresent: true, backupRecorded: false, state: "recycled" }], operation: recycleOperation() };
+  assert.equal(validRecyclePage(page, { offset: 0, pageSize: 25, operationId: page.operation!.id }), true);
+  assert.equal(validRecyclePage(page, { offset: 0, pageSize: 25, operationId: "other-task" }), false);
+  assert.equal(validRecyclePage({ ...page, total: 0 }), false);
+});
+test("recycle acceptance recovery returns original operation and verified nonacceptance permits a fresh preview", async () => {
+  let absent = false;
+  const unknown: Operation = { ...recycleOperation(), state: "accepted", stage: "acceptance-pending" };
+  const { app } = fixture(r => r.method === "Workspace.Read" ? ok(empty()) : r.method === "Recycle.Recover" ? ok(recycleOperation()) : r.method === "Operation.Read" ? ok(unknown) : absent ? { ok: false, mode: "native", error: { code: "RECYCLE_NOT_ACCEPTED", message: "absent", retryable: true } } : { ok: false, mode: "native", operationId: unknown.id, error: { code: "RECYCLE_INCOMPLETE", message: "unknown", retryable: true } });
+  await app.commitRecycle(recycleRequest()); await app.getOperation(unknown.id); assert.ok(app.getPendingRecycle());
+  assert.ok((await app.recoverRecycle(unknown.id)).ok); assert.equal(app.getPendingRecycle(), undefined);
+  const next = { ...recycleRequest(), previewId: "new-preview", requestId: "new-request" }; await app.commitRecycle(next);
+  absent = true; assert.equal((await app.commitRecycle(next)).ok, false); assert.equal(app.getPendingRecycle(), undefined); assert.equal(app.wasRecycleNotAccepted(next.requestId), true);
+});
+test("recycle recovery nonacceptance clears only the original pending owner", async () => {
+  const task = recycleOperation(); let deliver!: (r: ApplicationResult<unknown>) => void;
+  const { app } = fixture(r => r.method === "Workspace.Read" ? ok(empty()) : r.method === "Operation.Read" ? ok(task) : r.method === "Recycle.Recover" ? new Promise(resolve => { deliver = resolve; }) : { ok: false, mode: "native", operationId: task.id, error: { code: "RECYCLE_INCOMPLETE", message: "unknown", retryable: true } });
+  await app.commitRecycle(recycleRequest());
+  const refused = app.recoverRecycle(task.id);
+  deliver({ ok: false, mode: "native", error: { code: "RECYCLE_NOT_ACCEPTED", message: "absent", retryable: true } }); await refused;
+  assert.equal(app.getPendingRecycle(), undefined); assert.equal(app.wasRecycleNotAccepted(recycleRequest().requestId), true);
+  await app.commitRecycle(recycleRequest()); const late = app.recoverRecycle(task.id); await app.getOperation(task.id);
+  const next = { ...recycleRequest(), previewId: "next-preview", requestId: "next-request" }; await app.commitRecycle(next);
+  deliver({ ok: false, mode: "native", error: { code: "RECYCLE_NOT_ACCEPTED", message: "late", retryable: true } }); await late;
+  assert.deepEqual(app.getPendingRecycle()?.request, next);
+});
 
 test("restore mutation projects only confirmation and binds the accepted package, never paths or archived config", async () => {
   const task = restoreOperation();

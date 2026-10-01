@@ -293,6 +293,12 @@ HTTP经目标流写origin-form，HTTPS经同本机CONNECT透传TLS；SOCKS5本�
 | `STORAGE_WRITE_FAILED` / `DISK_FULL`                     | 快照写入失败或空间不足时不进入升级；附对应阶段                                                          |
 | `RESTORE_INCOMPLETE`                                     | 升级后需要回滚或恢复未完成；保持环境锁定，完成完整快照恢复后解锁                                        |
 
+### T19 回收目录边界（源码已编写，未运行验收）
+
+回收仅对已停止且退出确认的明确环境；CaptureProfile保存原树身份/文件清单，实际移动仍检查全部路径、重解析、可见硬链接和占用。移入与找回保持原目录对象与原精确身份，目标冲突不覆盖。共享[`rename`](../internal/backup/rename_windows.go)合并父路径pins，仅目标父对象允许write sharing以兼容系统隐式目标写访问，仍禁止delete sharing；临时输出创建和rename均用NT RootDirectory句柄及单leaf名称，不沿可写父路径重新创建。源数据遍历至最终核对保持严格pins，之后释放多余pins，仅按已固定对象句柄发布/移动；逻辑维护预约仍保持。覆盖备份发布和恢复/回收移动，父目录备份输出有专用回归。
+
+[`永久删除`](../internal/backup/delete_windows.go)只消费已确认回收日志，原运行锁另记身份/摘要，不以文件名授予删除权。全部已存在对象验证并持DELETE句柄后才开始；部分重试可容许已授权缺项，变化/未知项不收编。只读文件先拒绝，根对象关闭后确认消失才成功。仍不承诺防恶意同SID新增子条目的强隔离或擦除既有备份/恢复副本；[T19](verification/T19.md)的Windows目录、硬退出及浏览器原数据读回均尚未执行。
+
 ## 内核升级与完整恢复
 
 T17本地源码加入同卷目录恢复：[`目录对象核对/移动`](../internal/backup/switch_windows.go)持有已验证根和完整可见文件集合，拒绝reparse/可见hardlink/未知对象；采用实际目录身份识别rename结果。旧目录留在本次previous，日志DB提交标记决定旧状态回滚或完整新状态确认。归档锁不导入，新锁不保存旧PID/session；实际安装目录不能继续标never-initialized。此处是源码边界，非恶意同SID新增写入的强隔离保证，实际完整浏览数据/精确内核重开待[T17验收](verification/T17.md)；T18接续硬中断恢复。

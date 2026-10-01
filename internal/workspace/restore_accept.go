@@ -69,7 +69,7 @@ func (s *Service) acceptRestore(input RestoreRequest) Result {
 	if d.preview.OverwriteCount > 0 && !input.ConfirmOverwrite || d.preview.CredentialReentryCount > 0 && !input.AcknowledgeCredentials {
 		return failure("VALIDATION_FAILED", "请明确确认覆盖影响及凭据需要重新输入的范围。", false)
 	}
-	if s.restorePreflight != nil || s.kernelTask != nil || len(s.batchTasks) > 0 || len(s.batchAcceptances) > 0 || len(s.backupTasks) > 0 || len(s.cookieTasks) > 0 || len(s.proxyChecks) > 0 || len(s.proxyPending) > 0 || len(s.cookiePending) > 0 || len(s.runtimePending) > 0 {
+	if s.recycleTask != nil || s.restorePreflight != nil || s.kernelTask != nil || len(s.batchTasks) > 0 || len(s.batchAcceptances) > 0 || len(s.backupTasks) > 0 || len(s.cookieTasks) > 0 || len(s.proxyChecks) > 0 || len(s.proxyPending) > 0 || len(s.cookiePending) > 0 || len(s.runtimePending) > 0 {
 		return failure("PROFILE_BUSY", "当前有维护、批次、Cookie或观测待保存任务；先完成它，再恢复。", true)
 	}
 	baseline, err := restoreBaseline(s.db)
@@ -79,7 +79,7 @@ func (s *Service) acceptRestore(input RestoreRequest) Result {
 	if baseline != d.baseline {
 		return failure("REVISION_CONFLICT", "预检后当前配置已变化，请重新查看恢复影响。", true)
 	}
-	plan := restorePlan{JournalVersion: 2, ID: id(), Source: d.path, Baseline: d.baseline, ArchiveSHA256: input.ArchiveSHA256, Environments: []restoreStoredEnvironment{}, Proxies: []restoreStoredProxy{}, KernelMapping: d.kernelMapping, Moves: []restoreMove{}}
+	plan := restorePlan{JournalVersion: 3, ID: id(), Source: d.path, Baseline: d.baseline, ArchiveSHA256: input.ArchiveSHA256, Environments: []restoreStoredEnvironment{}, Proxies: []restoreStoredProxy{}, KernelMapping: d.kernelMapping, Moves: []restoreMove{}}
 	for index, item := range d.data.environments {
 		if slot := s.runtimeSlots[item.manifest.ID]; slot != nil {
 			if slot.session.NeedsReconcile || slot.session.PersistencePending {

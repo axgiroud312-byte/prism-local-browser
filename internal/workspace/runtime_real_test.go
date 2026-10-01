@@ -28,6 +28,7 @@ type syntheticBrowserStorage struct {
 }
 type syntheticBrowserReport struct {
 	Name          string                  `json:"name"`
+	Generation    string                  `json:"generation"`
 	Phase         string                  `json:"phase"`
 	Before        syntheticBrowserStorage `json:"before"`
 	After         syntheticBrowserStorage `json:"after"`
@@ -125,7 +126,7 @@ func TestRealIndependentBrowserSessions(t *testing.T) {
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		fmt.Fprintf(w, `<!doctype html><title>Prism synthetic isolation %s</title><script>
 (async () => {
- const name=%q, phase=%q, marker="SYNTHETIC-"+name+(phase==="mutate"?"-CHANGED":"");
+ const name=%q, phase=%q, generation=%q, marker="SYNTHETIC-"+name+(phase==="mutate"?"-CHANGED":"");
  const database = () => new Promise((resolve,reject) => {
    const request=indexedDB.open("prism-synthetic-isolation",1);
    request.onupgradeneeded=()=>request.result.createObjectStore("state");
@@ -144,8 +145,8 @@ func TestRealIndependentBrowserSessions(t *testing.T) {
  const before=await state();
  if(phase==="write"||phase==="mutate"){document.cookie="prism_synthetic="+marker+";Path=/;Max-Age=3600;SameSite=Lax";localStorage.setItem("marker",marker);await indexed(marker);}
  const after=await state();
- await fetch(%q,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name,phase,before,after})});
-})();</script>`, name, name, phase, "/"+token+"/report")
+  await fetch(%q,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name,phase,generation,before,after})});
+})();</script>`, name, name, phase, r.URL.Query().Get("generation"), "/"+token+"/report")
 	}))
 	defer server.Close()
 
@@ -183,12 +184,13 @@ func TestRealIndependentBrowserSessions(t *testing.T) {
 	startedSessions := []RuntimeSession{}
 	stoppedSessions := []RuntimeSession{}
 	readChanged := map[string]bool{}
+	expectedGeneration := map[string]string{}
 	inspect := func(service *Service, name, phase string) {
 		deadline := time.After(45 * time.Second)
 		for {
 			select {
 			case report := <-reports:
-				if report.Name != name || report.Phase != phase {
+				if report.Name != name || report.Phase != phase || report.Generation != expectedGeneration[name] {
 					continue
 				}
 				marker := "SYNTHETIC-" + name
@@ -212,6 +214,12 @@ func TestRealIndependentBrowserSessions(t *testing.T) {
 		}
 	}
 	start := func(service *Service, name string) {
+		// Restored tabs may post duplicate old reports. A unique URL nonce binds
+		// every assertion to a page actually loaded by this new browser start.
+		expectedGeneration[name] = id()
+		p := preview(t, service, "edit", environments[name].ID)
+		p.Environment.URLs = server.URL + "/" + token + "/" + name + "?generation=" + expectedGeneration[name]
+		value[any](t, call(service, "Environment.Update", Mutation{PreviewID: p.PreviewID, Configuration: p.Environment.Configuration, ExpectedRevision: p.ExpectedRevision, RequestID: id()}))
 		operation := acceptRuntimeTest(t, service, "Runtime.Start", runtimeRequest{EnvironmentID: environments[name].ID, RequestID: id(), NetworkPolicy: "direct"})
 		if completed := waitRuntimeReal(t, service, operation.ID); completed.State != "completed" {
 			t.Fatalf("real start failed: %+v", completed.Error)
@@ -301,6 +309,40 @@ func TestRealIndependentBrowserSessions(t *testing.T) {
 			}
 		}
 		recoveryEvidence = map[string]any{"status": "observed", "rootFaultInjected": true, "faultExitCode": 79, "crashObservation": observed, "otherRootAlive": true, "sameBrowserStorageAfterRetry": true, "forceStopActuallyUsed": forceUsed, "applicationCrashRestart": "not-run"}
+	}
+	recycleEvidence := map[string]any{"status": "not-run"}
+	if os.Getenv("PRISM_RECYCLE_VERIFY") == "1" {
+		_, removing := acceptRecycleFixture(t, reopened, previewRecycleFixture(t, reopened, "remove", environments["A"].ID))
+		if final := waitBackupFixture(t, reopened, removing.ID); final.State != "completed" {
+			t.Fatal("real recycle failed", final)
+		}
+		if err := reopened.Close(); err != nil {
+			t.Fatal(err)
+		}
+		reopened, err = Open(root, Options{})
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer reopened.Close()
+		list := recycleListFixture(t, reopened)
+		if list.Total != 1 || list.Items[0].EnvironmentID != environments["A"].ID {
+			t.Fatal("real retained entry mismatch")
+		}
+		_, restoring := acceptRecycleFixture(t, reopened, previewRecycleFixture(t, reopened, "restore", list.Items[0].ID))
+		final := waitBackupFixture(t, reopened, restoring.ID)
+		if final.State != "completed" {
+			t.Fatal("real recycle restore failed", final)
+		}
+		for _, name := range []string{"A", "B"} {
+			v := view(t, reopened)
+			if !reflect.DeepEqual(v.Fingerprints[environments[name].ID].Profile, profiles[name]) || v.DataReferences[environments[name].ID] != refs[name] {
+				t.Fatal("recycle changed original identity")
+			}
+			start(reopened, name)
+			inspect(reopened, name, "read")
+			stop(reopened, name)
+		}
+		recycleEvidence = map[string]any{"status": "observed", "operation": final, "applicationServiceReopened": true, "cookieLocalStorageIndexedDBReadBack": true, "originalIdentityPreserved": true, "unselectedEnvironmentUnchanged": true}
 	}
 	restoreEvidence := map[string]any{"status": "not-run"}
 	if os.Getenv("PRISM_RESTORE_VERIFY") == "1" {
@@ -423,6 +465,7 @@ func TestRealIndependentBrowserSessions(t *testing.T) {
 		evidence := map[string]any{"verifiedAt": timestamp(), "mode": "native", "kernelVersion": record.Version, "archiveSha256": record.ArchiveSHA256, "executableSha256": record.ExecutableSHA256, "profiles": profiles, "dataReferences": refs, "observations": observations, "startedSessions": startedSessions, "stoppedSessions": stoppedSessions, "transport": "inherited-private-pipe", "sandbox": true, "networkPolicy": "explicit-direct-test", "uiClicks": "not-run", "visibleBrowserWindows": true, "independentRootProcesses": true, "controlledJobsExited": true, "sameInputsAfterReopen": true}
 		evidence["recovery"] = recoveryEvidence
 		evidence["restore"] = restoreEvidence
+		evidence["recycle"] = recycleEvidence
 		encoded, err := json.MarshalIndent(evidence, "", "  ")
 		if err != nil {
 			t.Fatal(err)

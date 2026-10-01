@@ -57,6 +57,12 @@ func kernelFailure(err error) Result {
 	return storageFailure(err)
 }
 func (s *Service) selectKernelArchive() Result {
+	s.mu.Lock()
+	blocked := s.recycleTask != nil
+	s.mu.Unlock()
+	if blocked {
+		return failure("RECYCLE_INCOMPLETE", "请先完成原回收任务。", true)
+	}
 	if s.options.ChooseArchive == nil {
 		return failure("CAPABILITY_UNSUPPORTED", "本地文件选择器尚未就绪，请在Windows桌面使用。", true)
 	}
@@ -76,7 +82,7 @@ func (s *Service) selectKernelArchive() Result {
 	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	if s.closed {
+	if s.closed || s.recycleTask != nil {
 		return failure("NATIVE_UNAVAILABLE", "工作区已关闭。", true)
 	}
 	token := id()

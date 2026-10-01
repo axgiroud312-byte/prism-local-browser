@@ -11,7 +11,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"unsafe"
 
 	"github.com/axgiroud312-byte/prism-local-browser/internal/desktopbase"
 	"github.com/axgiroud312-byte/prism-local-browser/internal/kernel"
@@ -63,16 +62,23 @@ func MoveTree(ctx context.Context, root, source, destination string, expected Tr
 	if err != nil {
 		return err
 	}
-	a, err := pinDirectoryChain(filepath.Dir(from))
+	parent, release, err := pinRenameParents(filepath.Dir(from), filepath.Dir(to))
 	if err != nil {
 		return err
 	}
-	defer a()
-	b, err := pinDirectoryChain(filepath.Dir(to))
+	defer release()
+	// Source traversal remains fully frozen until inventory verification finishes.
+	// Release these extra read-only pins before the native target-directory open;
+	// the verified rename-capable source and relative destination handles remain.
+	releaseSource, err := pinDirectoryChain(filepath.Dir(from))
 	if err != nil {
 		return err
 	}
-	defer b()
+	defer func() {
+		if releaseSource != nil {
+			releaseSource()
+		}
+	}()
 	if err = desktopbase.ValidateTree(from); err != nil {
 		return err
 	}
@@ -107,23 +113,9 @@ func MoveTree(ctx context.Context, root, source, destination string, expected Tr
 	if closeErr != nil {
 		return closeErr
 	}
-	wide, err := windows.UTF16FromString(to)
-	if err != nil {
-		return err
-	}
-	type renameInfo struct {
-		Replace uint32
-		Root    windows.Handle
-		Length  uint32
-		Name    uint16
-	}
-	var layout renameInfo
-	offset := int(unsafe.Offsetof(layout.Name))
-	buffer := make([]byte, offset+len(wide)*2)
-	value := (*renameInfo)(unsafe.Pointer(&buffer[0]))
-	value.Length = uint32((len(wide) - 1) * 2)
-	copy(unsafe.Slice((*uint16)(unsafe.Pointer(&buffer[offset])), len(wide)), wide)
-	return windows.SetFileInformationByHandle(h, windows.FileRenameInfo, &buffer[0], uint32(len(buffer)))
+	releaseSource()
+	releaseSource = nil
+	return renameAt(h, parent, filepath.Base(to))
 }
 
 // Extract only a previously validated entry set into a newly owned same-volume

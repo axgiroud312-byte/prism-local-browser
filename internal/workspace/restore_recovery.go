@@ -28,7 +28,7 @@ func validateRestoreJournal(task *restoreTask, committed bool) error {
 	invalid := func() error {
 		return &Error{Code: "RESTORE_INCOMPLETE", Message: "恢复日志的版本、身份或目录清单无法核实；原数据和日志保留，未执行目录移动。请保留完整工作区并修复原日志后重开。", Retryable: true}
 	}
-	if p.JournalVersion != 2 || !backup.CanonicalID(p.ID) || op.ID != p.ID || op.Kind != "backup-restore" || r == nil || r.Mode != "native" || r.RequestID == "" || !backup.CanonicalID(r.PreviewID) || !backup.Hash(p.Baseline) || !backup.Hash(p.ArchiveSHA256) || p.ArchiveSHA256 != r.ArchiveSHA256 || op.Total != len(p.Environments) || r.EnvironmentCount != len(p.Environments) || r.SwitchedCount < 0 || r.SwitchedCount > len(p.Environments) || r.Sequence < 1 {
+	if (p.JournalVersion != 2 && p.JournalVersion != 3) || !backup.CanonicalID(p.ID) || op.ID != p.ID || op.Kind != "backup-restore" || r == nil || r.Mode != "native" || r.RequestID == "" || !backup.CanonicalID(r.PreviewID) || !backup.Hash(p.Baseline) || !backup.Hash(p.ArchiveSHA256) || p.ArchiveSHA256 != r.ArchiveSHA256 || op.Total != len(p.Environments) || r.EnvironmentCount != len(p.Environments) || r.SwitchedCount < 0 || r.SwitchedCount > len(p.Environments) || r.Sequence < 1 {
 		return invalid()
 	}
 	if p.Prepared && (!backup.Hash(p.PreviousBaseline) || !backup.Hash(p.PreviousConfigurationSHA256) || len(p.Moves) != len(p.Environments)) || committed && (!p.Prepared || !backup.Hash(p.CommittedBaseline)) {

@@ -355,6 +355,16 @@ parseSnapshot 校验 format、schemaVersion、主要记录字段、Cookie 数组
 
 启动期间保持原restoreTask屏障，目录结果确认后先恢复其余kernel/runtime/proxy/Cookie/batch/backup控制记录再开放操作；bootstrap前不持久化终态，独立内存容器锁外加载后发布，失败保留已完成步骤并明确重试。会话核对按持久初始化事实只读既有目录/锁，不创建已回滚为空的目录；Close可取消启动清理。已核对终态仅保存失败时只重试原观测，普通重试不复用过时finalPending去覆盖新保护。原生页面显示recoveredAfterRestart/interruptedStage及保留数据的修复步骤。5阶段与回滚再中断子进程Kill、真实浏览器组合用例仅编写，见[T18清单](verification/T18.md)。
 
+### T19 本机回收增量（本地源码，未运行验收）
+
+schema9保留原环境/档案行，以`environment_trash`标记回收成员，`recycle_jobs`保存原请求、计划SHA、逐项prepared/committed及配置前后摘要。正常环境列表/统计/业务来源和全量备份排除回收项；名称、编号、身份及共享内核/代理引用继续保留。移入/找回推进环境revision，保持seed、档案revision/hash与规范数据引用，旧编辑/批次不跨往返复用。
+
+[`回收服务`](../internal/workspace/recycle_api.go)接明确ID的影响预览和分页，确认仅收原previewId/requestId。已停止且退出/持久化已确认后，[`目录worker`](../internal/workspace/recycle_worker.go)固定原树身份/清单，prepared日志先于移动，成员和逐项committed同配置事务；未知提交先重读原日志，不用内存旧决策覆写。部分失败保已完成项，未提交移动回原侧；原目录冲突不覆盖、不调用克隆。
+
+永久删除只接明确回收项，保存purge开始授权后才执行已验证句柄删除；首次删除前检查全树与原运行锁的对象身份/摘要，拒绝未知、变化、重解析、硬链接、占用和只读文件。授权前取消保整项，部分删除后收敛当前项再停后续项；delete-pending尚未消失不能提交删除配置。移除停止会话控制行，历史操作/活动和既有备份保留；不删除共享内核/代理，不声称擦除所有历史介质字节。
+
+[`启动恢复`](../internal/workspace/recycle_recovery.go)检查唯一目录writer、完整决策字段、原受理和配置摘要；restore/recycle未完成日志并存时保护。目录结果后锁外加载其余启动记录，再落终态/解除维护；未加载会话不报告已停止。终态写失败仅重试保存原观测。native包仍v1/schema7，排除回收环境及本机日志；新restore journalVersion3摘要包括回收成员，v2算法保留。原生[`回收界面`](../src/components/NativeRecycleManager.tsx)接移除/找回/永久删除/原请求核实，记录与[待验收入口](verification/T19.md)均区分源码和实际结果。
+
 ### 原子替换与崩溃恢复
 
 #### T16只读预检增量（源码已完成，未运行验收）

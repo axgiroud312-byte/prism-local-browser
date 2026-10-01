@@ -38,6 +38,15 @@ func (s *Service) commitRestoredConfiguration(task *restoreTask, plan *restorePl
 		return err
 	}
 	defer tx.Rollback()
+	for _, item := range plan.Environments {
+		var trashed bool
+		if err := tx.QueryRow("SELECT EXISTS(SELECT 1 FROM environment_trash WHERE environment_id=?)", item.Manifest.ID).Scan(&trashed); err != nil {
+			return err
+		}
+		if trashed {
+			return errors.New("restore target is recycled; recover original entry first")
+		}
+	}
 	baseline, err := restoreBaseline(tx)
 	if err != nil {
 		return err

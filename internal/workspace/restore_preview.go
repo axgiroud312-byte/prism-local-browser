@@ -20,6 +20,12 @@ import (
 )
 
 func (s *Service) restorePreviewCall(request Request) Result {
+	s.mu.Lock()
+	blocked := s.recycleTask != nil
+	s.mu.Unlock()
+	if blocked {
+		return failure("RECYCLE_INCOMPLETE", "回收维护尚未收尾，请先核对原任务。", true)
+	}
 	switch request.Method {
 	case "Backup.SelectRestoreSource":
 		if decode(request.Payload, &struct{}{}) != nil {
@@ -44,7 +50,7 @@ func (s *Service) restorePreviewCall(request Request) Result {
 		if s.closed || s.closeRequested.Load() {
 			return failure("NATIVE_UNAVAILABLE", "应用正在退出。", true)
 		}
-		if s.restorePreflight != nil {
+		if s.restorePreflight != nil || s.recycleTask != nil {
 			return failure("PROFILE_BUSY", "先取消或等待当前只读预检。", true)
 		}
 		token := id()
@@ -113,7 +119,7 @@ func (s *Service) previewRestore(token string) (result Result) {
 		s.mu.Unlock()
 		return failure("PREVIEW_EXPIRED", "文件选择已失效，请重新选择。", true)
 	}
-	if s.restorePreflight != nil {
+	if s.restorePreflight != nil || s.recycleTask != nil {
 		s.mu.Unlock()
 		return failure("PROFILE_BUSY", "已有只读预检正在进行。", true)
 	}
@@ -277,6 +283,7 @@ func restoreBaseline(query interface {
 		"SELECT id,version,source,status FROM kernels ORDER BY id", "SELECT kernel_id,record_json FROM kernel_evidence ORDER BY kernel_id",
 		"SELECT environment_id,state FROM environment_data_state ORDER BY environment_id",
 		"SELECT plan_id,item_index,state,identity_json FROM batch_items ORDER BY plan_id,item_index",
+		"SELECT environment_id,trash_id,entry_json FROM environment_trash ORDER BY environment_id",
 	} {
 		rows, err := query.Query(statement)
 		if err != nil {
@@ -345,6 +352,7 @@ func (s *Service) planRestoreImpact(d *restoreDraft) (map[string]kernel.Record, 
 			query, reason string
 			args          []any
 		}{
+			{"SELECT EXISTS(SELECT 1 FROM environment_trash WHERE environment_id=?)", "environment-in-recycle-bin", []any{impact.ID}},
 			{"SELECT EXISTS(SELECT 1 FROM environments WHERE name=? AND id NOT IN (SELECT value FROM json_each(?)))", "name-conflict", []any{impact.Name, string(encoded)}},
 			{"SELECT EXISTS(SELECT 1 FROM environments WHERE fingerprint_id=? AND id<>?)", "fingerprint-id-conflict", []any{e.manifest.FingerprintID, impact.ID}},
 			{"SELECT EXISTS(SELECT 1 FROM batch_items WHERE identity_json IS NOT NULL AND json_extract(identity_json,'$.environmentId')=? AND state<>'completed')", "prepared-identity-conflict", []any{impact.ID}},

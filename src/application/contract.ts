@@ -42,13 +42,15 @@ export interface WorkspaceView {
   batchOperations?: Operation[];
   backupOperations?: Operation[];
   restoreOperations?: Operation[];
+  recycleOperations?: Operation[];
+  recycleMaintenance?: Operation;
   maintenance?: Operation;
   nativeBackups?: NativeBackup[];
   environmentPage?: NativeEnvironmentPage;
 }
 export interface Operation {
   id: string;
-  kind: "create" | "edit" | "kernel-install" | "kernel-verify" | "kernel-delete" | "runtime-start" | "runtime-stop" | "runtime-force-stop" | "runtime-reconcile" | "proxy-check" | "cookie-import" | "batch-create" | "batch-clone" | "batch-assign" | "backup-export" | "backup-restore";
+  kind: "create" | "edit" | "kernel-install" | "kernel-verify" | "kernel-delete" | "runtime-start" | "runtime-stop" | "runtime-force-stop" | "runtime-reconcile" | "proxy-check" | "cookie-import" | "batch-create" | "batch-clone" | "batch-assign" | "backup-export" | "backup-restore" | "recycle";
   state: "accepted" | "running" | "completed" | "cancelled" | "failed";
   total: number;
   completedIds: string[];
@@ -66,6 +68,7 @@ export interface Operation {
   batchReport?: NativeBatchReport;
   backupReport?: NativeBackupReport;
   restoreReport?: NativeRestoreReport;
+  recycleReport?: NativeRecycleReport;
 }
 export interface OperationEvent {
   mode: ApplicationMode;
@@ -81,6 +84,10 @@ export const operationIsTerminal = (operation: Operation) =>
 export function mergeOperation(previous: Operation | undefined, next: Operation): Operation {
   if (previous?.batchReport && next.batchReport && previous.batchReport.planId === next.batchReport.planId && next.batchReport.sequence < previous.batchReport.sequence) return previous;
   if (!previous || previous.id !== next.id) return next;
+  if (previous.recycleReport && next.recycleReport) {
+    if (next.recycleReport.sequence < previous.recycleReport.sequence) return previous;
+    if (previous.persistencePending && next.recycleReport.sequence > previous.recycleReport.sequence) return next;
+  }
   if (previous.restoreReport && next.restoreReport) {
     if (next.restoreReport.sequence < previous.restoreReport.sequence) return previous;
     if (previous.stage === "acceptance-pending" && previous.persistencePending && !next.persistencePending) return next;
@@ -138,6 +145,12 @@ export interface ApplicationService {
   updateEnvironment(request: UpdateEnvironmentRequest): Promise<ApplicationResult<{ status: "completed"; environment: SavedEnvironment }>>;
   getOperation(operationId: string): Promise<ApplicationResult<Operation>>;
   cancelOperation(operationId: string): Promise<ApplicationResult<Operation>>;
+  previewRecycle?(action: NativeRecycleAction, ids: string[]): Promise<ApplicationResult<NativeRecyclePage>>;
+  readRecyclePage?(request: NativeRecyclePageRequest): Promise<ApplicationResult<NativeRecyclePage>>;
+  commitRecycle?(request: NativeRecycleRequest): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
+  recoverRecycle?(operationId: string): Promise<ApplicationResult<Operation>>;
+  getPendingRecycle?(): { request: NativeRecycleRequest; operationId?: string } | undefined;
+  wasRecycleNotAccepted?(requestId: string): boolean;
   selectKernelArchive?(): Promise<ApplicationResult<{ status: "selected" | "cancelled"; archiveToken?: string; name?: string }>>;
   installKernel?(request: KernelInstallRequest): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
   verifyKernel?(kernelId: string, requestId: string): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
@@ -193,6 +206,28 @@ export interface NativeRestoreReport {
   environmentCount: number; switchedCount: number; credentialReentryCount: number;
   committed: boolean; rolledBack: boolean; protected: boolean;
   recoveredAfterRestart?: boolean; interruptedStage?: string;
+}
+
+export type NativeRecycleAction = "remove" | "restore" | "purge";
+export interface NativeRecycleRequest { previewId: string; confirm: boolean; requestId: string }
+export interface NativeRecycleReport {
+  mode: "native"; action: NativeRecycleAction; requestId: string; previewId: string;
+  sequence: number; completed: number; failed: number; notExecuted: number; protected: boolean;
+}
+export interface NativeRecycleItem {
+  id: string; environmentId: string; name: string; seed: string; kernelId: string; revision: number;
+  dataPresent: boolean; backupRecorded: boolean; removedAt?: string;
+  state: "pending" | "recycled" | "restored" | "purged" | "failed" | "protected";
+  error?: ApplicationError;
+}
+export interface NativeRecyclePreview {
+  mode: "native"; previewId: string; action: NativeRecycleAction; expiresAt: string;
+  total: number; dataCount: number; backupCount: number;
+}
+export interface NativeRecyclePageRequest { offset: number; pageSize: number; previewId?: string; operationId?: string }
+export interface NativeRecyclePage {
+  mode: "native"; offset: number; pageSize: number; total: number; items: NativeRecycleItem[];
+  preview?: NativeRecyclePreview; operation?: Operation;
 }
 export interface NativeRestorePage {
   mode: "native"; previewId: string; offset: number; total: number;
