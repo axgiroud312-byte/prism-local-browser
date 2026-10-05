@@ -1,7 +1,7 @@
 {
-  "verifiedAt": "2026-10-05T11:09:56.9352551Z",
-  "sourceCommit": "46649c0949ee899becb2252726ce79db1155ea48",
-  "sourceTree": "59446b7919a5f2a26a2fbd4ef70af1c100add9f5",
+  "verifiedAt": "2026-10-05T11:25:21.6099783Z",
+  "sourceCommit": "4b38dc8a94107325cbbca5050703a6bd80ca9e52",
+  "sourceTree": "f3c2f4798b6ad717d329519036d3199511dbc652",
   "sourceDirty": false,
   "version": "0.3.0-preview.4",
   "channel": "v1-candidate",
@@ -11,17 +11,18 @@
   "kernelIncluded": false,
   "installer": {
     "name": "prism-browser-0.3.0-preview.4-windows-amd64-setup.exe",
-    "bytes": 14764504,
-    "sha256": "d4a960ba175d310739da29d69c29bcea7cd7dd4efa6bd0aa8699654a17e82aec",
+    "bytes": 14763334,
+    "sha256": "0f1e29c50b64838c0ff0926127b6bf50b2375a2f955d208642f0aa72693fe324",
     "authenticode": "NotSigned",
     "peArchitecture": "i386",
     "windowsPEVersion": "0.3.0.4"
   },
   "application": {
-    "sha256": "4d65e345cf27e8ee87d9e206d196b676f8adfb0659e939f5d03b266a0e586312",
+    "sha256": "760ed062b7c4e4759c8a5a0207dc5d8c59720bcb302bf8e789686feea91ac254",
     "peArchitecture": "amd64",
     "windowsPEVersion": "0.3.0.0",
-    "windowVersion": "0.3.0-preview.4"
+    "windowVersion": "0.3.0-preview.4",
+    "trimpath": true
   },
   "dependencyVersions": { "node": "24.14.0", "npm": "11.9.0", "go": "1.27.1", "wails": "2.16.0", "nsis": "3.13" },
   "bundledLicenseScopes": { "linkedGoModules": 26, "goRuntime": true, "frontendPackagesIncludingViteHelper": 108 },
@@ -33,7 +34,7 @@
   "actualDefaultKnownFolders": true,
   "environmentOverrides": false,
   "installerExitCodes": [0, 0, 25, 0, 0, 0],
-  "appProcessIds": [81332, 82736, 25248, 62116, 36104, 57540],
+  "appProcessIds": [34860, 32040, 82964, 15908, 29692, 32404],
   "allSixAppProcessesNormalExitZero": true,
   "allSixNativePagesReadOnlyVerified": true,
   "allFiveRequiredSyntheticRecordReadsVisible": true,
@@ -50,7 +51,12 @@
   },
   "uninstallDataCheckbox": "not-observed; silent path does not verify wizard defaults",
   "rawInstallerEvidence": "output/goal/V1-final/install-no-clicks/installer-verification.json",
-  "rawInstallerEvidenceSHA256": "35d1f45586316dc51cf7714ac395e2950e0b9f434f19e4ae048802b007dba20c",
+  "rawInstallerEvidenceSHA256": "69115746083eca3f841382c0e860b7777f26d914060a13803e4d58a9468fc14a",
+  "binaryPrivacyEvidence": "output/goal/V1-final/binary-path-privacy.json",
+  "sourceArchive": {
+    "name": "prism-source-4b38dc8.zip",
+    "sha256": "edc335a8026171a9f9dc4cb59f55ae97944b30c4a21ad2530df9e08b7781efb7"
+  },
   "remaining": ["independent remote egress matrix", "manual native product flows", "clean Windows user or VM", "unsupported OS/kernel combinations", "remote authentication and CI"],
   "formallyAcceptedTasks": 4,
   "totalTasks": 21

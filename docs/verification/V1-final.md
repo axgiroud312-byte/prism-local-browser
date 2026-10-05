@@ -4,17 +4,19 @@
 
 ## 结论与当前产物
 
-**最终分享前发现构建隐私缺口并修订：**46649c0主程序的Go源文件表包含编译机私有路径，维护helper已trimpath。Wails现改用官方`-trimpath`（不改业务逻辑）；下列46649c0哈希/安装结果为首轮历史候选，不能再作为最终分享对象。正在按新干净来源重建/复验，最终产物以本报告收尾记录为准；旧包仅留本机忽略的历史证据，不对外分发。
+最终分享前发现并修复构建隐私缺口：首轮46649c0主程序带编译机路径，Wails改用官方`-trimpath`，不改业务逻辑。**最终4b38dc8包已重新构建且无点击复验通过**；主程序buildinfo确认trimpath=true，主程序/维护helper路径扫描未发现Windows编译用户路径。旧包仅在本机忽略的历史证据目录，不对外分发。
 
 后台回归、本机真实固定档案、正式代理保护链、三种存储、备份恢复及硬中断均有下列证据。独立远端出口、人工完整页面、干净Windows及远程CI尚缺，**未达到正式交付条件**。候选仅用于合成数据检查，不用于真实账号/凭据。
 
-**候选已构建并完成本机无点击安装闭环。** 主交付目录`output/delivery/0.3.0-preview.4-v1-candidate/`，主包`prism-browser-0.3.0-preview.4-windows-amd64-setup.exe`，14,764,504字节；SHA-256：
+**候选已构建并完成本机无点击安装闭环。** 主交付目录`output/delivery/0.3.0-preview.4-v1-candidate/`，主包`prism-browser-0.3.0-preview.4-windows-amd64-setup.exe`，14,763,334字节；SHA-256：
 
 ```text
-d4a960ba175d310739da29d69c29bcea7cd7dd4efa6bd0aa8699654a17e82aec
+0f1e29c50b64838c0ff0926127b6bf50b2375a2f955d208642f0aa72693fe324
 ```
 
-版本`0.3.0-preview.4`，channel=`v1-candidate`，`NotSigned`，`sourceDirty=false`。构建来源`46649c0949ee899becb2252726ce79db1155ea48`，tree=`59446b7919a5f2a26a2fbd4ef70af1c100add9f5`。Node24.14.0/npm11.9.0/Go1.27.1/Wails2.16.0/NSIS3.13，锁文件摘要及9个payload文件摘要在对应release清单；许可包含26个实际Go模块/Go runtime、108个前端包（含Vite helper）及NSIS。
+版本`0.3.0-preview.4`，channel=`v1-candidate`，`NotSigned`，`sourceDirty=false`。构建来源`4b38dc8a94107325cbbca5050703a6bd80ca9e52`，tree=`f3c2f4798b6ad717d329519036d3199511dbc652`。Node24.14.0/npm11.9.0/Go1.27.1/Wails2.16.0/NSIS3.13，锁文件摘要及9个payload文件摘要在对应release清单；许可包含26个实际Go模块/Go runtime、108个前端包（含Vite helper）及NSIS。
+
+同提交源码`prism-source-4b38dc8.zip`，SHA=`edc335a8026171a9f9dc4cb59f55ae97944b30c4a21ad2530df9e08b7781efb7`。源码快照保留构建时的文档状态；本报告和交付目录`docs/`是后续准确验收记录，不改变二进制来源。
 
 NSIS bootstrap为i386是既有体系行为，安装限定x64，主程序和维护helper均实际amd64；installer PE版本0.3.0.4，主程序PE固定资源仍0.3.0.0，窗口/运行应用版本明确0.3.0-preview.4。没有把这些不同版本字段混为一谈，不捆绑Chromium。`.3`仅用于同源码升级验证，主交付为`.4`；[脱敏回执](V1-candidate-acceptance.json)与下面实跑对应，不是版本字符串证明。
 
@@ -31,14 +33,15 @@ NSIS bootstrap为i386是既有体系行为，安装限定x64，主程序和维�
 | 三项新增服务缺口及shutdown回归 | 实际空目录clone/31项分页去重、异kernel ID同精确build候选、nil取消正常退出通过；DPAPI首轮误用不存在的测试RPC失败，修成现有DiscardRestore后定向通过 | `service-gap-tests.log`、`dpapi-preview-retest.log` |
 | PowerShell解析、Node语法、前端许可汇集 | 通过；108包包含107生产包和Vite注入helper许可；未新增依赖 | 本会话exit0回执，实际随包许可文件 |
 | 候选首次构建与NSIS修订 | Wails production、26 Go模块/108前端通知通过；NSIS单元素条件数组被PowerShell5展开为String后原传参返回usage，整轮FAIL。改显式string[]后实际PS5/NSIS SAFEPPO exit0；候选重建另记 | `build-candidate-3-failed.log`、`nsis-powershell5-retest.log` |
-| `npm run build:installer -- -PreviewRevision 3/4 -Candidate`（分别执行） | 两版同一干净46649c0源码构建成功，Wails production/NSIS/许可/真实哈希/签名齐全，无内核 | `build-candidate-3.log`、`build-candidate-4.log`及对应release清单 |
+| `npm run build:installer -- -PreviewRevision 3/4 -Candidate`（分别执行） | 最终两版同一干净4b38dc8源码构建成功，Wails production/trimpath/NSIS/许可/真实哈希/签名齐全，无内核 | `build-candidate-3.log`、`build-candidate-4.log`及对应release清单 |
 | `npm run verify:installer -- --no-clicks --candidate --first-revision=3 --second-revision=4` | 实际安装→桌面/开始菜单native加载→正常关重开→升级→拒降级25→默认保留卸载→重装同记录→仅删自有合成数据通过；6进程exit0，5次必须读到合成记录均满足 | `installer-no-clicks.log`、`install-no-clicks/installer-verification.json`、[脱敏回执](V1-candidate-acceptance.json) |
 | 安装后独立只读收尾核对 | 默认数据/程序/注册与两快捷方式均不存在，六自有工作台PID均不存在；没有删除真实数据 | `install-postconditions.json` |
+| 二进制路径隐私与buildinfo | 主程序`-trimpath=true`，两payload exe未发现Windows编译用户路径；首轮含路径包撤出交付，只留本机历史 | `binary-path-privacy.json`、`binary-go-buildinfo.log` |
 | 最新文档与格式 | 50份文档、本地链接/12需求/6路由/4嵌入文档通过；暂存diff格式通过 | `docs-final.log`和本会话回执 |
 
-除第一行之外表中日志均在`output/goal/V1-final/`。没有运行`npm run check`或Playwright/UI自动点击，**不声称完整check通过**。人工替代项见下文。网页build保留原有大chunk和Lucide `use client`警告，均不是静默当失败修掉的测试；候选production build需另记。
+除第一行之外表中日志均在`output/goal/V1-final/`。没有运行`npm run check`或Playwright/UI自动点击，**不声称完整check通过**。人工替代项见下文。网页build保留原有大chunk和Lucide `use client`警告，候选production实际结果已另列。首轮46649c0包与安装记录留在本机`pre-trimpath-artifacts/`，本表最终构建/安装日志和回执都对应4b38dc8，不混用哈希。
 
-未提交旧修复已调查保留：shutdown仅防御不存在cancel；网络/Cookie旧夹具改为真正provider缺失或受控host seam；adapter只读快照用值相等而非旧对象引用。不删除测试、不放宽生产schema或网络保护。
+接续时的四个未提交修复已调查保留并提交：shutdown仅防御不存在cancel；网络/Cookie旧夹具改为真正provider缺失或受控host seam；adapter只读快照用值相等而非旧对象引用。不删除测试、不放宽生产schema或网络保护。
 
 ## 真实与硬中断证据的准确覆盖
 
@@ -66,7 +69,7 @@ NSIS bootstrap为i386是既有体系行为，安装限定x64，主程序和维�
 
 ## T05–T21逐票矩阵
 
-共同命令：G=`npm run test:desktop`（internal结果）＋上述根包补编/vet；F=`npm run check:background`＋受影响路径定向修订。共同待验：对应人工native流程、候选/干净Windows、远程规则。旧票中的“全部未执行/迁移代理未接入”是早期开发记录，不覆盖本报告的实跑事实。
+共同命令：G=`npm run test:desktop`（internal结果）＋上述根包补编/vet；F=`npm run check:background`＋受影响路径定向修订。共同待验：对应人工native流程、安装版业务闭环/干净Windows、远程规则。旧票中的“全部未执行/迁移代理未接入”是早期开发记录，不覆盖本报告的实跑事实。
 
 | 需求 / Issue | 实现位置（`internal/workspace/`，除注明） | 命令/实际结果与证据 | 未覆盖条件 / 关闭条件 | 可关闭 |
 | --- | --- | --- | --- | --- |
@@ -114,7 +117,7 @@ NSIS bootstrap为i386是既有体系行为，安装限定x64，主程序和维�
 4. A/B正常停后完整备份，改合成三存储，预检→明确恢复→重开；A回收/找回再核对，复制环境必须新seed/空目录，只对自有复制项永久删除。检查中断/占用重试和未知结果不会另建任务。
 5. 选定停止A做148→150工作副本试用、正常停止、切换及原备份退回；不宣称所有目标网站兼容。活动页诊断先取消保存再新文件保存/核实，确认报告不含身份/路径/凭据/Cookie。
 
-自动化无点击**复验必须使用构建来源46649c0的干净Git checkout**，不能用后续报告提交或只有源码ZIP的无Git目录冒充同源码；可在隔离测试位置新建detached worktree，不回退/重置本工作区。脚本需要项目局部`.tools/go/bin/go.exe`及Node开发工具；这不是产品安装依赖。普通用户的人工清单只需WebView2与明确选择的内核。现有CI默认不自动点击，旧点击分支保持显式opt-in，本轮没有触发任何CI。
+自动化无点击**复验必须使用构建来源4b38dc8的干净Git checkout**，不能用后续报告提交或只有源码ZIP的无Git目录冒充同源码；可在隔离测试位置新建detached worktree，不回退/重置本工作区。脚本需要项目局部`.tools/go/bin/go.exe`及Node开发工具；这不是产品安装依赖。普通用户的人工清单只需WebView2与明确选择的内核。现有CI默认不自动点击，旧点击分支保持显式opt-in，本轮没有触发任何CI。
 
 独立出口用上表资源单独验收；人工界面顺利不替代网络/进程/目录证据。禁止自动点击仍生效；不要求逐步询问“是否继续”。
 
@@ -122,6 +125,6 @@ NSIS bootstrap为i386是既有体系行为，安装限定x64，主程序和维�
 
 `gh auth status --hostname github.com`明确token失效。用户在本机执行`gh auth login -h github.com`后再核对身份；本轮不伪称推送/PR/Issue关闭。待同步评论和PR材料应包含此矩阵、实际检查及剩余边界，符合仓库模板；blocking/所有验收未满足前保持OPEN。
 
-本轮提交（另含最终验收记录提交）：`493da0b`修复原检查/退出与Cookie UI；`86d7b4e`候选/许可/无点击验证与逐票文档；`46649c0`修复PS5/NSIS参数（实际候选来源）。前轮`bc56c90`/`7b1f8bb`/`07e4049`正式保护、恢复与共用队列成果均保留。最终记录提交只更新非嵌入报告/进度，不改变交付二进制来源，无需重新构建。
+本轮提交（另含最终验收记录提交）：`493da0b`修复原检查/退出与Cookie UI；`86d7b4e`候选/许可/无点击验证与逐票文档；`46649c0`修复PS5/NSIS参数；`5791be1`首轮验收记录；`4b38dc8`Wails trimpath隐私修订（最终包来源）。前轮`bc56c90`/`7b1f8bb`/`07e4049`正式保护、恢复与共用队列成果均保留。最终记录提交只更新非嵌入报告/进度，不改变交付二进制来源，无需重新构建。
 
 公开仅脱敏合成观测；交付目录含SHA256SUMS、release、安装/恢复指南、许可、同提交源码ZIP和脱敏日志索引，不附profile、备份原包或真实私有路径。无点击安装用本机原本空产品根，不是干净用户/机器；静默卸载只证明默认保留逻辑，**向导复选框默认状态未观察**。
