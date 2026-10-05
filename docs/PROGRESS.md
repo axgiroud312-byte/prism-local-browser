@@ -4,8 +4,8 @@
 
 - Goal：T11系统故障验证条件受阻；[规则](GOAL.md)；完成 **4/21**（验收任务计数）。
 - 当前任务：返回T11 / [Issue #12](https://github.com/axgiroud312-byte/prism-local-browser/issues/12)系统隔离前提；T21独立诊断/指南已本地提交，完整交付仍受T11/T14阻塞。
-- 当前步骤：已执行获准BFE实验并收尾。15:51手动UAC后OpenService组合权限申请被拒（5），实际STOP/START各0次，BFE保持RUNNING，没有故障窗口；按授权结束、不升级权限或改服务配置重试。最新恢复工具末审P2已修，专用Go编译通过，脱敏报告/9项SHA核对通过；保存本轮源码和证据后等待必要验证条件。
-- 现场：分支`goal/v1-remaining-integration`，HEAD`1e16130`，保留全部前置。主代理唯一写入，所有只读代理已返回。未提交：专用BFE工具/README及记录、脱敏JSON。两轮prepare全部清理，15:53实查自有实验进程0/目录不存在/容器mapping0，BFE/MpsSvc/Dnscache均Running。无点击/CI/远程写入，生产门禁保持；通用回归仍未执行。
+- 当前步骤：已执行获准BFE实验并收尾，本轮工具与证据本地提交`2d1e426`。15:51手动UAC后OpenService组合权限申请被拒（5），实际STOP/START各0次，BFE保持RUNNING，没有故障窗口；按授权结束、不升级权限或改服务配置重试。最新恢复工具末审P2已修，专用Go编译、45文档/暂存格式及脱敏报告/9项SHA核对通过，等待必要验证条件。
+- 现场：分支`goal/v1-remaining-integration`，最新源码/实验提交`2d1e426`（本条进度随后独立提交；准确HEAD用git log读取），保留全部前置。主代理唯一写入，所有只读代理已返回；源码/证据已提交。两轮prepare全部清理，15:53实查自有实验进程0/目录不存在/容器mapping0，BFE/MpsSvc/Dnscache均Running。无点击/CI/远程写入，生产门禁保持；通用回归仍未执行。
 
 ## 当前阻塞与恢复入口
 
@@ -26,7 +26,7 @@
 | T08 | #9 | 已实现待验收 | 本地 `f020076`；[验收清单](verification/T08.md)，blocking #3 CLOSED，无PR/推送 |
 | T09 | #10 | 已实现待验收 | 本地 `f6ebca1`；[验收清单](verification/T09.md)，原blocking #7/#9仍OPEN，无PR/推送 |
 | T10 | #11 | 已实现待验收 | 本地 `88ba61a`；[验收清单](verification/T10.md)，唯一blocking #10仍OPEN，无PR/推送 |
-| T11 | #12 | 部分实现，隔离接入准备中 | 监督/门禁`d547bb1`；独立实验`6c45eb0`；入口/系统只读`7c05dc8`；资源收尾`1e16130`；[清单](verification/T11.md)，系统故障/生产provider未完成，代理Start继续拒绝；无PR/推送 |
+| T11 | #12 | 部分实现，系统故障验证受阻 | 监督/门禁`d547bb1`；独立实验`6c45eb0`；入口/系统只读`7c05dc8`；资源收尾`1e16130`；停服途径拒绝/工具`2d1e426`；[清单](verification/T11.md)，系统故障/生产provider未完成，代理Start继续拒绝；无PR/推送 |
 | T12 | #13 | 已实现待验收 | 本地c3ff618；[清单](verification/T12.md)，无推送/PR；#7仍OPEN |
 | T13 | #14 | 已实现待验收 | 本地`54d8be9`；[清单](verification/T13.md)，blocking #8/#9仍OPEN，按D007消费本地T07/T08；无推送/PR |
 | T14 | #15 | 等待T11完整隔离 | #12缺失完整成果，原proxy门禁不绕过；先开发其他可用票 |
