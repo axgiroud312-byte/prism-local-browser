@@ -49,3 +49,16 @@ $env:PRISM_NETWORK_FEASIBILITY = '1'
 ```
 
 此入口只接受固定前缀和合法 UUID；不能据此删除其他目录。若进程被外部硬杀，尚未撤销的窗口站 ACE 需依据私有记录另行准确恢复；不能用通配符覆盖共享对象的完整权限。工具自身硬中断恢复尚未构成生产隔离组件的生命周期实现。
+
+## 单独授权的一次 BFE 正常停止实验
+
+2026-10-05仅获准当前电脑一次标准BFE STOP；被Windows拒绝立即结束，成功则短时合成探针并恢复原RUNNING。不调用依赖停服、宿主终止或规则/配置修改。后续操作者不能复用此记录作为新的停服授权。
+
+- `PRISM_BFE_NORMAL_STOP=1`的非提升host运行`--bfe-prepare <output/goal/T11/bfe-stop-UUID>`：独占新目录，启动普通与零capability AppContainer持久helper，先完成TCP4/TCP6/UDP4/UDP6和指定loopback DNS的基线，记录准确Job/token。这一模式不启动Chromium、不改窗口站权限，也不是外部网络验收。
+- `probe-ready.json`成功后，手动UAC提升同一已编译exe运行`--bfe-controller <同目录>`。一次性claim拒绝重放；核对非提升host原进程创建时间与同构建摘要，SCM只向BFE申请QUERY/STOP/START。
+- controller先启动Job外的独立`--bfe-recover`子进程；该进程仅有QUERY/START服务句柄，READY时尚未进入恢复责任；随后单独arm/ACK成功才允许唯一一次`ControlService(STOP)`。未调用或明确拒绝时发送无副作用cancel，不能启动由其他原因停止的服务。拒绝记录原错误及重新查询的状态，不信任失败输出结构；不会为1051停止依赖服务，1052不支持控制也直接结束。
+- 成功STOPPED窗口才触发合成探针；controller的收尾优先恢复RUNNING。guard在25秒或父进程丢失时持续尝试恢复，STOP_PENDING等待停止后再Start；父异常退出继续监测至少一分钟的晚到停止。此机制不能保证Windows服务调用与恢复在固定秒数内完成。
+- STOP结果未知，或虽然受理但从未观测STOPPED时，不因一次RUNNING查询解除guard或标记恢复确认；报告保留`recoveryUncertain`，独立进程继续收尾。准备阶段可写含本次nonce的`probe-cancel-request.json`退出；仅在不存在controller claim时生效。
+- JSON、摘要、PID/SID和日志仅在Git忽略的私有目录。全部自有helper退出后删除临时容器及`synthetic`目录；`probe-finished.json`记录清理。服务拒绝只能证明请求未获准，不能计为故障隔离通过。
+
+SCM依据：[Stopping a Service](https://learn.microsoft.com/en-us/windows/win32/services/stopping-a-service)、[ControlService](https://learn.microsoft.com/en-us/windows/win32/api/winsvc/nf-winsvc-controlservice)、[StartServiceW](https://learn.microsoft.com/en-us/windows/win32/api/winsvc/nf-winsvc-startservicew)。`StartService`不会取消STOP_PENDING；其成功结果也必须后续读回RUNNING。探针中断、超时或尚未取得结果便离开STOPPED都作为工具错误，立即转入恢复。

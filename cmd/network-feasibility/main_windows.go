@@ -72,6 +72,13 @@ type labReport struct {
 }
 
 func main() {
+	if len(os.Args) >= 2 && strings.HasPrefix(os.Args[1], "--bfe-") {
+		if err := bfeExperimentCommand(os.Args[1:]); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+		return
+	}
 	if os.Getenv("PRISM_NETWORK_FEASIBILITY") != "1" {
 		fmt.Fprintln(os.Stderr, "Set PRISM_NETWORK_FEASIBILITY=1 for this synthetic experiment only.")
 		os.Exit(2)

@@ -173,9 +173,11 @@ HTTP经目标流写origin-form，HTTPS经同本机CONNECT透传TLS；SOCKS5本�
 
 用户允许未来组件管理员安装，未现在提权/改系统。WFP独立程序路径可研究socket隔离，但ALE_ORIGINAL_APP_ID只定义连接重定向，不保证DNS Client委托查询，dynamic过滤生命周期也不保证host崩溃的拒绝边界；不能全局封DNS影响其他环境。[D012](DECISIONS.md#d012--安全边界缺失先阻止代理启动并允许隔离组件管理员安装2026-10-01)、[待完成清单](verification/T11.md)。完整组件/真实出口和故障验收均未实现通过，用户已选择先保存部分继续不依赖它的其他票。
 
-2026-10-05增量：独立实验已证固定148在零能力AppContainer内正常桌面/原renderer限制、同package socket桥、委托DnsQueryEx局部拒绝、跨新SID三种合成存储及独立桥硬退出后的端口接管拒绝。用户另授临时非交互窗口站ACL和管理员只读采集；最终权限/资源已清理。只读结果显示本机BFE/MpsSvc宿主critical=true、相关运行期默认规则无persistent/boottime标志，不能替代系统故障窗口验证。[实验](verification/T11-feasibility-observations.json)与[系统只读观测](verification/T11-system-boundary-observations.json)都不是生产provider，当前工作机系统故障注入未授权。
+2026-10-05增量：独立实验已证固定148在零能力AppContainer内正常桌面/原renderer限制、同package socket桥、委托DnsQueryEx局部拒绝、跨新SID三种合成存储及独立桥硬退出后的端口接管拒绝。用户另授临时非交互窗口站ACL和管理员只读采集；最终权限/资源已清理。只读结果显示本机BFE/MpsSvc宿主critical=true、相关运行期默认规则无persistent/boottime标志，不能替代系统故障窗口验证。[实验](verification/T11-feasibility-observations.json)与[系统只读观测](verification/T11-system-boundary-observations.json)都不是生产provider。随后仅新增一次BFE标准正常停止并立即恢复的明确授权；拒绝即结束，其他服务/宿主故障及系统改动未授权，实际执行位置见[T11记录](verification/T11.md)。
 
 同日[`资源收尾源码`](../internal/kernel/runtime_lifecycle_windows.go)：根信号和准确Job空的读回成功后，只缓存“进程已退”；通道Close锁外成功后才释放pipe/guard/pins/目录并发布完整Done。失败仍能正常Stop重试清理，已退出时不再发CDP或操作已释放Job；在途尝试共享，未知查询不作成功。未创建process时通道仍由创建方收敛；真实ManagedProcess与workspace不重复拥有它。7内核+8服务回归及静态编译不是实际目录/恢复或OS隔离验收。
+
+15:51获准的BFE正常停服实验被提升`OpenServiceW`以错误5拒绝组合QUERY/START/STOP权限申请，实际STOP/START均0次；所有采样仍在RUNNING状态。[结果与摘要](verification/T11-bfe-stop-observations.json)不能证明保护组件故障期间的隔离，当前管理员授权也不能解锁provider；完整代理门禁继续保持。
 
 ## 请求与返回合同
 

@@ -34,6 +34,7 @@
 - PRX-001：[管理员只读规则/服务观测](verification/T11-system-boundary-observations.json)记录本机关键服务宿主、运行规则和boot策略的实际类别；不将配置快照当作故障时有效或流量命中证明。采集脚本失败准确返回、临时权限恢复及证据目录保护已核对。
 - PRX-001：[`生产身份入口接点`](../internal/proxy/bridge_ingress.go)支持host成对提供listener/前检dialer，禁止失败fallback，关闭等待前检及其拨号完成；6回归仅编写，生产局部编译通过。它不提供完整系统隔离或改变现有代理门禁。
 - ENV-003、PRX-001：[`资源收尾`](../internal/kernel/runtime_lifecycle_windows.go)确认Job空及通道清理成功后才释放目录，workspace保留无PID通道占用/重试，页面按当前`resourcesPending`显示重试关闭；应用退出允许重试迟到owner并等待迁移资源退出，真实崩溃根因保持。新增7内核+8服务+1adapter回归仅编写，测试包/TS仅编译通过；真实操作未验收。
+- PRX-001、ENV-003：[获准BFE实验结果](verification/T11-bfe-stop-observations.json)为提升OpenService组合权限申请被拒（5），实际STOP/START各0次，BFE保持RUNNING。健康基线普通socket/DNS对照到达、AC全0；临时Job/容器/目录已清理。没有故障窗口或恢复guard运行证据，T11及后续完整代理交付仍受阻。
 
 ### T21 诊断与指南独立部分（本地源码，未运行验收）
 
