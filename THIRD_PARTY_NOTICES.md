@@ -25,6 +25,8 @@
 
 T01 新增仅用于测试的 [Playwright Test](https://github.com/microsoft/playwright) 1.63.0（Apache-2.0；Microsoft Corporation）和 `@types/node` 26.6.3（MIT；DefinitelyTyped contributors）。Playwright 自带的测试 Chromium 由 `npx playwright install chromium` 安装到开发/CI 缓存，不进入应用分发，也不是产品指定的 fingerprint-chromium。保留 [Playwright 许可](https://github.com/microsoft/playwright/blob/main/LICENSE) 与实际包内通知，具体依赖版本以锁文件为准。
 
+T11可行性调查仅在项目忽略工具目录使用 [Capstone](https://github.com/capstone-engine/capstone) **5.0.6** 静态读取固定自有内核的崩溃位置。实际包内 `LICENSE.TXT` 为 BSD-3-Clause，Copyright (c) 2013 COSEINC，设计实现 Nguyen Anh Quynh；不进入应用、实验exe或安装包依赖，未重新分发其库。许可入口为 [5.0.6 LICENSE.TXT](https://github.com/capstone-engine/capstone/blob/5.0.6/LICENSE.TXT)。
+
 ## Go/Wails 桌面底座（T02）
 
 固定版本见 [go.mod](go.mod) 和 [go.sum](go.sum)。以下信息来自本机实际下载模块的许可证，不由本项目的 MIT 重新授权：

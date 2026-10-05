@@ -27,6 +27,11 @@
 
 ## 已发布的桌面开发任务
 
+### T11 隔离可行性增量（2026-10-05；独立实验）
+
+- ENV-003、PRX-001：[`实验工具`](../cmd/network-feasibility/README.md)在固定148/Windows build26200上记录零能力AppContainer、私有pipe、准确Job全树token，以及身份socket/受控DNS和IPv4/IPv6局部观测。
+- DATA-001、ENV-003：普通/AC互换及重开三种合成持久存储读回；独立桥进程硬退出、浏览器保持活着时普通host接管端口仍0连接，临时窗口站权限撤销与资源清理有实际证据。[T11记录](verification/T11.md)明确剩余外部网络/OS保护服务故障、生产接入和完整验收，产品代理门禁保持。
+
 ### T21 诊断与指南独立部分（本地源码，未运行验收）
 
 - UX-001、DOC-001：[`NativeDiagnostics`](../src/components/NativeDiagnostics.tsx)接活动页/数据库打开失败对话框，冻结预览、原请求核实及明确结束核实；[`adapter`](../src/application/diagnostics-client.ts)跨离页保留未知状态。原native活动原文导出改为脱敏报告。

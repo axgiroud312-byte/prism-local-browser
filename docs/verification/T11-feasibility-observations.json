@@ -1,0 +1,109 @@
+{
+  "kind": "independent-synthetic-feasibility-observations",
+  "generatedAt": "2026-10-05T05:37:58.1327601Z",
+  "fullT11Acceptance": false,
+  "productionProxyGate": "unchanged-blocked",
+  "sourceBaseCommit": "e4db30b",
+  "testedSourceState": "T11 experiment working tree before local milestone commit",
+  "toolSha256": "cb9d1ee46eaa5e4d950d40f62f9a08084418e383426d307f79f90c6bd2be0f0e",
+  "platform": {
+    "editionId": "CoreCountrySpecific",
+    "displayVersion": "25H2",
+    "build": "26200.9457",
+    "elevated": false
+  },
+  "kernel": {
+    "version": "148.0.7778.215",
+    "archiveSha256": "9ef3f471b7a6641b4224532522b29141ce3746e27d55788d88e2fd951f362579",
+    "executableSha256": "1867319e56bcabbc4681d8575c002106ce7b61b5290dc5eb34a37676805f6915",
+    "modified": false,
+    "noSandboxFlag": false,
+    "unsandboxedNetworkServiceLaunchFallbackDisabled": true
+  },
+  "presentation": {
+    "headless": false,
+    "startMinimizedRequested": true,
+    "ordinaryOwnedVisibleWindows": 1,
+    "containerOwnedVisibleWindows": 1,
+    "observedMinimizedWindows": 0,
+    "automaticClicks": false,
+    "normalBrowserScriptsReturned": 2
+  },
+  "dns": {
+    "api": "DnsQueryEx",
+    "server": "controlled-ipv4-loopback-udp53",
+    "ordinaryStatus": 0,
+    "ordinaryQueriesReceived": 1,
+    "ordinarySenderAttributedTo": "Dnscache-service-process",
+    "attributionMethod": "sender-port UDP owner PID before reply compared with SCM Dnscache PID",
+    "containerStatus": 5,
+    "containerQueriesReceived": 0
+  },
+  "ordinaryEndpointObservations": [
+    { "protocol": "tcp4", "ordinaryConnections": 1, "containerConnections": 0 },
+    { "protocol": "tcp6", "ordinaryEcho": true, "ordinaryReceived": 1, "containerEcho": false, "containerReceived": 0 },
+    { "protocol": "udp4", "ordinaryEcho": true, "ordinaryReceived": 1, "containerEcho": false, "containerReceived": 0 },
+    { "protocol": "udp6", "ordinaryEcho": true, "ordinaryReceived": 1, "containerEcho": false, "containerReceived": 0 }
+  ],
+  "protectedJobSnapshot": {
+    "memberCount": 7,
+    "allMembersAppContainer": true,
+    "allMembersSameSessionPackage": true,
+    "allMembersCapabilityCount": 0,
+    "roles": [
+      { "role": "browser", "restrictedSidCount": 0, "integrity": 4096, "win32kDisabled": false },
+      { "role": "gpu-process", "restrictedSidCount": 5, "integrity": 4096, "win32kDisabled": false },
+      { "role": "network.mojom.NetworkService", "restrictedSidCount": 0, "integrity": 4096, "win32kDisabled": false },
+      { "role": "storage.mojom.StorageService", "restrictedSidCount": 1, "integrity": 0, "win32kDisabled": true },
+      { "role": "renderer", "restrictedSidCount": 1, "integrity": 0, "win32kDisabled": true },
+      { "role": "renderer", "restrictedSidCount": 1, "integrity": 0, "win32kDisabled": true },
+      { "role": "renderer", "restrictedSidCount": 1, "integrity": 4096, "win32kDisabled": true }
+    ]
+  },
+  "persistence": {
+    "syntheticDataOnly": true,
+    "ordinaryProfileWrittenBeforeContainerWriteGrant": true,
+    "profileIntegrityLabelChangedByGrant": false,
+    "containerPackageChangedOnReopen": true,
+    "storageKinds": ["persistent-cookie", "local-storage", "indexed-db"],
+    "stages": [
+      { "stage": "ordinary-write", "allStorageMatched": true, "normalExitCode": 0, "exactJobEmpty": true },
+      { "stage": "container-read-write", "allStorageMatched": true, "normalExitCode": 0, "exactJobEmpty": true, "dataGrantRevoked": true },
+      { "stage": "new-container-reopen", "allStorageMatched": true, "normalExitCode": 0, "exactJobEmpty": true, "dataGrantRevoked": true },
+      { "stage": "ordinary-read-back", "allStorageMatched": true, "normalExitCode": 0, "exactJobEmpty": true }
+    ]
+  },
+  "bridgeFault": {
+    "socketCreatedUnderContainerImpersonation": true,
+    "acceptAndUpstreamRunAfterRevert": true,
+    "route": "real Chromium -> same-package socket -> ordinary host bridge -> controlled loopback origin",
+    "originRequestsAcrossFourStages": [2, 4, 6, 8],
+    "independentBridgeProcessTerminated": true,
+    "confirmedBridgeExitCode": 57,
+    "browserInSeparateJob": true,
+    "replacementBoundExactPreviousAddress": true,
+    "replacementIdentity": "ordinary-host",
+    "fetchAfterTerminationSucceeded": false,
+    "replacementAccepts": 0,
+    "replacementRequests": 0,
+    "browserControlStillAliveAfterProbe": true,
+    "probeWindowMilliseconds": 3000,
+    "terminatedOwnerRequestCount": null
+  },
+  "cleanup": {
+    "temporaryStationSidRevokedAndReadBack": true,
+    "allOwnedJobsExited": true,
+    "syntheticRootsRemainingAfterRun": 0,
+    "syntheticContainerDirectoriesRemainingAfterRun": 0,
+    "cooperatingStationAclWritersUseNamedMutex": true
+  },
+  "notCovered": [
+    "external-network-interface and controlled-remote receiver observations",
+    "default resolver APIs, DoH and DNS-service failure fallback",
+    "BFE and MpsSvc stop, crash, recovery and combined DNS-service faults",
+    "continuous process-token lifecycle rather than sampled live members",
+    "production pinned-object grants, durable resource journal and crash recovery",
+    "parallel environment A/B and production HTTP/HTTPS/SOCKS5 integrations",
+    "all required supported Windows versions and final installer acceptance"
+  ]
+}
