@@ -178,6 +178,7 @@ func (s *Service) bootstrapMigration(ctx context.Context, task *migrationTask) e
 	s.mu.Lock()
 	if task.bootstrapLoader == nil {
 		task.bootstrapLoader = &Service{db: s.db, root: s.root, options: s.options, runtimeSlots: map[string]*runtimeSlot{}, runtimePending: map[string]*runtimePendingWrite{}, runtimeResults: map[string]Operation{}, profileUses: map[string]bool{}}
+		task.bootstrapLoader.inheritNetworkResources(s)
 	}
 	loader, step := task.bootstrapLoader, task.bootstrapStep
 	s.mu.Unlock()
@@ -209,6 +210,9 @@ func (s *Service) bootstrapMigration(ctx context.Context, task *migrationTask) e
 		return err
 	}
 	s.runtimeSlots, s.runtimePending, s.runtimeResults, s.profileUses = loader.runtimeSlots, loader.runtimePending, loader.runtimeResults, loader.profileUses
+	for id := range s.networkPending {
+		s.profileUses[id] = true
+	}
 	task.bootstrapReady = true
 	return nil
 }
@@ -252,7 +256,7 @@ func (s *Service) releaseMigration(task *migrationTask) {
 	if task.plan.Committed {
 		delete(s.runtimeSlots, task.plan.Environment.ID)
 		delete(s.runtimePending, task.plan.Environment.ID)
-		delete(s.profileUses, task.plan.Environment.ID)
+		s.releaseProfileUse(task.plan.Environment.ID)
 	}
 	s.migrationTask = nil
 	s.migrationDraft = nil

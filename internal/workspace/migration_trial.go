@@ -10,7 +10,13 @@ import (
 )
 
 func (s *Service) runMigrationTrial(ctx context.Context, task *migrationTask) {
-	err := s.prepareMigrationBackup(ctx, task)
+	var err error
+	if task.plan.Environment.ProxyID != "" {
+		err = kernel.RequireProxyNetworkBoundary()
+	}
+	if err == nil {
+		err = s.prepareMigrationBackup(ctx, task)
+	}
 	if err == nil {
 		err = s.prepareMigrationCopy(ctx, task)
 	}

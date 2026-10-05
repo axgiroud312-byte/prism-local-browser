@@ -148,6 +148,7 @@ func (s *Service) resumeWorkspaceAfterRestore(ctx context.Context, task *restore
 	if task.bootstrapLoader == nil {
 		task.bootstrapLoader = &Service{db: s.db, root: s.root, options: s.options,
 			runtimeSlots: map[string]*runtimeSlot{}, runtimePending: map[string]*runtimePendingWrite{}, runtimeResults: map[string]Operation{}, profileUses: map[string]bool{}}
+		task.bootstrapLoader.inheritNetworkResources(s)
 	}
 	loader, step := task.bootstrapLoader, task.bootstrapStep
 	s.mu.Unlock()
@@ -185,6 +186,9 @@ func (s *Service) resumeWorkspaceAfterRestore(ctx context.Context, task *restore
 			return
 		}
 		s.runtimeSlots, s.runtimePending, s.runtimeResults, s.profileUses = loader.runtimeSlots, loader.runtimePending, loader.runtimeResults, loader.profileUses
+		for id := range s.networkPending {
+			s.profileUses[id] = true
+		}
 		task.bootstrapReady = true
 	}
 	s.finishRestoreBootstrap(task)

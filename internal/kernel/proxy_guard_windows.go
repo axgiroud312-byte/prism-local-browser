@@ -19,8 +19,9 @@ var processInJob = windows.NewLazySystemDLL("kernel32.dll").NewProc("IsProcessIn
 // A QUERY-only, non-inheritable duplicate. Its lifetime is bounded by the
 // same channel/process, never handed to a separate long-lived helper.
 type proxyJobGuard struct {
-	mu  sync.Mutex
-	job windows.Handle
+	mu         sync.Mutex
+	job        windows.Handle
+	packageSID *windows.SID
 }
 
 func newProxyJobGuard(job windows.Handle) (*proxyJobGuard, error) {
@@ -70,6 +71,9 @@ func (g *proxyJobGuard) allow(conn net.Conn) bool {
 	var member int32
 	result, _, _ := processInJob.Call(uintptr(process), uintptr(g.job), uintptr(unsafe.Pointer(&member)))
 	if result == 0 || member == 0 {
+		return false
+	}
+	if g.packageSID != nil && verifyNetworkProcess(process, g.packageSID) != nil {
 		return false
 	}
 	// Recheck the exact connection, not an executable name or cached PID. The

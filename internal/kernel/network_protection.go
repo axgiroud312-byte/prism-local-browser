@@ -1,13 +1,9 @@
 package kernel
 
-// No currently integrated provider establishes a verified per-session OS
-// egress boundary across Chromium sockets AND delegated DNS, nor preserves
-// that boundary through host/broker crashes. Proxy flags and a healthy Bridge
-// are not substitutes. Installing an administrator-authorized broker is now
-// allowed, but authority alone is not an implemented/verified boundary.
-//
-// Fail before creating any protected browser. This gate is intentionally not
-// an RPC toggle, a build whitelist, or a promise that a broker already exists.
+// A generic capability check cannot authorize a browser. The launcher requires
+// concrete ProtectedProxy material bound to this exact session/root/build and
+// a successful same-channel preflight, then verifies the actual process tree.
+// Paths not integrated with that owner (including migration) still fail here.
 func RequireProxyNetworkBoundary() error {
-	return &Problem{Code: "NETWORK_PROTECTION_UNAVAILABLE", Reason: "verified-egress-boundary-missing", Message: "当前构建尚无已实现并验证的系统级代理出网隔离；已阻止代理环境启动，未改为直连。原档案和数据保持，隔离组件完成并验证后才能重试。", Retryable: false}
+	return &Problem{Code: "NETWORK_PROTECTION_UNAVAILABLE", Reason: "session-egress-boundary-missing", Message: "本次启动未提供与环境、内核和会话匹配的隔离资源及前检结果，已拒绝启动且未改为直连；请使用正式环境启动入口，原档案和数据保持。", Retryable: false}
 }

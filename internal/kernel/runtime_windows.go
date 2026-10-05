@@ -116,8 +116,14 @@ func (p *pipeProcess) activeProcesses() (uint32, error) {
 }
 
 func LaunchManagedProfile(ctx context.Context, root string, record Record, profile ManagedProfile) (_ *ManagedProcess, resultErr error) {
+	var protected *ProtectedProxy
 	if profile.Network != nil {
-		if err := RequireProxyNetworkBoundary(); err != nil {
+		var ok bool
+		protected, ok = profile.Network.(*ProtectedProxy)
+		if !ok {
+			return nil, RequireProxyNetworkBoundary()
+		}
+		if err := protected.validate(root, record, profile); err != nil {
 			return nil, err
 		}
 	}
@@ -137,18 +143,27 @@ func LaunchManagedProfile(ctx context.Context, root string, record Record, profi
 			return nil, problem("VALIDATION_FAILED", "invalid-start-url", "启动网址必须是无凭据的HTTP/HTTPS地址。")
 		}
 	}
-	lock, err := lockManagedProfile(root, profile.EnvironmentID, profile.UserDataRef)
+	var lock *managedProfileLock
+	if protected != nil {
+		lock = protected.lock
+	} else {
+		lock, err = lockManagedProfile(root, profile.EnvironmentID, profile.UserDataRef)
+	}
 	if err != nil {
 		return nil, err
 	}
 	directory, err := RecordDirectory(root, record)
 	if err != nil {
-		lock.release()
+		if protected == nil {
+			lock.release()
+		}
 		return nil, err
 	}
 	releaseFiles, err := PinFiles(directory, record.Files)
 	if err != nil {
-		lock.release()
+		if protected == nil {
+			lock.release()
+		}
 		return nil, err
 	}
 	var networkGuard *proxyJobGuard
@@ -157,7 +172,9 @@ func LaunchManagedProfile(ctx context.Context, root string, record Record, profi
 			networkGuard.close()
 		}
 		releaseFiles()
-		lock.release()
+		if protected == nil {
+			lock.release()
+		}
 	}
 	if err = VerifyFiles(directory, record.Files); err != nil {
 		release()
@@ -180,6 +197,9 @@ func LaunchManagedProfile(ctx context.Context, root string, record Record, profi
 	}
 	args := []string{"--no-first-run", "--no-default-browser-check", "--user-data-dir=" + lock.path, "--window-size=" + strconv.Itoa(profile.Width) + "," + strconv.Itoa(profile.Height)}
 	args = append(args, networkArgs...)
+	if protected != nil {
+		args = append(args, "--disable-features=RestartNetworkServiceUnsandboxedForFailedLaunch")
+	}
 	if profile.RestoreTabs {
 		args = append(args, "--restore-last-session")
 	}
@@ -193,10 +213,21 @@ func LaunchManagedProfile(ctx context.Context, root string, record Record, profi
 				return problem("PROXY_BRIDGE_UNAVAILABLE", "caller-guard-unavailable", "本次代理调用进程无法安全核对，未关闭沙箱或切为直连。")
 			}
 			networkGuard = guard
+			guard.packageSID = protected.sid
 			return profile.Network.BindBrowser(guard.allow)
 		}
 	}
-	p, err := startPipeWithBinding(executable, args, profile.SessionID, bindJob)
+	var p *pipeProcess
+	if protected == nil {
+		p, err = startPipeWithBinding(executable, args, profile.SessionID, bindJob)
+	} else {
+		resource := NetworkResourceIntent{ResourceID: "job", Kind: "job", ObjectIdentity: protected.intent.JobName, Locator: protected.intent.JobName}
+		err = protected.store.journal.ApplyResource(ctx, profile.SessionID, resource, func(context.Context) error {
+			var startErr error
+			p, startErr = startPipeWithSecurity(executable, args, profile.SessionID, bindJob, protected.sid)
+			return startErr
+		})
+	}
 	if p == nil {
 		release()
 		var networkProblem *proxy.CheckError
@@ -263,6 +294,11 @@ func LaunchManagedProfile(ctx context.Context, root string, record Record, profi
 	}
 	if !pageFound {
 		return process, problem("PROCESS_READY_TIMEOUT", "no-page-target", "真实进程尚无可响应的网页目标，未报告运行中。")
+	}
+	if protected != nil {
+		if err = verifyNetworkTree(p, protected.sid); err != nil {
+			return process, problem("NETWORK_PROTECTION_UNAVAILABLE", "tree-identity-unconfirmed", "浏览器进程树隔离身份未通过核对，已停止本环境；请保留诊断并重试。")
+		}
 	}
 	if err = VerifyFiles(directory, record.Files); err != nil {
 		return process, err

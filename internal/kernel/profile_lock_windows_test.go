@@ -115,26 +115,50 @@ func TestManagedProfileRejectsExistingSharedBrowserDataFiles(t *testing.T) {
 	}
 }
 
-func TestManagedDirectoryGuardDeniesWriteHandlesWhileHoldingProfile(t *testing.T) {
+func TestManagedDirectoryGuardPreservesAncestorBoundaryAndAtomicBrowserWrites(t *testing.T) {
 	root, environmentID := t.TempDir(), uuid.NewString()
 	lock, err := lockManagedProfile(root, environmentID, "environments/"+environmentID+"/user-data")
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer lock.release()
-	wide, err := windows.UTF16PtrFromString(lock.path)
+	wide, err := windows.UTF16PtrFromString(filepath.Dir(lock.path))
 	if err != nil {
 		t.Fatal(err)
 	}
 	handle, err := windows.CreateFile(wide, windows.GENERIC_WRITE, windows.FILE_SHARE_READ|windows.FILE_SHARE_WRITE|windows.FILE_SHARE_DELETE, nil, windows.OPEN_EXISTING, windows.FILE_FLAG_BACKUP_SEMANTICS|windows.FILE_FLAG_OPEN_REPARSE_POINT, 0)
 	if err == nil {
 		windows.CloseHandle(handle)
-		t.Fatal("live profile directory can still be opened for in-place reparse mutation")
+		t.Fatal("profile ancestor can still be opened for in-place reparse mutation")
 	}
 	if !errors.Is(err, windows.ERROR_SHARING_VIOLATION) {
 		t.Fatalf("directory guard fixture failed for a different reason: %v", err)
 	}
 	if err := os.WriteFile(filepath.Join(lock.path, "synthetic-writable-child"), []byte("ordinary file writes still work"), 0600); err != nil {
 		t.Fatal(err)
+	}
+	if err := os.Rename(filepath.Join(lock.path, "synthetic-writable-child"), filepath.Join(lock.path, "Local State")); err != nil {
+		t.Fatal("Chromium atomic root-file rename blocked", err)
+	}
+	if err := os.Rename(lock.path, lock.path+"-replacement"); err == nil {
+		t.Fatal("live data root replacement permitted")
+	}
+}
+
+func TestManagedDirectoryGuardMaintenancePinsStillDenyRootWrites(t *testing.T) {
+	root := t.TempDir()
+	release, err := pinManagedDirectories(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer release()
+	wide, _ := windows.UTF16PtrFromString(root)
+	handle, err := windows.CreateFile(wide, windows.GENERIC_WRITE, windows.FILE_SHARE_READ|windows.FILE_SHARE_WRITE|windows.FILE_SHARE_DELETE, nil, windows.OPEN_EXISTING, windows.FILE_FLAG_BACKUP_SEMANTICS|windows.FILE_FLAG_OPEN_REPARSE_POINT, 0)
+	if err == nil {
+		windows.CloseHandle(handle)
+		t.Fatal("maintenance root opened for in-place reparse mutation")
+	}
+	if !errors.Is(err, windows.ERROR_SHARING_VIOLATION) {
+		t.Fatal("unexpected maintenance pin failure", err)
 	}
 }

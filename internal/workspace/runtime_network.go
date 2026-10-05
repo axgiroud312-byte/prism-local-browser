@@ -19,10 +19,8 @@ func (s *Service) prepareRuntimeNetwork(ctx context.Context, slot *runtimeSlot, 
 	// LaunchRuntime is a trusted host-only synthetic seam. It cannot make the
 	// real kernel launcher bypass its independent protection gate, and desktop
 	// production never injects it. RPC has no unsafe/protection-ready override.
-	if s.options.LaunchRuntime == nil {
-		if err := kernel.RequireProxyNetworkBoundary(); err != nil {
-			return nil, err
-		}
+	if s.options.LaunchRuntime == nil && s.networkStore == nil {
+		return nil, kernel.RequireProxyNetworkBoundary()
 	}
 	if err := s.runtimeStage(slot, "proxy-preflight"); err != nil {
 		return nil, err
@@ -51,7 +49,20 @@ func (s *Service) prepareRuntimeNetwork(ctx context.Context, slot *runtimeSlot, 
 		return nil, context.Canceled
 	}
 	factory := s.options.OpenProxyChannel
-	if factory == nil {
+	if s.options.LaunchRuntime == nil {
+		// The provider prepares the real data directory before browser creation.
+		// Persist that initialization fact before granting any access to it.
+		if err := s.claimRuntimeData(ctx, slot); err != nil {
+			return nil, err
+		}
+		factory = func(config proxy.Configuration, credentials *proxy.Credentials, _ proxy.BridgeOptions) (RuntimeProxyChannel, error) {
+			owner, err := s.networkStore.OpenProtectedProxy(ctx, input.Kernel, kernel.ManagedProfile{EnvironmentID: input.EnvironmentID, SessionID: input.SessionID, UserDataRef: input.DataReference}, channelID, config, credentials, s.options.ProtectedProxyCheck)
+			if owner == nil {
+				return nil, err
+			}
+			return owner, err
+		}
+	} else if factory == nil {
 		factory = func(config proxy.Configuration, credentials *proxy.Credentials, options proxy.BridgeOptions) (RuntimeProxyChannel, error) {
 			bridge, err := proxy.OpenBridge(config, credentials, options)
 			if bridge == nil {

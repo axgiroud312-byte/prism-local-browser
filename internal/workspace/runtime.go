@@ -29,6 +29,9 @@ type runtimeSlot struct {
 }
 
 func (s *Service) runtimeOwnsProfileUse(environmentID string) bool {
+	if s.hasPendingNetwork(environmentID) {
+		return true
+	}
 	if s.cookieTasks[environmentID] != nil {
 		return true
 	}

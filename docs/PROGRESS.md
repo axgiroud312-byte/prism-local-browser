@@ -4,12 +4,12 @@
 
 - Goal：按[六阶段计划](V1_DELIVERY.md)完成首版；完成 **4/21**（正式验收），**14项已实现待验收**，尚未交付完整首版安装包。
 - 当前任务：阶段1本地对齐已提交`a77630e`；当前主要阶段2 T11 / [Issue #12](https://github.com/axgiroud312-byte/prism-local-browser/issues/12)正式隔离与启动。首个产品交付点为真实代理访问→关闭→原身份/数据重开。
-- 当前步骤：独立持久资源日志基础已提交`ddf301b`，9项局部测试通过，最终只读复核无可信新增阻断；尚未接workspace/provider。下一步固定资源日志存储边界及重开入口，接真实容器/固定句柄差量ACL，再接专属桥与准确Job/token门禁；生产固定拒绝保持。
-- 现场：分支`goal/v1-remaining-integration`，起点`21ea8ef`且工作树原先干净。主代理唯一写入，子代理只读。本轮没有运行浏览器、修改系统权限或自动点击；旧实验清理证据仍按原时间引用。GitHub认证401，公开REST已读#12，尚未远程同步或触发CI。
+- 当前步骤：资源日志已接正式AppContainer、差量ACL恢复、同身份代理桥和原子Job启动；真实kernel入口与产品Runtime.Start/Stop、Service重开分别两轮通过，Cookie/LocalStorage/IndexedDB保留。见[T11本轮记录](verification/T11-production.md)。阶段2尚待独立远端出口及人工界面闭环，不计为完整验收。
+- 现场：分支`goal/v1-remaining-integration`。主代理唯一写入，子代理只读。本轮运行合成真实浏览器及其临时容器/ACL并确认正常收尾，没有自动点击、修改Windows服务或安装打包。GitHub认证401，尚未远程同步或触发CI。
 
 ## 当前阻塞与恢复入口
 
-- 正式provider仍缺容器/固定对象差量ACL、持久资源日志/恢复、Job/token全生命周期及正式启动接入，当前代理Start继续拒绝。先实现这条链，不等待重复BFE实验；旧拒绝结果不是通过。
+- 正式provider已接入并通过本机受控启动验证；故障矩阵、跨注销/重启恢复和外部全路径仍待验证。迁移副本尚未接保护，继续明确拒绝；未知资源清理保留环境占用。
 - 外部代理/独立远端观察端、第二个不同版本真实内核、干净Windows/runner均未全部核实，按[资源表](V1_DELIVERY.md)准备；仅对应实测保持待验证。不自动点击，产品界面闭环需用户少量人工操作。
 - 远程认证恢复前保留本地提交及待同步记录；不反复重试401。完整回归阶段5，安装包阶段6；开发期允许关键局部验证。
 
@@ -27,7 +27,7 @@
 | T08 | #9 | 已实现待验收 | 本地 `f020076`；[验收清单](verification/T08.md)，blocking #3 CLOSED，无PR/推送 |
 | T09 | #10 | 已实现待验收 | 本地 `f6ebca1`；[验收清单](verification/T09.md)，原blocking #7/#9仍OPEN，无PR/推送 |
 | T10 | #11 | 已实现待验收 | 本地 `88ba61a`；[验收清单](verification/T10.md)，唯一blocking #10仍OPEN，无PR/推送 |
-| T11 | #12 | 部分实现，正式隔离接入待完成 | 监督/门禁`d547bb1`；独立实验`6c45eb0`；入口准备`7c05dc8`；资源收尾`1e16130`；旧实验`2d1e426`；[清单](verification/T11.md)，按确认首版范围接入provider，代理Start仍拒绝；无PR/推送 |
+| T11 | #12 | 正式启动接入，本机闭环已验证，完整验收待补 | [本轮记录](verification/T11-production.md)：真实内核及应用入口两轮代理启动/停止/重开，三存储保留；远端/故障/人工界面待验，无PR/推送 |
 | T12 | #13 | 已实现待验收 | 本地c3ff618；[清单](verification/T12.md)，无推送/PR；#7仍OPEN |
 | T13 | #14 | 已实现待验收 | 本地`54d8be9`；[清单](verification/T13.md)，blocking #8/#9仍OPEN，按D007消费本地T07/T08；无推送/PR |
 | T14 | #15 | 等待T11完整隔离 | #12缺失完整成果，原proxy门禁不绕过；先开发其他可用票 |
@@ -40,6 +40,8 @@
 | T21 | #22 | 诊断/指南源码完成待验收，完整交付受阻 | 本地`732c483`；[独立部分与待验收](verification/T21.md)；不绕过T11/T14 |
 
 ## 最近检查与当前工作
+
+- 阶段2正式接入：kernel/proxy/workspace选择性回归、两项真实启动重开测试、TypeScript检查通过。修复目录锁阻止Chromium原子写Local State导致Cookie丢失；仅运行期userdata根允许WRITE共享，维护目录保持严格锁。只读末审所报P2已修复并复核。证据与检查范围见[T11正式接入](verification/T11-production.md)，完整回归仍留阶段5。
 
 - 本轮阶段2：新增`internal/kernel/network_journal.go`及测试，独立SQLite/FULL提交、不可变会话/资源意图、每环境唯一未清理会话、逆序可重试清理。评审P2“清理越过在途创建”以同会话全动作互斥修复，封存后再核对Job；A/B独立。`go test -p 1 ./internal/kernel -run '^TestNetworkJournal' -count=1 -v`：9项通过，另1helper只由父测试启动并突然退出；无真实ACL/容器/浏览器/网络实验。阶段1提交`a77630e`，本子成果`ddf301b`；46份文档及暂存格式检查通过。未执行全量回归、自动点击、安装打包或远程写入。
 

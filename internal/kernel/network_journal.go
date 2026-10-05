@@ -60,6 +60,7 @@ type NetworkSessionIntent struct {
 	PackageSID    string `json:"packageSid"`
 	JobName       string `json:"jobName"`
 	LogonSID      string `json:"logonSid"`
+	BootID        string `json:"bootId,omitempty"`
 }
 
 // ObjectIdentity is the provider's stable OS identity, not merely a path. For a
@@ -163,6 +164,19 @@ func (j *NetworkJournal) initialize() error {
 }
 
 func (j *NetworkJournal) Close() error { return j.db.Close() }
+
+func (j *NetworkJournal) Session(ctx context.Context, sessionID string) (NetworkSessionIntent, error) {
+	var intent NetworkSessionIntent
+	var encoded string
+	err := j.db.QueryRowContext(ctx, "SELECT intent FROM sessions WHERE session_id=?", sessionID).Scan(&encoded)
+	if err != nil {
+		return intent, err
+	}
+	if json.Unmarshal([]byte(encoded), &intent) != nil || !validNetworkSession(intent) || intent.SessionID != sessionID {
+		return intent, ErrNetworkJournalConflict
+	}
+	return intent, nil
+}
 
 func validNetworkSession(intent NetworkSessionIntent) bool {
 	for _, value := range []string{intent.SessionID, intent.EnvironmentID, intent.ChannelID} {

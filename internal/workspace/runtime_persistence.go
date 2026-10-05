@@ -238,6 +238,9 @@ func validateSavedRuntime(session RuntimeSession, environmentID string) error {
 }
 
 func (s *Service) inspectSavedRuntime(session RuntimeSession) (kernel.ManagedRecovery, error) {
+	if s.hasPendingNetwork(session.EnvironmentID) {
+		return kernel.ManagedRecovery{ProcessState: "unconfirmed"}, &kernel.Problem{Code: "NETWORK_CLEANUP_PENDING", Message: "原隔离资源尚未确认清理，请关闭原浏览器，检查目录权限后重开管理程序重试；原环境保持占用。", Retryable: true}
+	}
 	if s.options.InspectRuntime != nil {
 		return s.options.InspectRuntime(session)
 	}

@@ -44,10 +44,18 @@ func finalDirectory(path string) (string, error) {
 	return strings.TrimRight(strings.ToLower(windows.UTF16ToString(buffer[:n])), `\`), nil
 }
 
-// Deny both DELETE and WRITE access on the directory chain. Denying rename
-// alone does not stop FSCTL_SET_REPARSE_POINT on the same directory object.
-// File creation/writes *inside* these directories remain possible for Chromium.
+// Maintenance and creation pins remain strict on every component. Only a live
+// browser data lock explicitly opts into atomic writes at its existing root.
 func pinManagedDirectories(directory string) (func(), error) {
+	return pinProfileDirectories(directory, false)
+}
+
+// Ancestors deny WRITE/DELETE; a live data root allows WRITE sharing because
+// Chromium's atomic Local State replacement opens that parent for writing.
+// Root rename/delete remains denied. A same-user writer's in-place reparse
+// mutation is not prevented by sharing alone: every host traversal must still
+// inspect the actual object and refuse reparse points (including cleanup).
+func pinProfileDirectories(directory string, writableRoot bool) (func(), error) {
 	handles := []windows.Handle{}
 	release := func() {
 		for index := len(handles) - 1; index >= 0; index-- {
@@ -60,7 +68,11 @@ func pinManagedDirectories(directory string) (func(), error) {
 			release()
 			return nil, err
 		}
-		handle, err := windows.CreateFile(wide, windows.GENERIC_READ, windows.FILE_SHARE_READ, nil, windows.OPEN_EXISTING, windows.FILE_FLAG_BACKUP_SEMANTICS|windows.FILE_FLAG_OPEN_REPARSE_POINT, 0)
+		sharing := uint32(windows.FILE_SHARE_READ)
+		if writableRoot && current == directory {
+			sharing |= windows.FILE_SHARE_WRITE
+		}
+		handle, err := windows.CreateFile(wide, windows.GENERIC_READ, sharing, nil, windows.OPEN_EXISTING, windows.FILE_FLAG_BACKUP_SEMANTICS|windows.FILE_FLAG_OPEN_REPARSE_POINT, 0)
 		if err != nil {
 			release()
 			return nil, err
@@ -121,7 +133,7 @@ func lockManagedProfile(root, environmentID, reference string) (*managedProfileL
 		return nil, err
 	}
 	directory := filepath.Join(root, filepath.FromSlash(reference))
-	releasePinned, err := pinManagedDirectories(directory)
+	releasePinned, err := pinProfileDirectories(directory, true)
 	if err != nil {
 		release()
 		return nil, err

@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"runtime"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -49,6 +50,10 @@ func startPipeWithSession(executable string, args []string, sessionID string) (_
 }
 
 func startPipeWithBinding(executable string, args []string, sessionID string, bindJob func(windows.Handle) error) (_ *pipeProcess, resultErr error) {
+	return startPipeWithSecurity(executable, args, sessionID, bindJob, nil)
+}
+
+func startPipeWithSecurity(executable string, args []string, sessionID string, bindJob func(windows.Handle) error, packageSID *windows.SID) (_ *pipeProcess, resultErr error) {
 	resourcesTransferred := false
 	childRead, parentWrite, err := os.Pipe()
 	if err != nil {
@@ -92,7 +97,11 @@ func startPipeWithBinding(executable string, args []string, sessionID string, bi
 			return nil, err
 		}
 	}
-	attributes, err := windows.NewProcThreadAttributeList(2)
+	count := uint32(2)
+	if packageSID != nil {
+		count++
+	}
+	attributes, err := windows.NewProcThreadAttributeList(count)
 	if err != nil {
 		return nil, err
 	}
@@ -105,6 +114,12 @@ func startPipeWithBinding(executable string, args []string, sessionID string, bi
 	if err = attributes.Update(0x0002000D, unsafe.Pointer(&job), unsafe.Sizeof(job)); err != nil {
 		return nil, err
 	}
+	capabilities := networkSecurityCapabilities{SID: packageSID}
+	if packageSID != nil {
+		if err = attributes.Update(0x00020009, unsafe.Pointer(&capabilities), unsafe.Sizeof(capabilities)); err != nil {
+			return nil, err
+		}
+	}
 	args = append([]string{executable}, args...)
 	args = append(args, "--remote-debugging-pipe", fmt.Sprintf("--remote-debugging-io-pipes=%d,%d", uint32(handles[0]), uint32(handles[1])))
 	command, err := windows.UTF16PtrFromString(windows.ComposeCommandLine(args))
@@ -114,7 +129,10 @@ func startPipeWithBinding(executable string, args []string, sessionID string, bi
 	image, _ := windows.UTF16PtrFromString(executable)
 	si := windows.StartupInfoEx{StartupInfo: windows.StartupInfo{Cb: uint32(unsafe.Sizeof(windows.StartupInfoEx{}))}, ProcThreadAttributeList: attributes.List()}
 	var info windows.ProcessInformation
-	if err = windows.CreateProcess(image, command, nil, nil, true, windows.EXTENDED_STARTUPINFO_PRESENT|windows.CREATE_UNICODE_ENVIRONMENT|windows.CREATE_NO_WINDOW, nil, nil, &si.StartupInfo, &info); err != nil {
+	err = windows.CreateProcess(image, command, nil, nil, true, windows.EXTENDED_STARTUPINFO_PRESENT|windows.CREATE_UNICODE_ENVIRONMENT|windows.CREATE_NO_WINDOW, nil, nil, &si.StartupInfo, &info)
+	runtime.KeepAlive(capabilities)
+	runtime.KeepAlive(packageSID)
+	if err != nil {
 		return nil, err
 	}
 	windows.CloseHandle(info.Thread)

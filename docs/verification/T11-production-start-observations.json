@@ -1,0 +1,33 @@
+{
+  "executableSha256": "1867319e56bcabbc4681d8575c002106ce7b61b5290dc5eb34a37676805f6915",
+  "kernelVersion": "148.0.7778.215",
+  "observedAt": "2026-10-05T09:42:23.9470323Z",
+  "proxyObservedPageRequests": 4,
+  "rounds": [
+    {
+      "allObservedJobMembersSamePackageZeroCapabilities": true,
+      "containerAbsent": true,
+      "cookieReadBeforeWrite": "",
+      "cpu": 8,
+      "indexedDBReadBeforeWrite": "",
+      "localStorageReadBeforeWrite": "",
+      "normalExitCode": 0,
+      "pendingResources": 0,
+      "round": 0
+    },
+    {
+      "allObservedJobMembersSamePackageZeroCapabilities": true,
+      "containerAbsent": true,
+      "cookieReadBeforeWrite": "prism=synthetic",
+      "cpu": 8,
+      "indexedDBReadBeforeWrite": "synthetic",
+      "localStorageReadBeforeWrite": "synthetic",
+      "normalExitCode": 0,
+      "pendingResources": 0,
+      "round": 1
+    }
+  ],
+  "scope": "production kernel provider and launcher; controlled loopback upstream/HTTPS observer; no UI clicks or external egress claim",
+  "syntheticSeed": "1256789",
+  "windowsBuild": 26200
+}

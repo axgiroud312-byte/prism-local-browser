@@ -118,7 +118,7 @@ export function NativeProxyManager({ application, workspace, importOpen, onImpor
 
   return <div className="native-proxy-manager">
     <div className="info-strip"><ShieldCheck size={19} /><div><strong>本机凭据保护，独立环境通道</strong><p>HTTP / HTTPS / SOCKS5通道代码已接；环境启动重新建独立通道并做同通道前检，不凭历史成功启动。SOCKS5目标域名交给代理解析，无认证与用户名密码分别协商，不降级；HTTPS代理TLS不能跳验证。实际验收与运行期全路径保护仍待补。</p></div></div>
-    <div className="info-strip"><ShieldCheck size={19} /><div><strong>代理浏览器启动暂被安全门禁阻止</strong><p>当前系统级全路径隔离尚未实现并验证，不能仅凭前检或代理参数保证DNS/UDP无旁路。独立检查仍可进行，但不能作为浏览器启动许可。已允许后续隔离组件安装时请求管理员授权；不自动直连、不让页面伪造保护就绪。</p></div></div>
+    <div className="info-strip"><ShieldCheck size={19} /><div><strong>代理启动按实际会话核对隔离资源</strong><p>正式启动会创建独立容器和专属代理桥，核对进程树与同通道前检；缺失、失败或状态不明时拒绝启动。独立检查不能代替这套核对。当前受控本机启动闭环已验证，外部全路径及故障验收仍待补齐；支持前提是Windows网络隔离机制正常工作。</p></div></div>
     {importOpen && <section className="work-card native-proxy-form" aria-labelledby="native-proxy-import-title">
       <h2 id="native-proxy-import-title">导入代理 · 先预览再保存</h2>
       <p>每行一条：<code>http://user:password@host:port</code>、<code>https://host:port</code>、<code>socks5://user:password@host:port</code>或<code>host:port:user:password</code>。IPv6使用<code>socks5://[2001:db8::1]:1080</code>；分隔符按URI编码。SOCKS5账号密码各需1–255个UTF-8字节。HTTP/SOCKS5到代理不加密认证，HTTPS才提供TLS保护；预览不回显凭据。</p>

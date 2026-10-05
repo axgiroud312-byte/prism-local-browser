@@ -39,10 +39,13 @@ type Options struct {
 	LaunchRuntime  func(context.Context, RuntimeLaunch) (RuntimeProcess, error)
 	InspectRuntime func(RuntimeSession) (kernel.ManagedRecovery, error)
 	// Host-only seams. The desktop always uses Windows user DPAPI and TLS checks.
-	ProtectProxySecret      func(string, []byte) ([]byte, error)
-	UnprotectProxySecret    func(string, []byte) ([]byte, error)
-	CheckProxy              func(context.Context, proxy.Configuration, *proxy.Credentials, func(proxy.Step)) proxy.Report
-	OpenProxyChannel        func(proxy.Configuration, *proxy.Credentials, proxy.BridgeOptions) (RuntimeProxyChannel, error)
+	ProtectProxySecret   func(string, []byte) ([]byte, error)
+	UnprotectProxySecret func(string, []byte) ([]byte, error)
+	CheckProxy           func(context.Context, proxy.Configuration, *proxy.Credentials, func(proxy.Step)) proxy.Report
+	OpenProxyChannel     func(proxy.Configuration, *proxy.Credentials, proxy.BridgeOptions) (RuntimeProxyChannel, error)
+	// Host-only controlled HTTPS observer for real integration tests. Desktop
+	// leaves this empty; it cannot change container identity or caller guards.
+	ProtectedProxyCheck     proxy.CheckOptions
 	PrepareBatchDirectory   func(BatchDirectoryInput) (BatchDirectoryLease, error)
 	ChooseBackupDestination func() (string, error)
 	ChooseBackupSource      func() (string, error)
@@ -105,6 +108,8 @@ type Service struct {
 	recycleTask        *recycleTask
 	migrationDraft     *migrationDraft
 	migrationTask      *migrationTask
+	networkStore       *kernel.NetworkStore
+	networkPending     map[string]kernel.NetworkSessionIntent
 }
 
 func failure(code, message string, retryable bool) Result {
@@ -165,6 +170,16 @@ func Open(root string, options Options) (*Service, error) {
 		db.Close()
 		return nil, err
 	}
+	if err = s.openNetworkResources(); err != nil {
+		db.Close()
+		return nil, err
+	}
+	opened := false
+	defer func() {
+		if !opened {
+			_ = s.networkStore.Close()
+		}
+	}()
 	if err = s.loadInterruptedRestore(); err != nil {
 		db.Close()
 		var safe *Error
@@ -182,14 +197,17 @@ func Open(root string, options Options) (*Service, error) {
 		return nil, &Error{Code: "MIGRATION_INCOMPLETE", Message: "迁移日志不完整或存在多个目录维护任务，请保留原数据、备份及日志后核对。", Retryable: true}
 	}
 	if s.migrationTask != nil {
+		opened = true
 		s.startMigrationWorker(s.migrationTask, s.recoverMigration)
 		return s, nil
 	}
 	if s.recycleTask != nil {
+		opened = true
 		s.startRecycle(s.recycleTask, true)
 		return s, nil
 	}
 	if s.restoreTask != nil {
+		opened = true
 		s.startInterruptedRestore(s.restoreTask)
 		return s, nil
 	}
@@ -217,6 +235,7 @@ func Open(root string, options Options) (*Service, error) {
 		db.Close()
 		return nil, err
 	}
+	opened = true
 	return s, nil
 }
 func (s *Service) Close() error {
@@ -380,6 +399,9 @@ func (s *Service) closeResources(processes []RuntimeProcess, finished chan struc
 	proxy.Wipe(s.proxyRequestKey)
 	s.proxyRequestKey = nil
 	s.closeError = s.db.Close()
+	if s.networkStore != nil {
+		s.closeError = errors.Join(s.closeError, s.networkStore.Close())
+	}
 	if len(s.runtimePending) != 0 {
 		s.closeError = errors.Join(s.closeError, errors.New("runtime observations could not all be persisted before shutdown"))
 	}

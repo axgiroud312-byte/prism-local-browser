@@ -7,7 +7,7 @@ export function NativeRuntimeNetwork({ session }: { session: RuntimeSession }) {
   // A persisted PID never proves this service still owns a live bridge.
   const current = !session.needsReconcile && ["starting", "running"].includes(session.state);
   return <div className="native-runtime-network">
-    {session.networkFault && <div role="alert" className="cell-secondary">{session.networkFault.error.code === "NETWORK_PROTECTION_UNAVAILABLE" ? "系统级隔离未实现/验证，代理启动已阻止" : `网络故障：${session.networkFault.error.code} · ${session.networkFault.containment === "stopped" ? "本次故障资源已确认退出" : "停止本次会话，退出仍待确认"}`}。保持原代理策略，不自动直连或重建旧端口。</div>}
+    {session.networkFault && <div role="alert" className="cell-secondary">{session.networkFault.error.code === "NETWORK_PROTECTION_UNAVAILABLE" ? "本次会话隔离条件未通过核对，代理启动已阻止" : `网络故障：${session.networkFault.error.code} · ${session.networkFault.containment === "stopped" ? "本次故障资源已确认退出" : "停止本次会话，退出仍待确认"}`}。保持原代理策略，不自动直连或重建旧端口。</div>}
     <div className="cell-secondary">{current ? "本次会话启动前报告" : "历史启动前报告"} · 修订{session.proxyRevision}{session.needsReconcile ? " · 原会话待核对" : ""}</div>
     <div className="cell-secondary" role="status">{session.persistencePending ? "通道结果待保存，尚未确认" : report?.error ? `前检失败：${report.error.code}` : report?.finishedAt ? "同通道启动前检查通过" : "同通道前检尚未完成"}</div>
     {report?.exitIp && <div className="cell-secondary">启动前观测IP：{report.exitIp}</div>}
