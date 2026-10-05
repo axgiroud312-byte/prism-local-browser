@@ -39,7 +39,7 @@ ENV-003、PRX-001、DATA-001阶段2：[`独立持久资源日志`](../internal/k
 - ENV-003/DATA-001：shutdown容许无cancel的已停止观察，新增[`回归`](../internal/workspace/runtime_network_cleanup_test.go)通过；不改变准确Job/owner和未知清理占用。旧测试seam与provider缺失夹具复核，不放宽真实保护。
 - ENV-001/002/DATA-001：[`production目录批次回归`](../internal/workspace/batch_test.go)使用实际Windows空目录，源合成登录文件未动，clone新seed/ref，31项分页/重复请求通过；百万项仍只虚拟预览，不冒称实际规模。
 - BKP-001/CORE-001/PRX-001：[`预检回归`](../internal/workspace/restore_preview_test.go)核对同精确build不同ID候选且错hash拒绝；真实DPAPI当前用户可用、拒解注入后提示重输，密文原样/响应无秘密。不是跨SID实测。恢复/回收/迁移新增硬中断结果见报告。
-- DOC-001/UX-001：候选NSIS、窗口/前端/manifestchannel三层标记；新增USER_GUIDE和完整前端通知（含Vite helper），hash名单一致，无内核再分发。无点击安装路径绑定外部包SHA/源码、先拒已有数据/安装/注册/快捷方式、只读UIA/SQLite与带nonce空库API；实际安装结果另记，不当作人工流程或干净机器。
+- DOC-001/UX-001：候选窗口/前端/manifest三层标记，全许可/指南与9文件hash一致，无内核再分发；实际`.3/.4`同干净source构建成功，NSIS首次PS5传参FAIL修复后通过。无点击安装绑定SHA/source并拒已有五位置，nonce/只读空库保护；本机6次native加载/正常关闭、升级、保留卸载/重装、仅自有合成删除通过。[实际回执](verification/V1-candidate-acceptance.json)，不当作人工/干净机器。
 
 ### T11 隔离可行性增量（历史独立实验，不覆盖当前正式结果）
 
