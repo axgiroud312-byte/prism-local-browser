@@ -110,8 +110,17 @@ const result={generation,cookie:document.cookie,local:localStorage.getItem('mark
 })();</script>`, r.URL.Query().Get("generation"), write.Load(), marker)
 	}))
 	defer server.Close()
+	policy := "direct"
+	proxyID := ""
+	if os.Getenv("PRISM_MIGRATION_PROXY_VERIFY") == "1" {
+		upstream, check := protectedSiteProxy(t, server.URL)
+		s.options.ProtectedProxyCheck = check
+		proxyID = importProxyFixture(t, s, upstream).ID
+		policy = "proxy"
+	}
 	p := generateFingerprint(t, s, preview(t, s, "create", ""), oldID, false)
 	p.Environment.Name = "合成真实迁移目标"
+	p.Environment.ProxyID = proxyID
 	value[any](t, call(s, "Environment.Create", Mutation{PreviewID: p.PreviewID, Configuration: p.Environment.Configuration, ProfileHash: p.Fingerprint.PreviewProfile.ConfigHash, Count: 1, RequestID: id()}))
 	e := view(t, s).State.Environments[0]
 	other := createRuntimeEnvironment(t, s, oldID, "合成未选迁移环境")
@@ -121,7 +130,7 @@ const result={generation,cookie:document.cookie,local:localStorage.getItem('mark
 		draft := preview(t, service, "edit", e.ID)
 		draft.Environment.URLs = server.URL + "/" + token + "/?generation=" + generation
 		value[any](t, call(service, "Environment.Update", Mutation{PreviewID: draft.PreviewID, Configuration: draft.Environment.Configuration, ExpectedRevision: draft.ExpectedRevision, RequestID: id()}))
-		op := acceptRuntimeTest(t, service, "Runtime.Start", runtimeRequest{EnvironmentID: e.ID, NetworkPolicy: "direct", RequestID: id()})
+		op := acceptRuntimeTest(t, service, "Runtime.Start", runtimeRequest{EnvironmentID: e.ID, NetworkPolicy: policy, RequestID: id()})
 		if final := waitRuntimeReal(t, service, op.ID); final.State != "completed" {
 			t.Fatal(final)
 		}
@@ -218,7 +227,7 @@ const result={generation,cookie:document.cookie,local:localStorage.getItem('mark
 	if err := s.Close(); err != nil {
 		t.Fatal(err)
 	}
-	reopened, err := Open(root, Options{})
+	reopened, err := Open(root, Options{ProtectedProxyCheck: s.options.ProtectedProxyCheck})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -228,7 +237,7 @@ const result={generation,cookie:document.cookie,local:localStorage.getItem('mark
 	}
 	readStorage(reopened, "SYNTHETIC_BEFORE")
 	if destination := os.Getenv("PRISM_MIGRATION_EVIDENCE"); destination != "" {
-		encoded, err := json.MarshalIndent(map[string]any{"verifiedAt": timestamp(), "oldBuild": oldBuild, "newBuild": newBuild, "migration": final, "switchFailure": failure, "rollback": restored, "cookieLocalStorageIndexedDBRestored": true, "selectedSeedPreserved": true, "unselectedProfileUnchanged": true, "applicationReopened": true, "uiClicks": "not-run"}, "", "  ")
+		encoded, err := json.MarshalIndent(map[string]any{"verifiedAt": timestamp(), "oldBuild": oldBuild, "newBuild": newBuild, "migration": final, "switchFailure": failure, "rollback": restored, "networkPolicy": policy, "networkScope": "controlled local upstream; not external egress evidence", "cookieLocalStorageIndexedDBRestored": true, "selectedSeedPreserved": true, "unselectedProfileUnchanged": true, "applicationReopened": true, "uiClicks": "not-run"}, "", "  ")
 		if err != nil {
 			t.Fatal(err)
 		}

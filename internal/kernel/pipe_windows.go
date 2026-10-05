@@ -21,9 +21,12 @@ import (
 // Chromium on Windows adopts precisely these two inherited handles. No TCP
 // debugger or named/public control endpoint is created, including during probe.
 type pipeReply struct {
-	ID     int             `json:"id"`
-	Result json.RawMessage `json:"result"`
-	Error  json.RawMessage `json:"error"`
+	ID      int             `json:"id"`
+	Result  json.RawMessage `json:"result"`
+	Error   json.RawMessage `json:"error"`
+	Method  string          `json:"method"`
+	Params  json.RawMessage `json:"params"`
+	Session string          `json:"sessionId"`
 }
 type pipeProcess struct {
 	process        windows.Handle
@@ -39,6 +42,7 @@ type pipeProcess struct {
 	commandGate    chan struct{}
 	writeLost      atomic.Bool
 	readEnded      chan struct{}
+	migrationRoute atomic.Pointer[migrationPipeRoute]
 }
 
 func startPipe(executable string, args []string) (_ *pipeProcess, resultErr error) {
@@ -193,7 +197,10 @@ func (p *pipeProcess) readLoop() {
 			return
 		}
 		if reply.ID == 0 {
-			continue
+			route := p.migrationRoute.Load()
+			if route == nil || reply.Method != "Fetch.requestPaused" || reply.Session != route.session {
+				continue
+			}
 		}
 		select {
 		case p.responses <- reply:
@@ -290,6 +297,14 @@ func (p *pipeProcess) callLocked(ctx context.Context, method string, params any,
 		case reply, open := <-p.responses:
 			if !open {
 				return &Problem{Code: "CONTROL_CHANNEL_LOST", Reason: "control-read-ended", Message: "本次私有控制通道已断开，无法确认命令完成；仍保护原浏览数据。", Retryable: false}
+			}
+			if reply.ID == 0 {
+				if route := p.migrationRoute.Load(); route != nil && reply.Session == route.session && reply.Method == "Fetch.requestPaused" {
+					if err := route.fulfill(ctx, p, reply); err != nil {
+						return err
+					}
+				}
+				continue
 			}
 			if reply.ID != id {
 				continue

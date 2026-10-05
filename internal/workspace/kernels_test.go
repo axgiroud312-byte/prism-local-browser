@@ -35,7 +35,7 @@ func syntheticKernelPrepare(ctx context.Context, root string, input kernel.Insta
 	kernelID := id()
 	// Deliberately synthetic evidence through a test-only host seam. Nothing here
 	// is executed or used as public evidence of a real build's capabilities.
-	report := kernel.Report{AdapterVersion: kernel.AdapterVersion, Version: kernel.CapabilityVersion, Transport: "synthetic-test-only", Observations: []kernel.Observation{{BrowserVersion: input.Version}}, Capabilities: []kernel.Capability{}}
+	report := kernel.Report{AdapterVersion: kernel.AdapterVersion, Version: kernel.CapabilityVersion, Transport: "synthetic-test-only", Observations: []kernel.Observation{{BrowserVersion: input.Version, HTTPClientHints: map[string]string{}, Brands: []kernel.Brand{}, FullVersionList: []kernel.Brand{}, Languages: []string{}}}, Capabilities: []kernel.Capability{}}
 	for _, field := range []string{"identity", "cpu", "acceptLanguages", "timezone"} {
 		report.Capabilities = append(report.Capabilities, kernel.Capability{Field: field, Status: "configurable", Source: "observed", Note: "synthetic-test-only"})
 	}

@@ -627,7 +627,7 @@ export default function App({ application }: { application: ApplicationService }
         if (!planned.ok) { notify(planned.error.message, true); return; }
         const directCount = planned.data.filter(item => item.networkPolicy === "direct").length;
         const proxyCount = planned.data.length - directCount;
-        const confirmation = directCount ? `所选${directCount}个未绑定代理的环境将使用本机直连，网站可看到本机出口。${proxyCount ? `另外${proxyCount}个已绑定代理的环境不会改为直连；当前完整隔离未实现，代理启动将被安全门禁拒绝。` : ""}确认按刚读取的明确ID/修订/策略启动？` : "所选环境均绑定代理；当前完整隔离未实现，启动将被安全门禁拒绝，不改为直连。确认按明确ID/修订/代理策略提交？";
+        const confirmation = directCount ? `所选${directCount}个未绑定代理的环境将使用本机直连，网站可看到本机出口。${proxyCount ? `另外${proxyCount}个代理环境须通过逐会话隔离及前检，不会改为直连。` : ""}确认按刚读取的ID/修订/策略排队启动？` : "所选环境均绑定代理；各项通过实际隔离和前检后才能启动，失败不改直连。确认按读取的ID/修订排队启动？";
         if (!window.confirm(confirmation)) return;
         for (const item of planned.data) {
           const result = await application.startRuntime({ environmentId: item.environmentId, requestId: uid("request"), networkPolicy: item.networkPolicy, expectedRevision: item.expectedRevision });
@@ -742,6 +742,14 @@ export default function App({ application }: { application: ApplicationService }
       if (!result.ok) notify(result.error.message, true);
       else notify(action === "force" ? "指定会话结束任务已受理；确认本次Job全部退出后才显示已停止。" : "核对任务已受理；以实际进程身份和目录锁结果为准。");
     } finally { endRuntimeAction(id); }
+  }
+  async function cancelQueuedRuntime() {
+    const queued = Object.values(application.getSnapshot().runtimeSessions ?? {}).filter(session => session.state === "starting" && session.launchStage === "queued");
+    for (const session of queued) {
+      const result = await application.cancelOperation(session.operationId);
+      if (!result.ok) notify(result.error.message, true);
+    }
+    await application.refresh?.();
   }
   async function checkProxy(ids: string[]) {
     if (nativeMode) { notify("真实代理检查尚未接入，不会返回模拟检测结果。", true); return; }
@@ -1237,6 +1245,10 @@ export default function App({ application }: { application: ApplicationService }
                       <Square size={13} />
                       批量关闭
                     </Button>
+                    {nativeMode && <Button onClick={() => void launch(selected.filter(id => {
+                      const session = workspace.runtimeSessions?.[id];
+                      return session?.state === "error" && !session.pid && !session.resourcesPending && !session.needsReconcile && !session.persistencePending && !workspace.networkResources?.[id];
+                    }))}>仅重试已释放资源的失败项</Button>}
                     {nativeMode && <><Button onClick={() => setNativeBatchInput({ kind: "clone", sourceIds: [...selected] })}><Copy size={14} />复制配置（新身份）</Button><Button onClick={() => setNativeBatchInput({ kind: "assign", sourceIds: [...selected] })}><Network size={14} />明确分配代理</Button><Button onClick={() => { setNativeBackupSelection([...selected]); navigate("backups"); }}><HardDrive size={14} />完整备份所选</Button></>}
                     <Button
                       onClick={() => {
@@ -1257,6 +1269,10 @@ export default function App({ application }: { application: ApplicationService }
                     </button>
                   </div>
                 )}
+                {nativeMode && Object.values(workspace.runtimeSessions ?? {}).some(session => session.state === "starting") && <div className="selection-bar" role="status">
+                  <span>启动队列：{Object.values(workspace.runtimeSessions ?? {}).filter(session => session.state === "starting" && session.launchStage === "queued").length} 项等待，按受理顺序启动；已运行环境不占队列名额。</span>
+                  <Button onClick={() => void cancelQueuedRuntime()}>取消排队启动</Button>
+                </div>}
                 <div className="table-scroll">
                   <table className="environment-table">
                     <thead>

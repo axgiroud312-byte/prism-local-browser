@@ -35,6 +35,8 @@ ENV-003、PRX-001、DATA-001阶段2：[`独立持久资源日志`](../internal/k
 
 ### T11 隔离可行性增量（2026-10-05；独立实验）
 
+ENV-001/ENV-003/UX-001/COOKIE-001/CORE-001：阶段4[FIFO及保护链集成](verification/T14.md)已实现并局部通过，真实Cookie双环境隔离和148→150代理迁移/备份回退已验证；完整远端及人工验收待补。
+
 当前ENV-003/PRX-001追加[正式故障恢复验证](verification/T11-recovery.md)：上游断开、实际listener失去/旧端口接管、管理器硬退出、授权后中断及A/B独立均有本机局部结果；原地资源清理重试已补，外部全路径仍待验。下列独立实验不是这次生产结果的替代。
 
 - ENV-003、PRX-001：[`实验工具`](../cmd/network-feasibility/README.md)在固定148/Windows build26200上记录零能力AppContainer、私有pipe、准确Job全树token，以及身份socket/受控DNS和IPv4/IPv6局部观测。

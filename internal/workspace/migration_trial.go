@@ -10,13 +10,7 @@ import (
 )
 
 func (s *Service) runMigrationTrial(ctx context.Context, task *migrationTask) {
-	var err error
-	if task.plan.Environment.ProxyID != "" {
-		err = kernel.RequireProxyNetworkBoundary()
-	}
-	if err == nil {
-		err = s.prepareMigrationBackup(ctx, task)
-	}
+	err := s.prepareMigrationBackup(ctx, task)
 	if err == nil {
 		err = s.prepareMigrationCopy(ctx, task)
 	}
@@ -62,9 +56,21 @@ func (s *Service) runMigrationTrial(ctx context.Context, task *migrationTask) {
 			break
 		}
 		launchCtx, cancel := context.WithTimeout(ctx, 45*time.Second)
-		process, launchErr := kernel.LaunchManagedProfile(launchCtx, s.root, record, kernel.ManagedProfile{EnvironmentID: task.plan.WorkID, SessionID: task.plan.SessionID, UserDataRef: task.plan.Move.Incoming, Fingerprint: profileInput(profile), Width: profile.Width, Height: profile.Height, RestoreTabs: false, URLs: []string{}, OnCreated: func(pid int, created string) error {
+		input := kernel.ManagedProfile{EnvironmentID: task.plan.WorkID, SessionID: task.plan.SessionID, UserDataRef: task.plan.Move.Incoming, Fingerprint: profileInput(profile), Width: profile.Width, Height: profile.Height, RestoreTabs: false, URLs: []string{}, OnCreated: func(pid int, created string) error {
 			return s.migrationUpdate(task, "trial-starting", func(p *migrationPlan, r *MigrationReport) { p.PID = pid; p.ProcessCreatedAt = created })
-		}})
+		}}
+		var channel *kernel.ProtectedProxy
+		var launchErr error
+		if task.plan.Environment.ProxyID != "" {
+			channel, launchErr = s.prepareMigrationNetwork(launchCtx, task, record, input)
+		}
+		var process *kernel.ManagedProcess
+		if launchErr == nil {
+			if channel != nil {
+				input.Network = channel
+			}
+			process, launchErr = kernel.LaunchManagedProfile(launchCtx, s.root, record, input)
+		}
 		cancel()
 		// Ownership transfers even when the launcher returns both a process and
 		// an error. Late shutdown still reaches this exact Job through cleanup.
@@ -73,10 +79,13 @@ func (s *Service) runMigrationTrial(ctx context.Context, task *migrationTask) {
 			task.process = process
 		} else {
 			task.process = nil
+			if channel != nil {
+				task.process = ownRuntimeNetwork(nil, channel)
+			}
 		}
 		s.mu.Unlock()
 		if launchErr != nil {
-			if process == nil {
+			if process == nil && channel == nil {
 				_ = s.migrationUpdate(task, "copy-ready", func(p *migrationPlan, r *MigrationReport) {
 					p.LaunchNoProcess = true
 					p.TrialExited = true

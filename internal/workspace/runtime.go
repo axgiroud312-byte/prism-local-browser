@@ -23,6 +23,7 @@ type runtimeSlot struct {
 	process       RuntimeProcess
 	cancel        context.CancelFunc
 	launchDone    chan struct{}
+	startTurn     chan struct{}
 	reconcile     *Operation
 	cleanupIntent bool
 	startupError  *Error
@@ -244,6 +245,11 @@ func (s *Service) runtimeCall(request Request) Result {
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	slot := &runtimeSlot{session: session, start: operation, cancel: cancel, launchDone: make(chan struct{})}
+	slot.startTurn = make(chan struct{})
+	s.startQueue = append(s.startQueue, slot.startTurn)
+	if len(s.startQueue) == 1 {
+		close(slot.startTurn)
+	}
 	s.runtimeSlots[environment.ID] = slot
 	s.profileUses[environment.ID] = true
 	s.workers.Add(1)
@@ -296,10 +302,15 @@ func (s *Service) launchRuntime(ctx context.Context, slot *runtimeSlot, input Ru
 	defer s.workers.Done()
 	defer close(slot.launchDone)
 	select {
-	case s.startGate <- struct{}{}:
-		defer func() { <-s.startGate }()
+	case <-slot.startTurn:
 	case <-ctx.Done():
 		s.finishRuntimeStart(slot, nil, nil, ctx.Err())
+		s.releaseRuntimeTurn(slot.startTurn)
+		return
+	}
+	defer s.releaseRuntimeTurn(slot.startTurn)
+	if err := ctx.Err(); err != nil {
+		s.finishRuntimeStart(slot, nil, nil, err)
 		return
 	}
 	var network RuntimeProxyChannel
@@ -441,7 +452,7 @@ func (s *Service) finishRuntimeStart(slot *runtimeSlot, process RuntimeProcess, 
 	if snapshot := startupNetworkSnapshot(process, channel); s.observeRuntimeNetworkFault(slot, snapshot) {
 		taskErr = errors.Join(snapshot.ProxyError, taskErr)
 	}
-	if s.closed || s.closeRequested.Load() || slot.session.State == "stopping" {
+	if s.closed || s.closeRequested.Load() || slot.session.State == "stopping" || slot.start.CancelRequested {
 		taskErr = errors.Join(taskErr, context.Canceled)
 	}
 	if taskErr == nil && (process == nil || !process.Alive()) {

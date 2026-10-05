@@ -72,7 +72,7 @@ type Service struct {
 	closed             bool
 	profileUses        map[string]bool
 	runtimeSlots       map[string]*runtimeSlot
-	startGate          chan struct{}
+	startQueue         []chan struct{}
 	closeDone          chan struct{}
 	closeError         error
 	closeOnce          sync.Once
@@ -160,7 +160,7 @@ func Open(root string, options Options) (*Service, error) {
 		return nil, err
 	}
 	db.SetMaxOpenConns(1)
-	s := &Service{db: db, root: absolute, drafts: map[string]draft{}, archives: map[string]string{}, profileUses: map[string]bool{}, runtimeSlots: map[string]*runtimeSlot{}, startGate: make(chan struct{}, 1), closeDone: make(chan struct{}), runtimePending: map[string]*runtimePendingWrite{}, runtimeResults: map[string]Operation{}, options: options}
+	s := &Service{db: db, root: absolute, drafts: map[string]draft{}, archives: map[string]string{}, profileUses: map[string]bool{}, runtimeSlots: map[string]*runtimeSlot{}, closeDone: make(chan struct{}), runtimePending: map[string]*runtimePendingWrite{}, runtimeResults: map[string]Operation{}, options: options}
 	s.proxyChecks, s.proxyResults, s.proxyPending, s.proxyCheckGate = map[string]*proxyCheckTask{}, map[string]Operation{}, map[string]*proxyCheckWrite{}, make(chan struct{}, 4)
 	s.cookieTasks, s.cookieResults, s.cookiePending = map[string]*cookieImportTask{}, map[string]Operation{}, map[string]Operation{}
 	s.batchTasks, s.batchUses, s.batchGate = map[string]*batchTask{}, map[string]*batchTask{}, make(chan struct{}, 1)

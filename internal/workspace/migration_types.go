@@ -6,6 +6,7 @@ import (
 
 	"github.com/axgiroud312-byte/prism-local-browser/internal/backup"
 	"github.com/axgiroud312-byte/prism-local-browser/internal/kernel"
+	"github.com/axgiroud312-byte/prism-local-browser/internal/proxy"
 )
 
 type MigrationPreview struct {
@@ -47,6 +48,7 @@ type MigrationReport struct {
 	Protected      bool                         `json:"protected"`
 	Before         *kernel.MigrationObservation `json:"before,omitempty"`
 	After          *kernel.MigrationObservation `json:"after,omitempty"`
+	ProxyReport    *proxy.Report                `json:"proxyReport,omitempty"`
 }
 type migrationPlan struct {
 	Version           int                 `json:"version"`

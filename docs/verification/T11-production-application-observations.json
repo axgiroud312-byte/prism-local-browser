@@ -1,7 +1,7 @@
 {
   "executableSha256": "1867319e56bcabbc4681d8575c002106ce7b61b5290dc5eb34a37676805f6915",
   "kernelVersion": "148.0.7778.215",
-  "observedAt": "2026-10-05T09:42:29.8594075Z",
+  "observedAt": "2026-10-05T10:20:43.4848743Z",
   "rounds": [
     {
       "applicationStart": "completed",
@@ -18,6 +18,13 @@
       "indexedDBReadBeforeWrite": "synthetic",
       "localStorageReadBeforeWrite": "synthetic",
       "round": 1
+    },
+    {
+      "cookieImportRequestDeduplicated": true,
+      "emptySessionHttpOnlyAndPersistentSecureVerified": true,
+      "otherEnvironmentCookieCount": 0,
+      "protectedQueuedCookieStarts": 2,
+      "savedURLsSuppressed": true
     }
   ],
   "savedIdentityAndDataReferenceUnchanged": true,

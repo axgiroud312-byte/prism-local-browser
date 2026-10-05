@@ -379,6 +379,7 @@ export interface RuntimeSession {
   sessionId: string;
   operationId: string;
   state: Environment["status"];
+  launchStage?: string;
   revision: number;
   fingerprintRevision: number;
   kernelId: string;
@@ -412,11 +413,12 @@ export interface NativeMigrationPreview {
   before: DeviceProfile; after: DeviceProfile; beforeCapabilities: FingerprintCapability[]; afterCapabilities: FingerprintCapability[];
   changes: { field: string; before: string; after: string }[]; expiresAt: string;
 }
-export interface NativeMigrationObservation { fingerprint: KernelObservation; cookie: boolean; localStorage: boolean; indexedDB: boolean; sampledAt: string }
+export interface NativeMigrationObservation { fingerprint: KernelObservation; cookie: boolean; localStorage: boolean; indexedDB: boolean; sampledAt: string; transport?: "loopback-http" | "private-pipe-canary" }
 export interface NativeMigrationReport {
   mode: "native"; requestId: string; previewId: string; environmentId: string; oldKernelId: string; newKernelId: string; seed: string;
   sequence: number; backupVerified: boolean; archiveSha256: string; trialExited: boolean; committed: boolean; protected: boolean;
   before?: NativeMigrationObservation; after?: NativeMigrationObservation;
+  proxyReport?: ProxyCheckReport;
 }
 export interface KernelDefaultRequest { kernelId: string; expectedRevision: number; requestId: string }
 export interface KernelInstallRequest {

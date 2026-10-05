@@ -3,6 +3,7 @@
 package workspace
 
 import (
+	"context"
 	"crypto/x509"
 	"encoding/json"
 	"fmt"
@@ -177,6 +178,68 @@ func TestRealProtectedRuntimeApplicationReopen(t *testing.T) {
 			t.Fatal("application reopen changed saved identity or data reference")
 		}
 	}
+	// Cookie-purpose launches share the actual provider and FIFO queue, suppress
+	// saved URLs/tabs only for this launch, and preserve A/B data isolation.
+	other := createRuntimeEnvironment(t, s, record.ID, "Synthetic protected cookie B "+id())
+	bindRuntimeProxyFixture(t, s, other, bound)
+	previewB := cookiePreviewFixture(t, s, other.ID, `[{"name":"unused","value":"SYNTHETIC_UNUSED","domain":"example.test"}]`)
+	previewA := cookiePreviewFixture(t, s, environment.ID, fmt.Sprintf(`[{"name":"empty","value":"","domain":"example.test","httpOnly":true,"session":true},{"name":"persistent","value":"SYNTHETIC_IMPORT","domain":"example.test","secure":true,"expires":%d}]`, time.Now().Unix()+3600))
+	starts := []Operation{}
+	for _, p := range []CookiePreview{previewA, previewB} {
+		starts = append(starts, acceptRuntimeTest(t, s, "Runtime.Start", runtimeRequest{EnvironmentID: p.EnvironmentID, RequestID: id(), NetworkPolicy: "proxy", Purpose: "cookie-import", ExpectedRevision: p.ExpectedRevision}))
+	}
+	for _, start := range starts {
+		if done := waitRuntimeReal(t, s, start.ID); done.State != "completed" {
+			t.Fatal("protected queued Cookie start", done.Error)
+		}
+	}
+	select {
+	case <-reports:
+		t.Fatal("Cookie-purpose start restored saved page URLs")
+	default:
+	}
+	request := cookieCommitFixture(t, s, previewA, []int{1, 2}, "merge")
+	imported := acceptCookieFixture(t, s, request)
+	final := waitRuntimeReal(t, s, imported.ID)
+	if final.State != "completed" || final.CookieReport == nil || final.CookieReport.VerifiedCount != 2 {
+		t.Fatal("protected actual Cookie import", final.Error)
+	}
+	if repeated := acceptCookieFixture(t, s, request); repeated.ID != imported.ID {
+		t.Fatal("Cookie request replay produced a second import")
+	}
+	s.mu.Lock()
+	aTransport := s.runtimeSlots[environment.ID].process.(cookieTransport)
+	bTransport := s.runtimeSlots[other.ID].process.(cookieTransport)
+	s.mu.Unlock()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	aCookies, err := aTransport.ReadCookies(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	bCookies, err := bTransport.ReadCookies(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	verified := 0
+	for _, c := range aCookies {
+		if c.Name == "empty" && c.Value == "" && c.HTTPOnly && c.Session {
+			verified++
+		}
+		if c.Name == "persistent" && c.Value == "SYNTHETIC_IMPORT" && c.Secure && !c.Session {
+			verified++
+		}
+	}
+	if verified != 2 || len(bCookies) != 0 {
+		t.Fatal("actual Cookie semantics or A/B separation failed")
+	}
+	for _, env := range []string{environment.ID, other.ID} {
+		op := acceptRuntimeTest(t, s, "Runtime.Stop", runtimeRequest{EnvironmentID: env, RequestID: id()})
+		if done := waitRuntimeReal(t, s, op.ID); done.State != "completed" {
+			t.Fatal(done.Error)
+		}
+	}
+	evidence = append(evidence, map[string]any{"protectedQueuedCookieStarts": 2, "savedURLsSuppressed": true, "emptySessionHttpOnlyAndPersistentSecureVerified": true, "cookieImportRequestDeduplicated": true, "otherEnvironmentCookieCount": len(bCookies)})
 	if output := os.Getenv("PRISM_PROTECTED_APP_EVIDENCE"); output != "" {
 		bytes, _ := json.MarshalIndent(map[string]any{"observedAt": timestamp(), "scope": "native application Runtime.Start/Stop and Service reopen with real production provider; controlled loopback upstream/HTTPS observer; no UI clicks or external egress claim", "kernelVersion": record.Version, "executableSha256": record.ExecutableSHA256, "savedIdentityAndDataReferenceUnchanged": true, "rounds": evidence}, "", "  ")
 		if err = os.WriteFile(output, append(bytes, '\n'), 0600); err != nil {

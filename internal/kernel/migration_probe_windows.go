@@ -28,6 +28,7 @@ type MigrationObservation struct {
 	LocalStorage bool        `json:"localStorage"`
 	IndexedDB    bool        `json:"indexedDB"`
 	SampledAt    string      `json:"sampledAt"`
+	Transport    string      `json:"transport"`
 }
 
 func NewMigrationProbe() (*MigrationProbe, error) {
@@ -43,9 +44,6 @@ func (p *MigrationProbe) Close() { p.close() }
 // under the new build. This is a narrow storage-migration check, not a claim that
 // every third-party site's login or all existing stored values are compatible.
 func (p *MigrationProbe) Sample(ctx context.Context, process *ManagedProcess, record Record, input FingerprintInput, seedCanary bool) (_ MigrationObservation, resultErr error) {
-	if process.network != nil {
-		return MigrationObservation{}, problem("NETWORK_PROTECTION_UNAVAILABLE", "migration-local-probe-route", "此迁移诊断尚无已核验的代理本机测试路由，未改为直连。")
-	}
 	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()
 	if err := process.pipe.beginCommand(ctx); err != nil {
@@ -86,6 +84,23 @@ func (p *MigrationProbe) Sample(ctx context.Context, process *ManagedProcess, re
 	}
 	if err := call(ctx, "Target.attachToTarget", map[string]any{"targetId": target.ID, "flatten": true}, "", &session); err != nil {
 		return MigrationObservation{}, err
+	}
+	if process.network != nil {
+		// Fulfill only this private canary tab through the existing anonymous
+		// pipe. No browser proxy exception or host/upstream bypass is installed.
+		route := &migrationPipeRoute{session: session.ID, url: p.url}
+		if !process.pipe.migrationRoute.CompareAndSwap(nil, route) {
+			return MigrationObservation{}, errors.New("migration route already active")
+		}
+		defer process.pipe.migrationRoute.Store(nil)
+		if err := call(ctx, "Fetch.enable", map[string]any{"patterns": []map[string]any{{"urlPattern": p.url + "*", "requestStage": "Request"}}}, session.ID, nil); err != nil {
+			return MigrationObservation{}, err
+		}
+		defer func() {
+			cleanup, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+			defer cancel()
+			resultErr = errors.Join(resultErr, call(cleanup, "Fetch.disable", struct{}{}, session.ID, nil))
+		}()
 	}
 	if err := call(ctx, "Page.navigate", map[string]any{"url": p.url}, session.ID, nil); err != nil {
 		return MigrationObservation{}, err
@@ -133,10 +148,16 @@ func (p *MigrationProbe) Sample(ctx context.Context, process *ManagedProcess, re
 	result.Fingerprint.PID = uint32(process.PID())
 	result.Fingerprint.ProcessCreatedAt = process.CreatedAt()
 	result.SampledAt = time.Now().UTC().Format(time.RFC3339Nano)
+	result.Transport = "loopback-http"
+	if process.network != nil {
+		result.Transport = "private-pipe-canary"
+	}
 	if err := checkIdentity(result.Fingerprint, record.Version); err != nil {
 		return result, err
 	}
-	if result.Fingerprint.Language != input.Language || result.Fingerprint.Timezone != input.Timezone || !strings.HasPrefix(result.Fingerprint.AcceptLanguage, input.Language) || (input.CPU != "auto" && strconv.Itoa(result.Fingerprint.CPU) != input.CPU) || !result.Cookie || !result.LocalStorage || !result.IndexedDB {
+	// Request-stage interception precedes Chromium's final transport headers.
+	// Do not fabricate Accept-Language or claim an HTTP observation for it.
+	if result.Fingerprint.Language != input.Language || result.Fingerprint.Timezone != input.Timezone || (process.network == nil && !strings.HasPrefix(result.Fingerprint.AcceptLanguage, input.Language)) || (input.CPU != "auto" && strconv.Itoa(result.Fingerprint.CPU) != input.CPU) || !result.Cookie || !result.LocalStorage || !result.IndexedDB {
 		return result, problem("KERNEL_INTEGRITY_FAILED", "migration-values-mismatch", "工作副本的参数或Cookie/LocalStorage/IndexedDB迁移读回不符，未切换原环境。")
 	}
 	return result, nil

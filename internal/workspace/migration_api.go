@@ -106,9 +106,6 @@ func (s *Service) previewMigration(environmentID, kernelID string) Result {
 	if err = s.recycleTargetFree(environmentID); err != nil {
 		return migrationProblem(err)
 	}
-	if e.ProxyID != "" {
-		return failure("NETWORK_PROTECTION_UNAVAILABLE", "代理环境的迁移副本尚未接入独立隔离通道，请先使用原环境；未以直连试用。", false)
-	}
 	if e.CoreID == kernelID || e.CoreID == PendingKernelID || kernelID == PendingKernelID {
 		return failure("VALIDATION_FAILED", "迁移需要当前与目标两个不同的已核验构建。", false)
 	}

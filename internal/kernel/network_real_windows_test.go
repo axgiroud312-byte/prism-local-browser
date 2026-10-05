@@ -142,6 +142,11 @@ func TestRealProtectedProxyLaunchAndReopen(t *testing.T) {
 	environment := uuid.NewString()
 	profile := ManagedProfile{EnvironmentID: environment, UserDataRef: "environments/" + environment + "/user-data", Fingerprint: FingerprintInput{Seed: "1256789", Language: "en-US", Timezone: "America/New_York", CPU: "8"}, Width: 1000, Height: 700}
 	evidence := []map[string]any{}
+	canary, err := NewMigrationProbe()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer canary.Close()
 	for round := 0; round < 2; round++ {
 		profile.SessionID = uuid.NewString()
 		channel, err := store.openProtectedProxy(ctx, record, profile, uuid.NewString(), proxy.Configuration{Name: "Synthetic controlled upstream", Type: "http", Host: u.Hostname(), Port: port}, nil, proxy.BridgeOptions{TargetURL: observer.URL, RootCAs: pool})
@@ -173,6 +178,9 @@ func TestRealProtectedProxyLaunchAndReopen(t *testing.T) {
 		}
 		if err = verifyNetworkTree(process.pipe, channel.sid); err != nil {
 			t.Fatal("actual tree", err)
+		}
+		if observed, sampleErr := canary.Sample(ctx, process, record, profile.Fingerprint, round == 0); sampleErr != nil {
+			t.Fatalf("protected canary: %v; cookie=%v local=%v indexed=%v language=%s accept=%s timezone=%s cpu=%d", sampleErr, observed.Cookie, observed.LocalStorage, observed.IndexedDB, observed.Fingerprint.Language, observed.Fingerprint.AcceptLanguage, observed.Fingerprint.Timezone, observed.Fingerprint.CPU)
 		}
 		var target struct {
 			ID string `json:"targetId"`

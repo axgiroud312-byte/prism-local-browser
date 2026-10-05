@@ -66,6 +66,10 @@ func (s *Service) finishMigrationRecovery(_ context.Context, task *migrationTask
 		s.protectMigration(task, errors.New("trial job still owns data"))
 		return
 	}
+	if err = s.recoverMigrationNetwork(ctx, plan); err != nil {
+		s.protectMigration(task, err)
+		return
+	}
 	if plan.LaunchPermitted && !plan.TrialExited && !plan.Prepared {
 		identity, present, e := backup.IdentifyTree(s.root, plan.Move.Incoming)
 		if e != nil || !present || identity != plan.WorkIdentity {
