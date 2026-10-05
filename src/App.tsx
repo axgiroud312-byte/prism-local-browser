@@ -352,7 +352,7 @@ export default function App({ application }: { application: ApplicationService }
     latestOperationEvent.current = event;
     if (event) setBatch({ label: "创建环境", done: event.operation.completedIds.length, total: event.operation.total });
   }), [application]);
-  const nativeRuntimeActive = nativeMode && (!!workspace.migrationMaintenance || !!workspace.maintenance || !!workspace.recycleMaintenance || (workspace.restoreOperations ?? []).some(operation => !operationIsTerminal(operation)) || Object.values(workspace.runtimeSessions ?? {}).some(session => ["starting", "running", "stopping"].includes(session.state) || !!session.pid || session.resourcesPending || session.needsReconcile || session.persistencePending) || (workspace.batchOperations ?? []).some(operation => !operationIsTerminal(operation)));
+  const nativeRuntimeActive = nativeMode && (Object.keys(workspace.networkResources ?? {}).length > 0 || !!workspace.migrationMaintenance || !!workspace.maintenance || !!workspace.recycleMaintenance || (workspace.restoreOperations ?? []).some(operation => !operationIsTerminal(operation)) || Object.values(workspace.runtimeSessions ?? {}).some(session => ["starting", "running", "stopping"].includes(session.state) || !!session.pid || session.resourcesPending || session.needsReconcile || session.persistencePending) || (workspace.batchOperations ?? []).some(operation => !operationIsTerminal(operation)));
   useEffect(() => {
     if (!nativeRuntimeActive || !application.refresh) return;
     let cancelled = false;
@@ -729,9 +729,10 @@ export default function App({ application }: { application: ApplicationService }
   async function handleRuntimeSessionAction(id: string, expectedSessionId: string, action: "force" | "reconcile") {
     if (!nativeMode) return;
     const session = application.getSnapshot().runtimeSessions?.[id];
-    if (!session || session.sessionId !== expectedSessionId) { notify("这条记录属于旧会话，未操作现在的浏览器；请重新读取状态。", true); return; }
+    const networkSession = application.getSnapshot().networkResources?.[id];
+    if (action === "force" ? !session || session.sessionId !== expectedSessionId : networkSession !== expectedSessionId && session?.sessionId !== expectedSessionId) { notify("这条记录属于旧会话，未操作现在的浏览器；请重新读取状态。", true); return; }
     if (action === "force") {
-      if (!application.forceStopRuntime || !session.canForce || session.needsReconcile) { notify("尚未满足指定会话强制结束条件。请先正常关闭；不会按PID结束进程。", true); return; }
+      if (!application.forceStopRuntime || !session?.canForce || session.needsReconcile) { notify("尚未满足指定会话强制结束条件。请先正常关闭；不会按PID结束进程。", true); return; }
       if (!window.confirm("仅强制结束这份已确认会话，可能丢失尚未保存的网页内容。不会结束其他环境，也不会清空浏览数据。确认强制结束？")) return;
     } else if (!application.reconcileRuntime) { notify("当前桌面版本未提供会话核对。", true); return; }
     if (!beginRuntimeAction(id)) return;
@@ -1412,6 +1413,8 @@ export default function App({ application }: { application: ApplicationService }
                               <div className="row-actions">
                                 {runtimeSession?.persistencePending ? (
                                   <span className="cell-secondary runtime-recovery-note" role="status">结果待保存 · 修复存储后自动核对</span>
+                                ) : workspace.networkResources?.[e.id] ? (
+                                  <Button className="soft-primary compact" disabled={runtimeActionPending} onClick={() => void handleRuntimeSessionAction(e.id, workspace.networkResources![e.id], "reconcile")}>重试资源清理</Button>
                                 ) : runtimeSession?.needsReconcile ? (
                                   <Button className="soft-primary compact" disabled={runtimeActionPending} onClick={() => void handleRuntimeSessionAction(e.id, runtimeSession.sessionId, "reconcile")}>核对会话</Button>
                                  ) : runtimeSession?.canForce ? (

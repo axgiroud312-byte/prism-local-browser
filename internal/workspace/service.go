@@ -110,6 +110,7 @@ type Service struct {
 	migrationTask      *migrationTask
 	networkStore       *kernel.NetworkStore
 	networkPending     map[string]kernel.NetworkSessionIntent
+	networkRecoveries  map[string]*networkRecoveryTask
 }
 
 func failure(code, message string, retryable bool) Result {
@@ -404,6 +405,9 @@ func (s *Service) closeResources(processes []RuntimeProcess, finished chan struc
 	}
 	if len(s.runtimePending) != 0 {
 		s.closeError = errors.Join(s.closeError, errors.New("runtime observations could not all be persisted before shutdown"))
+	}
+	if len(s.networkRecoveries) != 0 {
+		s.closeError = errors.Join(s.closeError, errors.New("network cleanup results could not all be persisted before shutdown"))
 	}
 	if len(s.proxyPending) != 0 {
 		s.closeError = errors.Join(s.closeError, errors.New("proxy check results could not all be persisted before shutdown"))
@@ -1427,5 +1431,5 @@ func (s *Service) viewPage(query EnvironmentQuery) (View, error) {
 		op := copyRestoreOperation(s.restoreTask.operation)
 		maintenance = &op
 	}
-	return View{Mode: "native", State: state, KernelRecords: installed, KernelOperations: operations, DefaultKernel: &defaultKernel, Fingerprints: profiles, DataReferences: references, RuntimeSessions: sessions, NativeProxyRecords: proxyRecords, ProxyOperations: proxyOperations, CookieOperations: cookieOperations, BatchOperations: batchOperations, BackupOperations: backupOperations, NativeBackups: backups, RestoreOperations: restores, Maintenance: maintenance, RecycleOperations: recycles, RecycleMaintenance: recycleMaintenance, MigrationOperations: migrations, MigrationMaintenance: migrationMaintenance, EnvironmentPage: &page}, nil
+	return View{Mode: "native", State: state, KernelRecords: installed, KernelOperations: operations, DefaultKernel: &defaultKernel, Fingerprints: profiles, DataReferences: references, RuntimeSessions: sessions, NetworkResources: s.networkResourceViews(), NativeProxyRecords: proxyRecords, ProxyOperations: proxyOperations, CookieOperations: cookieOperations, BatchOperations: batchOperations, BackupOperations: backupOperations, NativeBackups: backups, RestoreOperations: restores, Maintenance: maintenance, RecycleOperations: recycles, RecycleMaintenance: recycleMaintenance, MigrationOperations: migrations, MigrationMaintenance: migrationMaintenance, EnvironmentPage: &page}, nil
 }

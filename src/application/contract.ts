@@ -37,6 +37,7 @@ export interface WorkspaceView {
   fingerprints?: Record<string, ProfileRevision>;
   dataReferences?: Record<string, string>;
   runtimeSessions?: Record<string, RuntimeSession>;
+  networkResources?: Record<string, string>;
   nativeProxyRecords?: NativeProxy[];
   proxyOperations?: Operation[];
   cookieOperations?: Operation[];

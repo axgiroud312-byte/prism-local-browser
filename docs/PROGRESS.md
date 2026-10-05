@@ -41,6 +41,8 @@
 
 ## 最近检查与当前工作
 
+- 阶段3本机增量：真实双环境listener损失/旧端口接管、上游故障、授权后及浏览器就绪后管理器硬退出恢复通过。发现并修复networkPending只能重开重试的问题，增加journal-only原地清理入口；见[故障记录](verification/T11-recovery.md)。独立外部观察资源待提供，继续推进共用保护链的功能集成。
+
 - 阶段2正式接入：kernel/proxy/workspace选择性回归、两项真实启动重开测试、TypeScript检查通过。修复目录锁阻止Chromium原子写Local State导致Cookie丢失；仅运行期userdata根允许WRITE共享，维护目录保持严格锁。只读末审所报P2已修复并复核。证据与检查范围见[T11正式接入](verification/T11-production.md)，完整回归仍留阶段5。
 
 - 本轮阶段2：新增`internal/kernel/network_journal.go`及测试，独立SQLite/FULL提交、不可变会话/资源意图、每环境唯一未清理会话、逆序可重试清理。评审P2“清理越过在途创建”以同会话全动作互斥修复，封存后再核对Job；A/B独立。`go test -p 1 ./internal/kernel -run '^TestNetworkJournal' -count=1 -v`：9项通过，另1helper只由父测试启动并突然退出；无真实ACL/容器/浏览器/网络实验。阶段1提交`a77630e`，本子成果`ddf301b`；46份文档及暂存格式检查通过。未执行全量回归、自动点击、安装打包或远程写入。

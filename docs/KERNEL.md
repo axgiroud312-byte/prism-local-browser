@@ -120,7 +120,7 @@ T05实际增量以 [应用接口](DEVELOPMENT.md#t05-固定档案增量已实现
 1. **锁定环境。**核对已保存配置的修订号，取得以环境 ID 为键的独占文件锁，记录 PID、进程创建时间与会话 ID。重复启动返回现有任务或会话信息；环境忙返回 `PROFILE_BUSY`，实际目录被占用返回 `DATA_DIR_LOCKED`。仅有 PID 不足以判断陈旧锁，不能凭锁文件年龄直接删除。
 2. **核验内核与目录。**检查实际版本、文件哈希、能力验收状态。为每个环境分配独立 `user-data-dir`，解析后的绝对路径须处于应用数据根目录内，并拒绝通过路径穿越或重解析点指向其他环境。Chromium 的 `Default` 是用户数据目录内部子目录，不能仅靠共享数据根下的不同窗口形成隔离。[Chromium 用户数据目录说明](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/user_data_dir.md)
 3. **启动独立代理桥接。**HTTP、HTTPS 上游代理与 SOCKS5 统一由桥接层处理认证，浏览器只连接当前环境的 loopback 端口。HTTPS 表示到代理本身的 TLS 连接时须由桥接层明确支持，不能与“访问 HTTPS 网站的 CONNECT”混同。凭据经本地受保护存储按引用读取，不进入网页、命令行、普通日志或公开导出。
-   **当前T11安全门禁：**真实代理Start在凭据/建桥前、kernel在创建进程前分别要求系统级出网边界，缺失则NETWORK_PROTECTION_UNAVAILABLE。下述同桥检查/启动链仅是保护边界就绪后的目标流程；当前独立检查不解锁浏览器，门禁不会自动改直连。
+   **当前T11安全门禁：**正式Start建立持久资源意图、零能力AppContainer与同身份桥；kernel仅接受绑定本次环境/会话/构建的实际owner和成功同桥前检，缺失则NETWORK_PROTECTION_UNAVAILABLE。独立检查不解锁浏览器，门禁不会自动改直连。[正式启动证据](verification/T11-production.md)。
 4. **完成代理前检。**经同一个桥接实例检查连通、认证、出口 IP；按需解析并核对时区。代理不可用、认证失败、配置冲突或桥接异常均阻止启动。UI 中选了“必须代理”的环境不自动改为直连。
 5. **启动浏览器并验证。**用参数数组调用已核验可执行文件，不经 shell 拼接；保留浏览器沙箱。确认进程、环境目录和身份配置；进程创建成功本身不等于环境就绪。
 6. **发布会话就绪。**代理前检和启动检查均完成才发布 `EnvironmentStateChanged` 的 `running` 状态及操作完成事件。失败要关闭本次产生的进程树与桥接、释放已取得的锁，并保留已有环境数据。
@@ -167,7 +167,9 @@ HTTP经目标流写origin-form，HTTPS经同本机CONNECT透传TLS；SOCKS5本�
 
 无真实SOCKS5/DNS/Windows浏览器或新页面证据，[T10清单](verification/T10.md)。远端目标解析不证明后台DNS、UDP/QUIC、WebRTC或WebSocket/重连无泄漏；T11须后端关闭不满足路径/阻止运行并补实际证据，不能只凭参数/前检。
 
-### T11 部分实现与系统隔离缺口
+### T11 正式接入与剩余验收
+
+正式provider现已接入；以下早期门禁/实验段落保留历史背景，当前状态以[正式接入](verification/T11-production.md)及[故障恢复](verification/T11-recovery.md)为准。目录运行锁仅userdata根允许WRITE共享以兼容Chromium原子写Local State，维护目录仍全链严格锁；不声称分享锁可阻止同用户在运行根原地修改reparse。
 
 [`每桥故障监视`](../internal/proxy/bridge_watch.go)闭锁第一个故障，Failed事件交准确Job持有者独立安全结束本树，不等DB；单个请求取消或客户端上传异常只关闭该请求。30s同bridge巡检并非全路径隔离；确认桥/全树gone才收敛完整Done。停止失败保持pins/目录与准确会话，未终结Stop不释放后来Start的预留。
 

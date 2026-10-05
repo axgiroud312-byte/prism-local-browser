@@ -162,6 +162,9 @@ func (s *Service) reconcileRuntime(input runtimeRequest) Result {
 	if s.cookieTasks[input.EnvironmentID] != nil {
 		return failure("PROFILE_BUSY", "本次Cookie任务或观测待保存，核对不能提前释放它的数据预留。", true)
 	}
+	if s.hasPendingNetwork(input.EnvironmentID) {
+		return s.reconcileNetworkResources(input)
+	}
 	slot := s.runtimeSlots[input.EnvironmentID]
 	if slot == nil || slot.session.SessionID != input.SessionID {
 		return failure("REVISION_CONFLICT", "会话已变更，未重新接管或修改其他会话。", true)
@@ -194,7 +197,9 @@ func (s *Service) reconcileRuntime(input runtimeRequest) Result {
 		s.mu.Unlock()
 		// Filesystem scans and process inspection never hold the global service
 		// mutex. Busy remains reserved; late results must match this generation.
-		recovery, inspectionErr := s.inspectSavedRuntime(snapshot)
+		// Pending ownership was checked while holding s.mu at acceptance; this
+		// worker must not read that map while another environment deletes it.
+		recovery, inspectionErr := s.inspectRuntimeAfterNetworkRecovery(snapshot)
 		s.mu.Lock()
 		defer s.mu.Unlock()
 		if s.runtimeSlots[input.EnvironmentID] != slot {

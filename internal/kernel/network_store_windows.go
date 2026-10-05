@@ -142,6 +142,11 @@ func (s *NetworkStore) Recover(ctx context.Context, intent NetworkSessionIntent)
 }
 
 func (s *NetworkStore) undo(ctx context.Context, intent NetworkSessionIntent, resource NetworkResourceRecord) (resultErr error) {
+	defer func() {
+		if resultErr != nil {
+			resultErr = fmt.Errorf("recover-%s: %w", resource.Kind, resultErr)
+		}
+	}()
 	switch resource.Kind {
 	case "job", "bridge":
 		// The application lock excludes an old owner; exact Job empty was

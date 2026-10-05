@@ -35,6 +35,8 @@ ENV-003、PRX-001、DATA-001阶段2：[`独立持久资源日志`](../internal/k
 
 ### T11 隔离可行性增量（2026-10-05；独立实验）
 
+当前ENV-003/PRX-001追加[正式故障恢复验证](verification/T11-recovery.md)：上游断开、实际listener失去/旧端口接管、管理器硬退出、授权后中断及A/B独立均有本机局部结果；原地资源清理重试已补，外部全路径仍待验。下列独立实验不是这次生产结果的替代。
+
 - ENV-003、PRX-001：[`实验工具`](../cmd/network-feasibility/README.md)在固定148/Windows build26200上记录零能力AppContainer、私有pipe、准确Job全树token，以及身份socket/受控DNS和IPv4/IPv6局部观测。
 - DATA-001、ENV-003：普通/AC互换及重开三种合成持久存储读回；独立桥进程硬退出、浏览器保持活着时普通host接管端口仍0连接，临时窗口站权限撤销与资源清理有实际证据。[T11记录](verification/T11.md)明确剩余外部网络/OS保护服务故障、生产接入和完整验收，产品代理门禁保持。
 - PRX-001：[管理员只读规则/服务观测](verification/T11-system-boundary-observations.json)记录本机关键服务宿主、运行规则和boot策略的实际类别；不将配置快照当作故障时有效或流量命中证明。采集脚本失败准确返回、临时权限恢复及证据目录保护已核对。

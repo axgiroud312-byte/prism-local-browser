@@ -2,6 +2,8 @@
 
 # 当前交付验收记录
 
+阶段3增量：[正式故障恢复](verification/T11-recovery.md)记录本机listener损失/旧端口接管、上游故障、两种管理器硬退出恢复与A/B独立的实跑结果。资源原地重试及结果保存失败保护已修复并局部通过；独立远端和人工UI仍待验，计数不变。
+
 ## 阶段2正式接入增量（2026-10-05；不增加正式验收计数）
 
 资源日志已接AppContainer、差量ACL恢复、同package代理桥及正式启动。真实内核入口与产品Runtime.Start/Stop、Service重开各两轮通过，Cookie/LocalStorage/IndexedDB保留，身份与数据引用不变；正常退出、资源pending=0及容器消失已有局部证据。见[本轮记录](verification/T11-production.md)。下方早期“未接入”描述保留为历史。

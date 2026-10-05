@@ -128,6 +128,7 @@ type View struct {
 	Fingerprints         map[string]ProfileRevision `json:"fingerprints"`
 	DataReferences       map[string]string          `json:"dataReferences"`
 	RuntimeSessions      map[string]RuntimeSession  `json:"runtimeSessions"`
+	NetworkResources     map[string]string          `json:"networkResources"`
 	NativeProxyRecords   []ProxyView                `json:"nativeProxyRecords"`
 	ProxyOperations      []Operation                `json:"proxyOperations"`
 	CookieOperations     []Operation                `json:"cookieOperations"`

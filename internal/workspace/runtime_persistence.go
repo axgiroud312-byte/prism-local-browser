@@ -156,6 +156,7 @@ func (s *Service) flushOneRuntimeWrite(pending *runtimePendingWrite) error {
 }
 
 func (s *Service) flushRuntimePersistence() {
+	s.flushNetworkRecoveries()
 	for _, pending := range s.runtimePending {
 		_ = s.flushOneRuntimeWrite(pending)
 	}
@@ -241,6 +242,10 @@ func (s *Service) inspectSavedRuntime(session RuntimeSession) (kernel.ManagedRec
 	if s.hasPendingNetwork(session.EnvironmentID) {
 		return kernel.ManagedRecovery{ProcessState: "unconfirmed"}, &kernel.Problem{Code: "NETWORK_CLEANUP_PENDING", Message: "原隔离资源尚未确认清理，请关闭原浏览器，检查目录权限后重开管理程序重试；原环境保持占用。", Retryable: true}
 	}
+	return s.inspectRuntimeAfterNetworkRecovery(session)
+}
+
+func (s *Service) inspectRuntimeAfterNetworkRecovery(session RuntimeSession) (kernel.ManagedRecovery, error) {
 	if s.options.InspectRuntime != nil {
 		return s.options.InspectRuntime(session)
 	}
