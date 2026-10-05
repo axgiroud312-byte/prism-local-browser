@@ -165,6 +165,8 @@ app-data/
 
 2026-10-05当前开发目标按[六阶段计划](V1_DELIVERY.md)：先持久记录容器、权限增量和准确进程/Job归属，再创建隔离资源、专属桥并接入正式启动。记录必须支持创建结果未知后的重开核对；只有全树退出及权限/桥/容器清理确认才释放环境。恢复不能按裸PID或旧路径字符串操作不明对象。首版支持前提已确认是Windows网络隔离正常，底层服务损坏保护留后续；应用/桥/上游故障仍必验。以下旧条目保留历史实际实现边界，不表示生产provider已存在。
 
+阶段2首个基础模块[`NetworkJournal`](../internal/kernel/network_journal.go)已实现并通过9项局部测试。独立数据库使用FULL提交、会话意图冻结/环境唯一占用、资源prepared/applied/released、会话preparing/cleaning/closed；不进入配置备份。按会话互斥覆盖整个创建动作与清理，封存后再确认Job为空，失败保持占用，分页恢复。调用方必须持应用锁/目录pins并提供真实对象核对与撤销，尚未接workspace或provider，不能据此声称实际容器恢复已实现。详见[T11记录](verification/T11.md)。
+
 - [`门禁`](../internal/kernel/network_protection.go)在workspace真实代理Start读取凭据/建桥前及kernel实际CreateProcess前分别执行，当前NETWORK_PROTECTION_UNAVAILABLE不可重试。独立代理检查保留，真实代理浏览器不能启动；host-only合成launcher不让真实kernel绕门禁，RPC无关闭保护参数。
 - [`Bridge故障`](../internal/proxy/bridge_watch.go)每桥闭锁/Failed事件、30s同桥前检巡检及4背景资源调度；仅实际上游/监听故障触发，单请求取消/超时/上传失败不误关会话。准确Job独立安全停止不等服务锁或SQLite，全部资源确认退出前不释放目录。
 - schema5表不变，session JSON增networkFault：network_error、安全根因/观测时刻及stopping/stopped/exit-unconfirmed。旧Environment status仍error。含启动期间、未返回process的真实闭锁故障，清理/强制结束/重开均保留根因；copy-on-write保留先前阶段，失败落盘只重试持久化，不重发网络/终止。未終结Stop的预留不随error展示提前释放。

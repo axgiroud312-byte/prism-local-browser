@@ -31,6 +31,8 @@
 
 ENV-003、PRX-001按用户单独确认的正常Windows隔离支持前提验收；底层服务自身损坏保护转后续加固，三种应用链故障、端口接管及持久恢复仍必验。[六阶段计划](V1_DELIVERY.md)列明缺口、资源和完成标准；正式验收4/21、14项源码待验收，当前生产代理闭环未通过。GitHub认证401，远程范围同步待补，不增加交付计数。
 
+ENV-003、PRX-001阶段2：[`独立持久资源日志`](../internal/kernel/network_journal.go)及[9项局部回归](../internal/kernel/network_journal_test.go)通过，包括合成子进程突然退出、清理确认丢失和同会话创建/清理互斥。仅基础模块，不代表workspace、实际权限恢复、生产隔离或产品代理闭环已接通；[详细边界](verification/T11.md)。
+
 ### T11 隔离可行性增量（2026-10-05；独立实验）
 
 - ENV-003、PRX-001：[`实验工具`](../cmd/network-feasibility/README.md)在固定148/Windows build26200上记录零能力AppContainer、私有pipe、准确Job全树token，以及身份socket/受控DNS和IPv4/IPv6局部观测。
