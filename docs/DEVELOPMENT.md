@@ -163,6 +163,8 @@ app-data/
 
 ### T11 网络故障监督与安全门禁（部分实现，完整隔离未实现）
 
+2026-10-05当前开发目标按[六阶段计划](V1_DELIVERY.md)：先持久记录容器、权限增量和准确进程/Job归属，再创建隔离资源、专属桥并接入正式启动。记录必须支持创建结果未知后的重开核对；只有全树退出及权限/桥/容器清理确认才释放环境。恢复不能按裸PID或旧路径字符串操作不明对象。首版支持前提已确认是Windows网络隔离正常，底层服务损坏保护留后续；应用/桥/上游故障仍必验。以下旧条目保留历史实际实现边界，不表示生产provider已存在。
+
 - [`门禁`](../internal/kernel/network_protection.go)在workspace真实代理Start读取凭据/建桥前及kernel实际CreateProcess前分别执行，当前NETWORK_PROTECTION_UNAVAILABLE不可重试。独立代理检查保留，真实代理浏览器不能启动；host-only合成launcher不让真实kernel绕门禁，RPC无关闭保护参数。
 - [`Bridge故障`](../internal/proxy/bridge_watch.go)每桥闭锁/Failed事件、30s同桥前检巡检及4背景资源调度；仅实际上游/监听故障触发，单请求取消/超时/上传失败不误关会话。准确Job独立安全停止不等服务锁或SQLite，全部资源确认退出前不释放目录。
 - schema5表不变，session JSON增networkFault：network_error、安全根因/观测时刻及stopping/stopped/exit-unconfirmed。旧Environment status仍error。含启动期间、未返回process的真实闭锁故障，清理/强制结束/重开均保留根因；copy-on-write保留先前阶段，失败落盘只重试持久化，不重发网络/终止。未終结Stop的预留不随error展示提前释放。
