@@ -20,6 +20,7 @@
 | `go vet -p 1 ./...` | shell完成回执exit0；空日志本身不是通过证据 | `go-vet.log`及本会话工具回执 |
 | 三项新增服务缺口及shutdown回归 | 实际空目录clone/31项分页去重、异kernel ID同精确build候选、nil取消正常退出通过；DPAPI首轮误用不存在的测试RPC失败，修成现有DiscardRestore后定向通过 | `service-gap-tests.log`、`dpapi-preview-retest.log` |
 | PowerShell解析、Node语法、前端许可汇集 | 通过；108包包含107生产包和Vite注入helper许可；未新增依赖 | 本会话exit0回执，实际随包许可文件 |
+| 候选首次构建与NSIS修订 | Wails production、26 Go模块/108前端通知通过；NSIS单元素条件数组被PowerShell5展开为String后原传参返回usage，整轮FAIL。改显式string[]后实际PS5/NSIS SAFEPPO exit0；候选重建另记 | `build-candidate-3-failed.log`、`nsis-powershell5-retest.log` |
 
 除第一行之外表中日志均在`output/goal/V1-final/`。没有运行`npm run check`或Playwright/UI自动点击，**不声称完整check通过**。人工替代项见下文。网页build保留原有大chunk和Lucide `use client`警告，均不是静默当失败修掉的测试；候选production build需另记。
 

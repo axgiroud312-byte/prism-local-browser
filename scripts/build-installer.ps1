@@ -47,8 +47,10 @@ foreach ($file in @('prism-browser.exe','prism-maintenance.exe','LICENSE','THIRD
 [IO.File]::WriteAllText((Join-Path $payload 'release.json'),($manifest | ConvertTo-Json -Depth 8),$encoding)
 $installer=Join-Path $output "prism-browser-$version-windows-amd64-setup.exe"
 $compiler=Join-Path $root '.tools/nsis/nsis-3.13/makensis.exe'
-$candidateDefine = if ($Candidate) { @('/DV1_CANDIDATE') } else { @() }
-& $compiler /V2 /INPUTCHARSET UTF8 @candidateDefine "/DPAYLOAD_DIR=$payload" "/DOUTPUT_FILE=$installer" "/DRELEASE_VERSION=$version" "/DPREVIEW_REVISION=$PreviewRevision" (Join-Path $root 'build/windows/installer/prism.nsi')
+[string[]]$compilerArguments = @('/V2','/INPUTCHARSET','UTF8')
+if ($Candidate) { $compilerArguments += '/DV1_CANDIDATE' }
+$compilerArguments += @("/DPAYLOAD_DIR=$payload", "/DOUTPUT_FILE=$installer", "/DRELEASE_VERSION=$version", "/DPREVIEW_REVISION=$PreviewRevision", (Join-Path $root 'build/windows/installer/prism.nsi'))
+& $compiler @compilerArguments
 if ($LASTEXITCODE) { throw 'NSIS installer build failed.' }
 $manifest.installer=@{ name=(Split-Path $installer -Leaf); sha256=(Get-FileHash -LiteralPath $installer -Algorithm SHA256).Hash.ToLowerInvariant(); authenticode=(Get-AuthenticodeSignature -FilePath $installer).Status.ToString(); bytes=(Get-Item -LiteralPath $installer).Length; windowsPEVersion=(Read-PEVersion $installer); peArchitecture=(Read-PEArchitecture $installer) }
 [IO.File]::WriteAllText((Join-Path $output "prism-browser-$version-release.json"),($manifest | ConvertTo-Json -Depth 8),$encoding)
