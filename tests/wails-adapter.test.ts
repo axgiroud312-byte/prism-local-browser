@@ -5,7 +5,7 @@ import { mergeOperation, type ApplicationResult, type Operation, type OperationE
 import type { Environment } from "../src/domain.ts";
 import { applyFingerprint, demoFingerprint, demoProfile, fingerprintMatchesConfiguration } from "../src/application/fingerprint-model.ts";
 import { proxyResolutionLabel, proxyStageLabel } from "../src/application/proxy-network.ts";
-import { currentCookieOperation } from "../src/application/cookie-import.ts";
+import { cookieStartupAllowed, cookieWriteAllowed, currentCookieOperation } from "../src/application/cookie-import.ts";
 import { mergeBatchPage, validBatchPage, validBatchReport } from "../src/application/batch-model.ts";
 import { readRuntimeStartPlan } from "../src/application/runtime-start-plan.ts";
 import { confirmsBackupRequest, validBackupReport } from "../src/application/backup-model.ts";
@@ -568,6 +568,29 @@ test("cross-page runtime policies are read by exact IDs and missing selections n
   assert.deepEqual(calls.find(request => request.method === "Runtime.Start")?.payload, { environmentId: "hidden-selected-A", networkPolicy: "proxy", expectedRevision: 9, requestId: "synthetic-start" });
 });
 
+test("Cookie startup allows a saved proxy without direct consent and blocks unconfirmed resources", () => {
+  assert.equal(cookieStartupAllowed("synthetic-proxy", false), true);
+  assert.equal(cookieStartupAllowed("", false), false);
+  assert.equal(cookieStartupAllowed("", true), true);
+  const stopped: RuntimeSession = { mode: "native", environmentId: "synthetic-environment", sessionId: "synthetic-session", operationId: "synthetic-start", state: "ready", revision: 1, fingerprintRevision: 1, kernelId: "synthetic-kernel", userDataRef: "synthetic-ref", networkPolicy: "proxy", canControl: false, canForce: false, needsReconcile: false, persistencePending: false };
+  for (const protection of ["needsReconcile", "persistencePending", "resourcesPending"] as const) {
+    const session: RuntimeSession = { ...stopped, [protection]: true };
+    assert.equal(cookieStartupAllowed("synthetic-proxy", false, session), false);
+    assert.equal(cookieStartupAllowed("", true, session), false);
+  }
+});
+
+test("Cookie writes accept a controlled running process with resources held but reject failed observations", () => {
+  const running: RuntimeSession = { mode: "native", environmentId: "synthetic-environment", sessionId: "synthetic-session", operationId: "synthetic-start", state: "running", revision: 1, fingerprintRevision: 1, kernelId: "synthetic-kernel", userDataRef: "synthetic-ref", networkPolicy: "proxy", canControl: true, canForce: false, needsReconcile: false, persistencePending: false, resourcesPending: true };
+  assert.equal(cookieWriteAllowed(running), true);
+  assert.equal(cookieWriteAllowed(undefined), false);
+  assert.equal(cookieWriteAllowed({ ...running, state: "error" }), false);
+  assert.equal(cookieWriteAllowed({ ...running, canControl: false }), false);
+  assert.equal(cookieWriteAllowed({ ...running, needsReconcile: true }), false);
+  assert.equal(cookieWriteAllowed({ ...running, persistencePending: true }), false);
+  assert.equal(cookieWriteAllowed({ ...running, networkFault: { state: "network_error", containment: "stopping", observedAt: "2026-10-05T00:00:00Z", error: { code: "PROXY_BRIDGE_UNAVAILABLE", message: "synthetic failure", retryable: true } } }), false);
+});
+
 test("native Cookie commit and explicit blank launch project only safe target metadata", async () => {
   const { app, calls } = fixture(request => request.method === "Workspace.Read" ? ok(empty()) : rejected);
   await app.commitCookieImport({ previewId: "synthetic-preview", environmentId: environment.id, expectedRevision: 3, sessionId: "synthetic-session", selectedRows: [1], policy: "merge", requestId: "synthetic-cookie-write", value: "SYNTHETIC_PRIVATE_COOKIE_VALUE", cdpEndpoint: "http://127.0.0.1:9999", cookies: [], networkPolicy: "direct" } as CookieCommitRequest);
@@ -636,7 +659,7 @@ test("native starts empty/loading, has no demo compatibility and only publishes 
   assert.equal(app.getSnapshot().issue?.code, "WORKSPACE_LOADING");
   let changes = 0; const unsubscribe = app.subscribe(() => changes++);
   assert.equal((await app.refresh()).ok, true);
-  assert.equal(changes, 1); assert.equal(app.getSnapshot(), workspace);
+  assert.equal(changes, 1); assert.deepEqual(app.getSnapshot(), workspace);
   assert.deepEqual(calls[0], { mode: "native", method: "Workspace.Read", payload: {} });
   unsubscribe(); await app.refresh(); assert.equal(changes, 1);
 });
@@ -670,7 +693,7 @@ test("committed creation refreshes the service view before a native terminal eve
   const workspace = empty(); workspace.state.environments = [environment];
   const { app } = fixture(r => r.method === "Workspace.Read" ? ok(workspace) : ok({ status: "accepted", operation }));
   const events: OperationEvent[] = [];
-  const unsubscribe = app.subscribeEvents(e => { assert.equal(app.getSnapshot(), workspace); events.push(e); });
+  const unsubscribe = app.subscribeEvents(e => { assert.deepEqual(app.getSnapshot(), workspace); events.push(e); });
   const request = { previewId: "p", configuration: environment, count: 1, requestId: "r" };
   await app.createBatch(request); await app.createBatch(request);
   assert.equal(events.length, 2); assert.equal(events[0].mode, "native"); assert.equal(events[0].type, "OperationCompleted");
@@ -703,8 +726,10 @@ test("a delayed older read cannot overwrite a newer snapshot", async () => {
   const older = app.refresh(); const newer = app.refresh();
   const latest = empty(); latest.state.environments = [environment];
   replies[1](ok(latest)); await newer;
+  const published = app.getSnapshot();
+  assert.deepEqual(published, latest);
   replies[0](ok(empty())); await older;
-  assert.equal(app.getSnapshot(), latest);
+  assert.equal(app.getSnapshot(), published);
 });
 
 test("a committed mutation remains confirmed when the following read fails, with a visible read issue", async () => {

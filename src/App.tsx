@@ -1029,7 +1029,7 @@ export default function App({ application }: { application: ApplicationService }
                   添加代理
                 </Button>
               ) : route === "backups" ? (
-                nativeMode ? <span className="subtle-text">原生完整包 · 恢复仍待后续开发</span> : <>
+                nativeMode ? <span className="subtle-text">原生完整包 · 恢复前只读预检与明确确认</span> : <>
                   <Button onClick={() => backupFile.current?.click()}>
                     <ArrowUpFromLine size={16} />
                     导入快照
@@ -1082,7 +1082,7 @@ export default function App({ application }: { application: ApplicationService }
                   </div>
                   <span className="stat-foot">
                     <span className="status-dot green-dot" />
-                    {nativeMode ? "本机真实会话 · 仅明确直连" : "模拟运行状态"}
+                    {nativeMode ? "本机真实会话 · 代理逐会话保护 / 明确直连" : "模拟运行状态"}
                   </span>
                 </div>
                 <div className="stat-card">
@@ -2019,7 +2019,7 @@ export default function App({ application }: { application: ApplicationService }
                 <div>
                   <h2>{nativeMode ? "本机使用指南与排错" : "从产品需求，走到可实现的页面"}</h2>
                   <p>
-                    {nativeMode ? "当前为开发源码能力：代理启动仍受系统隔离门禁保护，完整桌面验收和新安装包待交付。按指南查看具体步骤、诊断和验证状态。" : "需求编号贯穿页面、数据模型与验收项。当前交互原型全部使用本地示例数据。"}
+                    {nativeMode ? "首版候选仅用于合成数据检查：代理逐会话保护已接入，本机受控能力已有证据；独立远端、人工流程及干净Windows验收仍待完成。按指南查看步骤与限制。" : "需求编号贯穿页面、数据模型与验收项。当前交互原型全部使用本地示例数据。"}
                   </p>
                 </div>
                 <Tag kind="blue-tag">v1.0 交付规格</Tag>

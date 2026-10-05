@@ -346,7 +346,9 @@ func (s *Service) beginShutdown() {
 		}
 	}
 	for _, slot := range s.runtimeSlots {
-		slot.cancel()
+		if slot.cancel != nil {
+			slot.cancel()
+		}
 		if slot.process != nil {
 			processes = append(processes, slot.process)
 		}

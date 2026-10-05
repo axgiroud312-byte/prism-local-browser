@@ -322,6 +322,9 @@ func TestCookieImportPurposeSuppressesSavedTabsWithoutChangingIdentityOrBypassin
 		t.Fatal("Cookie purpose changed saved identity/preferences or opened old tabs")
 	}
 	guarded, _, guardedKernel := fingerprintFixture(t, Options{})
+	store := guarded.networkStore
+	guarded.networkStore = nil // genuinely absent provider, not a permanent gate
+	defer func() { guarded.networkStore = store }()
 	record := importProxyFixture(t, guarded, "localhost:8080")
 	bound := createRuntimeEnvironment(t, guarded, guardedKernel, "合成Cookie代理门禁")
 	bindRuntimeProxyFixture(t, guarded, bound, record)

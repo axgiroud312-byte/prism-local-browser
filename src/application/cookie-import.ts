@@ -1,4 +1,15 @@
-import { mergeOperation, operationIsTerminal, type Operation } from "./contract.ts";
+import { mergeOperation, operationIsTerminal, type Operation, type RuntimeSession } from "./contract.ts";
+
+// This only enables an explicit request. Actual network protection and saved
+// binding are rechecked by Runtime.Start; a proxy never needs direct consent.
+export function cookieStartupAllowed(proxyId: string, confirmedDirect: boolean, session?: RuntimeSession): boolean {
+  return (!!proxyId || confirmedDirect) && !session?.needsReconcile && !session?.persistencePending && !session?.resourcesPending;
+}
+
+export function cookieWriteAllowed(session?: RuntimeSession): boolean {
+  // A running process normally holds resources. That is not a cleanup fault.
+  return session?.state === "running" && session.canControl && !session.needsReconcile && !session.persistencePending && !session.networkFault;
+}
 
 // Workspace records arrive newest first. Keep an in-flight observation across
 // stale snapshots, but adopt a newly accepted task after closing/reopening.

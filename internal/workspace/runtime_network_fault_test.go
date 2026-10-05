@@ -125,7 +125,7 @@ func TestLatchedChannelFaultWithoutCreatedProcessPersistsAcrossReopen(t *testing
 		t.Fatal(err)
 	}
 	defer reopened.Close()
-	if saved := view(t, reopened).RuntimeSessions[environment.ID]; saved.NetworkFault == nil || saved.State != "error" || saved.Error.Code != "PROXY_BRIDGE_UNAVAILABLE" {
+	if saved := view(t, reopened).RuntimeSessions[environment.ID]; saved.NetworkFault == nil || saved.State != "error" || saved.NetworkFault.Error.Code != "PROXY_BRIDGE_UNAVAILABLE" {
 		t.Fatal("reopen erased channel failure because no root process was created")
 	}
 }
@@ -142,6 +142,10 @@ func TestUnfinishedStopKeepsReservationEvenWhenNetworkErrorHasNoLiveProcess(t *t
 	s.mu.Lock()
 	slot := s.runtimeSlots[environment.ID]
 	stop := Operation{ID: id(), Kind: "runtime-stop", State: "accepted", Stage: "closing", Total: 1, CompletedIDs: []string{}, EnvironmentID: environment.ID, SessionID: slot.session.SessionID}
+	if result := s.acceptRuntime("Runtime.Stop", runtimeRequest{EnvironmentID: environment.ID, RequestID: id()}, stop); !result.OK {
+		s.mu.Unlock()
+		t.Fatal(result.Error)
+	}
 	slot.stop = &stop
 	s.profileUses[environment.ID] = true
 	if err := s.persistRuntime(slot, slot.stop, "合成并发停止受理"); err != nil {
@@ -202,6 +206,9 @@ func TestProductionProxyStartGateCreatesNeitherBridgeNorBrowserAndPreservesIdent
 	environment := createRuntimeEnvironment(t, s, kernelID, "合成缺失隔离阻断")
 	bindRuntimeProxyFixture(t, s, environment, record)
 	before := view(t, s)
+	store := s.networkStore
+	defer func() { s.networkStore = store }()
+	s.networkStore = nil // Exercise missing provider rather than assuming all proxy starts fail.
 	s.options.UnprotectProxySecret = func(string, []byte) ([]byte, error) {
 		decodes.Add(1)
 		return nil, errors.New("must not decode before protection")
@@ -220,6 +227,7 @@ func TestProductionProxyStartGateCreatesNeitherBridgeNorBrowserAndPreservesIdent
 	if after.Fingerprints[environment.ID].Profile.ConfigHash != before.Fingerprints[environment.ID].Profile.ConfigHash || after.DataReferences[environment.ID] != before.DataReferences[environment.ID] {
 		t.Fatal("protection failure modified device identity/data reference")
 	}
+	s.networkStore = store
 	if err := s.Close(); err != nil {
 		t.Fatal(err)
 	}

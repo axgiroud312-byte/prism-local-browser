@@ -5,12 +5,14 @@ import (
 	"crypto/sha256"
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 
 	"github.com/axgiroud312-byte/prism-local-browser/internal/backup"
+	"github.com/axgiroud312-byte/prism-local-browser/internal/kernel"
 )
 
 func restorePackageFixture(t *testing.T, s *Service, ids []string) string {
@@ -141,6 +143,63 @@ func TestRestoreConfigurationRejectsExtraSchemaWithoutOpeningCurrentWorkspace(t 
 		t.Fatal("untrusted schema accepted")
 	}
 }
+func TestRestorePreviewReportsUnavailableDPAPIWithoutExposingOrReplacingCredentials(t *testing.T) {
+	s, _ := fixture(t, Options{})
+	e, _ := create(t, s, "SYNTHETIC credential restore preview")
+	p := importProxyFixture(t, s, "http://SYNTHETIC_USER:SYNTHETIC_REENTRY_PASSWORD@localhost:8080")
+	bindRuntimeProxyFixture(t, s, e, p)
+	path := restorePackageFixture(t, s, []string{e.ID})
+	available := value[RestorePreview](t, previewPackageFixture(t, s, path))
+	if len(available.Credentials) != 1 || available.Credentials[0].State != "available-current-user" || available.CredentialReentryCount != 0 {
+		t.Fatal("same-user real DPAPI backup was not available")
+	}
+	value[map[string]any](t, call(s, "Backup.DiscardRestore", map[string]string{"previewId": available.PreviewID}))
+	var ref string
+	var original []byte
+	if err := s.db.QueryRow("SELECT credential_ref FROM proxies WHERE id=?", p.ID).Scan(&ref); err != nil {
+		t.Fatal(err)
+	}
+	if err := s.db.QueryRow("SELECT protected FROM proxy_credentials WHERE ref=?", ref).Scan(&original); err != nil {
+		t.Fatal(err)
+	}
+	s.options.UnprotectProxySecret = func(string, []byte) ([]byte, error) { return nil, errors.New("synthetic DPAPI unavailable") }
+	unavailable := value[RestorePreview](t, previewPackageFixture(t, s, path))
+	if len(unavailable.Credentials) != 1 || unavailable.Credentials[0].State != "reentry-required" || unavailable.CredentialReentryCount != 1 {
+		t.Fatal("unreadable credentials were silently cleared or reported usable")
+	}
+	encoded, _ := json.Marshal(unavailable)
+	if strings.Contains(string(encoded), "SYNTHETIC_USER") || strings.Contains(string(encoded), "SYNTHETIC_REENTRY_PASSWORD") {
+		t.Fatal("credential preview exposed authentication material")
+	}
+	var after []byte
+	if err := s.db.QueryRow("SELECT protected FROM proxy_credentials WHERE ref=?", ref).Scan(&after); err != nil || string(after) != string(original) {
+		t.Fatal("read-only preview replaced protected credential bytes", err)
+	}
+}
+
+func TestRestoreKernelCandidatesMatchExactBuildInsteadOfSourceID(t *testing.T) {
+	s, _, kernelID := fingerprintFixture(t, Options{})
+	r, err := s.savedKernel(kernelID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	alias := "synthetic-backup-kernel-alias"
+	for _, wrongDigest := range []bool{false, true} {
+		source := r
+		if wrongDigest {
+			source.ExecutableSHA256 = strings.Repeat("f", 64)
+		}
+		d := &restoreDraft{manifest: backup.Manifest{Kernels: []backup.Kernel{{ID: alias, State: "exact", Version: source.Version, Architecture: source.Architecture, ArchiveSHA256: source.ArchiveSHA256, ExecutableSHA256: source.ExecutableSHA256}}}, data: restoreData{kernels: map[string]kernel.Record{alias: source}}, kernelMapping: map[string]string{}, kernelCandidates: map[string][]string{}}
+		if _, err := s.planRestoreImpact(d); err != nil {
+			t.Fatal(err)
+		}
+		candidates := d.kernelCandidates[alias]
+		if wrongDigest && len(candidates) != 0 || !wrongDigest && (len(candidates) != 1 || candidates[0] != kernelID) {
+			t.Fatal("restore mapped by ID/version without exact digests, or rejected an equivalent build alias")
+		}
+	}
+}
+
 func TestRestoreReadPageDoesNotAcceptAnotherPreviewOrPath(t *testing.T) {
 	s, _ := fixture(t, Options{})
 	e, _ := create(t, s, "合成预览绑定")

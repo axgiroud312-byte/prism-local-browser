@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { LoaderCircle, X } from "lucide-react";
 import type { Environment } from "../domain";
 import { mergeOperation, operationIsTerminal, type ApplicationResult, type ApplicationService, type CookieCommitRequest, type CookieImportPreview, type CookieItemResult, type Operation, type WorkspaceView } from "../application/contract";
-import { currentCookieOperation } from "../application/cookie-import";
+import { cookieStartupAllowed, cookieWriteAllowed, currentCookieOperation } from "../application/cookie-import";
 import "./native-proxy.css";
 import "./native-cookie.css";
 
@@ -29,7 +29,8 @@ export function NativeCookieImport({ application, workspace, environment, onClos
   const closeRef = useRef(onClose); closeRef.current = onClose;
   const session = workspace.runtimeSessions?.[environment.id];
   const currentEnvironment = workspace.state.environments.find(record => record.id === environment.id) ?? environment;
-  const canWrite = session?.state === "running" && session.canControl && !session.needsReconcile && !session.persistencePending && !session.networkFault;
+  const canWrite = cookieWriteAllowed(session);
+  const canStart = cookieStartupAllowed(currentEnvironment.proxyId, confirmDirect, session);
   const active = !!operation && !operationIsTerminal(operation);
   const starting = !!startOperation && !operationIsTerminal(startOperation);
   const locked = busy || active || starting;
@@ -99,7 +100,7 @@ export function NativeCookieImport({ application, workspace, environment, onClos
   }
 
   async function start() {
-    if (!preview || !confirmDirect && !currentEnvironment.proxyId) return;
+    if (!preview || locked || !canStart) return;
     setBusy(true); setMessage("");
     const result = await application.startRuntime?.({ environmentId: environment.id, expectedRevision: preview.expectedRevision, purpose: "cookie-import", networkPolicy: currentEnvironment.proxyId ? "proxy" : "direct", requestId: crypto.randomUUID() });
     if (!mounted.current) return; setBusy(false);
@@ -153,8 +154,8 @@ export function NativeCookieImport({ application, workspace, environment, onClos
           </tr>)}</tbody></table></div>
           {!canWrite && <div className="info-strip native-cookie-start">
             <p>写入前需要指定环境的受控会话。启动只打开空白页，不恢复旧标签或保存网址；seed、数据目录、内核和代理绑定不变。</p>
-            {currentEnvironment.proxyId ? <p>当前系统网络保护尚未就绪，绑定代理的环境无法真实启动；独立代理检查成功也不能解锁，不会切为直连。</p> : <label className="native-proxy-inline"><input type="checkbox" checked={confirmDirect} disabled={locked} onChange={event => setConfirmDirect(event.target.checked)} />我确认：这个环境未绑定代理，启动会使用本机直连网络。</label>}
-            <button className="button" disabled={locked || !!currentEnvironment.proxyId || !confirmDirect || session?.needsReconcile || session?.persistencePending} onClick={() => { void start(); }}>{starting ? "正在启动，尚未写入…" : "明确启动空白环境（还不写Cookie）"}</button>
+            {currentEnvironment.proxyId ? <p>启动仍使用已绑定代理，核对本次实际隔离资源、同通道前检及进程树；保护缺失、失败或未知时拒绝，不会切为直连。</p> : <label className="native-proxy-inline"><input type="checkbox" checked={confirmDirect} disabled={locked} onChange={event => setConfirmDirect(event.target.checked)} />我确认：这个环境未绑定代理，启动会使用本机直连网络。</label>}
+            <button className="button" disabled={locked || !canStart} onClick={() => { void start(); }}>{starting ? "正在启动，尚未写入…" : "明确启动空白环境（还不写Cookie）"}</button>
           </div>}
           <div className="native-proxy-actions">
             <label className="native-proxy-inline"><input type="radio" name="native-cookie-policy" checked={policy === "merge"} disabled={locked} onChange={() => { setPolicy("merge"); setConfirmClear(false); }} />合并，仅替换完全相同键（默认）</label>

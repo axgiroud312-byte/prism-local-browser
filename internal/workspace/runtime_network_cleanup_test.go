@@ -173,6 +173,23 @@ func TestStartupWithoutBrowserRetainsFailedChannelAndAllowsCleanupRetry(t *testi
 	}
 }
 
+func TestApplicationCloseHandlesObservedSessionWithoutCancellation(t *testing.T) {
+	s, _ := fixture(t, Options{})
+	s.mu.Lock()
+	s.runtimeSlots["synthetic-observed-session"] = &runtimeSlot{session: RuntimeSession{Mode: "native", State: "ready"}}
+	s.mu.Unlock()
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	if err := s.CloseContext(ctx); err != nil {
+		t.Fatal("an already stopped observation without a launch cancellation prevented shutdown:", err)
+	}
+	select {
+	case <-s.closeDone:
+	default:
+		t.Fatal("shutdown did not publish confirmed resource completion")
+	}
+}
+
 func TestApplicationCloseRetriesChannelOwnerCreatedAfterInitialShutdownScan(t *testing.T) {
 	channel := &retryableCloseChannel{syntheticRuntimeChannel: &syntheticRuntimeChannel{}}
 	channel.fail.Store(true)

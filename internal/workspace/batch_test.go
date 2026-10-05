@@ -5,6 +5,8 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"os"
+	"path/filepath"
 	"reflect"
 	"strings"
 	"sync/atomic"
@@ -175,6 +177,59 @@ func TestBatchCloneKeepsExactTemplateButNewIDSeedAndNoLoginData(t *testing.T) {
 	cloned := view(t, s).Fingerprints[item.EnvironmentID].Profile
 	if cloned.Seed == before.Seed || cloned.KernelID != before.KernelID || cloned.GeneratorVersion != before.GeneratorVersion || cloned.CoreExecutableSHA256 != before.CoreExecutableSHA256 || reflect.DeepEqual(cloned.Parameters, before.Parameters) {
 		t.Fatal("clone changed the exact kernel/template or kept old seed parameters")
+	}
+}
+
+func TestBatchProductionDirectoriesAreEmptyAndNeverCopySourceLoginFiles(t *testing.T) {
+	s, root, kernelID := fingerprintFixture(t, Options{})
+	source := createRuntimeEnvironment(t, s, kernelID, "SYNTHETIC source with login files")
+	before := view(t, s).Fingerprints[source.ID].Profile
+	sourceData := filepath.Join(root, "environments", source.ID, "user-data", "Default")
+	if err := os.MkdirAll(sourceData, 0700); err != nil {
+		t.Fatal(err)
+	}
+	contents := []byte("SYNTHETIC login fixture only")
+	for _, name := range []string{"Cookies", "Local Storage", "IndexedDB"} {
+		if err := os.WriteFile(filepath.Join(sourceData, name), contents, 0600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	page := value[BatchPage](t, call(s, "Batch.Preview", BatchPreviewRequest{Kind: "clone", SourceIDs: []string{source.ID}}))
+	final := waitBatchFixture(t, s, acceptBatchFixture(t, s, page, id()).ID)
+	clone := readBatchPageFixture(t, s, page.PlanID, 0).Items[0]
+	if final.State != "completed" || clone.EnvironmentID == source.ID {
+		t.Fatal("production clone failed", final.Error)
+	}
+	cloned := view(t, s).Fingerprints[clone.EnvironmentID].Profile
+	if cloned.Seed == before.Seed || cloned.KernelID != before.KernelID {
+		t.Fatal("production clone retained source seed or changed exact kernel")
+	}
+	entries, err := os.ReadDir(filepath.Join(root, "environments", clone.EnvironmentID, "user-data"))
+	if err != nil || len(entries) != 0 {
+		t.Fatal("production clone is not a real empty directory", err)
+	}
+	for _, name := range []string{"Cookies", "Local Storage", "IndexedDB"} {
+		actual, err := os.ReadFile(filepath.Join(sourceData, name))
+		if err != nil || string(actual) != string(contents) {
+			t.Fatal("production clone touched source login files", err)
+		}
+	}
+	batch := createBatchPreviewFixture(t, s, "SYNTHETIC actual directories", 31)
+	requestID := id()
+	accepted := acceptBatchFixture(t, s, batch, requestID)
+	if repeated := acceptBatchFixture(t, s, batch, requestID); repeated.ID != accepted.ID {
+		t.Fatal("duplicate production batch request created another operation")
+	}
+	if completed := waitBatchFixture(t, s, accepted.ID); completed.State != "completed" || completed.BatchReport.CompletedCount != 31 {
+		t.Fatal("production directory batch did not complete", completed.Error)
+	}
+	for _, offset := range []int64{0, 25} {
+		for _, item := range readBatchPageFixture(t, s, batch.PlanID, offset).Items {
+			entries, err := os.ReadDir(filepath.Join(root, "environments", item.EnvironmentID, "user-data"))
+			if err != nil || len(entries) != 0 {
+				t.Fatal("production created directory was missing or contained data", err)
+			}
+		}
 	}
 }
 
