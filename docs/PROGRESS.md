@@ -4,7 +4,7 @@
 
 - Goal：按[六阶段计划](V1_DELIVERY.md)完成首版；完成 **4/21**（正式验收），**14项已实现待验收**，尚未交付完整首版安装包。
 - 当前任务：阶段1本地对齐已提交`a77630e`；当前主要阶段2 T11 / [Issue #12](https://github.com/axgiroud312-byte/prism-local-browser/issues/12)正式隔离与启动。首个产品交付点为真实代理访问→关闭→原身份/数据重开。
-- 当前步骤：独立持久资源日志基础已实现，9项局部测试通过，最终只读复核无可信新增阻断；尚未接workspace/provider。下一步固定资源日志存储边界及重开入口，接真实容器/固定句柄差量ACL，再接专属桥与准确Job/token门禁；生产固定拒绝保持。
+- 当前步骤：独立持久资源日志基础已提交`ddf301b`，9项局部测试通过，最终只读复核无可信新增阻断；尚未接workspace/provider。下一步固定资源日志存储边界及重开入口，接真实容器/固定句柄差量ACL，再接专属桥与准确Job/token门禁；生产固定拒绝保持。
 - 现场：分支`goal/v1-remaining-integration`，起点`21ea8ef`且工作树原先干净。主代理唯一写入，子代理只读。本轮没有运行浏览器、修改系统权限或自动点击；旧实验清理证据仍按原时间引用。GitHub认证401，公开REST已读#12，尚未远程同步或触发CI。
 
 ## 当前阻塞与恢复入口
@@ -41,7 +41,7 @@
 
 ## 最近检查与当前工作
 
-- 本轮阶段2：新增`internal/kernel/network_journal.go`及测试，独立SQLite/FULL提交、不可变会话/资源意图、每环境唯一未清理会话、逆序可重试清理。评审P2“清理越过在途创建”以同会话全动作互斥修复，封存后再核对Job；A/B独立。`go test -p 1 ./internal/kernel -run '^TestNetworkJournal' -count=1 -v`：9项通过，另1helper只由父测试启动并突然退出；无真实ACL/容器/浏览器/网络实验。阶段1文档检查46份通过、提交`a77630e`；本子成果准备文档/格式检查后提交。未执行全量回归、自动点击、安装打包或远程写入。
+- 本轮阶段2：新增`internal/kernel/network_journal.go`及测试，独立SQLite/FULL提交、不可变会话/资源意图、每环境唯一未清理会话、逆序可重试清理。评审P2“清理越过在途创建”以同会话全动作互斥修复，封存后再核对Job；A/B独立。`go test -p 1 ./internal/kernel -run '^TestNetworkJournal' -count=1 -v`：9项通过，另1helper只由父测试启动并突然退出；无真实ACL/容器/浏览器/网络实验。阶段1提交`a77630e`，本子成果`ddf301b`；46份文档及暂存格式检查通过。未执行全量回归、自动点击、安装打包或远程写入。
 
 - 2026-10-05 15:57：实验`ca7e0cb7…`在提升OpenService即失败，controller exit1，未进入guard/STOP路径。基线与拒绝后的普通/AC各四socket及委托DNS结果一致；[脱敏证据](verification/T11-bfe-stop-observations.json)对照8原始文件和实际exe摘要全部一致。最后P2（ARM后就绪重核对）与helper角色标签已源码修正，最新专用exe仅编译，未重复提权/实验。资源收尾`1e16130`已提交，本轮实验工具/证据待本地提交，完整Goal仍未完成。
 
