@@ -14,7 +14,7 @@
 | [react-markdown](https://github.com/remarkjs/react-markdown) | 10.1.0       | MIT；Espen Hovlandsdal                                            | 指南文档的 Markdown 渲染。     |
 | [remark-gfm](https://github.com/remarkjs/remark-gfm)         | 4.0.1        | MIT；Titus Wormer                                                 | Markdown 表格等 GFM 语法。     |
 
-下方保留上述五个运行时直接依赖的安装包许可证全文，包括 Lucide 包内的 Feather 归属说明。间接依赖仍保留各自的许可证；本文件不表示已列出完整依赖树中的每一个包。分发构建产物时，应同时保留构建工具生成的第三方通知及实际随附组件要求的许可文件。
+下方保留五个直接依赖许可证，包括Lucide/Feather归属。首版候选另由[collect-frontend-notices.mjs](scripts/collect-frontend-notices.mjs)核对锁文件和安装版本，汇集107个生产直接/间接包以及Vite注入的预加载helper/polyfill许可（共108包），随包保留`FRONTEND-THIRD-PARTY-NOTICES.txt`。Vite helper适用MIT，2019-present VoidZero Inc. and Vite contributors；不因Vite是dev依赖而遗漏。CLI/测试工具不进入产品；缺许可或版本不一致使构建失败。该文件与实际Go依赖通知、NSIS许可和本项目LICENSE共同分发。
 
 ## 开发与构建工具
 
@@ -40,7 +40,7 @@ T11可行性调查仅在项目忽略工具目录使用 [Capstone](https://github
 
 `npm run build:windows` 使用 [collect-go-notices.ps1](scripts/collect-go-notices.ps1) 从固定 Windows production 依赖图提取**实际参与构建**的 Go 模块许可证、NOTICE 与子组件条款（包括 modernc libc 的第三方通知），输出 `build/bin/GO-THIRD-PARTY-NOTICES.txt`。缺少许可文件会使构建步骤失败；分发 exe 时必须同时保留该文件、本文件和本项目 LICENSE。开发 CLI/测试依赖不因此变成产品运行时组件。
 
-T08代理主机名规范化直接使用已有固定 `golang.org/x/net v0.56.0` 的IDNA包（BSD-3-Clause，The Go Authors）；版本与go.sum未升级，分发仍由上述实际依赖图保留相应许可。Windows DPAPI为操作系统接口，不引入额外加密库或复制系统组件。
+代理IDNA与Cookie公共后缀使用已有固定`golang.org/x/net v0.56.0`（BSD-3-Clause，The Go Authors）；版本/go.sum未升级，许可按实际依赖图保留。Windows DPAPI、AppContainer、Job与ACL为系统API，不新增或复制第三方隔离组件。
 
 Windows WebView2 Runtime 为微软单独许可的外部先决条件，T02 使用机器上已安装的 Runtime，没有复制其运行时安装包或将其重新许可为 MIT。后续安装包须说明其检测/安装方式和适用条款。WebView2 是桌面壳，**不是产品指定的 fingerprint-chromium**。
 
@@ -111,7 +111,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ## 外部浏览器内核来源
 
-产品指定使用 [adryfish/fingerprint-chromium](https://github.com/adryfish/fingerprint-chromium)。T04已实际下载并受控探测148.0.7778.215 Windows x64构建，归档SHA-256为`9ef3f471b7a6641b4224532522b29141ce3746e27d55788d88e2fd951f362579`。原生安装按用户明确选定的官方发行ZIP或可信本地ZIP获取完整包，保留其中资源和组件；内核二进制/真实用户数据不提交仓库，也不随T03桌面壳安装包再分发。
+产品指定使用 [adryfish/fingerprint-chromium](https://github.com/adryfish/fingerprint-chromium)。148.0.7778.215归档SHA为`9ef3f471b7a6641b4224532522b29141ce3746e27d55788d88e2fd951f362579`；150.0.7871.186在10月5日已获取，实算SHA为`4d549c326e51ebbabf562fd365eb5380d9d4a81200da2c60f075c688d9a77e03`并真实迁移验证。**两版均不随首版候选重新分发。** 用户明确选择官方精确ZIP或可信本地ZIP，保留原包资源/组件；版本许可范围不能从148文本推导为150全部组件已获再分发许可。
 
 如后续下载、修改或再分发内核，应检查所选具体版本的来源、许可证、Chromium 组件及第三方通知，并随分发材料保留要求的声明。不得以本仓库使用 MIT 为由认定整个内核、所有组件或相关品牌也适用 MIT。内核版本与许可审查应和构建产物一起记录。
 

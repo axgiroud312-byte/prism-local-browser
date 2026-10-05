@@ -2,7 +2,7 @@
 
 本项目选择 [fingerprint-chromium](https://github.com/adryfish/fingerprint-chromium/blob/main/README-ZH.md) 作为 Windows 桌面版的内核方向。本文定义配置生成、内核管理、独立环境启动和代理接入的实现边界，供后续桌面后端开发使用。
 
-**网页原型与native能力分别记录。**T04精确安装、校验和受控148 Windows x64探测已验收；T05固定档案/历史回滚、T06正常会话及T07异常监督/重开核对已本地实现待验收，未运行故障验收。原型里的GPU、指纹摘要、连接结果和启动状态均是演示数据，不能标成内核探测结果。本合同中代理、正常进程和完整恢复的未验收项不因内核诊断通过而自动完成，实时结果见 [T04](verification/T04.md)、[T05](verification/T05.md)、[T06](verification/T06.md)、[T07](verification/T07.md) 与 [当前进度](PROGRESS.md)。
+**网页原型与native能力分别记录。** T04已正式验收；148/150、正式代理会话、故障恢复、三存储隔离、Cookie及完整恢复/迁移已有本机结果，详见[集中验收](verification/V1-final.md)。独立远端全路径、人工UI及其他Windows/内核组合仍待验证，不因诊断/参数/构建通过自动完成。原型GPU、摘要与启动状态仍为演示，不标成实测。
 
 核实日期：2026-09-30。Ant-Browser 仅作为架构参考，本项目不复制其源码；旧比特浏览器材料仅用于理解交互与字段关系，不作为本项目内核、算法或资源池来源。
 
@@ -23,7 +23,7 @@
 | 核实对象                   | 本轮结果                                                        | 开发含义                                           |
 | -------------------------- | --------------------------------------------------------------- | -------------------------------------------------- |
 | README 中的 150.0.7871.186 | 已列出 Windows ZIP 与安装包链接，注明源码随 151 发布            | 只是上游说明，不能显示“已安装”或“可用”             |
-| 150 的 Windows ZIP         | 仅请求 HTTP HEAD，返回 404；Release API 与 tag API 同样返回 404 | 本轮不能作为可获取构建，不自动回退后假报成功       |
+| 150 的 Windows ZIP         | 9月30日查询404；10月5日已获取并实算归档SHA，真实150运行及迁移通过 | 保留旧查询时间，不自动回退；许可与能力仍按精确构建记录 |
 | 148.0.7778.215             | Release API 可见 Windows x64 ZIP；T04 实算归档与PE/私有pipe真实探测通过 | 本票明确选定的实测候选；生产首选仍待兼容性等评估 |
 
 148 的公开 tag 指向 `13b89eae304123f0710f2d33fd0816a2f61d7ffc`。发行页中 Windows ZIP 资产名为 `ungoogled-chromium_148.0.7778.215-1.1_windows_x64.zip`，GitHub API 声明其 SHA-256 为 `9ef3f471b7a6641b4224532522b29141ce3746e27d55788d88e2fd951f362579`。T04 已实际下载并核对同一归档摘要；主程序摘要为 `1867319e56bcabbc4681d8575c002106ce7b61b5290dc5eb34a37676805f6915`，PE文件版本与CDP实际版本均为148.0.7778.215，HTTP/网页UA与高熵UA-CH按本合同核对。详细采样、会话及后续页面验收见 [T04](verification/T04.md)，不把上游摘要或静态源码当实测。核实入口：[148 发行元数据](https://api.github.com/repos/adryfish/fingerprint-chromium/releases/tags/148.0.7778.215)、[148 源码](https://github.com/adryfish/fingerprint-chromium/tree/148.0.7778.215)、[150 发行查询](https://api.github.com/repos/adryfish/fingerprint-chromium/releases/tags/150.0.7871.186)、[README 所列 150 ZIP](https://github.com/adryfish/fingerprint-chromium/releases/download/150.0.7871.186/ungoogled-chromium_150.0.7871.186-1.1_windows_x64.zip)。
@@ -139,7 +139,7 @@ CDP 默认不开启。需要身份探测或本机自动化时，优先采用本�
 
 [`pipe`](../internal/kernel/pipe_windows.go)串行整个请求/响应并支持有界写，正常会话控制仅内部使用，不向UI开放任意CDP。短期启动context不控制已经就绪会话；就绪前单独核对主进程存活，不以Job尚未清空代替浏览器活着。正常停止先Browser.close，只有确认Job ActiveProcesses==0才释放pins/锁并报告完成。等待退出超时可重试，控制写端断开则返回不可正常重试的CONTROL_CHANNEL_LOST，不谎称通道可恢复。超时或清理未确认仍保持busy与目标身份，应用退出/失败启动只能终止本次自有Job。不以主PID退出、CreateProcess成功或UI状态作为全树退出/实际隔离证据。
 
-以上为已编写实现，尚未运行正常窗口/目录/网络验收。已有T04/T05无头样本不能证明T06。A/B受控本地站点的真实Cookie/LocalStorage/IndexedDB隔离和重开持久用例保留在 [`runtime_real_test.go`](../internal/workspace/runtime_real_test.go)，需单独明确开关；用户暂停CI/完整回归/桌面操作期间不执行。
+[`runtime_real_test.go`](../internal/workspace/runtime_real_test.go)的实际A/B三存储隔离、停止、服务重开、根故障重试、回收找回及完整恢复已运行；显式direct测试与正式proxy测试分开，不互相冒充。原始证据及分支覆盖见[集中验收](verification/V1-final.md)，人工新页面仍未验证。
 
 ### T07 异常与重开的实际开发边界
 
@@ -173,7 +173,7 @@ HTTP经目标流写origin-form，HTTPS经同本机CONNECT透传TLS；SOCKS5本�
 
 [`每桥故障监视`](../internal/proxy/bridge_watch.go)闭锁第一个故障，Failed事件交准确Job持有者独立安全结束本树，不等DB；单个请求取消或客户端上传异常只关闭该请求。30s同bridge巡检并非全路径隔离；确认桥/全树gone才收敛完整Done。停止失败保持pins/目录与准确会话，未终结Stop不释放后来Start的预留。
 
-[`networkFault`](../internal/workspace/runtime_network_fault.go)保存network_error/安全根因/时刻/清理阶段。启动期间（包括无返回process）也记录已闭锁桥的故障，不与普通前检错误混同；失败清理、强制结束及重开不抹根因、不重建旧端口。当前[`门禁`](../internal/kernel/network_protection.go)固定拒绝真实代理浏览器，不能凭参数/前检/API存在/用户管理员授权解除。
+[`networkFault`](../internal/workspace/runtime_network_fault.go)保存network_error/安全根因/时刻/清理阶段，未返回process也记录闭锁故障；清理/重开不抹根因、不重建旧端口。当前[`门禁`](../internal/kernel/network_protection.go)只接受本次实际正式owner和同桥前检，缺失或未知拒绝，不能仅凭参数/API/管理员授权解除。
 
 用户允许未来组件管理员安装，未现在提权/改系统。WFP独立程序路径可研究socket隔离，但ALE_ORIGINAL_APP_ID只定义连接重定向，不保证DNS Client委托查询，dynamic过滤生命周期也不保证host崩溃的拒绝边界；不能全局封DNS影响其他环境。[D012](DECISIONS.md#d012--安全边界缺失先阻止代理启动并允许隔离组件管理员安装2026-10-01)、[待完成清单](verification/T11.md)。完整组件/真实出口和故障验收均未实现通过，用户已选择先保存部分继续不依赖它的其他票。
 
@@ -199,7 +199,7 @@ HTTP经目标流写origin-form，HTTPS经同本机CONNECT透传TLS；SOCKS5本�
 
 固定源码Storage.setCookies受理不以每条访问结果判成功，约400天等有效期限制导致读回差异不能计完整核对。writer不附URL，因为HTTPS URL会隐式改secure。写前拒绝可被URL规范化改成另一键的非规范path/host，以及多个域前导点、private PSL域Cookie；IPv6 Cookie域暂无闭合writer形态，明确不支持而非显示有效。JSON0与Netscape0时间语义分离，空value/session不改为默认未来时间。[官方依据/边界](verification/T12.md)、[D013](DECISIONS.md#d013--cookie命令只作用于指定会话重试先核对同键2026-10-01)。
 
-明确Cookie启动用途仍在原Runtime.Start链，仅本次不恢复标签和URLs，保保存修订/seed/精确内核/数据引用。T11真实proxy门禁不能因Cookie解锁。清空必须用户明确选择，只作用当前default context且确认空集合；失败重试合并、不重清或恢复其他数据。实际固定二进制写后读取、分区与A-B隔离仍待验收，源码不是证据。
+Cookie空白用途仍在原Runtime.Start链，仅本次不恢复标签和URLs，保留修订/seed/精确内核/数据引用。代理入口不在页面永久禁用，仍由后端逐会话保护；直连仅未绑定且明确确认时可请求。清空明确选择、只作用当前context，失败重试合并不重清。双真实代理会话写后读取及A/B独立已验证；尚未实测的分区组合与人工UI保持待验，见[报告](verification/V1-final.md)。
 
 ### T15 完整导出的实际目录边界（源码已编写，未运行验收）
 
@@ -311,7 +311,7 @@ HTTP经目标流写origin-form，HTTPS经同本机CONNECT透传TLS；SOCKS5本�
 
 ## 内核升级与完整恢复
 
-T20本地源码已接完整备份→规范独立副本旧/新试用→正常停止→明确切换；[`窄诊断`](../internal/kernel/migration_probe_windows.go)仅用自有匿名pipe和短期本机origin验证实际版本/语言/时区/CPU及持久合成Cookie/LocalStorage/IndexedDB，不访问原环境或替代用户网站兼容验收。正常结束必须Job全退出且实际退出码0；取消仅清理准确自有Job。缺失启动锁元数据仅在已记录WorkIdentity的未发布work UUID上通过[`准确Job核对`](../internal/kernel/migration_recovery_windows.go)收敛，不推广到普通环境。迁移独立journal/目录对象/配置摘要支持重开，旧构建恢复复用正式完整备份路径；代理环境仍保T11门禁。两不同真实构建、实际硬退出和浏览数据恢复入口仅编写，见[T20](verification/T20.md)，尚无运行证据。
+T20已接完整备份→独立副本旧/新试用→正常停止→明确切换；窄诊断仅自有pipe和受控合成三存储，不替代网站兼容或独立出口。正常结束要求准确Job全退且退出码0，取消只清理准确自有Job；WorkIdentity的缺锁恢复不推广普通环境。代理副本现共用正式保护链，真实148→150、切换失败回滚、成功切换及完整备份回退重开已有[运行证据](verification/T20-protected-observations.json)。实际硬中断与其余边界见[集中报告](verification/V1-final.md)。
 
 T17本地源码加入同卷目录恢复：[`目录对象核对/移动`](../internal/backup/switch_windows.go)持有已验证根和完整可见文件集合，拒绝reparse/可见hardlink/未知对象；采用实际目录身份识别rename结果。旧目录留在本次previous，日志DB提交标记决定旧状态回滚或完整新状态确认。归档锁不导入，新锁不保存旧PID/session；实际安装目录不能继续标never-initialized。此处是源码边界，非恶意同SID新增写入的强隔离保证，实际完整浏览数据/精确内核重开待[T17验收](verification/T17.md)；T18接续硬中断恢复。
 

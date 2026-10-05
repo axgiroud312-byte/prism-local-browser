@@ -2,16 +2,16 @@
 
 更新时间：2026-10-05，本轮六阶段接续。
 
-- Goal：按[六阶段计划](V1_DELIVERY.md)完成首版；完成 **4/21**（正式验收），**14项已实现待验收**，尚未交付完整首版安装包。
-- 当前任务：阶段1本地对齐已提交`a77630e`；当前主要阶段2 T11 / [Issue #12](https://github.com/axgiroud312-byte/prism-local-browser/issues/12)正式隔离与启动。首个产品交付点为真实代理访问→关闭→原身份/数据重开。
-- 当前步骤：资源日志已接正式AppContainer、差量ACL恢复、同身份代理桥和原子Job启动；真实kernel入口与产品Runtime.Start/Stop、Service重开分别两轮通过，Cookie/LocalStorage/IndexedDB保留。见[T11本轮记录](verification/T11-production.md)。阶段2尚待独立远端出口及人工界面闭环，不计为完整验收。
-- 现场：分支`goal/v1-remaining-integration`。主代理唯一写入，子代理只读。本轮运行合成真实浏览器及其临时容器/ACL并确认正常收尾，没有自动点击、修改Windows服务或安装打包。GitHub认证401，尚未远程同步或触发CI。
+- Goal：正式验收**4/21**；T05–T21共17票均有本地实现/部分验证，保持OPEN，首版候选不等于正式交付。
+- 当前任务：阶段5集中检查已收敛，阶段6沿既有NSIS构建候选并验证无点击安装闭环。[逐票矩阵、命令、证据和缺口](verification/V1-final.md)为本轮准确状态。
+- 已有实跑：正式代理启动/关闭/重开、故障和资源恢复、FIFO/Cookie、真实148→150代理迁移/完整回退；direct三存储/回收/恢复五切点只算各自范围。
+- 现场：`goal/v1-remaining-integration`，主代理唯一写，子代理只读。四个交接未提交修复保留并复核；新增Cookie旧UI门禁/许可/安装验证修订。无自动点击/停服/真实数据修改；GitHub认证仍失效，未推送/PR/CI。
 
 ## 当前阻塞与恢复入口
 
-- 正式provider已接入并通过本机受控启动验证；故障矩阵、跨注销/重启恢复和外部全路径仍待验证。迁移副本尚未接保护，继续明确拒绝；未知资源清理保留环境占用。
-- 外部代理/独立远端观察端、第二个不同版本真实内核、干净Windows/runner均未全部核实，按[资源表](V1_DELIVERY.md)准备；仅对应实测保持待验证。不自动点击，产品界面闭环需用户少量人工操作。
-- 远程认证恢复前保留本地提交及待同步记录；不反复重试401。完整回归阶段5，安装包阶段6；开发期允许关键局部验证。
+- 正式provider、proxy迁移副本及本机故障矩阵已验证；跨登录/重启及独立外部全路径仍待验，未知清理继续占用。
+- 148/150均已获核验并运行；专用外部代理/独立观察器未发现，开发HTTP_PROXY不算授权资源。最小配置与人工步骤见报告；干净Windows/runner仍缺，本机空产品根不是干净用户。
+- 用户在本机`gh auth login -h github.com`恢复失效登录前只做本地提交；不反复401，不伪称远程同步，不关闭未满足完整验收的票。
 
 ## 任务状态
 
@@ -27,19 +27,21 @@
 | T08 | #9 | 已实现待验收 | 本地 `f020076`；[验收清单](verification/T08.md)，blocking #3 CLOSED，无PR/推送 |
 | T09 | #10 | 已实现待验收 | 本地 `f6ebca1`；[验收清单](verification/T09.md)，原blocking #7/#9仍OPEN，无PR/推送 |
 | T10 | #11 | 已实现待验收 | 本地 `88ba61a`；[验收清单](verification/T10.md)，唯一blocking #10仍OPEN，无PR/推送 |
-| T11 | #12 | 正式启动接入，本机闭环已验证，完整验收待补 | [本轮记录](verification/T11-production.md)：真实内核及应用入口两轮代理启动/停止/重开，三存储保留；远端/故障/人工界面待验，无PR/推送 |
+| T11 | #12 | 正式保护/故障本机已验证，完整验收待补 | [启动](verification/T11-production.md)、[故障](verification/T11-recovery.md)；独立远端/跨登录及人工待验，无PR/推送 |
 | T12 | #13 | 已实现待验收 | 本地c3ff618；[清单](verification/T12.md)，无推送/PR；#7仍OPEN |
 | T13 | #14 | 已实现待验收 | 本地`54d8be9`；[清单](verification/T13.md)，blocking #8/#9仍OPEN，按D007消费本地T07/T08；无推送/PR |
 | T14 | #15 | FIFO队列已实现，本机集成已验证 | [记录](verification/T14.md)，取消/重试/迟到就绪回归及双代理环境实跑通过；远端/UI完整验收待补 |
 | T15 | #16 | 已实现待验收 | 本地`010b35a`（42文件）；[清单](verification/T15.md)；blocking #8/#9仍OPEN，按D007消费本地成果；无推送/PR |
-| T16 | #17 | 已实现待验收 | 本地`b66077b`；[清单](verification/T16.md)；全部回归未执行 |
-| T17 | #18 | 已实现待验收 | 本地`5bd08d7`；[清单](verification/T17.md)，回归全部未执行 |
-| T18 | #19 | 已实现待验收 | 本地`bdbddfb`；[清单](verification/T18.md)，全部测试未执行 |
-| T19 | #20 | 已实现待验收 | 本地`85bf478`；[清单](verification/T19.md)，回归全部未执行 |
-| T20 | #21 | 已实现待验收 | 本地`d8db031`；[清单](verification/T20.md)，全部测试未执行 |
-| T21 | #22 | 诊断/指南源码完成待验收，完整交付受阻 | 本地`732c483`；[独立部分与待验收](verification/T21.md)；不绕过T11/T14 |
+| T16 | #17 | 服务回归/凭据/精确build候选通过，人工待验 | [清单](verification/T16.md)、[集中结果](verification/V1-final.md)；拒解为注入，不假报跨SID实测 |
+| T17 | #18 | 服务回归/选定A真实三存储恢复通过 | [清单](verification/T17.md)；多真实环境/人工/实际权限空间待验 |
+| T18 | #19 | 五主切点真实读回、占用及回滚再中断通过 | [清单](verification/T18.md)、[集中结果](verification/V1-final.md)；未闭票 |
+| T19 | #20 | 服务/Windows目录及10个硬中断切点通过 | [清单](verification/T19.md)；真实三存储回收/找回通过，人工永久删除/故障待验 |
+| T20 | #21 | 两真实build代理迁移/回退及4硬中断切点通过 | [清单](verification/T20.md)；独立远端、人工与网站兼容待验 |
+| T21 | #22 | 诊断回归通过，首版候选打包/安装记录中 | [集中报告](verification/V1-final.md)；不绕过blocking/完整验收 |
 
 ## 最近检查与当前工作
+
+- 阶段5：129前端后台测试通过，Cookie正常资源持有和proxy空白启动修订6项定向/类型通过；336 Go内部测试通过，根包Vite/dist并行故障串行补编通过且vet exit0，保留原FAIL日志。实际production空目录clone/31项分页、DPAPI预检与异ID精确build候选通过；恢复回滚占用/再中断、回收10与迁移4个Kill切点、固定档案真实15.12秒通过。详细未覆盖项见报告，没有自动点击。
 
 - 阶段4：FIFO队列/取消/独立重试与Cookie启动共用正式保护，真实双环境Cookie语义读回通过；150归档现可获取且SHA已实算，真实148→150代理迁移、失败回滚、成功切换及完整备份回退重开通过。[T14及集成记录](verification/T14.md)。synthetic内核fixture补非null空集合以符合严格备份schema，没有放宽生产校验。
 

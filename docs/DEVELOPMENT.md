@@ -4,7 +4,7 @@
 
 版本：1.0 · 日期：2026-09-30
 
-本文件将 [产品需求](PRD.md) 转成实施边界、应用接口、状态与数据一致性规则。仓库保留 React/TypeScript 原型及 T01 的应用契约与 DemoAdapter；T02 的 Go/Wails、SQLite 和 WailsAdapter 本机配置底座已验收，T03 用户级安装预览正在验收（见 [安装说明](INSTALLATION.md)）。已选定的 adryfish/fingerprint-chromium 仍未安装或运行。下文完整接口是分票目标，不表示已全量实现；实际范围见 [PROGRESS.md](PROGRESS.md)。
+本文件定义产品接口与一致性规则。T01–T04已正式验收，fingerprint-chromium148/150均已有真实运行证据；正式保护、FIFO、Cookie、完整备份/恢复、回收、迁移和诊断现已接入。服务回归与本机局部实跑见[首版报告](verification/V1-final.md)；独立出口/人工UI/干净Windows未被这些结果替代。下文各票早期开发增量保留设计背景，其“仅编写”测试范围以新增集中验收记录为准。
 
 ## 1 当前交付与后续实施分层
 
@@ -161,13 +161,13 @@ app-data/
 - 报告JSON增可选安全resolutionPolicy，schema5表不变；取消/超时优先、result与最终错误一致。两native页面用[`共享阶段`](../src/application/proxy-network.ts)显示策略/认证字节范围/不加密边界，RPC不得覆盖DNS/目标/认证或DIRECT回退。
 - 7条代理库/6条服务/2条adapter回归仅编写未执行，无真实DNS/API/Windows浏览器或新页面证据，[清单](verification/T10.md)。远端目标解析不是全路径DNS保证，SOCKS UDP/BIND未支持，T11关闭/隔离/故障恢复待后续。
 
-### T11 网络故障监督与安全门禁（部分实现，完整隔离未实现）
+### T11 网络故障监督与安全门禁（正式接入，本机验证，完整验收待补）
 
-2026-10-05当前开发目标按[六阶段计划](V1_DELIVERY.md)：先持久记录容器、权限增量和准确进程/Job归属，再创建隔离资源、专属桥并接入正式启动。记录必须支持创建结果未知后的重开核对；只有全树退出及权限/桥/容器清理确认才释放环境。恢复不能按裸PID或旧路径字符串操作不明对象。首版支持前提已确认是Windows网络隔离正常，底层服务损坏保护留后续；应用/桥/上游故障仍必验。以下旧条目保留历史实际实现边界，不表示生产provider已存在。
+正式provider按[六阶段计划](V1_DELIVERY.md)先持久记录容器、权限增量和准确Job归属，再授权/创建桥与浏览器；全树退出和权限/桥/容器清理确认后才释放环境，未知保持占用。恢复不按裸PID或旧字符串操作对象。正常隔离服务为首版支持条件；本机代理/桥/管理器故障与端口接管已有结果，外部全路径仍必验。以下早期条目不作为当前未接入声明，准确范围见[正式接入](verification/T11-production.md)和[资源恢复](verification/T11-recovery.md)。
 
-阶段2首个基础模块[`NetworkJournal`](../internal/kernel/network_journal.go)已实现并通过9项局部测试。独立数据库使用FULL提交、会话意图冻结/环境唯一占用、资源prepared/applied/released、会话preparing/cleaning/closed；不进入配置备份。按会话互斥覆盖整个创建动作与清理，封存后再确认Job为空，失败保持占用，分页恢复。调用方必须持应用锁/目录pins并提供真实对象核对与撤销，尚未接workspace或provider，不能据此声称实际容器恢复已实现。详见[T11记录](verification/T11.md)。
+[`NetworkJournal`](../internal/kernel/network_journal.go)已接workspace与provider。独立数据库FULL提交、冻结意图/环境唯一占用、prepared/applied/released资源及preparing/cleaning/closed会话不进入配置备份。按会话互斥整个创建/清理，封存后核对Job空，失败保持占用；差量ACL和container清理可重开或原地重试。实际证据见[T11恢复记录](verification/T11-recovery.md)。
 
-- [`门禁`](../internal/kernel/network_protection.go)在workspace真实代理Start读取凭据/建桥前及kernel实际CreateProcess前分别执行，当前NETWORK_PROTECTION_UNAVAILABLE不可重试。独立代理检查保留，真实代理浏览器不能启动；host-only合成launcher不让真实kernel绕门禁，RPC无关闭保护参数。
+- [`门禁`](../internal/kernel/network_protection.go)与正式owner在workspace和kernel两层核对本次环境/会话/构建及实际资源；没有provider或核对缺失/失败/未知则NETWORK_PROTECTION_UNAVAILABLE。独立代理检查不是启动许可，RPC无关闭保护参数；host-only合成launcher不能使真实kernel绕过核对。
 - [`Bridge故障`](../internal/proxy/bridge_watch.go)每桥闭锁/Failed事件、30s同桥前检巡检及4背景资源调度；仅实际上游/监听故障触发，单请求取消/超时/上传失败不误关会话。准确Job独立安全停止不等服务锁或SQLite，全部资源确认退出前不释放目录。
 - schema5表不变，session JSON增networkFault：network_error、安全根因/观测时刻及stopping/stopped/exit-unconfirmed。旧Environment status仍error。含启动期间、未返回process的真实闭锁故障，清理/强制结束/重开均保留根因；copy-on-write保留先前阶段，失败落盘只重试持久化，不重发网络/终止。未終结Stop的预留不随error展示提前释放。
 
@@ -391,7 +391,7 @@ schema10增加默认构建与独立迁移日志/保留引用；[`默认选择`](
 
 prepared保存目录对象/清单，旧目录留previous，试用目录移到原规范引用；配置与committed/新摘要同事务。任何提交返回均读持久决策，不用旧计划补偿未知结果。[`启动恢复`](../internal/workspace/migration_recovery.go)先核对唯一writer，选择完整旧/新侧，加载其余启动记录后才保存终态；失败保屏障并支持重试，不把中断试用当授权。兼容问题通过绑定原SHA的短期token走正式`Backup.PreviewRestore/ApplyRestore`，完整撤回备份后变化。
 
-[`原生迁移页`](../src/components/NativeMigrationManager.tsx)独立25条查找与原请求核实；adapter保默认/迁移pending，回滚离页清理不能废弃未决恢复，同请求在途恢复Promise合并。代理绑定环境仍保T11门禁，待全路径隔离及试用路由集成。[测试入口与未验收边界](verification/T20.md)分别记录合成服务、Process.Kill与两不同真实构建；没有运行结果。
+[`原生迁移页`](../src/components/NativeMigrationManager.tsx)独立25条查找与原请求核实；adapter保pending，回滚离页不废弃未决恢复，同请求在途Promise合并。代理副本现走正式owner/桥/前检/Job链，private-pipe-canary仅验证合成三存储，不伪造外部出口或HTTP头观测。[本机双版本实跑](verification/T20-protected-observations.json)与[集中验收](verification/V1-final.md)分别标明服务/硬中断/远端/UI边界。
 
 ### 原子替换与崩溃恢复
 

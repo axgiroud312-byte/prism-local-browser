@@ -2,9 +2,9 @@
 
 # 需求到实现的追踪表
 
-版本：1.0 · 更新日期：2026-10-01
+版本：1.0 · 更新日期：2026-10-05
 
-本表将 PRD 的 12 项需求关联到当前前端入口和建议验收。**出现源码入口只代表存在相应原型逻辑，不代表完整桌面能力已经实现，也不代表测试已经通过。** 实际执行记录统一放在 [ACCEPTANCE.md](ACCEPTANCE.md)。
+本表关联12项需求、原型与native入口。源码入口不代表完整验收；[本轮逐票矩阵](verification/V1-final.md)明确区分服务回归、真实桌面、本机/独立网络及候选交付。[ACCEPTANCE](ACCEPTANCE.md)为实际结果索引；正式计数仍4/21。
 
 路由是运行应用后的 hash 路由。源码链接指向文件，函数名用于定位；前端持续修改时不依赖易失效的固定行号。领域逻辑自动测试入口为 [`tests/domain.test.ts`](../tests/domain.test.ts)，页面流程仍需真实浏览器操作检查。
 
@@ -29,13 +29,21 @@
 
 ### 首版范围与执行顺序（2026-10-05）
 
-ENV-003、PRX-001按用户单独确认的正常Windows隔离支持前提验收；底层服务自身损坏保护转后续加固，三种应用链故障、端口接管及持久恢复仍必验。[六阶段计划](V1_DELIVERY.md)列明缺口、资源和完成标准；正式验收4/21、14项源码待验收，当前生产代理闭环未通过。GitHub认证401，远程范围同步待补，不增加交付计数。
+ENV-003/PRX-001按正常Windows隔离前提验收，底层服务损坏转后续；正式生产代理及本机三种故障/旧端口接管/资源恢复已验证，独立远端全路径仍缺。阶段5–6结果、候选身份与每票缺口见[报告](verification/V1-final.md)；T05–T21共17票仍待完整验收，GitHub失效不伪称同步。
 
 ENV-003、PRX-001、DATA-001阶段2：[`独立持久资源日志`](../internal/kernel/network_journal.go)已接正式容器、差量ACL恢复及启动入口；真实内核与应用服务两轮代理启动/停止/重开均通过，三种存储保留。外部全路径、故障矩阵及人工UI仍待验；[本轮证据与边界](verification/T11-production.md)。
 
-### T11 隔离可行性增量（2026-10-05；独立实验）
+### 本轮行为追踪（2026-10-05；当前事实）
 
-ENV-001/ENV-003/UX-001/COOKIE-001/CORE-001：阶段4[FIFO及保护链集成](verification/T14.md)已实现并局部通过，真实Cookie双环境隔离和148→150代理迁移/备份回退已验证；完整远端及人工验收待补。
+- CK-001/ENV-003：[`cookieStartupAllowed/cookieWriteAllowed`](../src/application/cookie-import.ts)和[`原生Cookie窗口`](../src/components/NativeCookieImport.tsx)修正旧proxy永久禁用；逐会话后端保护不变，明确direct确认不用于proxy。正常running持有resourcesPending不误当故障，无法控制/核对/落盘/网络故障仍拒绝写；6项定向adapter/模型测试和类型通过，人工窗口未点击。
+- ENV-003/DATA-001：shutdown容许无cancel的已停止观察，新增[`回归`](../internal/workspace/runtime_network_cleanup_test.go)通过；不改变准确Job/owner和未知清理占用。旧测试seam与provider缺失夹具复核，不放宽真实保护。
+- ENV-001/002/DATA-001：[`production目录批次回归`](../internal/workspace/batch_test.go)使用实际Windows空目录，源合成登录文件未动，clone新seed/ref，31项分页/重复请求通过；百万项仍只虚拟预览，不冒称实际规模。
+- BKP-001/CORE-001/PRX-001：[`预检回归`](../internal/workspace/restore_preview_test.go)核对同精确build不同ID候选且错hash拒绝；真实DPAPI当前用户可用、拒解注入后提示重输，密文原样/响应无秘密。不是跨SID实测。恢复/回收/迁移新增硬中断结果见报告。
+- DOC-001/UX-001：候选NSIS、窗口/前端/manifestchannel三层标记；新增USER_GUIDE和完整前端通知（含Vite helper），hash名单一致，无内核再分发。无点击安装路径绑定外部包SHA/源码、先拒已有数据/安装/注册/快捷方式、只读UIA/SQLite与带nonce空库API；实际安装结果另记，不当作人工流程或干净机器。
+
+### T11 隔离可行性增量（历史独立实验，不覆盖当前正式结果）
+
+ENV-001/ENV-003/UX-001/CK-001/CORE-001：阶段4[FIFO及保护链集成](verification/T14.md)已实现并局部通过，真实Cookie双环境隔离和148→150代理迁移/备份回退已验证；完整远端及人工验收待补。
 
 当前ENV-003/PRX-001追加[正式故障恢复验证](verification/T11-recovery.md)：上游断开、实际listener失去/旧端口接管、管理器硬退出、授权后中断及A/B独立均有本机局部结果；原地资源清理重试已补，外部全路径仍待验。下列独立实验不是这次生产结果的替代。
 
@@ -46,37 +54,37 @@ ENV-001/ENV-003/UX-001/COOKIE-001/CORE-001：阶段4[FIFO及保护链集成](ver
 - ENV-003、PRX-001：[`资源收尾`](../internal/kernel/runtime_lifecycle_windows.go)确认Job空及通道清理成功后才释放目录，workspace保留无PID通道占用/重试，页面按当前`resourcesPending`显示重试关闭；应用退出允许重试迟到owner并等待迁移资源退出，真实崩溃根因保持。新增7内核+8服务+1adapter回归仅编写，测试包/TS仅编译通过；真实操作未验收。
 - PRX-001、ENV-003：[获准BFE实验结果](verification/T11-bfe-stop-observations.json)为提升OpenService组合权限申请被拒（5），实际STOP/START各0次，BFE保持RUNNING。健康基线普通socket/DNS对照到达、AC全0；临时Job/容器/目录已清理。没有故障窗口或恢复guard运行证据，T11及后续完整代理交付仍受阻。
 
-### T21 诊断与指南独立部分（本地源码，未运行验收）
+### T21 诊断与指南（服务回归通过，完整交付待验）
 
 - UX-001、DOC-001：[`NativeDiagnostics`](../src/components/NativeDiagnostics.tsx)接活动页/数据库打开失败对话框，冻结预览、原请求核实及明确结束核实；[`adapter`](../src/application/diagnostics-client.ts)跨离页保留未知状态。原native活动原文导出改为脱敏报告。
 - DATA-001：[`独立白名单报告`](../internal/workspace/diagnostics_report.go)及[`host保存`](../internal/workspace/diagnostics_host.go)不读取浏览内容/凭据、不flush待写状态；工作区外新文件、原字节SHA及应用会话内回执去重。签名not-checked不冒充签名检测。
 - DOC-001与12需求：[使用指南](USER_GUIDE.md)接入指南页及下载；旧[安装说明](INSTALLATION.md)标明旧包适用范围。[T21](verification/T21.md)保留源码/验收区分，T11/T14及完整安装包证据仍缺，未计入完成。
 
-### T20 选定迁移与升级前恢复（本地源码，未运行验收）
+### T20 选定迁移与升级前恢复（本机实跑通过，完整验收待补）
 
 - CORE-001：[`schema10/默认构建与引用保护`](../internal/workspace/kernel_default.go)仅影响后续草稿；当前/历史/默认/迁移备份引用全部参与删除保护，缺失构建不替代。
 - FP-002、FP-001：[`预览与受理`](../internal/workspace/migration_api.go)展示精确版本/能力/参数差异，原seed稳定；[`副本诊断`](../internal/kernel/migration_probe_windows.go)读取实际值及持久合成存储，试用明确正常退出后才允许切换。
 - BKP-001、DATA-001：[`完整备份与副本`](../internal/workspace/migration_backup.go)、[`目录与配置决策`](../internal/workspace/migration_commit.go)及[`启动恢复`](../internal/workspace/migration_recovery.go)选择完整侧；兼容性回滚复用正式完整恢复，原备份SHA绑定、不把旧内核指向升级数据。
-- UX-001：[`原生迁移页`](../src/components/NativeMigrationManager.tsx)独立查找、明确确认及原任务核实；离页/迟到响应、同恢复请求重试和空响应均保护原owner。[服务/输出/adapter、硬退出和两真实构建入口](verification/T20.md)仅编写未执行；T11代理门禁保持，静态通过不算验收。
+- UX-001：原生迁移页保持原请求/owner；[服务回归、两真实代理build及4个Kill切点](verification/V1-final.md)已实跑，人工UI/外部仍待验，不解除任何逐会话门禁。
 
-### T19 回收与找回（本地源码，未运行验收）
+### T19 回收与找回（服务/目录/10切点通过，完整验收待补）
 
 - DATA-001、ENV-001：[`schema9/回收日志`](../internal/workspace/recycle_storage.go)、[`明确ID影响/确认`](../internal/workspace/recycle_api.go)、[`逐项事务`](../internal/workspace/recycle_commit.go)和[`目录worker`](../internal/workspace/recycle_worker.go)；回收配置保原身份与引用，正常业务只取active，找回推进环境修订阻旧任务ABA。
 - DATA-001、FP-001、CORE-001：原目录对象/清单随同卷移动，找回保seed、档案revision/hash、精确内核和数据引用；永久删除仅授权回收树，未知路径/文件、重解析、硬链接、占用和delete-pending保持保护，共享内核/代理及备份不删。
 - UX-001：[`原生回收界面`](../src/components/NativeRecycleManager.tsx)提供分页、具体ID、数据/备份影响、明确永久删除、取消与原任务核实；[`重开`](../internal/workspace/recycle_recovery.go)先核对唯一writer，再完成其余启动加载，失败不假报已停止或解锁。
-- [测试/待验收清单](verification/T19.md)：服务、目录、adapter、十切点硬退出及真实浏览器组合入口均仅编写；必要生产静态/类型不代替实际能力验收。
+- [清单](verification/T19.md)：服务/实际Windows目录、10个Kill切点及真实三存储回收/找回已通过；人工永久删除/资源故障与安装版保持待验。
 
-### T18 中断恢复（开发中，未运行验收）
+### T18 中断恢复（主切点/回滚再中断通过，完整验收待补）
 
 - BKP-001、ENV-003：[`journal启动恢复`](../internal/workspace/restore_recovery.go)、[`配置原/新摘要`](../internal/workspace/restore_consistency.go)及[`目录收尾`](../internal/workspace/restore_worker.go)从DB标记选择完整侧；其他启动记录恢复完之前保全局维护保护，不自动读取原包或开启浏览器。
 - DATA-001、ENV-003：[`现有目录检查`](../internal/kernel/profile_inspect_windows.go)仅打开既有目录/锁，结合初始化事实和准确Job，不在回滚后创建新的浏览目录；启动加载独立内存容器锁外执行，完成前不落恢复终态。
-- UX-001：恢复页显示中断阶段、自动恢复结果、占用/存储修复与明确重试；坏日志在桌面入口保留安全错误，原数据不重置。[`硬中断测试入口`](../internal/workspace/restore_recovery_test.go)是真正独立Process.Kill，仅合成root、默认需显式开关，当前**没有执行**；[待验收](verification/T18.md)。
+- UX-001：恢复页中断/占用重试和坏日志不重置；[`硬中断`](../internal/workspace/restore_recovery_test.go)及真实五主切点组合、本轮回滚再中断已执行通过，全部自有合成root；人工/实际权限空间仍待验。
 
-### T17 完整恢复与执行回滚（本地源码完成，未运行验收）
+### T17 完整恢复与执行回滚（服务/选定A真实恢复通过）
 
 - BKP-001、DATA-001：[`受理/幂等`](../internal/workspace/restore_accept.go)、[`持久日志`](../internal/workspace/restore_storage.go)、[`执行/回滚`](../internal/workspace/restore_worker.go)、[`Windows目录对象`](../internal/backup/switch_windows.go)及[`逻辑配置事务`](../internal/workspace/restore_commit.go)；同卷旧副本、提交标记与配置同事务，不把混合状态发布成功。
 - FP-001：恢复原ID/seed/参数/历史，精确构建可映射本机ID，编号/配置revision与身份分开；真实目录提升初始化事实，旧更强事实保留。包外环境与本机历史不被清空。
-- UX-001：[`native恢复执行`](../src/components/NativeRestoreExecution.tsx)与[`Wails原请求保护`](../src/application/wails-adapter.ts)区分受理、进度、回滚、未知保护和完成。已有[`服务回归`](../internal/workspace/restore_execution_test.go)、[`目录回归`](../internal/backup/switch_windows_test.go)及adapter用例仅编写未执行；[验收清单](verification/T17.md)。
+- UX-001：native与adapter区分受理/回滚/未知/完成；服务/目录/adapter及选定A三存储恢复已通过，[清单](verification/T17.md)保留人工/多真实环境与实际资源故障边界。
 
 ### T01 应用契约先导（2026-09-30；原型层级）
 
@@ -109,60 +117,60 @@ UX-001、DOC-001 的发布入口在 [安装器](../build/windows/installer/prism
 - FP-001、ENV-002：[`固定档案服务`](../internal/workspace/fingerprints.go)与[`事务保存`](../internal/workspace/service.go)实现只读生成、服务预览/hash/原基线校验、schema3历史、同内核回滚新修订及持久幂等。名称/代理不换seed、不增加档案修订；旧pending/ID/seed/生成器版本迁移保留，已有数据引用不变。host-only忙租约供T06接入，不冒充正常运行监督器。
 - FP-002：[`能力白名单编译器`](../internal/kernel/fingerprint_windows.go)只下发所选构建已核验身份/seed/网站语言/时区/CPU参数；菜单语言保持system，GPU/字体等未实测具体值不伪造，窗口不写作屏幕。共享[`预览历史面板`](../src/components/FingerprintRevisionPanel.tsx)区分可配置、seed生成、真实环境和未验证，生成不启动浏览器。
 - [`服务回归`](../internal/workspace/fingerprints_test.go)、[`Demo回归`](../tests/application.test.ts)及[`Wails模式/白名单`](../tests/wails-adapter.test.ts)覆盖事务失败/重试/幂等、原预览冲突、同内核限制、特殊时区拒绝和历史重开。37项相关JS、类型与kernel/workspace Go通过；三项评审P2已修复。
-- [`真实保存档案回读`](../internal/workspace/fingerprints_real_test.go)与[实际样本](verification/T05-saved-profile-observations.json)证明已保存→重生成→回滚→服务重开仍复用原输入，合成文件/引用保持、诊断进程正常退出。样本是2026-09-30评审前工作树结果，不能冒充最终版本全量通过；真实Cookie与正常目录会话未验收。2026-10-01最终复验因C盘不足失败，随后用户要求先开发、停止CI/完整回归；新增UI仍未操作，[逐票记录](verification/T05.md)。
+- [`真实保存档案回读`](../internal/workspace/fingerprints_real_test.go)在本轮最新代码15.12秒通过，保存→重生成→回滚与服务重开保原输入/引用、实际148/CPU8/语言时区读回且正常退出。9月30日样本与10月1日空间失败保留历史，不覆盖新结果；人工抽屉仍未操作，[逐票记录](verification/T05.md)。
 
-### T06 正常会话与独立目录（本地实现已提交，未运行验收）
+### T06 正常会话与独立目录（本机实跑通过，完整验收待补）
 
-- ENV-003、CORE-001：[`运行服务`](../internal/workspace/runtime.go)读取固定档案/实际构建与数据引用，持久受理/去重，串行昂贵启动。客户端仅环境ID/requestId和明确direct；已绑定代理阻断，不接受路径/参数/PID覆盖。进程/控制通道就绪才running，真实状态经Wails/App刷新；正常停止只作用于本次自有Job，超时/清理未确认保留busy。
-- DATA-001：[`长期内核会话`](../internal/kernel/runtime_windows.go)、[`实际目录锁`](../internal/kernel/profile_lock_windows.go)持有实际目录与不可变文件pins，拒绝非法/链接路径及硬链接锁文件，Job全树退出才释放。不删除正常profile；停止/重开保持保存seed与数据引用，当前未以运行证据核验此结论。
-- 新增[`服务回归`](../internal/workspace/runtime_test.go)、[`目录用例`](../internal/kernel/profile_lock_windows_test.go)、adapter回归与[`A/B真实Cookie/LocalStorage/IndexedDB及重开`](../internal/workspace/runtime_real_test.go)仅编写，尚未运行。该真实用例需要独立开关，会打开可见窗口，当前不自动执行。用户先开发的规则与[剩余验收](verification/T06.md)保留，不能据源码入口声称#7已完成。
+- ENV-003/CORE-001：[`运行服务`](../internal/workspace/runtime.go)按固定档案/构建/ref持久去重、FIFO启动；只接受环境/request/revision/purpose与匹配保存绑定的direct/proxy，不接受路径/参数/PID覆盖。正式proxy逐会话保护，就绪才running，准确Job全树退出/清理确认才空闲。
+- DATA-001：长期会话/目录pins拒非法、链接与硬链接，Job全树退出才释放；正常profile不删，原seed/ref和三种存储停止重开已实跑核验。
+- 服务/目录/adapter、A/B真实三存储隔离和重开均已有通过结果；正式proxy与显式direct证据分开，人工UI未自动执行。[剩余验收](verification/T06.md)不据源码关闭#7。
 
-### T07 异常监督与重开核对（已实现，未运行验收）
+### T07 异常监督与重开核对（后台/根故障通过，实际ForceStop待验）
 
 - ENV-003、DATA-001：[`监督器`](../internal/workspace/runtime_supervisor.go)区分崩溃/断管/退出未确认，只在普通停止失败后允许指定当前Job结束；[`持久恢复`](../internal/workspace/runtime_persistence.go)与[`Windows身份核对`](../internal/kernel/runtime_recovery_windows.go)结合创建时间、session和实际锁，不接管裸PID、不按文件年龄删除锁。session/任务/活动同事务，存储失败保持保护及待写结果。
 - UX-001：Wails/App提供明确核对和指定会话结束及确认，显示安全错误/退出码/下一步；待核对即使无PID仍锁关键配置。活动使用environmentId/sessionId，旧记录不能控制后来新开的浏览器；批量关闭不自动强杀。
-- [`15条监督器用例`](../internal/workspace/runtime_supervisor_test.go)、[`3条Windows身份/锁/Job用例`](../internal/kernel/runtime_recovery_windows_test.go)及3条新增adapter回归仅编写，全部未运行；重开须原进程身份/实际锁与QUERY核对的确切Job资源均满足，不能以根退出代替子树退出。没有实际崩溃/重开/强制结束或新页面证据，[清单](verification/T07.md)。
+- 监督器/Windows身份/adapter已后台通过；实际A根故障与B独立、旧session拒绝及管理器Kill有局部结果，普通停止失败后的实际ForceStop与人工仍待验。重开始终核对准确Job全树，不以根退出替代；[清单](verification/T07.md)。
 
-### T08 原生代理配置与前检（已实现，未运行验收）
+### T08 原生代理配置与前检（后台/DPAPI通过，外部与人工待验）
 
 - PRX-001：[`解析`](../internal/proxy/parse.go)与[`导入/编辑/删除服务`](../internal/workspace/proxies.go)分离；URI/兼容文本/IPv6，原行号/错误和共享重复组，选择有效行提交。schema5及[`受保护存储`](../internal/workspace/proxy_storage.go)的user DPAPI密文引用、HMAC请求去重、事务替换/回滚、修订和引用保护，普通响应无用户名密码，不重生成环境seed。
 - PRX-001、UX-001：[`HTTP/HTTPS前检`](../internal/proxy/check.go)的连接/TLS/隧道认证/目标访问/实际出口与时刻，[`异步终态`](../internal/workspace/proxy_checks.go)的取消/有界资源、结果待保存不重发网络及重开中断；活动关联真实代理operation错误，不把失败文案投影成功。SOCKS5可保存、检查不支持，不跳TLS或静默直连。
-- [`NativeProxyManager`](../src/components/NativeProxyManager.tsx)和Wails安全字段接入native专用路由；keep/replace/clear避免空投影回填认证，错误/未选行保留，清理输入与过期预览，删除确认与引用提示。独立网页原型仍为demo。7条代理库/7条服务/3条adapter回归仅编写未执行，无新UI/实际公共出口证据，[清单](verification/T08.md)。本票不是T09浏览器代理通道或T11断线保护。
+- NativeProxyManager/Wails安全字段接native，keep/replace/clear不从投影回填认证；代理库/服务/adapter与真实Windows DPAPI通过。网页原型仍demo，新UI/独立公共出口待验，[清单](verification/T08.md)。本票不代替T09/T11。
 
-### T09 独立认证代理通道（已实现，未运行验收）
+### T09 独立认证代理通道（后台/protected本机通过，外部与人工待验）
 
 - PRX-001、ENV-003：[`桥接`](../internal/proxy/bridge.go)、[`同通道前检`](../internal/proxy/bridge_check.go)、[`运行接入`](../internal/workspace/runtime_network.go)；固定HTTP/HTTPS上游、独立session监听/生命周期，HTTP转发、HTTPS目标CONNECT与代理TLS分开，失败不直接拨号目标。报告仅安全ChannelID/修订/阶段/时间，秘密不进入参数/RPC。
 - PRX-001、DATA-001：[`Windows调用进程核对`](../internal/kernel/proxy_guard_windows.go)和创建前QUERY副本绑定；仅当前host+token前检或准确Job客户端，其他进程拒绝。创建后身份读取失败仍保留准确Job/目录资源直到全树确认，锁外解密不阻塞其他查询/停止；重开只核对不复活桥。
-- UX-001、ENV-003：[`NativeRuntimeNetwork`](../src/components/NativeRuntimeNetwork.tsx)和App固定direct/proxy策略、未绑定确认直连；安全报告与会话channel/修订错配拒绝。6条桥接/3条内核/8条服务/2条adapter回归仅编写未执行，实际Windows/普通用户沙箱/API/网络/新页面未验证；[清单](verification/T09.md)，T11不因参数或前检通过。
+- UX-001/ENV-003：固定保存direct/proxy策略，未绑定才确认直连；错channel/修订拒绝。桥/内核/服务/adapter通过，正式148代理与保沙箱本机链路实跑；外部认证/出口/换代理与人工仍待验，[清单](verification/T09.md)。
 
-### T10 SOCKS5与远端目标解析（已实现，未运行验收）
+### T10 SOCKS5与远端目标解析（后台通过，真实SOCKS5/DNS待验）
 
 - PRX-001、ENV-003：[`SOCKS5`](../internal/proxy/socks5.go)、Bridge及服务，RFC1928/1929指定方法不降级、IDNA DOMAINNAME远端目标DNS/IPv4/IPv6字节，HTTP origin-form/HTTPS隧道不漏认证、只拨上游；BND不当出口IP，错误有准确类型。
 - PRX-001：导入/replace协议校验，存储解码中性，keep不解密/改写；切协议不兼容建桥前PROXY_AUTH_INVALID。独立检查临时Bridge，normalStart自己的新桥同通道重检；schema5表不变，安全resolutionPolicy可选，RPC不能覆盖DNS/降级。
-- UX-001、ENV-003：[`共享阶段`](../src/application/proxy-network.ts)及native两页显示策略/字节范围/计数、不加密链路及代理host/目标DNS区分。7条代理库/6条服务/2条adapter回归仅编写未执行，[清单](verification/T10.md)，无真实DNS/Windows浏览器/页面，T11未通过。
+- UX-001/ENV-003：共享阶段区分代理host/目标DNS、认证链路；库/服务/adapter回归通过，真实SOCKS5浏览器和独立DNS/IPv6/UDP及人工页待验，[清单](verification/T10.md)。
 
-### T11 网络故障/门禁（部分实现，系统隔离未实现）
+### T11 网络故障/门禁（正式接入/本机故障通过，远端待验）
 
 - ENV-003、PRX-001：[`闭锁/巡检`](../internal/proxy/bridge_watch.go)及准确Job独立停止，不等服务锁/DB；请求取消/上传故障不误关整个桥。确认全树及桥退出前保护原数据，A闭锁不更改B，普通前检错误不冒充运行故障。
 - ENV-003、UX-001：[`网络根因`](../internal/workspace/runtime_network_fault.go)、持久化/恢复与native说明；network_error及清理阶段、启动含nil process真实闭锁、ForceStop/重开保根因；未终结Stop的预留与error展示分离，终态保存前不能被新Start替换。
-- PRX-001：[`双层门禁`](../internal/kernel/network_protection.go)缺少已验证全路径边界时真实代理Start拒绝，独立检查不解锁。7桥/2内核/9服务/1adapter回归仅编写，[清单](verification/T11.md)。用户许可管理员安装不等于已集成WFP/DNS/崩溃隔离；本票不记完整/验收。
+- PRX-001：双层门禁与正式owner、同package桥/准确Job/实际前检绑定，缺失失败未知拒绝；正式启动/故障/恢复及服务回归通过，独立检查不解锁。外部全路径/跨登录及人工待验，本票不记完整。
 
-### T12 指定环境Cookie导入（源码已编写，未运行验收）
+### T12 指定环境Cookie导入（双真实会话/后台通过，完整验收待补）
 
 - CK-001：[`解析`](../internal/cookies/parse.go)与[`安全预览`](../internal/workspace/cookie_import.go)分离；环境/修订/session绑定，空值/JSON-vs-Netscape时间/hostOnly/安全属性/分区/冲突和不支持项明确。写前拒会改变另一键的路径/作用域，现存冲突未知不填0，不持久化秘密。
 - CK-001、DATA-001：[`窄内核控制`](../internal/kernel/cookies_windows.go)单条读→同键matchskip→写→完整读回组合串行，scope为准确私有pipe；不任意CDP/SQL/URL，无结果/属性差异不计verified。明确全量清空才碰无关键；失败重试只合并、重开不自动重放。
 - CK-001、UX-001：[`任务/观测`](../internal/workspace/cookie_worker.go)部分成功/unknown、取消/落盘pending与lease，退出/核对不提前释放；[`native对话框`](../src/components/NativeCookieImport.tsx)明确空白启动原链、不绕代理门禁，隐藏输入/值与安全逐项结果，关闭后可取消。
-- 14解析/2内核/8服务/3adapter回归仅编写未运行，Go测试包未编译；真实写后读回、持久化/分区/expiry/A-B隔离及新UI未验收，[清单](verification/T12.md)。
+- 解析/内核/服务/adapter回归及双protected真实写后读回/A-B独立通过；正常资源持有/proxy空白启动UI模型已修并定向通过。分区/到期/清空/取消全真实矩阵及人工窗口见[缺口](verification/T12.md)。
 
-### T13 持久创建/复制/代理分配与真实分页（源码已编写，未运行验收）
+### T13 持久创建/复制/代理分配与真实分页（后台/production目录通过）
 
 - ENV-001、ENV-002：[`批次计划`](../internal/workspace/batch_preview.go)、[`逐项worker`](../internal/workspace/batch_worker.go)及schema6，创建大count虚拟预览、不预展开，环境/结果/统计同事务，取消/资源不足保已提交项；重开中断、明确继续索引跳过完成项、不重做身份。提交不明按[`受理核实`](../internal/workspace/batch_acceptance_recovery.go)挂原worker，未核实不调度。
 - ENV-002、FP-001、DATA-001：克隆配置新ID/seed并重新编译原精确构建，独立[`可见空目录`](../internal/kernel/empty_profile_windows.go)与journal归属marker，不复制源Cookie/账号/网站数据、不清空外来目录；普通写入也受[`seed预约`](../internal/workspace/seed_ownership.go)与owner lease保护，不把pins称同SID强隔离。
 - PRX-001：预览冻结明确ID→节点与修订，共享/不绑定总数确认；Assign逐项忙/旧修订冲突、只改proxy绑定/JSON和环境修订，seed/档案不变、不自动轮询复用。proxy网络编辑不以UsedBy展示样本裁定忙状态，T11启动门禁保留。
 - ENV-001、UX-001：[`服务端列表分页`](../internal/workspace/environment_query.go)与[`native批次对话框`](../src/components/NativeBatchDialog.tsx)，统计/筛选来自实际服务、档案/ref/session随一页加载；[`旧尝试明细`](../internal/workspace/batch_history.go)只用原事件和此前完成项，不混后来成功。按plan/op/offset/选择代次处理迟到结果、终态后读最终页、modal键盘保护；跨页启动每个明确ID重新读真实策略/修订，缺失不作直连。
-- 16服务/3目录/6adapter回归源码仅编写未执行，Go测试包未编译；真实规模/目录/取消重开/分页/新UI尚未验收，源码与静态核对不代表通过，[清单](verification/T13.md)。
+- 服务/目录/adapter通过；本轮production clone新seed/空目录与源合成文件保留、31项实际目录/分页/请求去重通过。百万虚拟预览不冒充真实规模，人工及资源不足待验，[清单](verification/T13.md)。
 
-### T16 恢复只读预检（源码已完成，未执行验收）
+### T16 恢复只读预检（后台/DPAPI提示与精确build候选通过）
 
 - BKP-001：[`严格包读取`](../internal/backup/read.go)、[`配置校验`](../internal/workspace/restore_configuration.go)与[`预览`](../internal/workspace/restore_preview.go)；独立分发避免待写日志flush，固定选包/完整摘要/可信schema与记录闭包，当前数据库及浏览目录只读。
 - CORE-001、FP-001、PRX-001：原ID/seed与历史、冲突/覆盖影响、同精确hash内核映射与只读文件核对、当前用户凭据可用性；不生成新身份、不运行内核或网络。
@@ -175,7 +183,7 @@ UX-001、DOC-001 的发布入口在 [安装器](../build/windows/installer/prism
 - BKP-001、DATA-001：[`只读数据固定`](../internal/backup/profile_windows.go)、[`独立ZIP/全量读回`](../internal/backup/format.go)与[`原句柄发布`](../internal/backup/output_windows.go)，拒links/hardlinks/变化、保空目录，manifest逐文件摘要；临时文件非成功包，不覆盖工作区或已有目标，不称同SID恶意writer强隔离。
 - UX-001、BKP-001：[`NativeBackupManager`](../src/components/NativeBackupManager.tsx)正常停止确认/全量与明确选定/只返回host token和安全名称/取消与历史读回/实际published摘要；浏览数据敏感和同Windows用户限制可见，不携带内核、不承诺登录便携。旧原型JSON不进入native，不标恢复已实现。
 - 独立[`初始化事实`](../internal/workspace/data_initialization.go)同事务保存、单调不重置；启动受理/最新失败不当未初始化证明，迁移旧环境保持未知、正常停止后只重读原冻结ID，worker锁外不碰mutable observation。Adapter旧响应须仍有原pending归属，错误模式/报告不推未受理，页面读取核实原受理统一消费旧输出授权。
-- 7文件/包+19服务+9adapter回归仅编写未执行，Go测试包未编译；17:44生产static/源码测试TS通过、17:47文档/格式通过，首轮2 P1+8 P2及第二轮5 P2源码闭环，文件/后端/UI最终只读均无剩余可信P1/P2。四项真实验收未执行，[清单](verification/T15.md)。
+- 文件/包/服务/adapter后台通过，真实选定A三存储导出/恢复实跑；all11非页8及DPAPI原密文/ref由服务回归核对。多真实运行环境正常停后备份和实际空间/权限失败、人工仍待验，[清单](verification/T15.md)。
 
 以下关联于 2026-09-30 发布，表示计划实现范围，不能据此判断已完成。当前状态与 blocking 依赖以 GitHub 为准；完整顺序见 [开发票据索引](ISSUES.md)，共同范围见 [总规格 Issue](https://github.com/axgiroud312-byte/prism-local-browser/issues/1)。
 
@@ -194,7 +202,7 @@ UX-001、DOC-001 的发布入口在 [安装器](../build/windows/installer/prism
 | UX-001   | [T01 · #2](https://github.com/axgiroud312-byte/prism-local-browser/issues/2)、[T02 · #3](https://github.com/axgiroud312-byte/prism-local-browser/issues/3)、[T03 · #4](https://github.com/axgiroud312-byte/prism-local-browser/issues/4)、[T07 · #8](https://github.com/axgiroud312-byte/prism-local-browser/issues/8)、[T08 · #9](https://github.com/axgiroud312-byte/prism-local-browser/issues/9)、[T14 · #15](https://github.com/axgiroud312-byte/prism-local-browser/issues/15)、[T18 · #19](https://github.com/axgiroud312-byte/prism-local-browser/issues/19)       | [T21 · #22](https://github.com/axgiroud312-byte/prism-local-browser/issues/22) |
 | DOC-001  | [T01 · #2](https://github.com/axgiroud312-byte/prism-local-browser/issues/2)、[T03 · #4](https://github.com/axgiroud312-byte/prism-local-browser/issues/4)                                                                                                                                                                                                                                                                                                                                                                                                                 | [T21 · #22](https://github.com/axgiroud312-byte/prism-local-browser/issues/22) |
 
-## 尚需桌面实现与真实验证
+## 完整验收证据要求（已有部分结果见集中报告，非全部尚未实现）
 
 | 范围                             | 关联需求          | 完成所需证据                                                                                    |
 | -------------------------------- | ----------------- | ----------------------------------------------------------------------------------------------- |

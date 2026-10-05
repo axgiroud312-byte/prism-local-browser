@@ -12,7 +12,12 @@ SetCompressor /SOLID zlib
 !include "nsDialogs.nsh"
 !insertmacro VersionCompare
 
-Name "棱镜浏览器 · 开发预览"
+!ifdef V1_CANDIDATE
+!define BUILD_LABEL "首版候选"
+!else
+!define BUILD_LABEL "开发预览"
+!endif
+Name "棱镜浏览器 · ${BUILD_LABEL}"
 OutFile "${OUTPUT_FILE}"
 InstallDir "$LOCALAPPDATA\Programs\PrismBrowserPreview"
 VIProductVersion "0.3.0.${PREVIEW_REVISION}"
@@ -24,8 +29,8 @@ VIAddVersionKey "LegalCopyright" "MIT; third-party components retain their licen
 !define PRODUCT_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\PrismBrowserPreview"
 !define SHORTCUT_NAME "棱镜浏览器 · 开发预览.lnk"
 !define MUI_ABORTWARNING
-!define MUI_WELCOMEPAGE_TITLE "棱镜浏览器 · 开发预览 ${RELEASE_VERSION}"
-!define MUI_WELCOMEPAGE_TEXT "仅为当前 Windows 用户安装，无需管理员权限。$\r$\n$\r$\n本包只交付桌面工作台和 SQLite 配置，不包含 fingerprint-chromium；真实浏览器、代理、Cookie 与备份尚未接入。$\r$\n$\r$\n这是未签名开发预览。安装/升级不会清除本机档案，请先正常关闭工作台。"
+!define MUI_WELCOMEPAGE_TITLE "棱镜浏览器 · ${BUILD_LABEL} ${RELEASE_VERSION}"
+!define MUI_WELCOMEPAGE_TEXT "仅为当前 Windows 用户安装，无需管理员权限。$\r$\n$\r$\n包含本机环境、代理、Cookie、备份恢复及队列实现；fingerprint-chromium 需单独安装。本机受控能力已有验证，独立远端出口、人工界面与干净机器验收仍待完成，仅用于合成数据检查。$\r$\n$\r$\n这是未签名候选/开发预览，不是正式发布。安装/升级不会清除本机档案，请先正常关闭工作台。"
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_LICENSE "${PAYLOAD_DIR}\LICENSE"
 !insertmacro MUI_PAGE_INSTFILES
@@ -102,9 +107,11 @@ Section "Install"
   File "${PAYLOAD_DIR}\prism-maintenance.exe"
   File "${PAYLOAD_DIR}\LICENSE"
   File "${PAYLOAD_DIR}\THIRD_PARTY_NOTICES.md"
-  File "${PAYLOAD_DIR}\GO-THIRD-PARTY-NOTICES.txt"
+   File "${PAYLOAD_DIR}\GO-THIRD-PARTY-NOTICES.txt"
+   File "${PAYLOAD_DIR}\FRONTEND-THIRD-PARTY-NOTICES.txt"
   File "${PAYLOAD_DIR}\NSIS-LICENSE.txt"
-  File "${PAYLOAD_DIR}\INSTALLATION.md"
+   File "${PAYLOAD_DIR}\INSTALLATION.md"
+   File "${PAYLOAD_DIR}\USER_GUIDE.md"
   File "${PAYLOAD_DIR}\release.json"
   ${If} ${Errors}
     !insertmacro Fail 26 "程序文件写入失败，安装未完成。已有版本和用户数据仍在，请释放空间或检查权限后重试。"

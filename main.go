@@ -24,6 +24,7 @@ var frontend embed.FS
 
 // Numeric PE version is 0.3.0.0; preview revision is recorded separately by the build.
 var applicationVersion = "0.3.0-preview.1"
+var applicationChannel = "development-preview"
 
 type DesktopApp struct {
 	service      *workspace.Service
@@ -120,8 +121,12 @@ func main() {
 		}
 		return wailsruntime.SaveFileDialog(desktopContext, wailsruntime.SaveDialogOptions{Title: "保存脱敏诊断（请选择新的 JSON 文件）", DefaultFilename: "prism-diagnostics.json", Filters: []wailsruntime.FileFilter{{DisplayName: "脱敏诊断 JSON", Pattern: "*.json"}}})
 	})
+	label := "开发预览"
+	if applicationChannel == "v1-candidate" {
+		label = "首版候选"
+	}
 	err = wails.Run(&options.App{
-		Title: "棱镜浏览器 · 开发预览 " + applicationVersion, Width: 1440, Height: 1000, MinWidth: 720, MinHeight: 600,
+		Title: "棱镜浏览器 · " + label + " " + applicationVersion, Width: 1440, Height: 1000, MinWidth: 720, MinHeight: 600,
 		AssetServer: &assetserver.Options{Assets: assets}, Bind: []interface{}{app},
 		OnStartup: func(ctx context.Context) { desktopContext = ctx },
 		OnShutdown: func(context.Context) {

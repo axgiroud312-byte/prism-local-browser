@@ -18,7 +18,7 @@ import (
 )
 
 var releasePattern = regexp.MustCompile(`^0\.3\.0-preview\.[1-9][0-9]{0,4}$`)
-var distributedNames = []string{"prism-browser.exe", "prism-maintenance.exe", "LICENSE", "THIRD_PARTY_NOTICES.md", "GO-THIRD-PARTY-NOTICES.txt", "NSIS-LICENSE.txt", "INSTALLATION.md"}
+var distributedNames = []string{"prism-browser.exe", "prism-maintenance.exe", "LICENSE", "THIRD_PARTY_NOTICES.md", "GO-THIRD-PARTY-NOTICES.txt", "FRONTEND-THIRD-PARTY-NOTICES.txt", "NSIS-LICENSE.txt", "INSTALLATION.md", "USER_GUIDE.md"}
 
 type releaseReceipt struct {
 	Version string `json:"version"`
