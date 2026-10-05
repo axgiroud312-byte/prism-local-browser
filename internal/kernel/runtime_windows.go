@@ -11,7 +11,6 @@ import (
 	"strconv"
 	"strings"
 	"sync"
-	"time"
 	"unsafe"
 
 	"github.com/axgiroud312-byte/prism-local-browser/internal/proxy"
@@ -49,6 +48,10 @@ type ManagedProcess struct {
 	lastSnapshot         RuntimeSnapshot
 	network              ManagedNetwork
 	networkCleanupFailed bool
+	control              managedProcessControl
+	exited               chan struct{}
+	jobExited            bool
+	cleanup              *managedCleanupAttempt
 }
 
 // Root death, control loss, and complete resource exit are distinct facts.
@@ -71,29 +74,32 @@ func (process *ManagedProcess) Alive() bool {
 
 func (process *ManagedProcess) Snapshot() RuntimeSnapshot {
 	process.mu.Lock()
-	defer process.mu.Unlock()
-	select {
-	case <-process.done:
-		return process.lastSnapshot
-	default:
+	result := process.lastSnapshot
+	if !process.jobExited {
+		if process.control.snapshot != nil {
+			result = process.control.snapshot()
+		} else {
+			result = process.pipe.snapshot()
+		}
 	}
-	return process.snapshotLocked()
-}
-
-func (process *ManagedProcess) snapshotLocked() RuntimeSnapshot {
-	state, err := windows.WaitForSingleObject(process.pipe.process, 0)
-	result := RuntimeSnapshot{RootAlive: err == nil && state == uint32(windows.WAIT_TIMEOUT), ControlReady: !process.pipe.writeLost.Load()}
+	result.NetworkCleanupFailed = process.networkCleanupFailed
+	process.mu.Unlock()
 	if process.network != nil {
 		result.ProxyError = process.network.Fault()
-		result.NetworkCleanupFailed = process.networkCleanupFailed
 	}
+	return result
+}
+
+func (p *pipeProcess) snapshot() RuntimeSnapshot {
+	state, err := windows.WaitForSingleObject(p.process, 0)
+	result := RuntimeSnapshot{RootAlive: err == nil && state == uint32(windows.WAIT_TIMEOUT), ControlReady: !p.writeLost.Load()}
 	select {
-	case <-process.pipe.readEnded:
+	case <-p.readEnded:
 		result.ControlReady = false
 	default:
 	}
 	if err == nil && state == windows.WAIT_OBJECT_0 {
-		result.ExitKnown = windows.GetExitCodeProcess(process.pipe.process, &result.ExitCode) == nil
+		result.ExitKnown = windows.GetExitCodeProcess(p.process, &result.ExitCode) == nil
 	}
 	return result
 }
@@ -109,98 +115,12 @@ func (p *pipeProcess) activeProcesses() (uint32, error) {
 	return accounting.ActiveProcesses, err
 }
 
-func (process *ManagedProcess) observeExit() {
-	// Closing a window is observable even without a Stop RPC. Keep the Job,
-	// directory locks and immutable file pins until every owned child is gone.
-	for {
-		process.mu.Lock()
-		state, err := windows.WaitForSingleObject(process.pipe.process, 100)
-		if err == nil && state == windows.WAIT_OBJECT_0 {
-			count, err := process.pipe.activeProcesses()
-			if err == nil && count == 0 {
-				process.lastSnapshot = process.snapshotLocked()
-				process.lastSnapshot.RootAlive, process.lastSnapshot.ControlReady, process.lastSnapshot.ResourcesExited = false, false, true
-				process.pipe.close()
-				process.release()
-				close(process.done)
-				process.mu.Unlock()
-				return
-			}
-		}
-		process.mu.Unlock()
-		time.Sleep(50 * time.Millisecond)
-	}
-}
-
-// Stop requests normal Browser.close. A timeout is NOT permission to kill and
-// does not release the data locks; the caller must retain the live session.
-func (process *ManagedProcess) Stop(ctx context.Context) error {
-	select {
-	case <-process.done:
-		return nil
-	case process.stopGate <- struct{}{}:
-		defer func() { <-process.stopGate }()
-	case <-ctx.Done():
-		return ctx.Err()
-	}
-	if err := process.pipe.beginCommand(ctx); err != nil {
-		select {
-		case <-process.done:
-			return nil
-		default:
-			return err
-		}
-	}
-	_, sendErr := process.pipe.sendContext(ctx, "Browser.close", map[string]any{}, "")
-	<-process.pipe.commandGate
-	if sendErr != nil {
-		select {
-		case <-process.done:
-			return nil
-		default:
-			return sendErr
-		}
-	}
-	select {
-	case <-process.done:
-		return nil
-	case <-ctx.Done():
-		return ctx.Err()
-	}
-}
-
-// Close is for failed startup/app shutdown and affects only this private Job.
-// It never searches by process name or closes an unrelated profile.
-func (process *ManagedProcess) Close() error {
-	process.mu.Lock()
-	select {
-	case <-process.done:
-		process.mu.Unlock()
-		return nil
-	default:
-	}
-	if err := windows.TerminateJobObject(process.pipe.job, 1); err != nil {
-		process.mu.Unlock()
-		select {
-		case <-process.done:
-			return nil
-		default:
-			return err
-		}
-	}
-	process.mu.Unlock()
-	_ = windows.CancelIoEx(windows.Handle(process.pipe.write.Fd()), nil)
-	_ = process.pipe.write.Close()
-	select {
-	case <-process.done:
-		return nil
-	case <-time.After(8 * time.Second):
-		return problem("PROCESS_STOP_TIMEOUT", "owned-job-not-empty", "本次进程树退出尚未确认，目录与档案锁仍保留。")
-	}
-}
-
 func LaunchManagedProfile(ctx context.Context, root string, record Record, profile ManagedProfile) (_ *ManagedProcess, resultErr error) {
-	if profile.Network != nil { if err := RequireProxyNetworkBoundary(); err != nil { return nil, err } }
+	if profile.Network != nil {
+		if err := RequireProxyNetworkBoundary(); err != nil {
+			return nil, err
+		}
+	}
 	if sessionID, err := uuid.Parse(profile.SessionID); err != nil || sessionID.String() != profile.SessionID {
 		return nil, problem("VALIDATION_FAILED", "invalid-session-id", "受控会话标识无效，未启动。")
 	}
@@ -233,9 +153,6 @@ func LaunchManagedProfile(ctx context.Context, root string, record Record, profi
 	}
 	var networkGuard *proxyJobGuard
 	release := func() {
-		if profile.Network != nil {
-			_ = profile.Network.Close()
-		}
 		if networkGuard != nil {
 			networkGuard.close()
 		}
@@ -290,27 +207,22 @@ func LaunchManagedProfile(ctx context.Context, root string, record Record, profi
 		return nil, problem("PROCESS_START_FAILED", "native-start-failed", "所选真实内核未能启动，未关闭沙箱或尝试其他内核。")
 	}
 	identityErr := err
-	var releaseOnce sync.Once
-	process := &ManagedProcess{pipe: p, done: make(chan struct{}), release: func() { releaseOnce.Do(release) }, stopGate: make(chan struct{}, 1), network: profile.Network}
+	process := newManagedProcess(p, profile.Network, release, pipeManagedControl(p))
 	go process.observeExit()
 	if profile.Network != nil {
 		go func() {
 			select {
 			case <-profile.Network.Failed():
-				if process.Close() != nil {
-					process.mu.Lock()
-					process.networkCleanupFailed = true
-					process.mu.Unlock()
-				}
+				_ = process.closeOwned(false)
 			case <-process.done:
 			}
 		}()
 	}
-	stopStartup := context.AfterFunc(ctx, func() { _ = process.Close() })
+	stopStartup := context.AfterFunc(ctx, func() { _ = process.closeOwned(false) })
 	defer func() {
 		stopStartup()
 		if resultErr != nil {
-			resultErr = errors.Join(resultErr, process.Close())
+			resultErr = errors.Join(resultErr, process.closeOwned(false))
 		}
 	}()
 	if err = lock.record(profile.EnvironmentID, profile.SessionID, p.pid, p.createdAt); err != nil {

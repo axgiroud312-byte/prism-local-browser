@@ -270,7 +270,7 @@ export default function App({ application }: { application: ApplicationService }
   const drawerRef = useRef(drawer);
   drawerRef.current = drawer;
   const drawerRuntime = drawer?.kind === "edit" ? workspace.runtimeSessions?.[drawer.environment.id] : undefined;
-  const profileBusy = nativeMode && !!drawerRuntime && (["starting", "running", "stopping"].includes(drawerRuntime.state) || !!drawerRuntime.pid || drawerRuntime.needsReconcile || drawerRuntime.persistencePending);
+  const profileBusy = nativeMode && !!drawerRuntime && (["starting", "running", "stopping"].includes(drawerRuntime.state) || !!drawerRuntime.pid || drawerRuntime.resourcesPending || drawerRuntime.needsReconcile || drawerRuntime.persistencePending);
   const previewOpenSequence = useRef(0);
   const fingerprintBusy = useRef(false);
   const [dialog, setDialog] = useState<Dialog | null>(null);
@@ -352,7 +352,7 @@ export default function App({ application }: { application: ApplicationService }
     latestOperationEvent.current = event;
     if (event) setBatch({ label: "创建环境", done: event.operation.completedIds.length, total: event.operation.total });
   }), [application]);
-  const nativeRuntimeActive = nativeMode && (!!workspace.migrationMaintenance || !!workspace.maintenance || !!workspace.recycleMaintenance || (workspace.restoreOperations ?? []).some(operation => !operationIsTerminal(operation)) || Object.values(workspace.runtimeSessions ?? {}).some(session => ["starting", "running", "stopping"].includes(session.state) || !!session.pid || session.needsReconcile || session.persistencePending) || (workspace.batchOperations ?? []).some(operation => !operationIsTerminal(operation)));
+  const nativeRuntimeActive = nativeMode && (!!workspace.migrationMaintenance || !!workspace.maintenance || !!workspace.recycleMaintenance || (workspace.restoreOperations ?? []).some(operation => !operationIsTerminal(operation)) || Object.values(workspace.runtimeSessions ?? {}).some(session => ["starting", "running", "stopping"].includes(session.state) || !!session.pid || session.resourcesPending || session.needsReconcile || session.persistencePending) || (workspace.batchOperations ?? []).some(operation => !operationIsTerminal(operation)));
   useEffect(() => {
     if (!nativeRuntimeActive || !application.refresh) return;
     let cancelled = false;
@@ -1414,16 +1414,19 @@ export default function App({ application }: { application: ApplicationService }
                                   <span className="cell-secondary runtime-recovery-note" role="status">结果待保存 · 修复存储后自动核对</span>
                                 ) : runtimeSession?.needsReconcile ? (
                                   <Button className="soft-primary compact" disabled={runtimeActionPending} onClick={() => void handleRuntimeSessionAction(e.id, runtimeSession.sessionId, "reconcile")}>核对会话</Button>
-                                ) : runtimeSession?.canForce ? (
-                                  <Button className="danger compact" disabled={runtimeActionPending || e.status === "stopping"} onClick={() => void handleRuntimeSessionAction(e.id, runtimeSession.sessionId, "force")}>强制结束</Button>
-                                ) : e.status === "running" || (nativeMode && (e.status === "starting" || !!runtimeSession?.pid)) ? (
+                                 ) : runtimeSession?.canForce ? (
+                                   <>
+                                     <Button className="stop-button compact" disabled={runtimeActionPending || e.status === "stopping"} onClick={() => void stop([e.id])}>重试关闭</Button>
+                                     <Button className="danger compact" disabled={runtimeActionPending || e.status === "stopping"} onClick={() => void handleRuntimeSessionAction(e.id, runtimeSession.sessionId, "force")}>强制结束</Button>
+                                   </>
+                                ) : e.status === "running" || (nativeMode && (e.status === "starting" || !!runtimeSession?.pid || runtimeSession?.resourcesPending)) ? (
                                   <Button
                                      className="stop-button compact"
                                      disabled={e.status === "stopping" || runtimeActionPending}
                                     onClick={() => stop([e.id])}
                                   >
                                     <Square size={12} />
-                                     {e.status === "starting" ? "取消启动" : "关闭"}
+                                     {e.status === "starting" ? "取消启动" : runtimeSession?.resourcesPending && e.status === "error" ? "重试关闭" : "关闭"}
                                   </Button>
                                 ) : (
                                   <Button

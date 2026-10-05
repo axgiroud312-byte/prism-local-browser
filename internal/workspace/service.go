@@ -74,6 +74,7 @@ type Service struct {
 	closeError         error
 	closeOnce          sync.Once
 	closeRequested     atomic.Bool
+	closeRetryActive   atomic.Bool
 	runtimePending     map[string]*runtimePendingWrite
 	runtimeResults     map[string]Operation
 	proxyImport        *proxyImportDraft
@@ -227,7 +228,11 @@ func (s *Service) Close() error {
 // Cancelling a waiter never abandons cleanup or claims the database is closed.
 // Every caller waits on the same completion; a timed-out close can be retried.
 func (s *Service) CloseContext(ctx context.Context) error {
-	s.closeOnce.Do(func() { s.closeRequested.Store(true); go s.beginShutdown() })
+	started := false
+	s.closeOnce.Do(func() { started = true; s.closeRequested.Store(true); go s.beginShutdown() })
+	if !started && ctx.Err() == nil {
+		s.retryRuntimeShutdown()
+	}
 	finished := s.closeDone
 	select {
 	case <-finished:
@@ -237,6 +242,40 @@ func (s *Service) CloseContext(ctx context.Context) error {
 	case <-ctx.Done():
 		return errors.New("controlled sessions have not all exited; cleanup continues and its resources are retained")
 	}
+}
+
+// A later explicit application-close request retries the retained owners,
+// including a channel-only owner registered after the first shutdown scan.
+// It never launches a new session or replaces the original completion signal.
+func (s *Service) retryRuntimeShutdown() {
+	select {
+	case <-s.closeDone:
+		return
+	default:
+	}
+	if !s.closeRetryActive.CompareAndSwap(false, true) {
+		return
+	}
+	go func() {
+		defer s.closeRetryActive.Store(false)
+		s.mu.Lock()
+		processes := []RuntimeProcess{}
+		for _, slot := range s.runtimeSlots {
+			if slot.process != nil {
+				processes = append(processes, slot.process)
+			}
+		}
+		if task := s.migrationTask; task != nil && task.process != nil {
+			processes = append(processes, task.process)
+		}
+		s.mu.Unlock()
+		var retries sync.WaitGroup
+		for _, process := range processes {
+			retries.Add(1)
+			go func() { defer retries.Done(); _ = process.Close() }()
+		}
+		retries.Wait()
+	}()
 }
 
 func (s *Service) beginShutdown() {
@@ -311,6 +350,23 @@ func (s *Service) closeResources(processes []RuntimeProcess, finished chan struc
 	}
 	shutdown.Wait()
 	s.workers.Wait()
+	// A failed migration trial can retain its owner after its worker ends.
+	// Keep shutdown and its explicit retry entrance alive until those resources
+	// really exit; worker completion alone is not release evidence.
+	s.mu.Lock()
+	retained := []RuntimeProcess{}
+	for _, slot := range s.runtimeSlots {
+		if slot.process != nil {
+			retained = append(retained, slot.process)
+		}
+	}
+	if task := s.migrationTask; task != nil && task.process != nil {
+		retained = append(retained, task.process)
+	}
+	s.mu.Unlock()
+	for _, process := range retained {
+		<-process.Done()
+	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.flushRuntimePersistence()
@@ -1290,7 +1346,7 @@ func (s *Service) viewPage(query EnvironmentQuery) (View, error) {
 	sessions := map[string]RuntimeSession{}
 	for _, environmentID := range ids {
 		if slot := s.runtimeSlots[environmentID]; slot != nil {
-			sessions[environmentID] = slot.session
+			sessions[environmentID] = runtimeSessionView(slot)
 		}
 	}
 	for index := range state.Environments {

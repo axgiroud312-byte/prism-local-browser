@@ -168,6 +168,8 @@ app-data/
 - schema5表不变，session JSON增networkFault：network_error、安全根因/观测时刻及stopping/stopped/exit-unconfirmed。旧Environment status仍error。含启动期间、未返回process的真实闭锁故障，清理/强制结束/重开均保留根因；copy-on-write保留先前阶段，失败落盘只重试持久化，不重发网络/终止。未終结Stop的预留不随error展示提前释放。
 
 2026-10-05生产接入准备：[`BridgeIngress`](../internal/proxy/bridge_ingress.go)以host-only listener/前检dialer成对提供会话入口，错误不退普通socket；前检/巡检仍保调用方准入和随机token。Bridge关闭取消全部前检并等待未返回dial清理，入口数据在创建时冻结。仅完成bridge资源接点，未增加schema或生产隔离provider；私有资源日志、目录授权/恢复和系统故障仍待实现，[T11记录](verification/T11.md)。
+
+同日资源收尾修订：进程Done与通道Close均需成功才结束会话资源owner；创建浏览器之前的通道失败也保留环境占用与正常关闭重试。新响应字段`resourcesPending`由当前owner投影，不持久化为恢复许可、不受RPC覆盖；页面不以PID0当空闲。应用后续明确CloseContext锁外重试既有owner（包括首次shutdown scan后登记项），保留原完成信号；崩溃/启动根因不被清理异常覆盖。新回归仅编译未运行，见[T11](verification/T11.md)。
 - native页面明确门禁、独立前检不授权浏览器与资源退出事实。7桥/2内核/9服务/1adapter回归全未运行，Go测试包未编译，[清单](verification/T11.md)。全路径WFP broker/委托DNS/崩溃保持拒绝未实现，不宣称T11已完整开发。
 - 用户允许管理员安装后续隔离组件，但不现在提权/改系统；已选择先保存部分、继续不依赖T11的Cookie/批量/备份，[D012](DECISIONS.md#d012--安全边界缺失先阻止代理启动并允许隔离组件管理员安装2026-10-01)。特权WFP匹配独立程序路径不自动覆盖DNS Client委托或准确Job，禁止全局封DNS/关闭沙箱/换内核掩盖缺口。
 

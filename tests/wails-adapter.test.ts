@@ -713,6 +713,18 @@ test("a committed mutation remains confirmed when the following read fails, with
   assert.equal(result.ok, true); assert.equal(app.getSnapshot().issue?.code, "STORAGE_READ_FAILED");
 });
 
+test("retained channel resources with no PID remain visible and use normal Stop without overrides", async () => {
+  const session: RuntimeSession = { mode: "native", environmentId: "synthetic-environment", sessionId: "synthetic-channel-only-session", operationId: "synthetic-start", state: "error", revision: 1, fingerprintRevision: 1, kernelId: "synthetic-kernel", userDataRef: "synthetic-ref", networkPolicy: "proxy", proxyId: "synthetic-proxy", proxyRevision: 1, proxyChannelId: "synthetic-channel", canControl: false, canForce: false, needsReconcile: false, persistencePending: false, resourcesPending: true };
+  const { app, calls } = fixture(request => request.method === "Workspace.Read" ? ok({ ...empty(), runtimeSessions: { [session.environmentId]: session } }) : rejected);
+  assert.ok((await app.refresh()).ok);
+  assert.equal(app.getSnapshot().runtimeSessions?.[session.environmentId].resourcesPending, true);
+  assert.equal(app.getSnapshot().runtimeSessions?.[session.environmentId].pid, undefined);
+  assert.equal(app.getSnapshot().runtimeSessions?.[session.environmentId].canForce, false);
+  await app.stopRuntime({ environmentId: session.environmentId, requestId: "synthetic-close-retry", resourcesPending: false, pid: 4242 } as Parameters<WailsAdapter["stopRuntime"]>[0]);
+  assert.deepEqual(calls.find(call => call.method === "Runtime.Stop")?.payload, { environmentId: session.environmentId, requestId: "synthetic-close-retry" });
+  assert.equal(calls.some(call => call.method === "Runtime.Start" || call.method === "Runtime.ForceStop"), false);
+});
+
 test("kernel acceptance is not completion, progress uses the real operation and path fields are excluded", async () => {
   let state: Operation["state"] = "accepted";
   const task: Operation = { id: "synthetic-kernel-op", kind: "kernel-install", state, total: 1, completedIds: [], cancelRequested: false };

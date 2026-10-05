@@ -2,8 +2,10 @@ package workspace
 
 import (
 	"context"
+	"errors"
 	"net/netip"
 	"sync"
+	"time"
 
 	"github.com/axgiroud312-byte/prism-local-browser/internal/cookies"
 	"github.com/axgiroud312-byte/prism-local-browser/internal/kernel"
@@ -51,7 +53,11 @@ func (s *Service) prepareRuntimeNetwork(ctx context.Context, slot *runtimeSlot, 
 	factory := s.options.OpenProxyChannel
 	if factory == nil {
 		factory = func(config proxy.Configuration, credentials *proxy.Credentials, options proxy.BridgeOptions) (RuntimeProxyChannel, error) {
-			return proxy.OpenBridge(config, credentials, options)
+			bridge, err := proxy.OpenBridge(config, credentials, options)
+			if bridge == nil {
+				return nil, err
+			}
+			return bridge, err
 		}
 	}
 	channel, err := factory(input.Proxy.Configuration, credentials, proxy.BridgeOptions{ChannelID: channelID, AuthorizeProbe: kernel.AuthorizeProxyProbe})
@@ -122,6 +128,16 @@ type networkRuntimeProcess struct {
 	done          chan struct{}
 	mu            sync.Mutex
 	cleanupFailed bool
+	processExited bool
+	channelClosed bool
+	doneClosed    bool
+	attempt       *networkCloseAttempt
+}
+
+type networkCloseAttempt struct {
+	done     chan struct{}
+	err      error
+	finished bool // protected by the owner's mu
 }
 
 func (p *networkRuntimeProcess) ReadCookies(ctx context.Context) ([]cookies.Stored, error) {
@@ -144,51 +160,191 @@ func (p *networkRuntimeProcess) ClearCookies(ctx context.Context) error {
 }
 
 func ownRuntimeNetwork(process RuntimeProcess, channel RuntimeProxyChannel) RuntimeProcess {
+	if native, ok := process.(*kernel.ManagedProcess); ok && native.ManagesNetwork() {
+		return process
+	}
 	owned := &networkRuntimeProcess{RuntimeProcess: process, channel: channel, done: make(chan struct{})}
-	go func() { <-process.Done(); _ = channel.Close(); close(owned.done) }()
+	go func() {
+		if process != nil {
+			<-process.Done()
+		}
+		owned.markProcessExited()
+		owned.beginChannelClose(false)
+	}()
 	go func() {
 		select {
 		case <-channel.Failed():
 			if owned.Close() != nil {
-				owned.mu.Lock()
-				owned.cleanupFailed = true
-				owned.mu.Unlock()
+				owned.recordCleanupFailure()
 			}
 		case <-owned.done:
 		}
 	}()
 	return owned
 }
+func (p *networkRuntimeProcess) PID() int {
+	if p.RuntimeProcess == nil {
+		return 0
+	}
+	return p.RuntimeProcess.PID()
+}
+func (p *networkRuntimeProcess) CreatedAt() string {
+	if p.RuntimeProcess == nil {
+		return ""
+	}
+	return p.RuntimeProcess.CreatedAt()
+}
+func (p *networkRuntimeProcess) Alive() bool {
+	return p.RuntimeProcess != nil && p.RuntimeProcess.Alive()
+}
+
+// Only this concrete owner can assert no browser was ever created. A missing
+// PID on an arbitrary process implementation is not that evidence.
+func runtimeHasBrowser(process RuntimeProcess) bool {
+	if process == nil {
+		return false
+	}
+	owned, ok := process.(*networkRuntimeProcess)
+	return !ok || owned.RuntimeProcess != nil
+}
+
+func networkCleanupUnconfirmed() *proxy.CheckError {
+	return &proxy.CheckError{Code: "PROXY_BRIDGE_UNAVAILABLE", Message: "本次代理通道资源清理尚未确认，环境占用保持；可重试关闭，没有重建通道或改为直连。", Retryable: true}
+}
+
+func (p *networkRuntimeProcess) completeLocked() {
+	if p.processExited && p.channelClosed && !p.doneClosed {
+		p.cleanupFailed = false
+		p.doneClosed = true
+		close(p.done)
+	}
+}
+
+func (p *networkRuntimeProcess) recordCleanupFailure() {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	if !p.doneClosed {
+		p.cleanupFailed = true
+	}
+}
+
+func (p *networkRuntimeProcess) markProcessExited() {
+	p.mu.Lock()
+	p.processExited = true
+	p.completeLocked()
+	p.mu.Unlock()
+}
+
+// Failed attempts remain observable and retryable. Do not put a fallible
+// cleanup behind sync.Once, and do not close Done just because the root/Job
+// exited. Concurrent Stop/ForceStop/exit observation share an in-flight close.
+func (p *networkRuntimeProcess) beginChannelClose(retry bool) *networkCloseAttempt {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	if p.attempt != nil && (!retry || p.channelClosed || !p.attempt.finished) {
+		return p.attempt
+	}
+	attempt := &networkCloseAttempt{done: make(chan struct{})}
+	p.attempt = attempt
+	go func() {
+		err := p.channel.Close()
+		p.mu.Lock()
+		defer p.mu.Unlock()
+		attempt.err, attempt.finished = err, true
+		if err == nil {
+			p.channelClosed = true
+		} else {
+			p.cleanupFailed = true
+		}
+		p.completeLocked()
+		close(attempt.done)
+	}()
+	return attempt
+}
+
+func (p *networkRuntimeProcess) waitProcessExit(ctx context.Context) error {
+	if p.RuntimeProcess != nil {
+		select {
+		case <-p.RuntimeProcess.Done():
+		case <-ctx.Done():
+			return ctx.Err()
+		}
+	}
+	p.markProcessExited()
+	return nil
+}
+
+func (p *networkRuntimeProcess) waitChannelClose(ctx context.Context, attempt *networkCloseAttempt) error {
+	select {
+	case <-attempt.done:
+		if attempt.err != nil {
+			return networkCleanupUnconfirmed()
+		}
+		return nil
+	case <-ctx.Done():
+		return errors.Join(networkCleanupUnconfirmed(), ctx.Err())
+	}
+}
+
 func (p *networkRuntimeProcess) Done() <-chan struct{} { return p.done }
 func (p *networkRuntimeProcess) Snapshot() kernel.RuntimeSnapshot {
-	snapshot := p.RuntimeProcess.Snapshot()
-	snapshot.ProxyError = p.channel.Fault()
 	p.mu.Lock()
-	snapshot.NetworkCleanupFailed = snapshot.NetworkCleanupFailed || p.cleanupFailed
+	done, cleanupFailed := p.doneClosed, p.cleanupFailed
 	p.mu.Unlock()
-	select {
-	case <-p.done:
-	default:
-		snapshot.ResourcesExited = false
+	snapshot := kernel.RuntimeSnapshot{}
+	if p.RuntimeProcess != nil {
+		snapshot = p.RuntimeProcess.Snapshot()
 	}
+	if fault := p.channel.Fault(); fault != nil {
+		snapshot.ProxyError = fault
+	}
+	snapshot.NetworkCleanupFailed = snapshot.NetworkCleanupFailed || cleanupFailed
+	snapshot.ResourcesExited = done
 	return snapshot
 }
 func (p *networkRuntimeProcess) Close() error {
-	_ = p.channel.Close()
-	if err := p.RuntimeProcess.Close(); err != nil {
-		return err
-	}
-	<-p.done
-	return nil
-}
-func (p *networkRuntimeProcess) Stop(ctx context.Context) error {
-	if err := p.RuntimeProcess.Stop(ctx); err != nil {
-		return err
-	}
 	select {
 	case <-p.done:
 		return nil
-	case <-ctx.Done():
-		return ctx.Err()
+	default:
 	}
+	// Start socket cleanup independently: a failure there must not prevent the
+	// browser's exact Job from being stopped, nor can Job exit hide that failure.
+	ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
+	defer cancel()
+	attempt := p.beginChannelClose(true)
+	var processErr error
+	if p.RuntimeProcess != nil {
+		processErr = p.RuntimeProcess.Close()
+	}
+	if processErr == nil {
+		processErr = p.waitProcessExit(ctx)
+	}
+	channelErr := p.waitChannelClose(ctx, attempt)
+	select {
+	case <-p.done:
+		return nil
+	default:
+	}
+	if err := errors.Join(processErr, channelErr); err != nil {
+		p.recordCleanupFailure()
+		return err
+	}
+	return networkCleanupUnconfirmed()
+}
+func (p *networkRuntimeProcess) Stop(ctx context.Context) error {
+	select {
+	case <-p.done:
+		return nil
+	default:
+	}
+	if p.RuntimeProcess != nil {
+		if err := p.RuntimeProcess.Stop(ctx); err != nil {
+			return err
+		}
+	}
+	if err := p.waitProcessExit(ctx); err != nil {
+		return err
+	}
+	return p.waitChannelClose(ctx, p.beginChannelClose(true))
 }

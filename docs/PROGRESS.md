@@ -1,11 +1,11 @@
 # Goal 当前执行位置
 
-更新时间：2026-10-05 14:30 Asia/Shanghai。
+更新时间：2026-10-05 15:04 Asia/Shanghai。
 
 - Goal：执行中；[规则](GOAL.md)；完成 **4/21**（验收任务计数）。
 - 当前任务：返回T11 / [Issue #12](https://github.com/axgiroud312-byte/prism-local-browser/issues/12)系统隔离前提；T21独立诊断/指南已本地提交，完整交付仍受T11/T14阻塞。
-- 当前步骤：管理员只读最终第3轮exit0、权限恢复确认，BFE/MpsSvc同宿主critical=true，运行期AppContainer规则无persistent/boottime标志；只读配置不能证明故障阻断。用户确认只有当前电脑，未授权系统故障注入。T11生产Bridge接点源码完成：成对身份listener/前检dialer，错误不退普通socket，关闭取消并等待未完成拨号；6回归仅编写未跑。生产proxy/kernel/workspace局部编译通过，两轮只读末审均无剩余可信P1/P2；收尾本地提交后继续必要资源生命周期准备，门禁保持。
-- 现场：分支`goal/v1-remaining-integration`，HEAD`6c45eb0`，保留全部前置。主代理唯一写入；所有只读代理/管理员采集进程均已退出，无STOP/故障/配置修改/推送/CI/点击。待阶段提交：只读脚本、系统脱敏证据及相关记录，proxy入口准备的3修改/2新文件。原实验全部临时资源已清理，采集原始文件只在忽略目录。
+- 当前步骤：资源收尾源码完成，首末轮4P2及1测试时序缺口已修，7内核+8服务+1adapter新回归仅编写。收尾静态检查后本地提交，再实施用户最新明确授权的一次BFE标准正常停止实验：系统拒绝即结束，成功则短时合成探针+立即恢复；预备独立恢复进程。尚未执行服务停止，门禁保持。
+- 现场：分支`goal/v1-remaining-integration`，HEAD`7c05dc8`，保留全部前置。主代理唯一写入；所有只读代理已返回。未提交：资源生命周期、服务/响应字段/UI、回归和记录；没有运行测试/应用/系统故障/点击/CI或远程写入。生产kernel/workspace、源码/测试TS和proxy/kernel/workspace测试包仅编译已通过，最后小修待重编译；本轮自有实验/采集进程0。
 
 ## 任务状态
 
@@ -21,7 +21,7 @@
 | T08 | #9 | 已实现待验收 | 本地 `f020076`；[验收清单](verification/T08.md)，blocking #3 CLOSED，无PR/推送 |
 | T09 | #10 | 已实现待验收 | 本地 `f6ebca1`；[验收清单](verification/T09.md)，原blocking #7/#9仍OPEN，无PR/推送 |
 | T10 | #11 | 已实现待验收 | 本地 `88ba61a`；[验收清单](verification/T10.md)，唯一blocking #10仍OPEN，无PR/推送 |
-| T11 | #12 | 部分实现，隔离接入准备中 | 监督/门禁`d547bb1`；独立实验`6c45eb0`；[清单](verification/T11.md)，系统故障/生产provider未完成，代理Start继续拒绝；无PR/推送 |
+| T11 | #12 | 部分实现，隔离接入准备中 | 监督/门禁`d547bb1`；独立实验`6c45eb0`；入口/系统只读`7c05dc8`；[清单](verification/T11.md)，系统故障/生产provider未完成，代理Start继续拒绝；无PR/推送 |
 | T12 | #13 | 已实现待验收 | 本地c3ff618；[清单](verification/T12.md)，无推送/PR；#7仍OPEN |
 | T13 | #14 | 已实现待验收 | 本地`54d8be9`；[清单](verification/T13.md)，blocking #8/#9仍OPEN，按D007消费本地T07/T08；无推送/PR |
 | T14 | #15 | 等待T11完整隔离 | #12缺失完整成果，原proxy门禁不绕过；先开发其他可用票 |
@@ -34,6 +34,10 @@
 | T21 | #22 | 诊断/指南源码完成待验收，完整交付受阻 | 本地`732c483`；[独立部分与待验收](verification/T21.md)；不绕过T11/T14 |
 
 ## 最近检查与当前工作
+
+- 2026-10-05 15:04：必要生产编译和`npm run typecheck`通过；`go test -c -vet=off -p 1`仅编译kernel/workspace测试包通过（未启动测试二进制）。内核5个生命周期测试、workspace6个资源/失败/存储与应用退出测试、1adapter回归已编写。应用退出的原closeDone保留、重试锁外扫描迟到owner；普通正常退出后清理异常与真实崩溃根因分开。UI禁止因PID0显示可启动，新增资源观察仅由当前owner投影；最终末审与文档待收尾。
+
+- 2026-10-05 14:47：`7c05dc8`本地提交后开始收尾缺口修复。原wrapper在底层Done后忽略channel.Close失败仍关闭Done，nil-process失败也丢资源；改两项完成事实、共享关闭尝试、显式失败重试和channel-only owner。关闭前即保存owner，防存储flush按error/nil误放占用。Go生产workspace局部编译通过，3新测试未编译/运行；最新#12仍OPEN。未开始系统服务故障或解锁生产provider。
 
 - 2026-10-05 14:30：管理员只读第三轮修订实跑成功，三项P2（不完整成功、权限恢复未知、目录创建竞态）已修并实际核对；合成目录重复拒绝/rename保护/子写入通过后清理。原始state有wfpstate/firewallState两个顶层片段，离线解析使用wrapper保留两者；139条旧事件无实验AppID命中，未宣称实际filter hit。proxy接入准备生产局部编译与45文档通过，测试仅编写；等待只读审查后本地提交。
 

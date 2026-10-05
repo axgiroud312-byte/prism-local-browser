@@ -69,6 +69,15 @@ type RuntimeSession struct {
 	LaunchStage         string               `json:"launchStage,omitempty"`
 	ResourceVersion     string               `json:"resourceVersion,omitempty"`
 	PersistencePending  bool                 `json:"persistencePending"`
+	// Response-only observation, recomputed from the current host's owner.
+	// It is not permission to adopt a saved PID or reconstruct an old channel.
+	ResourcesPending bool `json:"resourcesPending,omitempty"`
+}
+
+func runtimeSessionView(slot *runtimeSlot) RuntimeSession {
+	session := slot.session
+	session.ResourcesPending = slot.process != nil
+	return session
 }
 
 type RuntimeNetworkFault struct {

@@ -175,6 +175,8 @@ HTTP经目标流写origin-form，HTTPS经同本机CONNECT透传TLS；SOCKS5本�
 
 2026-10-05增量：独立实验已证固定148在零能力AppContainer内正常桌面/原renderer限制、同package socket桥、委托DnsQueryEx局部拒绝、跨新SID三种合成存储及独立桥硬退出后的端口接管拒绝。用户另授临时非交互窗口站ACL和管理员只读采集；最终权限/资源已清理。只读结果显示本机BFE/MpsSvc宿主critical=true、相关运行期默认规则无persistent/boottime标志，不能替代系统故障窗口验证。[实验](verification/T11-feasibility-observations.json)与[系统只读观测](verification/T11-system-boundary-observations.json)都不是生产provider，当前工作机系统故障注入未授权。
 
+同日[`资源收尾源码`](../internal/kernel/runtime_lifecycle_windows.go)：根信号和准确Job空的读回成功后，只缓存“进程已退”；通道Close锁外成功后才释放pipe/guard/pins/目录并发布完整Done。失败仍能正常Stop重试清理，已退出时不再发CDP或操作已释放Job；在途尝试共享，未知查询不作成功。未创建process时通道仍由创建方收敛；真实ManagedProcess与workspace不重复拥有它。7内核+8服务回归及静态编译不是实际目录/恢复或OS隔离验收。
+
 ## 请求与返回合同
 
 ### T13 创建/克隆的空目录准备（源码已实现，未运行验收）

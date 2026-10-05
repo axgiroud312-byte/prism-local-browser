@@ -25,18 +25,19 @@ type pipeReply struct {
 	Error  json.RawMessage `json:"error"`
 }
 type pipeProcess struct {
-	process     windows.Handle
-	job         windows.Handle
-	read, write *os.File
-	pid         uint32
-	createdAt   string
-	sequence    int
-	responses   chan pipeReply
-	stopped     chan struct{}
-	closeOnce   sync.Once
-	commandGate chan struct{}
-	writeLost   atomic.Bool
-	readEnded   chan struct{}
+	process        windows.Handle
+	job            windows.Handle
+	read, write    *os.File
+	pid            uint32
+	createdAt      string
+	sequence       int
+	responses      chan pipeReply
+	stopped        chan struct{}
+	closeOnce      sync.Once
+	closeWriteOnce sync.Once
+	commandGate    chan struct{}
+	writeLost      atomic.Bool
+	readEnded      chan struct{}
 }
 
 func startPipe(executable string, args []string) (_ *pipeProcess, resultErr error) {
@@ -134,11 +135,19 @@ func (p *pipeProcess) close() {
 	p.closeOnce.Do(func() {
 		close(p.stopped)
 		windows.TerminateJobObject(p.job, 1)
-		p.write.Close()
+		p.closeWrite()
 		p.read.Close()
 		windows.CloseHandle(p.job)
 		windows.WaitForSingleObject(p.process, 5000)
 		windows.CloseHandle(p.process)
+	})
+}
+
+func (p *pipeProcess) closeWrite() {
+	p.closeWriteOnce.Do(func() {
+		p.writeLost.Store(true)
+		_ = windows.CancelIoEx(windows.Handle(p.write.Fd()), nil)
+		_ = p.write.Close()
 	})
 }
 func (p *pipeProcess) readLoop() {
@@ -235,9 +244,7 @@ func (p *pipeProcess) sendContext(ctx context.Context, method string, params any
 	case <-ctx.Done():
 		// A bounded command must not hang forever in a synchronous Windows pipe
 		// write. A lost control channel is not re-used or published as ready.
-		_ = windows.CancelIoEx(windows.Handle(p.write.Fd()), nil)
-		p.writeLost.Store(true)
-		_ = p.write.Close()
+		p.closeWrite()
 		return 0, errors.Join(ctx.Err(), controlWriteLost())
 	}
 }

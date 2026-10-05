@@ -397,6 +397,8 @@ export interface RuntimeSession {
   canForce: boolean;
   needsReconcile: boolean;
   persistencePending: boolean;
+  /** Current host still owns session resources, even when no browser was created. */
+  resourcesPending?: boolean;
   nextAction?: string;
   reconciledAt?: string;
   lastExitCode?: number;

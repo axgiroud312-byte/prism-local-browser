@@ -5,6 +5,11 @@ import (
 )
 
 func (s *Service) applyRuntimeFault(slot *runtimeSlot, snapshot kernel.RuntimeSnapshot) {
+	// Cleanup can fail after a healthy browser exits. Name that failure without
+	// replacing an earlier startup/authentication error with a cleanup symptom.
+	if snapshot.ProxyError == nil && snapshot.NetworkCleanupFailed && slot.startupError == nil && slot.session.Error == nil && snapshot.ExitKnown && snapshot.ExitCode == 0 {
+		snapshot.ProxyError = networkCleanupUnconfirmed()
+	}
 	// The channel/Job owner already initiated safety cleanup without waiting
 	// for SQLite. A failed state write must not suppress fault observation.
 	if snapshot.ProxyError != nil && (slot.session.NetworkFault == nil || snapshot.NetworkCleanupFailed && slot.session.NetworkFault.Containment == "stopping") && s.observeRuntimeNetworkFault(slot, snapshot) {
@@ -20,6 +25,11 @@ func (s *Service) applyRuntimeFault(slot *runtimeSlot, snapshot kernel.RuntimeSn
 	var observed *Error
 	if !snapshot.RootAlive {
 		if snapshot.ExitKnown && snapshot.ExitCode == 0 {
+			if slot.stop != nil && slot.stop.State == "failed" && !snapshot.ResourcesExited {
+				// The process is gone but a resource close still failed. Keep
+				// the actionable error; "stopping" would disable its retry UI.
+				return
+			}
 			slot.session.State, slot.session.CanControl = "stopping", false
 			slot.session.NextAction = "主窗口已正常退出，仍在等待本次Job子进程释放目录。"
 			_ = s.persistRuntime(slot, nil, "等待浏览器子进程退出")
@@ -92,7 +102,7 @@ func (s *Service) forceStopRuntime(input runtimeRequest) Result {
 	if slot.stop != nil && slot.stop.Kind == "runtime-force-stop" && (slot.stop.State == "accepted" || slot.stop.State == "running") {
 		return s.acceptRuntime("Runtime.ForceStop", input, *slot.stop)
 	}
-	if !slot.session.CanForce || slot.session.NeedsReconcile || slot.process == nil || slot.stop == nil || slot.stop.State != "failed" {
+	if !slot.session.CanForce || slot.session.NeedsReconcile || !runtimeHasBrowser(slot.process) || slot.stop == nil || slot.stop.State != "failed" {
 		return failure("FORCE_STOP_NOT_ALLOWED", "必须先正常关闭失败，并且仍持有这份会话的受控Job；不能按PID或名称结束浏览器。", false)
 	}
 	if slot.process.PID() != slot.session.RootPID || slot.process.CreatedAt() != slot.session.ProcessCreatedAt {

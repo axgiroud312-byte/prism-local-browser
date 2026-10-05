@@ -33,7 +33,7 @@ func (s *Service) runtimeOwnsProfileUse(environmentID string) bool {
 		return true
 	}
 	slot := s.runtimeSlots[environmentID]
-	return slot != nil && (slot.process != nil || slot.session.NeedsReconcile || slot.session.PersistencePending || slot.session.State == "starting" || slot.session.State == "stopping")
+	return slot != nil && (slot.process != nil || runtimeStopPending(slot) || slot.session.NeedsReconcile || slot.session.PersistencePending || slot.session.State == "starting" || slot.session.State == "stopping")
 }
 
 func runtimeSignature(method string, input runtimeRequest) string {
@@ -119,7 +119,7 @@ func (s *Service) runtimeCall(request Request) Result {
 		sort.Strings(ids)
 		sessions := []RuntimeSession{}
 		for _, environmentID := range ids {
-			sessions = append(sessions, s.runtimeSlots[environmentID].session)
+			sessions = append(sessions, runtimeSessionView(s.runtimeSlots[environmentID]))
 		}
 		return success(sessions, "")
 	}
@@ -304,18 +304,12 @@ func (s *Service) launchRuntime(ctx context.Context, slot *runtimeSlot, input Ru
 		var err error
 		network, err = s.prepareRuntimeNetwork(ctx, slot, input)
 		if err != nil {
-			if network != nil {
-				_ = network.Close()
-			}
 			s.finishRuntimeStart(slot, nil, network, err)
 			return
 		}
 		input.Network = network
 	}
 	if err := s.runtimeStage(slot, "verifying-and-starting"); err != nil {
-		if network != nil {
-			_ = network.Close()
-		}
 		s.finishRuntimeStart(slot, nil, network, err)
 		return
 	}
@@ -324,9 +318,6 @@ func (s *Service) launchRuntime(ctx context.Context, slot *runtimeSlot, input Ru
 		launcher = launchManagedRuntime
 	}
 	if err := s.claimRuntimeData(ctx, slot); err != nil {
-		if network != nil {
-			_ = network.Close()
-		}
 		s.finishRuntimeStart(slot, nil, network, err)
 		return
 	}
@@ -335,8 +326,6 @@ func (s *Service) launchRuntime(ctx context.Context, slot *runtimeSlot, input Ru
 	if network != nil {
 		if process != nil {
 			process = ownRuntimeNetwork(process, network)
-		} else {
-			_ = network.Close()
 		}
 		if fault := network.Fault(); fault != nil {
 			err = errors.Join(fault, err)
@@ -416,7 +405,7 @@ func runtimeIntegrityProblem(err error) *kernel.Problem {
 }
 
 func startupNetworkSnapshot(process RuntimeProcess, channel RuntimeProxyChannel) kernel.RuntimeSnapshot {
-	snapshot := kernel.RuntimeSnapshot{ResourcesExited: process == nil}
+	snapshot := kernel.RuntimeSnapshot{ResourcesExited: process == nil && channel == nil}
 	if process != nil {
 		snapshot = process.Snapshot()
 	}
@@ -431,6 +420,11 @@ func runtimeStopPending(slot *runtimeSlot) bool {
 }
 
 func (s *Service) finishRuntimeStart(slot *runtimeSlot, process RuntimeProcess, channel RuntimeProxyChannel, taskErr error) {
+	// A bridge can exist even if CreateProcess never ran. Preserve its cleanup
+	// owner just like an already-created Job; nil PID is not resource exit.
+	if process == nil && channel != nil {
+		process = ownRuntimeNetwork(nil, channel)
+	}
 	s.mu.Lock()
 	if s.runtimeSlots[slot.session.EnvironmentID] != slot {
 		s.mu.Unlock()
@@ -447,7 +441,7 @@ func (s *Service) finishRuntimeStart(slot *runtimeSlot, process RuntimeProcess, 
 	if s.closed || s.closeRequested.Load() || slot.session.State == "stopping" {
 		taskErr = errors.Join(taskErr, context.Canceled)
 	}
-	if taskErr == nil && !process.Alive() {
+	if taskErr == nil && (process == nil || !process.Alive()) {
 		taskErr = errors.New("browser root exited before readiness publication")
 	}
 	if taskErr == nil {
@@ -482,6 +476,10 @@ func (s *Service) finishRuntimeStart(slot *runtimeSlot, process RuntimeProcess, 
 	}
 	slot.cleanupIntent = true
 	slot.startupError = runtimeError(taskErr)
+	// Retain the owner before releasing the service lock for cleanup. A network
+	// fault may already display "error"; pending-write flush must not treat that
+	// display state plus a nil slot.process as permission to reuse the profile.
+	slot.process = process
 	if slot.session.NetworkPolicy == "proxy" && slot.startupError.Code == "NETWORK_PROTECTION_UNAVAILABLE" {
 		slot.session.NetworkFault = &RuntimeNetworkFault{State: "network_error", Error: slot.startupError, ObservedAt: timestamp(), Containment: "stopped"}
 	}
@@ -517,10 +515,12 @@ func (s *Service) finishRuntimeStart(slot *runtimeSlot, process RuntimeProcess, 
 		// permit an overlapping writer just because startup never became ready.
 		slot.process = process
 		slot.session.State, slot.session.PID, slot.session.RootPID, slot.session.ProcessCreatedAt = "error", process.PID(), process.PID(), process.CreatedAt()
-		if process.CreatedAt() == "" {
+		if !runtimeHasBrowser(process) {
+			slot.session.LaunchStage = "no-process-created"
+		} else if process.CreatedAt() == "" {
 			slot.session.LaunchStage = "identity-unconfirmed"
 		}
-		slot.session.Error = &Error{Code: "PROCESS_STOP_TIMEOUT", Message: "启动失败后本次进程树退出尚未确认，目录与档案锁仍保留；可重试停止。", Retryable: true}
+		slot.session.Error = &Error{Code: "PROCESS_STOP_TIMEOUT", Message: "启动失败后本次进程树或代理通道资源清理尚未确认，环境占用仍保留；可重试停止。", Retryable: true}
 		slot.session.CanControl, slot.session.NextAction = process.Snapshot().ControlReady, "请先尝试正常关闭本次会话；未确认退出前不能启动或替换数据。"
 		_ = s.observeRuntimeNetworkFault(slot, startupNetworkSnapshot(process, channel))
 		if slot.session.NetworkFault != nil {
@@ -531,10 +531,11 @@ func (s *Service) finishRuntimeStart(slot *runtimeSlot, process RuntimeProcess, 
 		go s.watchRuntime(slot, process)
 		return
 	}
+	slot.process = nil
 	if slot.session.State != "stopping" {
 		slot.session.State, slot.session.Error = "error", slot.startupError
 	}
-	if process == nil {
+	if !runtimeHasBrowser(process) {
 		slot.session.LaunchStage = "no-process-created"
 	} else {
 		slot.session.PID, slot.session.CanControl, slot.session.CanForce = 0, false, false
@@ -616,7 +617,7 @@ func (s *Service) stopRuntime(input runtimeRequest) Result {
 	}
 	operation.SessionID, operation.KernelID = slot.session.SessionID, slot.session.KernelID
 	next := slot.session
-	next.State, next.CanForce, next.NextAction = "stopping", false, "正在正常关闭，仅确认本次Job全部退出后释放目录。"
+	next.State, next.CanForce, next.NextAction = "stopping", false, "正在正常关闭，确认本次进程树与代理通道均已清理后释放环境占用。"
 	result := s.acceptRuntimeRecord("Runtime.Stop", input, operation, &next)
 	if !result.OK {
 		return result
@@ -666,12 +667,15 @@ func (s *Service) closeRuntime(slot *runtimeSlot) {
 			}
 		}
 		slot.session.State, slot.session.Error = "error", slot.stop.Error
-		slot.session.CanForce = process != nil
+		slot.session.CanForce = runtimeHasBrowser(process)
 		if process != nil {
 			snapshot := process.Snapshot()
 			slot.session.CanControl = snapshot.RootAlive && snapshot.ControlReady
 		}
 		slot.session.NextAction = "正常关闭未成功，可重试允许的正常关闭，或明确确认仅强制结束这份会话；未确认退出仍保护目录。"
+		if !runtimeHasBrowser(process) {
+			slot.session.NextAction = "浏览器没有创建，代理通道清理尚未确认；请重试关闭，本次环境占用继续保留。"
+		}
 	} else {
 		slot.stop.State, slot.stop.Stage, slot.stop.CompletedIDs = "completed", "exited", []string{slot.session.EnvironmentID}
 		if process != nil {
