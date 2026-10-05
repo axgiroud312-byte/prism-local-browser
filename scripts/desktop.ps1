@@ -32,7 +32,7 @@ try {
     'build' {
       $env:VITE_DESKTOP_VERSION = "0.3.0-preview.$PreviewRevision"
       $env:VITE_DESKTOP_CHANNEL = if ($Candidate) { 'v1-candidate' } else { 'development-preview' }
-      & wails build -clean -platform windows/amd64 -webview2 error -ldflags "-X main.applicationVersion=0.3.0-preview.$PreviewRevision -X main.applicationChannel=$($env:VITE_DESKTOP_CHANNEL)"
+      & wails build -clean -trimpath -platform windows/amd64 -webview2 error -ldflags "-X main.applicationVersion=0.3.0-preview.$PreviewRevision -X main.applicationChannel=$($env:VITE_DESKTOP_CHANNEL)"
       if ($LASTEXITCODE) { throw 'Windows build failed.' }
       & (Join-Path $PSScriptRoot 'collect-go-notices.ps1') -Go $go
       & node (Join-Path $PSScriptRoot 'collect-frontend-notices.mjs')
