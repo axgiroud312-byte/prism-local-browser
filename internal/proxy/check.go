@@ -27,6 +27,9 @@ const CheckVersion = "go-proxy-preflight-v1"
 type CheckOptions struct {
 	TargetURL string
 	RootCAs   *x509.CertPool
+	// Only Bridge supplies this private, identity-bound ingress dialer. It
+	// cannot receive or select a target/upstream destination from the request.
+	proxyDial func(context.Context) (net.Conn, error)
 }
 
 func Check(ctx context.Context, config Configuration, credentials *Credentials, options CheckOptions, progress func(Step)) Report {
@@ -92,6 +95,7 @@ func Check(ctx context.Context, config Configuration, credentials *Credentials, 
 	}
 	var tunnelErr *CheckError
 	var connMu sync.Mutex
+	var pendingDials sync.WaitGroup
 	connections := []net.Conn{}
 	connectionsClosed := false
 	closeConnections := func() {
@@ -104,17 +108,51 @@ func Check(ctx context.Context, config Configuration, credentials *Credentials, 
 		}
 	}
 	stopConnectionCleanup := context.AfterFunc(ctx, closeConnections)
-	defer func() { stopConnectionCleanup(); closeConnections() }()
+	defer func() {
+		// A Transport dial may still be unwinding when RoundTrip returns on
+		// cancellation. Do not release a host-owned token/ingress while it can
+		// still create a socket. Registration and closure share connMu.
+		cancel()
+		stopConnectionCleanup()
+		closeConnections()
+		pendingDials.Wait()
+	}()
 	dialer := &net.Dialer{Timeout: 6 * time.Second, KeepAlive: -1}
 	transport := &http.Transport{
 		Proxy: http.ProxyURL(proxyURL), ProxyConnectHeader: headers,
 		DialContext: func(_ context.Context, network, address string) (net.Conn, error) {
+			connMu.Lock()
+			if connectionsClosed {
+				connMu.Unlock()
+				return nil, errors.New("check-connections-closed")
+			}
+			pendingDials.Add(1)
+			connMu.Unlock()
+			defer pendingDials.Done()
 			// Transport may detach its dial context from a cancelled request.
 			// Pin this private transport to the original check and close every
 			// owned socket on cancellation/finish, including an in-flight CONNECT.
 			step("connection", "running", "正在连接所选代理，不使用直连回退。")
-			conn, err := dialer.DialContext(ctx, network, address)
+			// Never let an identity-bound ingress failure retry with an ordinary
+			// host socket. Keep the destination check even though Transport is
+			// configured with an explicit proxy and redirects are refused.
+			if (network != "tcp" && network != "tcp4") || address != proxyURL.Host {
+				return nil, errors.New("check-proxy-destination-mismatch")
+			}
+			var conn net.Conn
+			var err error
+			if options.proxyDial != nil {
+				conn, err = options.proxyDial(ctx)
+			} else {
+				conn, err = dialer.DialContext(ctx, network, address)
+			}
+			if err == nil && conn == nil {
+				err = errors.New("check-proxy-connection-missing")
+			}
 			if err != nil {
+				if conn != nil {
+					_ = conn.Close()
+				}
 				step("connection", "failed", "到所选代理的连接未完成，没有回退直连。")
 				return nil, err
 			}

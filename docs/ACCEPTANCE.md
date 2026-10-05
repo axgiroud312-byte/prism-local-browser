@@ -6,6 +6,10 @@
 
 固定148在零网络能力AppContainer内保原renderer限制运行，准确Job快照全树同package且无网络capability。受控DnsQueryEx、IPv4 TCP/IPv6 TCP/IPv4与IPv6 UDP差分观测，普通/AC切换及重开后的三种合成存储，独立桥进程真实硬退出后旧端口接管零连接均有局部证据。已明确授权的临时非交互窗口站ACE撤销读回；最终第19轮自有Job/root/container全部清理。[逐项记录](verification/T11.md)及[工具](../cmd/network-feasibility/README.md)。生产隔离接入、外部全路径和Windows保护服务故障仍待完成；验收保持4/21。
 
+后续第20–21轮补普通profile先写、不改Low标签的新SID重开、可见窗口及DNS实际服务owner归属。获准的管理员只读采集最终第三轮exit0、权限恢复确认，规则和服务保护读回见[脱敏系统观测](verification/T11-system-boundary-observations.json)。BFE/MpsSvc宿主critical=true；未执行系统服务故障或取得独立外部出口证据，不解锁门禁或增加验收计数。
+
+生产Bridge身份入口、前检专用拨号与关闭收尾接点已编写，6条相关回归仅编写未执行；生产proxy/kernel/workspace局部编译、45文档及只读评审通过。当前源码接点不能替代完整provider及运行验收。
+
 ## T20 开发检查点（2026-10-01；未运行验收）
 
 默认构建/schema10、选定环境完整备份/独立副本旧新试用、明确切换/同事务决策、重开收敛和升级前完整恢复已编写；必要生产静态、源码/测试TS和43份文档通过。服务/输出/adapter、四切点真实Process.Kill和双不同真实内核存储恢复入口只编写，Go测试包未编译、全部未执行；测试评审已补PE版本夹具、真实新构建先读后写及故障点必命中。不能用既有两份148安装证明跨版本迁移。代理试用保持T11缺失门禁，[T20清单](verification/T20.md)。验收仍4/21。

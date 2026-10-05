@@ -28,6 +28,7 @@ type BridgeOptions struct {
 	AuthorizeProbe func(net.Conn) bool
 	TargetURL      string
 	RootCAs        *x509.CertPool
+	Ingress        *BridgeIngress
 }
 type bridgeProbe struct {
 	progress func(Step)
@@ -39,6 +40,8 @@ type Bridge struct {
 	upstreamAuth   string
 	authentication *Credentials
 	listener       net.Listener
+	endpoint       string
+	probeDial      func(context.Context) (net.Conn, error)
 	server         *http.Server
 	ctx            context.Context
 	cancel         context.CancelFunc
@@ -56,6 +59,7 @@ type Bridge struct {
 	faultOnce      sync.Once
 	failed         chan struct{}
 	monitors       sync.WaitGroup
+	checks         sync.WaitGroup
 }
 type bridgeClientKey struct{}
 
@@ -69,12 +73,13 @@ func OpenBridge(config Configuration, credentials *Credentials, options BridgeOp
 			return nil, err
 		}
 	}
-	listener, err := net.Listen("tcp4", "127.0.0.1:0")
+	listener, probeDial, endpoint, err := openBridgeIngress(options.Ingress)
 	if err != nil {
 		return nil, &CheckError{Code: "PROXY_BRIDGE_UNAVAILABLE", Message: "本次环境的独立本机通道无法建立，未启动。", Retryable: true}
 	}
 	ctx, cancel := context.WithCancel(context.Background())
-	b := &Bridge{config: config, opts: options, listener: listener, ctx: ctx, cancel: cancel, probes: map[string]*bridgeProbe{}, connections: map[net.Conn]bool{}, forwardGate: make(chan struct{}, 64), serveDone: make(chan struct{}), done: make(chan struct{}), failed: make(chan struct{})}
+	options.Ingress = nil // do not retain mutable caller-owned launch options
+	b := &Bridge{config: config, opts: options, listener: listener, endpoint: endpoint, probeDial: probeDial, ctx: ctx, cancel: cancel, probes: map[string]*bridgeProbe{}, connections: map[net.Conn]bool{}, forwardGate: make(chan struct{}, 64), serveDone: make(chan struct{}), done: make(chan struct{}), failed: make(chan struct{})}
 	if credentials != nil {
 		copy := *credentials
 		b.authentication = &copy
@@ -113,7 +118,7 @@ func OpenBridge(config Configuration, credentials *Credentials, options BridgeOp
 }
 
 // Endpoint is private launch material. The UI only receives ChannelID.
-func (b *Bridge) Endpoint() string        { return "http://" + b.listener.Addr().String() }
+func (b *Bridge) Endpoint() string        { return b.endpoint }
 func (b *Bridge) ID() string              { return b.opts.ChannelID }
 func (b *Bridge) Done() <-chan struct{}   { return b.done }
 func (b *Bridge) Failed() <-chan struct{} { return b.failed }
@@ -166,6 +171,7 @@ func (b *Bridge) Close() error {
 		<-b.serveDone
 		b.workers.Wait()
 		b.monitors.Wait()
+		b.checks.Wait()
 		b.mu.Lock()
 		b.upstreamAuth = ""
 		if b.authentication != nil {

@@ -16,6 +16,8 @@ import (
 func (b *Bridge) Preflight(ctx context.Context, progress func(Step)) Report {
 	ctx, cancel := context.WithTimeout(ctx, 25*time.Second)
 	defer cancel()
+	stopBridgeCancellation := context.AfterFunc(b.ctx, cancel)
+	defer stopBridgeCancellation()
 	secret := make([]byte, 32)
 	if _, err := rand.Read(secret); err != nil {
 		return Report{Mode: "native", AdapterVersion: BridgeVersion, ChannelID: b.ID(), StartedAt: time.Now().UTC().Format(time.RFC3339Nano), FinishedAt: time.Now().UTC().Format(time.RFC3339Nano), Steps: []Step{}, Error: &CheckError{Code: "PROXY_BRIDGE_UNAVAILABLE", Message: "无法生成本次安全前检标识，未发起请求。", Retryable: true}}
@@ -55,10 +57,12 @@ func (b *Bridge) Preflight(ctx context.Context, progress func(Step)) Report {
 		return Report{Mode: "native", AdapterVersion: BridgeVersion, ChannelID: b.ID(), StartedAt: time.Now().UTC().Format(time.RFC3339Nano), FinishedAt: time.Now().UTC().Format(time.RFC3339Nano), Steps: []Step{}, Error: &CheckError{Code: "PROXY_BRIDGE_UNAVAILABLE", Message: "本次桥接已关闭，未重新建立或改为直连。", Retryable: true}}
 	}
 	b.probes[authorization] = probe
+	b.checks.Add(1) // serialized against closing/Wait by b.mu
 	b.mu.Unlock()
+	defer b.checks.Done()
 	u, _ := url.Parse(b.Endpoint())
 	port, _ := strconv.Atoi(u.Port())
-	report := Check(ctx, Configuration{Name: "本次独立桥接", Type: "http", Host: u.Hostname(), Port: port}, &Credentials{Username: "prism-probe", Password: token}, CheckOptions{TargetURL: b.opts.TargetURL, RootCAs: b.opts.RootCAs}, collect)
+	report := Check(ctx, Configuration{Name: "本次独立桥接", Type: "http", Host: u.Hostname(), Port: port}, &Credentials{Username: "prism-probe", Password: token}, CheckOptions{TargetURL: b.opts.TargetURL, RootCAs: b.opts.RootCAs, proxyDial: b.probeDial}, collect)
 	b.mu.Lock()
 	observed := probe.err
 	delete(b.probes, authorization)

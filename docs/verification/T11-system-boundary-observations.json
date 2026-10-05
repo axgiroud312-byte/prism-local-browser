@@ -1,0 +1,82 @@
+{
+  "kind": "administrator-readonly-network-boundary-observations",
+  "generatedAt": "2026-10-05T06:25:08.8818843+00:00",
+  "collector": "scripts/collect-network-boundary-readonly.ps1",
+  "collectorSha256": "29a5f2ed67fbf1c8a95e435bc7b1e8c65617482dafa507c83fa6f4b07ec1fd17",
+  "collectorExitCode": 0,
+  "collectorProcessExited": true,
+  "privilegeRestore": "confirmed",
+  "authorizedScope": "query only; new private evidence files",
+  "fullT11Acceptance": false,
+  "windows": { "editionId": "CoreCountrySpecific", "displayVersion": "25H2", "build": "26200.9457" },
+  "services": [
+    { "name": "BFE", "state": "running", "acceptsStop": true, "launchProtection": 0, "hostCritical": true, "sharesHostWith": ["MpsSvc"], "queriesSucceeded": true },
+    { "name": "MpsSvc", "state": "running", "acceptsStop": false, "launchProtection": 0, "hostCritical": true, "sharesHostWith": ["BFE"], "queriesSucceeded": true },
+    { "name": "Dnscache", "state": "running", "acceptsStop": false, "launchProtection": 0, "hostCritical": false, "sharesHostWith": [], "queriesSucceeded": true }
+  ],
+  "exports": [
+    { "kind": "state", "exitCode": 0, "bytes": 6292532, "sha256": "0c13ebea2f4acb0bf83be7ad6569d923b94b401fd36dae45cdfda740bf45afef" },
+    { "kind": "boottimepolicy", "exitCode": 0, "bytes": 25645, "sha256": "772739d9599d4b218753e1eb6cd4ea2c789ab41da9e25af3a72666f5d4ae3925" },
+    { "kind": "netevents", "exitCode": 0, "bytes": 284603, "sha256": "2d03e0dc7b23ee45c861d4d001b2b4d2597b22b778e6146fdc39e6890386c20e" }
+  ],
+  "filterGroups": [
+    {
+      "name": "UWP Default Outbound Block Rule",
+      "count": 2,
+      "layers": ["FWPM_LAYER_ALE_AUTH_CONNECT_V4", "FWPM_LAYER_ALE_AUTH_CONNECT_V6"],
+      "action": "FWP_ACTION_BLOCK",
+      "condition": "ALE_PACKAGE_ID != NULL SID (S-1-0-0)",
+      "flags": ["FWPM_FILTER_FLAG_HAS_PROVIDER_CONTEXT", "FWPM_FILTER_FLAG_HAS_FILTER_ORIGIN"],
+      "persistentFlag": false,
+      "boottimeFlag": false
+    },
+    {
+      "name": "AppContainerLoopback",
+      "count": 18,
+      "layers": {
+        "FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V4": 4,
+        "FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V6": 4,
+        "FWPM_LAYER_ALE_AUTH_CONNECT_V4": 5,
+        "FWPM_LAYER_ALE_AUTH_CONNECT_V6": 5
+      },
+      "actions": { "FWP_ACTION_PERMIT": 8, "FWP_ACTION_BLOCK": 6, "FWP_ACTION_CALLOUT_INSPECTION": 4 },
+      "flags": ["FWPM_FILTER_FLAG_HAS_PROVIDER_CONTEXT", "FWPM_FILTER_FLAG_HAS_FILTER_ORIGIN"],
+      "persistentFlag": false,
+      "boottimeFlag": false
+    },
+    {
+      "name": "AppContainerBoottimeFilter",
+      "count": 4,
+      "layers": ["FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V4", "FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V6"],
+      "action": "FWP_ACTION_PERMIT",
+      "boottimeCount": 2,
+      "persistentCount": 2
+    }
+  ],
+  "bootPolicy": {
+    "entries": 16,
+    "runtimeFilterIdMatches": 16,
+    "layers": {
+      "FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V4": 4,
+      "FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V6": 6,
+      "FWPM_LAYER_INBOUND_ICMP_ERROR_V4": 2,
+      "FWPM_LAYER_INBOUND_ICMP_ERROR_V6": 2,
+      "FWPM_LAYER_IPFORWARD_V4": 1,
+      "FWPM_LAYER_IPFORWARD_V6": 1
+    },
+    "runtimeFailureFallbackProven": false
+  },
+  "eventCorrelation": {
+    "exportedEvents": 139,
+    "matchingSyntheticToolPaths": 0,
+    "experimentFilterHitProven": false
+  },
+  "faultInjectionPerformed": false,
+  "remainingEvidence": [
+    "actual filter hits correlated with fresh synthetic probes",
+    "default DNS and service-unavailable fallback paths",
+    "system-service stop, crash, recovery and overlapping faults",
+    "independent external network observations during the fault window",
+    "Windows 10/11 Home version coverage"
+  ]
+}

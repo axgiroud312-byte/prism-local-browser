@@ -173,6 +173,8 @@ HTTP经目标流写origin-form，HTTPS经同本机CONNECT透传TLS；SOCKS5本�
 
 用户允许未来组件管理员安装，未现在提权/改系统。WFP独立程序路径可研究socket隔离，但ALE_ORIGINAL_APP_ID只定义连接重定向，不保证DNS Client委托查询，dynamic过滤生命周期也不保证host崩溃的拒绝边界；不能全局封DNS影响其他环境。[D012](DECISIONS.md#d012--安全边界缺失先阻止代理启动并允许隔离组件管理员安装2026-10-01)、[待完成清单](verification/T11.md)。完整组件/真实出口和故障验收均未实现通过，用户已选择先保存部分继续不依赖它的其他票。
 
+2026-10-05增量：独立实验已证固定148在零能力AppContainer内正常桌面/原renderer限制、同package socket桥、委托DnsQueryEx局部拒绝、跨新SID三种合成存储及独立桥硬退出后的端口接管拒绝。用户另授临时非交互窗口站ACL和管理员只读采集；最终权限/资源已清理。只读结果显示本机BFE/MpsSvc宿主critical=true、相关运行期默认规则无persistent/boottime标志，不能替代系统故障窗口验证。[实验](verification/T11-feasibility-observations.json)与[系统只读观测](verification/T11-system-boundary-observations.json)都不是生产provider，当前工作机系统故障注入未授权。
+
 ## 请求与返回合同
 
 ### T13 创建/克隆的空目录准备（源码已实现，未运行验收）

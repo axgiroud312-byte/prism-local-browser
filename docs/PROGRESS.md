@@ -1,11 +1,11 @@
 # Goal 当前执行位置
 
-更新时间：2026-10-05 13:40 Asia/Shanghai。
+更新时间：2026-10-05 14:30 Asia/Shanghai。
 
 - Goal：执行中；[规则](GOAL.md)；完成 **4/21**（验收任务计数）。
 - 当前任务：返回T11 / [Issue #12](https://github.com/axgiroud312-byte/prism-local-browser/issues/12)系统隔离前提；T21独立诊断/指南已本地提交，完整交付仍受T11/T14阻塞。
-- 当前步骤：第21轮普通桌面窗口也已通过真实renderer与四阶段合成持久化；在普通先写的profile上仅授DACL、不改Low label，第二次AC用新SID；DNS普通对照源PID已核为Dnscache服务。独立桥硬杀/旧端口接管0连接和全树token证据保持。首轮3P2已修，最终cmd build/vet及现有docs/格式通过，脱敏证据已落盘；全部临时授权/Job/root/container清理完整。系统保护服务故障仍未证实，普通只读critical查询被拒；准备请求一次管理员只读网络规则/服务保护诊断，再确定后续故障实验，门禁保持。
-- 现场：从`c55a3cf`创建本地集成分支`goal/v1-remaining-integration`，保留T15–T21及全部前置。主代理统一写入；本轮只运行获准的独立T11合成实验与该cmd编译，其他票回归/点击/CI/完整构建未执行，未推送或提权。新增实验cmd、脱敏证据及相关记录待本地阶段提交；只读代理全部已返回。
+- 当前步骤：管理员只读最终第3轮exit0、权限恢复确认，BFE/MpsSvc同宿主critical=true，运行期AppContainer规则无persistent/boottime标志；只读配置不能证明故障阻断。用户确认只有当前电脑，未授权系统故障注入。T11生产Bridge接点源码完成：成对身份listener/前检dialer，错误不退普通socket，关闭取消并等待未完成拨号；6回归仅编写未跑。生产proxy/kernel/workspace局部编译通过，两轮只读末审均无剩余可信P1/P2；收尾本地提交后继续必要资源生命周期准备，门禁保持。
+- 现场：分支`goal/v1-remaining-integration`，HEAD`6c45eb0`，保留全部前置。主代理唯一写入；所有只读代理/管理员采集进程均已退出，无STOP/故障/配置修改/推送/CI/点击。待阶段提交：只读脚本、系统脱敏证据及相关记录，proxy入口准备的3修改/2新文件。原实验全部临时资源已清理，采集原始文件只在忽略目录。
 
 ## 任务状态
 
@@ -21,7 +21,7 @@
 | T08 | #9 | 已实现待验收 | 本地 `f020076`；[验收清单](verification/T08.md)，blocking #3 CLOSED，无PR/推送 |
 | T09 | #10 | 已实现待验收 | 本地 `f6ebca1`；[验收清单](verification/T09.md)，原blocking #7/#9仍OPEN，无PR/推送 |
 | T10 | #11 | 已实现待验收 | 本地 `88ba61a`；[验收清单](verification/T10.md)，唯一blocking #10仍OPEN，无PR/推送 |
-| T11 | #12 | 部分实现，完整隔离暂缓 | 本地阶段 `d547bb1`；[清单](verification/T11.md)，代理Start门禁保持拒绝；无PR/推送 |
+| T11 | #12 | 部分实现，隔离接入准备中 | 监督/门禁`d547bb1`；独立实验`6c45eb0`；[清单](verification/T11.md)，系统故障/生产provider未完成，代理Start继续拒绝；无PR/推送 |
 | T12 | #13 | 已实现待验收 | 本地c3ff618；[清单](verification/T12.md)，无推送/PR；#7仍OPEN |
 | T13 | #14 | 已实现待验收 | 本地`54d8be9`；[清单](verification/T13.md)，blocking #8/#9仍OPEN，按D007消费本地T07/T08；无推送/PR |
 | T14 | #15 | 等待T11完整隔离 | #12缺失完整成果，原proxy门禁不绕过；先开发其他可用票 |
@@ -34,6 +34,8 @@
 | T21 | #22 | 诊断/指南源码完成待验收，完整交付受阻 | 本地`732c483`；[独立部分与待验收](verification/T21.md)；不绕过T11/T14 |
 
 ## 最近检查与当前工作
+
+- 2026-10-05 14:30：管理员只读第三轮修订实跑成功，三项P2（不完整成功、权限恢复未知、目录创建竞态）已修并实际核对；合成目录重复拒绝/rename保护/子写入通过后清理。原始state有wfpstate/firewallState两个顶层片段，离线解析使用wrapper保留两者；139条旧事件无实验AppID命中，未宣称实际filter hit。proxy接入准备生产局部编译与45文档通过，测试仅编写；等待只读审查后本地提交。
 
 - 2026-10-05 13:10：首个窗口站权限补救实测成功；为查询UOI_FLAGS补所需READATTRIBUTES，精确GR+CREATEDESKTOP授权，不改交互桌面。修正实验debugger超时未detach可能保留退出进程，以及测试root/image和container清理短暂竞争；第17轮最终清理完整。一次实验token/profile残留通过仅匹配`prism-feasibility-UUID`的专用cleanup入口删除。无管理员、服务、WFP、适配器修改或远程写入。
 
