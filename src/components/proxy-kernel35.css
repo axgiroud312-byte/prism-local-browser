@@ -51,6 +51,7 @@
 .pk35-modal { font-size: 12px; line-height: 18px; transform: translateY(8px); }
 .pk35-modal p { margin: 8px 0 12px; line-height: 18px; overflow-wrap: anywhere; }
 .pk35-modal .reference-modal-body { flex: 1; min-height: 0; }
+:is(.proxy35-import, .proxy35-edit, .proxy35-usage).reference-dialog .reference-modal-header h2 { transform: translate(-8px, 7px); }
 .pk35-modal .reference-modal-footer { padding: 10px; min-height: 58px; gap: 10px; flex-wrap: wrap; }
 .pk35-footer-note { margin-right: auto; color: #8c8c8c; font-size: 11px; max-width: 45%; }
 .pk35-modal .proxy35-footer-message { flex-basis: 100%; margin: 0; text-align: left; }
@@ -95,7 +96,8 @@
 .proxy35-file-box > p { padding: 10px; min-height: 40px; display: flex; align-items: flex-start; gap: 8px; }
 .proxy35-file-box > p > span { flex: 1; min-width: 0; }
 .proxy35-file-box > p > button { flex-shrink: 0; }
-.proxy35-file-pick { color: white; background: transparent; padding: 0 !important; border: 0; margin-left: auto; cursor: pointer; position: relative; }
+.proxy35-file-box .proxy35-file-pick { color: white; background: transparent; padding: 0 !important; border: 0; margin-left: auto; cursor: pointer; position: relative; }
+.proxy35-file-box .proxy35-file-pick:hover { color: white; background: #ffffff1a; border: 0; }
 .proxy35-file-pick input { position: absolute; inset: 0; opacity: 0; width: 100%; cursor: pointer; }
 .proxy35-usage .reference-modal-body { padding: 10px 10px 0; }
 .proxy35-usage-scroll { max-height: 388px; }

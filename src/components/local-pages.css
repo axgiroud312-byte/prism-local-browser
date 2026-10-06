@@ -77,7 +77,9 @@
 .local-page-diagnostic-fields li { margin: 5px 0; overflow-wrap: anywhere; }
 .local-page-activity .local-page-panel { padding-top: 0; }
 .local-page-activity .local-page-tabs { margin-top: 4px; }
-.local-page-activity .local-page-pagination { margin-top: 10px; min-height: 30px; height: 30px; padding: 0; }
+:is(.local-page-activity, .local-page-backups) .local-page-pagination { margin-top: 10px; min-height: 30px; height: 30px; padding: 0; }
+.local-page-backups .local-page-table-scroll { max-height: calc(100dvh - 260px); overflow-y: auto; overscroll-behavior: contain; }
+.local-page-backups .local-page-table th { position: sticky; top: 0; background: #fff; z-index: 1; }
 .local-page-activity .local-page-table-scroll { max-height: calc(100dvh - 230px); overflow-y: auto; overscroll-behavior: contain; }
 .local-page-activity .local-page-table th { position: sticky; top: 0; background: #fff; z-index: 1; }
 .local-page-activity .local-page-table th, .local-page-activity .local-page-table td { text-align: center; }
