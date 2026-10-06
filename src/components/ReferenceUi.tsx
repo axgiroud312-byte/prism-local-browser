@@ -54,7 +54,7 @@ export function ReferenceModalFrame({ title, titleId, onClose, busy, children, f
   title: string; titleId: string; onClose: () => void; busy?: boolean; children: ReactNode;
   footer?: ReactNode; width?: number; height?: number; variant?: "dialog" | "drawer"; className?: string;
 }) {
-  return <section className={`reference-modal reference-${variant} ${className}`} role="dialog" aria-modal="true" aria-labelledby={titleId} style={{ width, height }}>
+  return <section className={`reference-modal reference-${variant} ${className}`} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby={titleId} style={{ width, height }}>
     <header className="reference-modal-header"><h2 id={titleId}>{title}</h2><button className="icon-button" aria-label={`关闭${title}`} disabled={busy} onClick={onClose}><X size={16} /></button></header>
     <div className="reference-modal-body">{children}</div>
     {footer && <footer className="reference-modal-footer">{footer}</footer>}
