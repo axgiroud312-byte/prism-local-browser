@@ -272,11 +272,11 @@ table:not(.environment-table):not(.reference-group-table) td { padding: 8px 12px
 .import-preview span { color: #8c8c8c; }
 .import-preview strong { font-weight: 400; }
 .invalid-row { color: #f5222d; background: #fff1f0; }
-.toast { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); z-index: 120; display: flex; align-items: center; gap: 10px; background: #21ba45; box-shadow: 0 1px 8px #0003; border-radius: 3px; padding: 10px 12px; max-width: calc(100vw - 24px); min-width: 240px; color: white; }
+.toast { position: fixed; top: 40px; left: 50%; transform: translateX(-50%); z-index: 120; display: flex; align-items: center; gap: 10px; background: #21ba45; box-shadow: 0 1px 8px #0003; border-radius: 3px; padding: 9px 12px; max-width: calc(100vw - 24px); min-width: 240px; color: white; }
 .toast > span { color: inherit; overflow-wrap: anywhere; }
 .toast-error { background: #f5222d; }
 .batch-progress { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 130; display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 10px 16px; background: white; box-shadow: 0 1px 8px #0003; border-radius: 3px; max-width: calc(100vw - 24px); }
-.batch-progress ~ .toast { top: 16px; }
+.batch-progress ~ .toast { top: 40px; }
 .spin { animation: rotate 1.2s linear infinite; }
 @keyframes rotate { to { transform: rotate(360deg); } }
 .kernel-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; margin-bottom: 10px; }
