@@ -278,6 +278,7 @@ test("proxy import returns to the unchanged environment draft", async ({ page })
   await page.getByLabel("环境名称", { exact: true }).fill("代理往返草稿");
   await page.getByLabel("分组", { exact: true }).fill("合成往返分组");
   const seed = await page.getByLabel("固定指纹种子").inputValue();
+  const kernel = await page.getByLabel("浏览器内核").inputValue();
   await page.getByRole("button", { name: "导入代理", exact: true }).click();
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog", { name: "新建浏览器环境" })).toBeVisible();
@@ -285,11 +286,19 @@ test("proxy import returns to the unchanged environment draft", async ({ page })
   await page.getByRole("button", { name: "导入代理", exact: true }).click();
   await page.getByLabel("代理文本").fill("socks5://192.0.2.99:1080");
   await page.getByRole("button", { name: "解析预览", exact: true }).click();
+  await denyWrites(page);
+  await page.getByRole("button", { name: /导入 1 个代理/ }).click();
+  await expect(page.locator(".toast-error")).toContainText("未保存");
+  await expect(page.getByLabel("代理文本")).toHaveValue("socks5://192.0.2.99:1080");
+  expect((await stored(page)).proxies.some(p => p.host === "192.0.2.99")).toBe(false);
+  await restoreWrites(page);
   await page.getByRole("button", { name: /导入 1 个代理/ }).click();
   await expect(page.getByRole("dialog", { name: "新建浏览器环境" })).toBeVisible();
   await expect(page.getByLabel("环境名称", { exact: true })).toHaveValue("代理往返草稿");
   await expect(page.getByLabel("分组", { exact: true })).toHaveValue("合成往返分组");
   await expect(page.getByLabel("固定指纹种子")).toHaveValue(seed);
+  await expect(page.getByLabel("浏览器内核")).toHaveValue(kernel);
+  await expect(page.getByRole("button", { name: "导入代理", exact: true })).toBeFocused();
   const imported = (await stored(page)).proxies.find(p => p.host === "192.0.2.99")!;
   await page.getByLabel("绑定代理").selectOption(imported.id);
   await page.getByRole("button", { name: "创建", exact: true }).click();

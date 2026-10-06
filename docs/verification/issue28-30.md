@@ -16,7 +16,7 @@
 
 ## 2 参考分别影响什么
 
-| 参考 | 提炼的交互规律 | 本批次对应界面；待预览核对 |
+| 参考 | 提炼的交互规律 | 已在 Vite 预览核对的对应界面 |
 | ---- | -------------- | -------------------------- |
 | [Ant Browser README/界面预览](https://github.com/black-ant/Ant-Browser#界面预览) | 实例优先、顶部分组/搜索/筛选、新建入口、直接启动/停止/配置；名称、内核、网络在一条创建流程中选择 | 环境表及工具栏；行内打开/关闭、清晰编辑入口；一个常用创建窗口，而非让单个操作先读技术计划 |
 | 旧前端 `BxDQjoAQ.js` | 紧凑表格、分组筛选、行操作密度 | 分组/网络/内核/状态分列，多选范围和逐项反馈明确 |
@@ -32,18 +32,25 @@
 | ---- | -------------- | -------------- |
 | E28-L | #28 提交上的本地 `npm run check`，原 13 条 UI | **PASS：13/13，41.8 秒**，由 #28 实际记录核对；首次缺 Playwright 浏览器的失败保留。不是本次文档代理重跑。 |
 | E28-R | [CI 37419040709](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37419040709) | **PASS：单个 Browser clicks job，1 分 27 秒；13/13，34.1 秒**。成功运行未触发失败附件上传，不声称实测过上传。 |
-| E-RED | 协调者基线 `npm run test:ui -- tests/ui/environment.spec.ts -g 'one window selects'` | **预期 RED：1 failed，6.3 秒**，旧窗口没有可见“换一套”；报告/trace 在 `output/playwright/`。失败不改记成功，新实现复验 PENDING。 |
+| E-RED | 协调者基线 `npm run test:ui -- tests/ui/environment.spec.ts -g 'one window selects'` | **预期 RED：1 failed，6.3 秒**，旧窗口没有可见“换一套”；新实现对应定向用例已通过。报告/trace 在 `output/playwright/`，不把初次失败改记成功。 |
 | E-SOURCE | #30 集成提交；`ApplicationService`、Wails/Demo 适配层及请求路径复核 | **PENDING**：记录最终源码 SHA 和人工复核结论，不把未提交或未集成源码当最终交付。 |
 | E-DEMO | [environment.spec.ts](../../tests/ui/environment.spec.ts) 的创建/编辑/取消/重载、服务内核、自动档案、代理导入、分组/搜索/部分失败、窄窗口 | **PENDING**：记录定向命令、实际数量/时间、失败及修复，不删除旧断言。localStorage 只证明 demo 配置持久化。 |
 | E-BRIDGE | [native-boundary.spec.ts](../../tests/ui/native-boundary.spec.ts) 的创建一次/打开失败重试、显式 direct、混合批量策略、无可用内核、坏桥阻断 | **PENDING**：合成注入 Wails bridge 的请求与页面反馈；fixture 的 sessionStorage 只用于测试重载，不是 SQLite。 |
 | E-CHECK | 集成后共享的一次 `npm run check`（#29/#30 共用） | **PENDING**：直接启动 Vite，记录最新源码 SHA、完整 UI 数量、时间与报告。不重复按票构建或再跑全套。 |
 | E-CI | 最新交付 head 的远程 Browser clicks job | **PENDING**：记录实际 run URL/head、单 job 及结果；不能用 E28-R 代替新行为远程检查。 |
-| E-SHOT-LIST | `docs/screenshots/issue30-environments.png` | **PENDING**：协调者从 Vite 源码页面生成、检查合成数据；展示分组/搜索、网络/版本/状态、行操作。 |
-| E-SHOT-CREATE | `docs/screenshots/issue30-create.png` | **PENDING**：展示同一常用窗口、直连/代理、服务内核、自动摘要/换一套和两种创建按钮，高级默认收起。 |
-| E-SHOT-NARROW | `docs/screenshots/issue30-narrow.png` | **PENDING**：展示窄窗口核心表单/列表与主操作可达；截图不替代实际点击和焦点检查。 |
+| E-SHOT-LIST | [环境列表](../screenshots/issue30-environments.png) | **PASS（可见布局）**：从 Vite 当前源码生成并逐图核对，仅合成 demo 数据；1440×1000，分组/搜索、网络/版本/状态、行操作清晰。 |
+| E-SHOT-CREATE | [新建窗口](../screenshots/issue30-create.png) | **PASS（可见布局）**：同一常用窗口、直连/代理、服务内核、自动摘要/换一套和两种创建按钮，高级默认收起。不是产品内核截图。 |
+| E-SHOT-NARROW | [窄窗口](../screenshots/issue30-narrow.png) | **PASS（可见布局）**：390×844，常用表单可滚动、主操作固定可达；截图不代替实际点击/焦点检查。 |
 | E-DOCS | 本次文档准备的 `npm run check:docs`，以及文本/边界核对 | **PASS（文档静态范围）**：52 份文档、本地链接、12 个需求、6 个路由、4 份内嵌文档。首轮因追踪表漏写 `activity` 路由失败，补回后复验通过；不弱化检查。源码集成后的实际行为/截图一致性仍 PENDING；截图不存在时只保留计划路径。 |
 
 上述新测试覆盖定义仍可能随一致的实际控件标签调整；不能为通过而放宽稳定身份、操作范围、无技术确认、失败恢复或窄窗口断言。`output/playwright/` 中的报告、trace 和临时截图只记录实际产物，不把未来文件当已存在。
+
+### 联调与审查记录（整轮通过前不算完成）
+
+- `bf6f453` 上新增关键交互定向检查：`npm run test:ui -- -g 'one window selects|proxy import returns|group and search|injected native bridge'`，**6/6，21.2 秒**；分别为 3 条 demo 和 3 条合成 bridge。创建失败恢复、明确网络策略和身份读回有断言，不是截图推断。
+- 同提交首次 `npm run check`：最先 6 条中 **4 失败、2 通过**，外层 120 秒超时，余下未完成。三个失败由实际行菜单被下一行遮挡造成；另一个是高级设置测试选择器同时匹配嵌套 summary。修正直接子 summary 选择器，不跳过编辑、取消和写失败断言。
+- 独立代码审查发现 **2 个 P2、无 P1**：native 非法创建数量错误提交后可能冻结草稿；demo 启停持久化失败后逐项结果未转为失败/未执行。修复及新增定向回归仍待验证。新增两条回归在修复前 **2/2 失败（7.2 秒、6.0 秒）**，如实保留 RED。
+- 截图来自 Vite/Playwright 当前源码，页面错误 **0**；静态文档核对 **52 文档/链接、12 需求、6 路由、4 内嵌文档通过**。这些检查不代替整轮或真实桌面结果。
 
 ## 4 #28 验收矩阵（已有结果，不重复建设）
 
