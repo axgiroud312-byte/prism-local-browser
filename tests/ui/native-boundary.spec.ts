@@ -21,17 +21,17 @@ async function environmentBridge(page: Page, options: { failStart?: boolean; noK
       nativeProxyRecords: [{ id: "fixture-proxy", name: "合成代理", type: "socks5", host: "192.0.2.88", port: 1080, country: "US", status: "connected", hasAuthentication: false, revision: 1, usedBy: [] }],
       fingerprints: {}, runtimeSessions: {},
     };
-    const revisions: Record<string, number> = Object.fromEntries(view.state.environments.map(e => [e.id, view.fingerprints?.[e.id]?.profile.configRevision ?? 1]));
+    const revisions: Record<string, number> = JSON.parse(sessionStorage.getItem(`${key}-revisions`) ?? "null") ?? Object.fromEntries(view.state.environments.map(e => [e.id, 1]));
     const previews = new Map<string, EnvironmentPreview>();
     const operations = new Map<string, Operation>();
     const calls: NativeRequest[] = [];
     let serial = 0, failStart = !!options.failStart;
-    const save = () => sessionStorage.setItem(key, JSON.stringify(view));
+    const save = () => { sessionStorage.setItem(key, JSON.stringify(view)); sessionStorage.setItem(`${key}-revisions`, JSON.stringify(revisions)); };
     const ok = (data: unknown) => ({ ok: true, mode: "native", data });
     const fail = (message: string) => ({ ok: false, mode: "native", error: { code: "PROXY_AUTH_FAILED", message, retryable: true } });
     function profile(e: Environment): DeviceProfile {
       const version = kernels.find(k => k.id === e.coreId)?.version ?? "";
-      return { schemaVersion: 1, configRevision: revisions[e.id] ?? 1, seed: e.seed, templateId: "windows-desktop-v1", templateVersion: e.fingerprintVersion, generatorVersion: "synthetic-only", platform: "windows", platformVersion: "15.0.0", brand: "Chrome", brandVersion: version, kernelId: e.coreId, coreActualVersion: version, coreExecutableSha256: "b".repeat(64), adapterVersion: "synthetic-only", capabilityVersion: "synthetic-only", language: e.language, acceptLanguages: [e.language], uiLanguage: "system", timezone: e.timezone, regionPreset: "synthetic-only", cpu: e.cpu, width: e.width, height: e.height, parameters: [], configHash: `${e.seed}-${e.coreId}-${e.width}` };
+      return { schemaVersion: 1, configRevision: view.fingerprints?.[e.id]?.profile.configRevision ?? 1, seed: e.seed, templateId: "windows-desktop-v1", templateVersion: e.fingerprintVersion, generatorVersion: "synthetic-only", platform: "windows", platformVersion: "15.0.0", brand: "Chrome", brandVersion: version, kernelId: e.coreId, coreActualVersion: version, coreExecutableSha256: "b".repeat(64), adapterVersion: "synthetic-only", capabilityVersion: "synthetic-only", language: e.language, acceptLanguages: [e.language], uiLanguage: "system", timezone: e.timezone, regionPreset: "synthetic-only", cpu: e.cpu, width: e.width, height: e.height, parameters: [], configHash: `${e.seed}-${e.coreId}-${e.width}` };
     }
     function preview(e: Environment, previewId: string): EnvironmentPreview {
       return { previewId, environment: { ...e }, expectedRevision: e.id ? revisions[e.id] : undefined, fingerprint: kernels.length ? { mode: "native", previewProfile: profile(e), action: "preview", changes: [], capabilityReport: { kernelId: e.coreId, evidenceStatus: "synthetic-only", capabilities: [], observedFingerprint: null, canLaunchNative: false } } : undefined, userDataRef: e.id ? `environments/${e.id}/user-data` : undefined };
@@ -119,6 +119,10 @@ test("injected native bridge creates once, retries failed opening and preserves 
   expect(data.calls.filter(c => c.method === "Runtime.Start")[0].payload).toMatchObject({ networkPolicy: "proxy", expectedRevision: 1 });
   await row.getByRole("button", { name: /打开|重试/, exact: true }).click();
   await expect(row).toContainText("运行中");
+  data = await nativeView(page);
+  expect(data.calls.filter(c => c.method === "Environment.Create")).toHaveLength(1);
+  expect(data.calls.filter(c => c.method === "Runtime.Start").map(c => (c.payload as { networkPolicy: string }).networkPolicy)).toEqual(["proxy", "proxy"]);
+  expect(data.view.state.environments[0].seed).toBe(seed);
   await row.getByRole("button", { name: "关闭", exact: true }).click();
   await expect(row).toContainText("待启动");
   await page.getByRole("button", { name: "桥接合成环境 更多操作", exact: true }).click();
