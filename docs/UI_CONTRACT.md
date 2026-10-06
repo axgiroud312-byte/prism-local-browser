@@ -25,6 +25,12 @@ Popover portal 到 `document.body`，不受下一行/表体 overflow 遮挡；�
 
 `reference-ui.css` 提供 40px 标题、32px 下划线控件、可滚正文、固定 footer，drawer 为 top40/bottom8/主宽660 的调用约定。公共 token 为 `--blue/--ink/--muted/--border`；`.button.primary/.danger/.compact` 是已有兼容样式。后续特殊样式在自己的 CSS 内用页面前缀隔离。
 
+### #37 弹层所有权与公共原语
+
+`modal-lifecycle.ts` 提供引用计数 `lockBodyScroll()`、`topModalElement()` / `ownsTopModal()` 和受最高窗口限制的 `restoreModalFocus()`。每个生命周期owner只取得一次锁，释放幂等；较低窗口退出不得恢复仍被其他窗口持有的背景滚动。现有页面/窗口owner继续负责自己的业务关闭保护，不把保存、取消或未知请求移入公共helper。
+
+环境内的唯一 `ProxyImportWindow` 采用 `lifecycle="parent"`：App提供遮罩/ref/键盘/焦点/滚动，组件只渲染frame。代理页使用self owner。隐藏/卸载保留同一ApplicationService对应的内存session；在途请求禁止关闭，未知回执允许隐藏但编辑冻结，返回核实准确原请求。`DemoRestoreWindow` / 本机专用窗口的portal由各自owner管理，App不得另包旧restore窗口或重复设置其inert/trap。工作区blocker优先级160；从它主动打开的诊断子窗口在其上方，低层Escape/Tab不关闭或抢焦点。
+
 ### 列表/分组模块
 
 - `EnvironmentFilters.tsx`：受控 `search/group/status/groups/total/running/errors/selected/pageSelected/native/blocked/searchRef`；回调为 `onSearch/onGroup/onStatus/onClear/onCreate/onOpen/onStop/onAssign/onRemove/onCancelSelection/onRefresh/onBackup/onHistory/onRecycle/onClone/onProxyAssign/onRetryReleased`。只管理浮层草稿/显示，不持有业务选择 ID、不调用 adapter。

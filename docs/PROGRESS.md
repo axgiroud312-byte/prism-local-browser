@@ -1,6 +1,15 @@
 # Goal 当前执行位置
 
-更新时间：2026-10-06，用户调整为 Ant Browser 核心流程与浏览器点击检查。
+更新时间：2026-10-06。当前唯一视觉目标是「完整代码」冻结归档 `202609160208`，不是 Ant Browser 或旧六页框架。
+
+## 当前 #32–#37 界面增量
+
+- 基线：PR #31 精确 `e170099`，集成分支 `codex/issue32-37-ui-integration`，增量 [草稿PR #38](https://github.com/axgiroud312-byte/prism-local-browser/pull/38)。保留 #31 → #27 依赖，不自动合并。
+- #33 shell/环境表/分组已合入；#34 模块及正式环境窗口挂载合入 `0d67ea5`，dirty/force确认冻结准确草稿/会话，49/49定向通过；#35 模块合入 `c6371eb`；#36 模块合入 `3c93a2a`。各自结果见 [#33](verification/issue33.md)、[#34](verification/issue34.md)、[正式挂载](verification/issue34-integration.md)、[#35](verification/issue35.md)、[#36](verification/issue36.md)。
+- #37 正在接入最后页面、唯一代理往返、共用弹层滚动所有权，修正独立视觉审查发现的表头/分组位置差异；最终源码截图、独立审查、共享全套点击仍待完成。模块harness截图不是主入口终验，不因已合入闭票。
+- 只使用 Vite、相关定向点击和必要类型检查；没有本轮构建、打包、Go/Wails、UIA或真实内核/网络/目录恢复实验。历史正式4/21和旧候选内容不变。
+
+## #28–#30 历史页面成果
 
 - 已有成果：[#28](https://github.com/axgiroud312-byte/prism-local-browser/issues/28) 精简 CI，`53ac883` 保留；本地 13/13、远程 [37419040709](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37419040709) 单个 Browser clicks / 13/13 已通过，不构建或打包。
 - 当前批次：[#30](https://github.com/axgiroud312-byte/prism-local-browser/issues/30) 承接环境表与统一创建/编辑窗口；[#29](https://github.com/axgiroud312-byte/prism-local-browser/issues/29) 负责整体六项验收，不重复页面实现。目标为服务内核/直连或代理/自动固定指纹/创建并打开/关闭重开，保留失败恢复与身份保护。

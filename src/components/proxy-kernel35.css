@@ -16,7 +16,7 @@
 .pk35-search svg { position: absolute; right: 5px; color: #2f54eb; }
 .pk35-table-scroll { overflow: auto; min-width: 0; max-width: 100%; overscroll-behavior: contain; }
 .pk35-table.pk35-table.pk35-table { width: 100%; border-collapse: separate; border-spacing: 0 10px; margin: -10px 0 0; font-size: 12px; line-height: 18px; table-layout: fixed; white-space: normal; }
-.pk35-table.pk35-table.pk35-table th { height: 40px; font-weight: 400; color: #595959; background: white; padding: 0 8px; text-align: left; border: 0; }
+.pk35-table.pk35-table.pk35-table th { height: 40px; font-weight: 700; color: #595959; background: white; padding: 0 8px; text-align: left; border: 0; }
 .pk35-table.pk35-table.pk35-table td { height: 48px; padding: 4px 8px; border: 0; background: #fff; color: #595959; overflow-wrap: anywhere; vertical-align: middle; }
 .pk35-table tr { box-shadow: 0 4px 12px #0000000a; }
 .pk35-table th:first-child, .pk35-table td:first-child { border-radius: 6px 0 0 6px; }

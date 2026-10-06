@@ -84,11 +84,11 @@ main { padding: 50px 10px 10px; min-width: 0; }
 .environment-table { display: block; width: 100%; min-width: 855px; border-collapse: separate; border-spacing: 0; font-size: 12px; white-space: nowrap; text-align: left; }
 .environment-table thead { display: block; height: 40px; border-radius: 8px; background: white; box-shadow: 0 3px 14px #0000000d; position: relative; z-index: 1; }
 .environment-table tr { display: grid; grid-template-columns: 30px 55px 70px 90px 140px 126px 114px minmax(120px, 1fr); }
-.environment-table th { display: flex; align-items: center; height: 40px; padding: 0 3px; font-weight: 400; font-size: 12px; border: 0; color: #595959; }
+.environment-table th { display: flex; align-items: center; height: 40px; padding: 0 4px; font-weight: 700; font-size: 12px; border: 0; color: #595959; }
 .environment-table tbody { display: block; height: calc(100dvh - 318px); min-height: 160px; overflow-y: auto; padding: 10px 0; scrollbar-width: thin; overscroll-behavior: contain; }
 .environment-table tbody tr { height: 48px; margin-bottom: 10px; border-radius: 8px; background: white; box-shadow: 0 3px 14px #0000000d; }
 .environment-table tbody tr:last-child { margin-bottom: 0; }
-.environment-table td { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; height: 48px; padding: 0 3px; border: 0; min-width: 0; position: relative; }
+.environment-table td { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; height: 48px; padding: 0 4px; border: 0; min-width: 0; position: relative; }
 .environment-table .check-cell { padding-left: 5px; }
 .environment-table tbody tr.row-selected { background: #fff; }
 .environment-table .environment-code { flex-direction: row; justify-content: flex-start; align-items: center; gap: 4px; }
@@ -132,7 +132,8 @@ main { padding: 50px 10px 10px; min-width: 0; }
 .environment-empty-row .empty-symbol { display: none; }
 .environment-empty-row .empty h3 { font-size: 12px; font-weight: 400; }
 .environment-empty-row .empty p { margin: 0; font-size: 12px; }
-.environment-group-popup .group-popup-search { display: flex; gap: 6px; padding: 10px; }
+.environment-group-popup { padding-bottom: 9px; }
+.environment-group-popup .group-popup-search { display: flex; gap: 6px; padding: 10px 10px 1px; }
 .group-popup-search input { height: 32px; min-width: 0; flex: 1; border: 1px solid var(--blue); border-radius: 3px; padding: 0 10px; }
 .group-popup-search .button { padding-inline: 15px; }
 .environment-group-popup > button { width: 100%; min-height: 32px; text-align: left; padding: 0 25px; }
@@ -163,7 +164,7 @@ main { padding: 50px 10px 10px; min-width: 0; }
 .group-name-search { display: flex; gap: 8px; align-items: center; height: 32px; border-bottom: 1px solid #bfbfbf; }
 .group-name-search input { border: 0; outline: none; min-width: 0; background: white; width: 170px; }
 .reference-group-table { width: 100%; margin-top: -10px; border-spacing: 0 10px; text-align: left; }
-.reference-group-table th { height: 40px; background: white; font-weight: 400; }
+.reference-group-table th { height: 40px; background: white; font-weight: 700; }
 .reference-group-table td { height: 48px; }
 .reference-group-table tr { box-shadow: 0 3px 14px #0000000d; border-radius: 8px; }
 .reference-group-table th, .reference-group-table td { padding: 0 20px; font-size: 12px; }
@@ -209,6 +210,7 @@ table:not(.environment-table):not(.reference-group-table) td { padding: 8px 12px
 .target-info { margin-bottom: 16px; align-items: center; }
 .target-info .tag { margin-left: auto; }
 .overlay { position: fixed; inset: 0; background: #0006; z-index: 80; display: flex; }
+.overlay[inert], .app-shell:has(> .workspace-blocker) > .overlay:not(.workspace-blocker), body:has(.workspace-blocker) > .pk35-overlay { background: transparent; }
 .modal-overlay { justify-content: center; align-items: center; padding: 24px; }
 .modal { width: 500px; max-width: 100%; max-height: calc(100dvh - 48px); background: #fff; border-radius: 3px; display: flex; flex-direction: column; min-height: 0; box-shadow: 0 1px 6px #0003; }
 .wide-modal { width: 620px; }
@@ -220,6 +222,7 @@ table:not(.environment-table):not(.reference-group-table) td { padding: 8px 12px
 .modal-footer { display: flex; align-items: center; justify-content: flex-end; gap: 10px; flex-shrink: 0; min-height: 71px; padding: 20px; }
 .modal-footer > .button:first-child { background: #eee; border-color: #eee; }
 .group-modal { height: 339.86px; transform: translateY(8px); }
+.group-modal .modal-header h2 { transform: translate(-8px, 7px); }
 .group-modal .modal-body { flex: 1; padding: 20px 60px 0; }
 .group-modal .field { flex-direction: row; gap: 25px; align-items: center; margin-bottom: 22px; }
 .group-modal .field > span { width: 80px; flex-shrink: 0; }

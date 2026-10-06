@@ -2,57 +2,34 @@ import {
   useEffect,
   useRef,
   useState,
-  lazy,
-  Suspense,
   useSyncExternalStore,
   type ReactNode,
 } from "react";
 import {
-  Activity as ActivityIcon,
-  ArrowDownToLine,
-  ArrowUpFromLine,
-  ArrowUpRight,
   Bell,
   BookOpen,
   Box,
-  Check,
-  CheckCheck,
   CheckCircle2,
-  ChevronDown,
   ChevronLeft,
   ChevronRight,
   CircleHelp,
   Copy,
-  Download,
   EllipsisVertical,
-  ExternalLink,
   FileJson,
   Fingerprint,
   Folder,
-  FolderPlus,
   Globe2,
   HardDrive,
   History,
-  Info,
   Layers3,
   LayoutGrid,
-  Link2,
-  ListFilter,
   LoaderCircle,
-  LockKeyhole,
   Monitor,
   Network,
-  Plus,
-  RefreshCw,
-  Search,
   Settings2,
-  ShieldCheck,
-  SlidersHorizontal,
   Square,
-  Terminal,
   Trash2,
   TriangleAlert,
-  Wifi,
   X,
 } from "lucide-react";
 import {
@@ -61,15 +38,11 @@ import {
   mergeCookies,
   now,
   parseCookies,
-  parseProxyText,
-  parseSnapshot,
   regions,
   restoreSnapshot,
   uid,
   type Environment,
   type Activity,
-  type Kernel,
-  type ProxyNode,
   type Snapshot,
   type State,
 } from "./domain";
@@ -88,15 +61,12 @@ import prdText from "../docs/PRD.md?raw";
 import developmentText from "../docs/DEVELOPMENT.md?raw";
 import kernelText from "../docs/KERNEL.md?raw";
 import userGuideText from "../docs/USER_GUIDE.md?raw";
-const Markdown = lazy(() => import("react-markdown"));
-import remarkGfm from "remark-gfm";
 import { NativeKernelManager } from "./components/NativeKernelManager";
 import { NativeMigrationManager } from "./components/NativeMigrationManager";
 import { NativeProxyManager } from "./components/NativeProxyManager";
 import { NativeCookieImport } from "./components/NativeCookieImport";
 import { NativeBatchDialog, type NativeBatchDialogInput } from "./components/NativeBatchDialog";
 import { readRuntimeStartPlan } from "./application/runtime-start-plan";
-import { NativeBackupManager } from "./components/NativeBackupManager";
 import { NativeRecycleManager } from "./components/NativeRecycleManager";
 import { NativeDiagnostics } from "./components/NativeDiagnostics";
 import { EnvironmentEditorWindow } from "./components/EnvironmentEditorWindow";
@@ -106,6 +76,15 @@ import { EnvironmentFilters } from "./components/EnvironmentFilters";
 import { EnvironmentGroups } from "./components/EnvironmentGroups";
 import { ReferencePopover } from "./components/ReferenceUi";
 import { EnvironmentRuntimeDetails } from "./components/EnvironmentRuntimeDetails";
+import { DemoProxyManager } from "./components/DemoProxyManager";
+import { DemoKernelManager } from "./components/DemoKernelManager";
+import { ProxyImportWindow } from "./components/ProxyImportWindow";
+import { getProxyImportSession } from "./components/proxy-import-session";
+import { BackupManagementPage } from "./components/BackupManagementPage";
+import { DemoRestoreWindow } from "./components/DemoBackupPage";
+import { ActivityPage } from "./components/ActivityPage";
+import { HelpPage } from "./components/HelpPage";
+import { lockBodyScroll, lockModalBackground, modalLayer, ownsTopModal, restoreModalFocus, topModalElement } from "./components/modal-lifecycle";
 
 type Route =
   "environments" | "groups" | "proxies" | "kernels" | "backups" | "activity" | "guide";
@@ -143,10 +122,7 @@ const fingerprintInputKey = (environment: Environment) => JSON.stringify([
 type Dialog =
   | { kind: "delete"; ids: string[] }
   | { kind: "cookies"; id: string }
-  | { kind: "proxy" }
-  | { kind: "proxy-edit"; proxy: ProxyNode }
   | { kind: "restore"; snapshot: Snapshot; name: string }
-  | { kind: "kernel"; core: Kernel }
   | { kind: "group"; ids: string[] };
 const routeInfo = {
   environments: {
@@ -220,9 +196,6 @@ function Button({
     </button>
   );
 }
-function Tag({ children, kind = "" }: { children: ReactNode; kind?: string }) {
-  return <span className={`tag ${kind}`}>{children}</span>;
-}
 function Empty({
   title,
   text,
@@ -280,20 +253,6 @@ function download(name: string, content: string, type = "application/json") {
   setTimeout(() => URL.revokeObjectURL(url), 1500);
 }
 
-function topModalElement() {
-  const modals = [...document.querySelectorAll<HTMLElement>('[aria-modal="true"]')]
-    .filter(element => element.getClientRects().length > 0 && !element.closest("[inert]"));
-  const layer = (element: HTMLElement) => {
-    let highest = 0;
-    for (let node: HTMLElement | null = element; node; node = node.parentElement) {
-      const zIndex = Number(getComputedStyle(node).zIndex);
-      if (Number.isFinite(zIndex)) highest = Math.max(highest, zIndex);
-    }
-    return highest;
-  };
-  return modals.reduce<HTMLElement | null>((top, candidate) => !top || layer(candidate) >= layer(top) ? candidate : top, null);
-}
-
 export default function App({ application }: { application: ApplicationService }) {
   const workspace = useSyncExternalStore(application.subscribe, application.getSnapshot);
   const state = workspace.state;
@@ -324,9 +283,13 @@ export default function App({ application }: { application: ApplicationService }
   const automaticPreviewAttempt = useRef("");
   const [previewError, setPreviewError] = useState("");
   const [dialog, setDialog] = useState<Dialog | null>(null);
+  const legacyDialog = dialog?.kind !== "restore" ? dialog : null;
   const [environmentConfirmation, setEnvironmentConfirmation] = useState<PendingEnvironmentConfirmation | null>(null);
+  const [confirmationLayer, setConfirmationLayer] = useState(120);
   const environmentConfirmationRef = useRef<PendingEnvironmentConfirmation | null>(null);
   const [nativeProxyImportOpen, setNativeProxyImportOpen] = useState(false);
+  const [migrationOpen, setMigrationOpen] = useState(false);
+  const proxyImportSession = getProxyImportSession(application);
   const [draftProxyImportOpen, setDraftProxyImportOpen] = useState(false);
   const [draftProxyImportBusy, setDraftProxyImportBusy] = useState(false);
   const [nativeCookieEnvironment, setNativeCookieEnvironment] = useState<Environment | null>(null);
@@ -346,10 +309,6 @@ export default function App({ application }: { application: ApplicationService }
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [menu, setMenu] = useState<string | null>(null);
   const [checking, setChecking] = useState<string[]>([]);
-  const [proxyText, setProxyText] = useState("");
-  const [proxyRows, setProxyRows] = useState<ReturnType<typeof parseProxyText>>(
-    [],
-  );
   const [cookieText, setCookieText] = useState("");
   const [cookieResult, setCookieResult] = useState<ReturnType<
     typeof parseCookies
@@ -375,8 +334,6 @@ export default function App({ application }: { application: ApplicationService }
   const [groupPending, setGroupPending] = useState(false);
   const initialDraft = useRef("");
   const initialFingerprintHash = useRef("");
-  const backupFile = useRef<HTMLInputElement>(null);
-  const proxyFile = useRef<HTMLInputElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const workspaceOverlayRef = useRef<HTMLDivElement>(null);
   const drawerOverlayRef = useRef<HTMLDivElement>(null);
@@ -388,6 +345,7 @@ export default function App({ application }: { application: ApplicationService }
   const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
   const uiBlocked = Boolean(drawerVisible || dialog || environmentConfirmation || draftProxyImportOpen || nativeBatchInput || nativeCookieEnvironment || nativeRecycleSelection || storageIssue);
+  const appInert = Boolean(drawerVisible || legacyDialog || environmentConfirmation || draftProxyImportOpen || nativeBatchInput || nativeCookieEnvironment || nativeRecycleSelection || storageIssue);
   useEffect(() => { if (uiBlocked) setMenu(null); }, [uiBlocked]);
   const notify = (text: string, error = false) => {
     setToast({ text, error });
@@ -459,6 +417,8 @@ export default function App({ application }: { application: ApplicationService }
   }, []);
   function showEnvironmentConfirmation(pending: PendingEnvironmentConfirmation) {
     if (environmentConfirmationRef.current || application.getSnapshot().issue) return;
+    const top = topModalElement();
+    setConfirmationLayer(Math.min(158, Math.max(120, top ? modalLayer(top) + 2 : 120)));
     confirmationReturnFocus.current = document.activeElement as HTMLElement;
     environmentConfirmationRef.current = pending;
     setEnvironmentConfirmation(pending);
@@ -508,8 +468,7 @@ export default function App({ application }: { application: ApplicationService }
     const timer = setTimeout(() => {
       const fallback = drawerRef.current ? drawerOverlayRef.current : drawerReturnFocus.current;
       const eligible = target.isConnected && !target.closest("[inert]") && !target.matches(":disabled") && target.getClientRects().length > 0;
-      if (eligible) target.focus();
-      else if (fallback?.isConnected && !fallback.closest("[inert]") && !fallback.matches(":disabled")) fallback.focus();
+      restoreModalFocus(eligible ? target : fallback);
     }, 0);
     return () => clearTimeout(timer);
   }, [Boolean(environmentConfirmation)]);
@@ -517,7 +476,7 @@ export default function App({ application }: { application: ApplicationService }
     if (drawerVisible || drawer || environmentConfirmation) return;
     const target = drawerReturnFocus.current;
     if (!target) return;
-    const timer = setTimeout(() => { if (target.isConnected && !target.closest("[inert]") && !target.matches(":disabled")) target.focus(); }, 0);
+    const timer = setTimeout(() => restoreModalFocus(target), 0);
     return () => clearTimeout(timer);
   }, [drawerVisible, Boolean(drawer), Boolean(environmentConfirmation)]);
   useEffect(() => {
@@ -528,7 +487,7 @@ export default function App({ application }: { application: ApplicationService }
         return;
       }
       const top = topModalElement();
-      if (top && ![drawerOverlayRef.current, overlayRef.current, draftProxyOverlayRef.current, confirmationOverlayRef.current].includes(top as HTMLDivElement)) {
+      if (top && ![drawerOverlayRef.current, overlayRef.current, draftProxyOverlayRef.current, confirmationOverlayRef.current].some(ownsTopModal)) {
         if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") e.preventDefault();
         return;
       }
@@ -537,11 +496,11 @@ export default function App({ application }: { application: ApplicationService }
         if ((e.ctrlKey || e.metaKey) && e.key === "k") e.preventDefault();
         return;
       }
-      if (draftProxyImportOpen || dialog) {
+      if (draftProxyImportOpen || legacyDialog) {
         if ((e.ctrlKey || e.metaKey) && e.key === "k") e.preventDefault();
         if (e.key === "Escape" && !draftProxyImportBusy && !groupPending) {
           e.preventDefault();
-          if (draftProxyImportOpen) setDraftProxyImportOpen(false);
+          if (draftProxyImportOpen) closeDraftProxyImport();
           else setDialog(null);
         }
         return;
@@ -557,34 +516,42 @@ export default function App({ application }: { application: ApplicationService }
     };
     window.addEventListener("keydown", key);
     return () => window.removeEventListener("keydown", key);
-  }, [generating, drawer, drawerVisible, dialog, environmentConfirmation, draftProxyImportOpen, draftProxyImportBusy, groupPending, nativeBatchInput, nativeCookieEnvironment, nativeRecycleSelection, storageIssue]);
+  }, [generating, drawer, drawerVisible, legacyDialog, environmentConfirmation, draftProxyImportOpen, draftProxyImportBusy, groupPending, nativeBatchInput, nativeCookieEnvironment, nativeRecycleSelection, storageIssue]);
   useEffect(() => {
-    if (dialog?.kind === "proxy" || draftProxyImportOpen || !drawerVisible || !proxyReturnFocus.current) return;
-    const timer = setTimeout(() => proxyReturnFocus.current?.focus(), 40);
+    if (draftProxyImportOpen || !drawerVisible || !proxyReturnFocus.current) return;
+    const timer = setTimeout(() => {
+      restoreModalFocus(proxyReturnFocus.current);
+    }, 40);
     return () => clearTimeout(timer);
-  }, [dialog?.kind, draftProxyImportOpen, drawerVisible]);
+  }, [draftProxyImportOpen, drawerVisible]);
   useEffect(() => {
     if (!formError) return;
-    const overlay = dialog ? overlayRef.current : drawerVisible ? drawerOverlayRef.current : null;
+    const overlay = legacyDialog ? overlayRef.current : drawerVisible ? drawerOverlayRef.current : null;
     overlay?.querySelector('[role="alert"]')?.scrollIntoView({ block: "nearest" });
-  }, [formError, Boolean(dialog), drawerVisible]);
+  }, [formError, Boolean(legacyDialog), drawerVisible]);
   useEffect(() => {
-    if (!drawerVisible && !dialog && !environmentConfirmation && !draftProxyImportOpen && !storageIssue) return;
-    const oldOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    if (!storageIssue) return;
+    const lowerLayers = [...document.querySelectorAll<HTMLElement>(
+      '.app-shell > .overlay:not(.workspace-blocker), body > .pk35-overlay, body > .local-page-overlay',
+    )].filter(element => modalLayer(element) < 160);
+    return lockModalBackground(lowerLayers, true);
+  }, [Boolean(storageIssue)]);
+  useEffect(() => {
+    if (!drawerVisible && !legacyDialog && !environmentConfirmation && !draftProxyImportOpen && !storageIssue) return;
+    const releaseScroll = lockBodyScroll();
     const previous = document.activeElement as HTMLElement;
-    const topOverlay = () => storageIssue ? workspaceOverlayRef.current : environmentConfirmationRef.current ? confirmationOverlayRef.current : draftProxyImportOpen ? draftProxyOverlayRef.current : dialog ? overlayRef.current : drawerOverlayRef.current;
+    const topOverlay = () => storageIssue ? workspaceOverlayRef.current : environmentConfirmationRef.current ? confirmationOverlayRef.current : draftProxyImportOpen ? draftProxyOverlayRef.current : legacyDialog ? overlayRef.current : drawerOverlayRef.current;
     const focusable = (overlay: HTMLElement) => [...overlay.querySelectorAll<HTMLElement>(
       'button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), a[href], summary, [tabindex="0"]',
     )].filter(element => element.getClientRects().length > 0 && !element.closest("[inert]"));
     const focusFirst = () => {
       const overlay = topOverlay();
-      if (overlay && topModalElement() === overlay) (focusable(overlay)[0] ?? overlay).focus();
+      if (overlay && ownsTopModal(overlay)) (focusable(overlay)[0] ?? overlay).focus();
     };
     const timer = setTimeout(focusFirst, 30);
     const trap = (e: KeyboardEvent) => {
       const overlay = topOverlay();
-      if (e.defaultPrevented || !overlay || topModalElement() !== overlay) return;
+      if (e.defaultPrevented || !ownsTopModal(overlay) || !overlay) return;
       if (storageIssue && (e.key === "Escape" || (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k")) {
         e.preventDefault();
         e.stopImmediatePropagation();
@@ -614,19 +581,18 @@ export default function App({ application }: { application: ApplicationService }
     };
     const repairFocus = (event: FocusEvent) => {
       const overlay = topOverlay();
-      if (overlay && topModalElement() === overlay && !overlay.contains(event.target as Node)) focusFirst();
+      if (overlay && ownsTopModal(overlay) && !overlay.contains(event.target as Node)) focusFirst();
     };
     document.addEventListener("keydown", trap, true);
     document.addEventListener("focusin", repairFocus);
     return () => {
-      document.body.style.overflow = oldOverflow;
+      releaseScroll();
       clearTimeout(timer);
       document.removeEventListener("keydown", trap, true);
       document.removeEventListener("focusin", repairFocus);
-      if (previous?.isConnected && !previous.closest("[inert]")) previous.focus();
-      else if (menuAnchor?.isConnected && !menuAnchor.closest("[inert]")) menuAnchor.focus();
+      restoreModalFocus(previous?.isConnected && !previous.closest("[inert]") ? previous : menuAnchor);
     };
-  }, [drawerVisible, Boolean(dialog), Boolean(environmentConfirmation), draftProxyImportOpen, Boolean(storageIssue)]);
+  }, [drawerVisible, Boolean(legacyDialog), Boolean(environmentConfirmation), draftProxyImportOpen, Boolean(storageIssue)]);
   const navigate = (r: Route) => {
     location.hash = `/${r}`;
   };
@@ -1111,8 +1077,8 @@ export default function App({ application }: { application: ApplicationService }
     setChecking([]);
     if (!checkFailed) notify("模拟检查完成，结果不代表真实网络状态");
   }
-  function newBackup() {
-    if (nativeMode) { notify("完整本地备份尚未接入，不会创建原型 JSON 冒充备份。", true); return; }
+  function newBackup(): boolean {
+    if (nativeMode) { notify("完整本地备份尚未接入，不会创建原型 JSON 冒充备份。", true); return false; }
     const snapshot = createSnapshot(state);
     const name = `工作区快照 ${time(snapshot.createdAt)}`;
     if (!update((s) => ({
@@ -1125,19 +1091,22 @@ export default function App({ application }: { application: ApplicationService }
       "创建原型快照",
       name,
       "仅包含原型配置和示例 Cookie，排除代理密码，不包含 Chromium 用户目录。",
-    ))) return;
+    ))) return false;
     notify("原型快照已保存到当前浏览器");
+    return true;
   }
   function confirmRestore() {
     if (nativeMode) { notify("原型快照不能恢复到真实工作区，原数据未修改。", true); return; }
     if (dialog?.kind !== "restore") return;
+    setFormError("");
     try {
       const next = restoreSnapshot(state, dialog.snapshot);
-      if (!update(() => next, log(
+      const result = updateDemo(() => next, log(
         "恢复原型快照",
         dialog.name,
         "配置已恢复；代理凭据需重新填写，所有代理需重新检查。",
-      ))) return;
+      ));
+      if (!result.ok) { setFormError(result.error.message); return; }
       setSelected([]);
       setDialog(null);
       notify("快照已恢复，代理需要重新检查");
@@ -1168,13 +1137,17 @@ export default function App({ application }: { application: ApplicationService }
     if (environmentConfirmationRef.current) return;
     if (drawerRef.current && !drawerSuspended) {
       proxyReturnFocus.current = document.activeElement as HTMLElement;
-      if (nativeMode) { setDraftProxyImportBusy(false); setDraftProxyImportOpen(true); return; }
+      setDraftProxyImportBusy(proxyImportSession.getSnapshot().busy);
+      setDraftProxyImportOpen(true);
+      return;
     }
     if (nativeMode) { setNativeProxyImportOpen(true); return; }
-    setDialog({ kind: "proxy" });
-    setProxyText("");
-    setProxyRows([]);
-    setFormError("");
+    navigate("proxies");
+  }
+  function closeDraftProxyImport() {
+    if (proxyImportSession.getSnapshot().busy) return;
+    proxyImportSession.setShowText(false);
+    setDraftProxyImportOpen(false);
   }
   function openGroupAssignment(ids: string[], name = "") {
     setMenu(null); setGroupName(name); setFormError(""); setDialog({ kind: "group", ids: [...new Set(ids)] });
@@ -1229,7 +1202,6 @@ export default function App({ application }: { application: ApplicationService }
     setSelected([]);
     notify("环境已从工作区移除");
   }
-  const summary = routeInfo[route];
   const canConfigureProfileField = (field: string) => !profileBusy && (!nativeMode || !!selectedKernelRecord?.report.capabilities.some(capability => capability.field === field && capability.status === "configurable" && capability.source === "observed"));
   const outcomePanel = outcomes.length > 0 && <section className="environment-outcomes" aria-label="逐项操作结果">
     <div className="outcome-heading"><strong>操作结果 · {outcomes.length} 项</strong><span>{nativeMode ? "本机服务反馈" : "模拟操作，不启动真实浏览器"}</span><button className="text-button" disabled={outcomes.some(item => ["pending", "accepted"].includes(item.state))} onClick={() => setOutcomes([])}>收起结果</button></div>
@@ -1239,7 +1211,7 @@ export default function App({ application }: { application: ApplicationService }
     <div className="app-shell">
       <aside
         className="sidebar"
-        inert={uiBlocked}
+        inert={appInert} data-app-inert={String(appInert)}
       >
         <a className="brand" href="#/environments">
           <div className="brand-mark">
@@ -1270,7 +1242,7 @@ export default function App({ application }: { application: ApplicationService }
       </aside>
       <div
         className="main-shell"
-        inert={uiBlocked}
+        inert={appInert} data-app-inert={String(appInert)}
       >
         <header className="topbar">
           <span className="topbar-local"><Monitor size={15} />本机工作区</span>
@@ -1301,38 +1273,6 @@ export default function App({ application }: { application: ApplicationService }
           {nativeMode && workspace.maintenance && <div className="prototype-notice" role="status">完整恢复正在维护保护中，配置修改与新启动暂不可用。<Button onClick={() => navigate("backups")}>查看恢复任务</Button></div>}
           {nativeMode && workspace.migrationMaintenance && <div className="prototype-notice" role="status">内核迁移维护中，原环境保持停止。<Button onClick={() => navigate("kernels")}>查看试用与迁移</Button></div>}
           {nativeMode && workspace.recycleMaintenance && <div className="prototype-notice" role="status">回收维护保护中，请核实原任务。<Button onClick={() => setNativeRecycleSelection([])}>打开回收区</Button></div>}
-          {!["environments", "groups"].includes(route) && <div className="page-toolbar">
-            <h1>{summary.label}</h1>
-            <div className="page-toolbar-actions">
-              {route === "proxies" ? (
-                <Button className="primary" onClick={openProxyImport}>
-                  <Plus size={18} />
-                  添加代理
-                </Button>
-              ) : route === "backups" ? (
-                nativeMode ? <span className="subtle-text">原生完整包 · 恢复前只读预检与明确确认</span> : <>
-                  <Button onClick={() => backupFile.current?.click()}>
-                    <ArrowUpFromLine size={16} />
-                    导入快照
-                  </Button>
-                  <Button className="primary" onClick={newBackup}>
-                    <Plus size={18} />
-                    创建快照
-                  </Button>
-                </>
-              ) : route === "kernels" ? (
-                <a
-                  className="button"
-                  href="https://github.com/adryfish/fingerprint-chromium/blob/main/README-ZH.md"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <ExternalLink size={16} />
-                  查看官方内核
-                </a>
-              ) : null}
-            </div>
-          </div>}
           {route === "environments" && (
             <>
               <div className="environment-list-panel">
@@ -1592,585 +1532,40 @@ export default function App({ application }: { application: ApplicationService }
             </>
           )}
           {route === "groups" && <>{outcomePanel}<EnvironmentGroups groups={groups} environments={state.environments} native={nativeMode} onFilter={value => { setGroup(value); setStatus("all"); navigate("environments"); }} onAssign={openGroupAssignment} /></>}
-          {route === "proxies" && nativeMode && <NativeProxyManager application={application} workspace={workspace} importOpen={nativeProxyImportOpen} onImportOpenChange={setNativeProxyImportOpen} />}
-          {route === "proxies" && !nativeMode && (
-            <>
-              <div className="info-strip">
-                <Info size={18} />
-                <div>
-                  <strong>独立出口，明确绑定</strong>
-                  <p>
-                    支持 HTTP、HTTPS 和
-                    SOCKS5。检查失败时阻止环境启动；不自动切换直连。当前检查使用演示结果。
-                  </p>
-                </div>
-              </div>
-              <section className="work-card">
-                <div className="section-toolbar">
-                  <h2>
-                    代理列表 <span>{state.proxies.length}</span>
-                  </h2>
-                  <Button
-                    disabled={checking.length > 0}
-                    onClick={() => checkProxy(state.proxies.map((p) => p.id))}
-                  >
-                    <RefreshCw
-                      size={15}
-                      className={checking.length ? "spin" : ""}
-                    />
-                    检查全部
-                  </Button>
-                </div>
-                <div className="table-scroll">
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>代理名称</th>
-                        <th>协议与地址</th>
-                        <th>地区</th>
-                        <th>检查结果</th>
-                        <th>关联环境</th>
-                        <th>操作</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {state.proxies.map((p) => (
-                        <tr key={p.id}>
-                          <td>
-                            <div className="proxy-title">
-                              <div className="small-icon">
-                                <Network size={17} />
-                              </div>
-                              <strong>{p.name}</strong>
-                            </div>
-                            <span className="cell-secondary">
-                              {p.username
-                                ? "已配置认证用户名"
-                                : "无需用户名认证"}
-                            </span>
-                          </td>
-                          <td>
-                            <Tag>{p.type.toUpperCase()}</Tag>
-                            <div className="cell-secondary mono">
-                              {p.host}:{p.port}
-                            </div>
-                          </td>
-                          <td>
-                            <span className="country-code">{p.country}</span>{" "}
-                            {regions[p.country]?.label || p.country}
-                          </td>
-                          <td>
-                            <Tag
-                              kind={
-                                p.status === "connected"
-                                  ? "success"
-                                  : p.status === "failed"
-                                    ? "warning"
-                                    : ""
-                              }
-                            >
-                              {checking.includes(p.id)
-                                ? "检查中…"
-                                : p.status === "connected"
-                                  ? `模拟可连接 · ${p.latency} ms`
-                                  : p.status === "failed"
-                                    ? "模拟连接失败"
-                                    : "待检查"}
-                            </Tag>
-                          </td>
-                          <td>
-                            {
-                              state.environments.filter(
-                                (e) => e.proxyId === p.id,
-                              ).length
-                            }{" "}
-                            个环境
-                          </td>
-                          <td>
-                            <div className="row-actions">
-                              <Button
-                                className="compact"
-                                disabled={checking.length > 0}
-                                onClick={() => checkProxy([p.id])}
-                              >
-                                <Wifi size={14} />
-                                检查
-                              </Button>
-                              <button
-                                className="icon-button"
-                                aria-label={`编辑代理 ${p.name}`}
-                                onClick={() => {
-                                  if (
-                                    state.environments.some(
-                                      (e) =>
-                                        e.proxyId === p.id &&
-                                        [
-                                          "running",
-                                          "starting",
-                                          "stopping",
-                                        ].includes(e.status),
-                                    )
-                                  ) {
-                                    notify(
-                                      "请先关闭使用该代理的环境，再修改代理配置。",
-                                      true,
-                                    );
-                                    return;
-                                  }
-                                  setDialog({
-                                    kind: "proxy-edit",
-                                    proxy: { ...p },
-                                  });
-                                  setFormError("");
-                                }}
-                              >
-                                <Settings2 size={16} />
-                              </button>
-                              <button
-                                className="icon-button"
-                                aria-label={`删除代理 ${p.name}`}
-                                onClick={() => {
-                                  if (
-                                    state.environments.some(
-                                      (e) => e.proxyId === p.id,
-                                    )
-                                  ) {
-                                    notify(
-                                      "代理正在被环境引用，请先更改环境的代理绑定。",
-                                      true,
-                                    );
-                                    return;
-                                  }
-                                  if (!update((s) => ({
-                                    ...s,
-                                    proxies: s.proxies.filter(
-                                      (i) => i.id !== p.id,
-                                    ),
-                                  }), log(
-                                    "删除代理",
-                                    p.name,
-                                    "未被引用的代理配置已删除。",
-                                  ))) return;
-                                }}
-                              >
-                                <Trash2 size={16} />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-                {!state.proxies.length && (
-                  <Empty
-                    title="还没有代理"
-                    text="导入代理后，可以在新建或编辑环境时进行绑定。"
-                    action={
-                      <Button className="primary" onClick={openProxyImport}>
-                        添加代理
-                      </Button>
-                    }
-                  />
-                )}
-              </section>
-            </>
-          )}
-          {route === "kernels" && nativeMode && <><NativeKernelManager application={application} workspace={workspace} /><NativeMigrationManager application={application} workspace={workspace} /></>}
-          {route === "kernels" && !nativeMode && (
-            <>
-              <div className="info-strip">
-                <ShieldCheck size={19} />
-                <div>
-                  <strong>固定版本，明确来源</strong>
-                  <p>
-                    {nativeMode ? "指定 adryfish/fingerprint-chromium。当前未安装；安装与校验尚未接入，本机档案不能启动。" : "选用 adryfish/fingerprint-chromium。原型没有下载或运行内核；正式接入需核对可执行文件版本、哈希和参数实际读值。"}
-                  </p>
-                </div>
-              </div>
-              <div className="kernel-grid">
-                {state.kernels.map((k) => (
-                  <section
-                    className={`kernel-card ${k.available ? "primary-kernel" : ""}`}
-                    key={k.id}
-                  >
-                    <div className="kernel-card-top">
-                      <div className="kernel-symbol">
-                        <Box size={28} />
-                      </div>
-                      <Tag kind={k.available ? "blue-tag" : ""}>
-                        {nativeMode ? (k.available ? "已核验" : "未安装 · 未就绪") : (k.available ? "演示基线" : "待验证")}
-                      </Tag>
-                    </div>
-                    <h2>Chromium {k.version.split(".")[0]}</h2>
-                    <div className="kernel-version mono">{k.version}</div>
-                    <p>{k.note}</p>
-                    <div className="kernel-meta">
-                      <span>
-                        适用系统<strong>Windows x64</strong>
-                      </span>
-                      <span>
-                        关联环境
-                        <strong>
-                          {
-                            state.environments.filter((e) => e.coreId === k.id)
-                              .length
-                          }{" "}
-                          个
-                        </strong>
-                      </span>
-                      <span>
-                        真实运行验证<strong>尚未执行</strong>
-                      </span>
-                    </div>
-                    <Button
-                      className={k.available ? "soft-primary wide" : "wide"}
-                      onClick={() => {
-                        setDialog({ kind: "kernel", core: k });
-                        setFormError("");
-                      }}
-                    >
-                      <SlidersHorizontal size={16} />
-                      查看能力与接入要求
-                    </Button>
-                  </section>
-                ))}
-              </div>
-              <div className="work-card capability-card">
-                <div>
-                  <h2>参数能力分层</h2>
-                  <p>只开放有明确实现入口的参数。</p>
-                </div>
-                <div className="capability-columns">
-                  <div>
-                    <Tag kind="success">可配置</Tag>
-                    <p>语言、时区、CPU 线程数、网络策略</p>
-                  </div>
-                  <div>
-                    <Tag kind="blue-tag">内核生成</Tag>
-                    <p>GPU、内存、绘图与声音相关输出</p>
-                  </div>
-                  <div>
-                    <Tag kind="warning">待实际核对</Tag>
-                    <p>完整屏幕指纹、定位、跨版本输出</p>
-                  </div>
-                </div>
-              </div>
-            </>
-          )}
+          {route === "proxies" && nativeMode && <NativeProxyManager application={application} workspace={workspace}
+            importOpen={nativeProxyImportOpen} onImportOpenChange={setNativeProxyImportOpen}
+            onAssign={ids => {
+              if (ids?.length) setNativeBatchInput({ kind: "assign", sourceIds: [...new Set(ids)] });
+              else { navigate("environments"); notify("请先明确选择要分配代理的环境，再使用“批量分配代理”。"); }
+            }} />}
+          {route === "proxies" && !nativeMode && <DemoProxyManager application={application} workspace={workspace} checking={checking} onCheck={checkProxy} />}
+          {route === "kernels" && nativeMode && <><NativeKernelManager application={application} workspace={workspace} onMigration={() => setMigrationOpen(true)} /><NativeMigrationManager application={application} workspace={workspace} open={migrationOpen} onOpenChange={setMigrationOpen} /></>}
+          {route === "kernels" && !nativeMode && <DemoKernelManager workspace={workspace} />}
           {route === "backups" && (
-            nativeMode ? <NativeBackupManager key={nativeBackupSelection.join(",")} application={application} workspace={workspace} selectedIds={nativeBackupSelection} /> : <>
-              <input
-                ref={backupFile}
-                type="file"
-                accept=".json"
-                hidden
-                onChange={async (e) => {
-                  const file = e.target.files?.[0];
-                  e.target.value = "";
-                  if (!file) return;
-                  if (nativeMode) { notify("原型 JSON 不可导入真实工作区；完整恢复尚未接入。原数据未修改。", true); return; }
-                  try {
-                    if (file.size > 10 * 1024 * 1024)
-                      throw new Error(
-                        "原型文件请控制在 10 MB 内；这不是产品环境数量限制。",
-                      );
-                    const snapshot = parseSnapshot(await file.text());
-                    setDialog({ kind: "restore", snapshot, name: file.name });
-                    setFormError("");
-                  } catch (err) {
-                    notify((err as Error).message, true);
-                  }
-                }}
-              />
-              <div className="info-strip amber-strip">
-                <Info size={19} />
-                <div>
-                  <strong>{nativeMode ? "完整本机备份与恢复尚未接入" : "当前保存的是原型数据快照"}</strong>
-                  <p>
-                    {nativeMode ? "本机环境保存在 SQLite。此页不会生成原型快照，也不会把原型 JSON 恢复为生产记录。" : "JSON 包含页面中的环境配置与示例 Cookie，排除代理密码。真实 Chromium 用户目录的备份与原子恢复在开发文档中单独定义。"}
-                  </p>
-                </div>
-              </div>
-              <section className="work-card">
-                <div className="section-toolbar">
-                  <h2>
-                    本地快照 <span>{state.backups.length}</span>
-                  </h2>
-                  <span className="subtle-text">
-                    保存在当前浏览器 · 建议导出文件留存
-                  </span>
-                </div>
-                {state.backups.length ? (
-                  <div className="table-scroll">
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>快照名称</th>
-                          <th>环境数量</th>
-                          <th>创建时间</th>
-                          <th>格式</th>
-                          <th>操作</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {state.backups.map((b) => (
-                          <tr key={b.id}>
-                            <td>
-                              <div className="proxy-title">
-                                <div className="small-icon">
-                                  <HardDrive size={18} />
-                                </div>
-                                <strong>{b.name}</strong>
-                              </div>
-                            </td>
-                            <td>{b.snapshot.environments.length} 个</td>
-                            <td>{time(b.createdAt)}</td>
-                            <td>
-                              <Tag>原型 JSON</Tag>
-                            </td>
-                            <td>
-                              <div className="row-actions">
-                                <Button
-                                  className="compact"
-                                  onClick={() =>
-                                    download(
-                                      `prism-snapshot-${b.id}.json`,
-                                      JSON.stringify(b.snapshot, null, 2),
-                                    )
-                                  }
-                                >
-                                  <Download size={14} />
-                                  导出
-                                </Button>
-                                <Button
-                                  className="compact"
-                                  onClick={() => {
-                                    setDialog({
-                                      kind: "restore",
-                                      snapshot: b.snapshot,
-                                      name: b.name,
-                                    });
-                                    setFormError("");
-                                  }}
-                                >
-                                  <History size={14} />
-                                  恢复
-                                </Button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                ) : (
-                  <Empty
-                    title="为工作区保存第一份快照"
-                    text="在批量修改或测试恢复流程前，先保留当前环境配置。"
-                    action={
-                      <Button className="primary" onClick={newBackup}>
-                        <Plus size={16} />
-                        创建快照
-                      </Button>
-                    }
-                  />
-                )}
-              </section>
-            </>
+            <BackupManagementPage key={nativeMode ? `native:${nativeBackupSelection.join(",")}` : "demo"}
+              application={application} workspace={workspace} selectedIds={nativeBackupSelection}
+              demo={{ state, disabled: Boolean(storageIssue), onCreate: newBackup,
+                onRestore: (snapshot, name) => { setFormError(""); setDialog({ kind: "restore", snapshot, name }); },
+                onDownload: backup => download(`prism-snapshot-${backup.id}.json`, JSON.stringify(backup.snapshot, null, 2)) }} />
           )}
           {route === "activity" && (
-            <>{nativeMode && <NativeDiagnostics application={application} />}<section className="work-card">
-              <div className="section-toolbar">
-                <h2>最近操作</h2>
-                {!nativeMode && <Button
-                  onClick={() =>
-                    download(
-                      "prism-activity.json",
-                      JSON.stringify(state.activities, null, 2),
-                    )
-                  }
-                >
-                  <Download size={15} />
-                  导出记录
-                </Button>}
-              </div>
-              <div className="activity-list">
-                {state.activities.map((a) => {
-                  const session = a.environmentId ? workspace.runtimeSessions?.[a.environmentId] : undefined;
-                  const currentSession = nativeMode && !!session && session.sessionId === a.sessionId;
-                  return (
-                  <div className="activity-item" key={a.id}>
-                    <span className={`activity-symbol ${a.result}`}>
-                      {a.result === "error" ? (
-                        <TriangleAlert size={17} />
-                      ) : a.result === "success" ? (
-                        <Check size={17} />
-                      ) : (
-                        <Info size={17} />
-                      )}
-                    </span>
-                    <div className="activity-content">
-                      <strong>
-                        {a.action}
-                        <span>{a.target}</span>
-                      </strong>
-                      <p>{a.detail}</p>
-                      {a.errorCode && <p className="mono">原因：{a.errorCode}</p>}
-                      {a.nextAction && <p>{a.nextAction}</p>}
-                      {currentSession && session.needsReconcile && <Button className="compact" disabled={runtimeActionIds.includes(a.environmentId!)} onClick={() => void handleRuntimeSessionAction(a.environmentId!, session.sessionId, "reconcile")}>核对会话</Button>}
-                      {currentSession && session.canForce && !session.needsReconcile && <Button className="danger compact" disabled={runtimeActionIds.includes(a.environmentId!)} onClick={() => void handleRuntimeSessionAction(a.environmentId!, session.sessionId, "force")}>强制结束此会话</Button>}
-                    </div>
-                    <time>{time(a.time)}</time>
-                  </div>
-                ); })}
-              </div>
-            </section></>
+            <ActivityPage activities={state.activities} native={nativeMode} runtimeSessions={workspace.runtimeSessions}
+              blockedIds={runtimeActionIds} diagnostics={nativeMode ? <NativeDiagnostics application={application} /> : undefined}
+              onExport={nativeMode ? undefined : () => download("prism-activity.json", JSON.stringify(state.activities, null, 2))}
+              onSessionAction={(environmentId, sessionId, action) => void handleRuntimeSessionAction(environmentId, sessionId, action)} />
           )}
           {route === "guide" && (
-            <>
-              <div className="guide-intro">
-                <div className="guide-symbol">
-                  <BookOpen size={28} />
-                </div>
-                <div>
-                  <h2>{nativeMode ? "本机使用指南与排错" : "从产品需求，走到可实现的页面"}</h2>
-                  <p>
-                    {nativeMode ? "首版候选仅用于合成数据检查：代理逐会话保护已接入，本机受控能力已有证据；独立远端、人工流程及干净Windows验收仍待完成。按指南查看步骤与限制。" : "需求编号贯穿页面、数据模型与验收项。当前交互原型全部使用本地示例数据。"}
-                  </p>
-                </div>
-                <Tag kind="blue-tag">v1.0 交付规格</Tag>
-              </div>
-              <div className="guide-links">
-                {[
-                  {
-                    title: "环境与固定指纹",
-                    text: "ENV-001 / ENV-002 / FP-001",
-                    r: "environments",
-                  },
-                  {
-                    title: "代理与故障阻断",
-                    text: "PRX-001 / ENV-003",
-                    r: "proxies",
-                  },
-                  {
-                    title: "内核能力与版本",
-                    text: "CORE-001 / FP-002",
-                    r: "kernels",
-                  },
-                  {
-                    title: "快照与恢复边界",
-                    text: "BKP-001 / DATA-001",
-                    r: "backups",
-                  },
-                ].map((item) => (
-                  <button
-                    key={item.r}
-                    onClick={() => navigate(item.r as Route)}
-                  >
-                    <span>{item.title}</span>
-                    <small>{item.text}</small>
-                    <ArrowUpRight size={17} />
-                  </button>
-                ))}
-              </div>
-              <section className="work-card document-card">
-                <div className="list-tabs">
-                  {(
-                    [
-                      { id: "user", text: "本机使用指南" },
-                      { id: "prd", text: "产品需求 PRD" },
-                      { id: "development", text: "开发与验收" },
-                      { id: "kernel", text: "内核适配合同" },
-                    ] as const
-                  ).map((d) => (
-                    <button
-                      className={docTab === d.id ? "selected" : ""}
-                      key={d.id}
-                      onClick={() => setDocTab(d.id)}
-                    >
-                      {d.text}
-                    </button>
-                  ))}
-                  <div className="list-tabs-tail">
-                    <Button
-                      className="compact"
-                      onClick={() =>
-                        download(
-                          docTab === "user" ? "USER_GUIDE.md" : docTab === "prd"
-                            ? "PRD.md"
-                            : docTab === "kernel"
-                              ? "KERNEL.md"
-                              : "DEVELOPMENT.md",
-                          docTab === "user" ? userGuideText : docTab === "prd"
-                            ? prdText
-                            : docTab === "kernel"
-                              ? kernelText
-                              : developmentText,
-                          "text/markdown;charset=utf-8",
-                        )
-                      }
-                    >
-                      <Download size={14} />
-                      下载文档
-                    </Button>
-                  </div>
-                </div>
-                <div className="document-body">
-                  <Suspense fallback={<p>正在载入文档…</p>}>
-                    <Markdown
-                      remarkPlugins={[remarkGfm]}
-                      components={{
-                        a: ({ href, children }) => (
-                          <a
-                            href={docHref(href)}
-                            target={
-                              docHref(href).startsWith("https://")
-                                ? "_blank"
-                                : undefined
-                            }
-                            rel="noreferrer"
-                            onClick={(ev) => {
-                              if (
-                                href &&
-                                /(?:PRD|DEVELOPMENT|KERNEL|USER_GUIDE)\.md/.test(href)
-                              ) {
-                                ev.preventDefault();
-                                setDocTab(
-                                  href.includes("USER_GUIDE") ? "user" : href.includes("KERNEL")
-                                    ? "kernel"
-                                    : href.includes("DEVELOPMENT")
-                                      ? "development"
-                                      : "prd",
-                                );
-                                document
-                                  .querySelector(".document-body")
-                                  ?.scrollTo(0, 0);
-                              }
-                            }}
-                          >
-                            {children}
-                          </a>
-                        ),
-                      }}
-                    >
-                      {docTab === "user" ? userGuideText : docTab === "prd"
-                        ? prdText
-                        : docTab === "kernel"
-                          ? kernelText
-                          : developmentText}
-                    </Markdown>
-                  </Suspense>
-                </div>
-              </section>
-            </>
+            <HelpPage native={nativeMode} docTab={docTab}
+              text={docTab === "user" ? userGuideText : docTab === "prd" ? prdText : docTab === "kernel" ? kernelText : developmentText}
+              onDocTab={setDocTab} onNavigate={navigate} download={download} docHref={docHref} />
           )}
         </main>
       </div>
       {drawerVisible && drawer && (
         <div
           className="overlay environment-overlay"
-          inert={Boolean(dialog || draftProxyImportOpen || environmentConfirmation || storageIssue)}
+          inert={Boolean(legacyDialog || draftProxyImportOpen || environmentConfirmation || storageIssue)}
+          data-app-inert={String(Boolean(legacyDialog || draftProxyImportOpen || environmentConfirmation || storageIssue))}
         >
           <EnvironmentEditorWindow dialogRef={drawerOverlayRef} error={formError}
             saving={savePending} canSave={canSaveProfile}
@@ -2193,26 +1588,29 @@ export default function App({ application }: { application: ApplicationService }
       {nativeMode && nativeCookieEnvironment && <NativeCookieImport key={nativeCookieEnvironment.id} application={application} workspace={workspace} environment={nativeCookieEnvironment} onClose={() => setNativeCookieEnvironment(null)} />}
       {nativeMode && nativeRecycleSelection && <NativeRecycleManager application={application} workspace={workspace} selectedIds={nativeRecycleSelection} onClose={() => { setNativeRecycleSelection(null); setSelected([]); void application.refresh?.(); }} />}
       {nativeMode && nativeBatchInput && <NativeBatchDialog key={`${nativeBatchInput.kind}:${nativeBatchInput.initialPage?.planId ?? nativeBatchInput.sourceIds?.join(",") ?? "history"}`} application={application} workspace={workspace} input={nativeBatchInput} onClose={() => { setNativeBatchInput(null); setMenu(null); }} />}
-      {nativeMode && draftProxyImportOpen && <div className="overlay modal-overlay stacked-overlay"><div className="modal wide-modal" ref={draftProxyOverlayRef} role="dialog" aria-modal="true" aria-labelledby="draft-proxy-import-title">
-        <div className="modal-header"><h2 id="draft-proxy-import-title">导入代理</h2><button className="icon-button" aria-label="关闭代理导入并返回环境配置" disabled={draftProxyImportBusy} onClick={() => setDraftProxyImportOpen(false)}><X size={20} /></button></div>
-        <div className="modal-body"><p className="modal-intro">环境草稿已保留。导入成功后可直接选择新代理，不会改变指纹。</p><NativeProxyManager application={application} workspace={workspace} importOnly importOpen onImportOpenChange={open => { setDraftProxyImportOpen(open); if (!open) setDraftProxyImportBusy(false); }} onBusyChange={setDraftProxyImportBusy} onImported={ids => { if (ids[0]) patchDraft({ proxyId: ids[0] }); notify(`已导入 ${ids.length} 条代理，环境草稿已保留`); }} /></div>
-        <div className="modal-footer"><Button disabled={draftProxyImportBusy} onClick={() => setDraftProxyImportOpen(false)}>返回环境配置</Button></div>
-      </div></div>}
-      {dialog?.kind === "cookies" && <div className={`overlay modal-overlay ${drawerVisible ? "stacked-overlay" : ""}`} inert={Boolean(environmentConfirmation || storageIssue)}>
-        <DemoCookieImportWindow environment={state.environments.find(e => e.id === dialog.id)!}
+      {draftProxyImportOpen && <div className="overlay modal-overlay stacked-overlay" ref={draftProxyOverlayRef} tabIndex={-1} inert={Boolean(environmentConfirmation || storageIssue)} data-app-inert={String(Boolean(environmentConfirmation || storageIssue))}>
+        <ProxyImportWindow application={application} session={proxyImportSession} open lifecycle="parent" context="environment"
+          onClose={closeDraftProxyImport} onBusyChange={setDraftProxyImportBusy}
+          onImported={ids => { if (ids[0]) patchDraft({ proxyId: ids[0] }); notify(`已导入 ${ids.length} 条代理，环境草稿已保留`); }} />
+      </div>}
+      {!nativeMode && dialog?.kind === "restore" && <DemoRestoreWindow snapshot={dialog.snapshot} name={dialog.name}
+        runningCount={state.environments.filter(environment => ["running", "starting", "stopping"].includes(environment.status)).length}
+        error={formError} onClose={() => setDialog(null)} onConfirm={confirmRestore} />}
+      {legacyDialog?.kind === "cookies" && <div className={`overlay modal-overlay ${drawerVisible ? "stacked-overlay" : ""}`} inert={Boolean(environmentConfirmation || storageIssue)} data-app-inert={String(Boolean(environmentConfirmation || storageIssue))}>
+        <DemoCookieImportWindow environment={state.environments.find(e => e.id === legacyDialog.id)!}
           text={cookieText} result={cookieResult} error={formError} dialogRef={overlayRef}
           onText={text => { setCookieText(text); setCookieResult(null); }}
           onParse={() => setCookieResult(parseCookies(cookieText))}
           onClose={() => setDialog(null)} onSave={saveDemoCookie} />
       </div>}
-      {dialog?.kind === "delete" && <div className="overlay modal-overlay" inert={Boolean(environmentConfirmation || storageIssue)}>
-        <DemoEnvironmentRemoveWindow count={dialog.ids.length} error={formError}
+      {legacyDialog?.kind === "delete" && <div className="overlay modal-overlay" inert={Boolean(environmentConfirmation || storageIssue)} data-app-inert={String(Boolean(environmentConfirmation || storageIssue))}>
+        <DemoEnvironmentRemoveWindow count={legacyDialog.ids.length} error={formError}
           dialogRef={overlayRef} onClose={() => setDialog(null)} onRemove={removeEnvironments} />
       </div>}
-      {dialog && dialog.kind !== "cookies" && dialog.kind !== "delete" && (
-        <div className={`overlay modal-overlay ${drawerVisible ? "stacked-overlay" : ""}`} inert={Boolean(environmentConfirmation || storageIssue)}>
+      {legacyDialog?.kind === "group" && (
+        <div className={`overlay modal-overlay ${drawerVisible ? "stacked-overlay" : ""}`} inert={Boolean(environmentConfirmation || storageIssue)} data-app-inert={String(Boolean(environmentConfirmation || storageIssue))}>
           <div
-            className={`modal ${dialog.kind === "proxy" ? "wide-modal" : ""} ${dialog.kind === "group" ? "group-modal" : ""}`}
+            className="modal group-modal"
             ref={overlayRef}
             tabIndex={-1}
             role="dialog"
@@ -2220,17 +1618,7 @@ export default function App({ application }: { application: ApplicationService }
             aria-labelledby="modal-title"
           >
             <div className="modal-header">
-              <h2 id="modal-title">
-                {dialog.kind === "proxy-edit"
-                  ? "编辑代理配置"
-                  : dialog.kind === "proxy"
-                    ? "批量导入代理"
-                    : dialog.kind === "restore"
-                      ? "恢复原型快照"
-                      : dialog.kind === "kernel"
-                        ? "内核能力与接入"
-                        : "调整环境分组"}
-              </h2>
+              <h2 id="modal-title">调整环境分组</h2>
               <button
                 className="icon-button"
                 aria-label="关闭对话框"
@@ -2241,306 +1629,23 @@ export default function App({ application }: { application: ApplicationService }
               </button>
             </div>
             <div className="modal-body">
-              {dialog.kind === "proxy" && (
-                <>
-                  <p className="modal-intro">
-                    每行一个代理，支持
-                    HTTP、HTTPS、SOCKS5。请使用示例数据，原型不进行真实网络检查。
-                  </p>
-                  <Field label="代理文本">
-                    <textarea
-                      aria-label="代理文本"
-                      className="code-input"
-                      rows={5}
-                      placeholder="socks5://demo:password@192.0.2.10:1080"
-                      value={proxyText}
-                      onChange={(e) => {
-                        setProxyText(e.target.value);
-                        setProxyRows([]);
-                      }}
-                    />
-                  </Field>
-                  <input
-                    ref={proxyFile}
-                    type="file"
-                    accept=".txt"
-                    hidden
-                    onChange={async (e) => {
-                      const f = e.target.files?.[0];
-                      if (f) {
-                        setProxyText(await f.text());
-                        setProxyRows([]);
-                      }
-                      e.target.value = "";
-                    }}
-                  />
-                  <div className="inline-actions">
-                    <Button onClick={() => proxyFile.current?.click()}>
-                      <ArrowUpFromLine size={15} />
-                      选择文本文件
-                    </Button>
-                    <button
-                      className="text-button"
-                      onClick={() => {
-                        setProxyText(
-                          "socks5://demo:example@192.0.2.90:1080\nhttp://198.51.100.90:8080",
-                        );
-                        setProxyRows([]);
-                      }}
-                    >
-                      填入示例
-                    </button>
-                    <Button
-                      className="soft-primary"
-                      onClick={() => {
-                        const rows = parseProxyText(proxyText);
-                        setProxyRows(rows);
-                        setFormError(
-                          rows.length ? "" : "请先输入至少一条代理。",
-                        );
-                      }}
-                    >
-                      解析预览
-                    </Button>
-                  </div>
-                  {proxyRows.length > 0 && (
-                    <div className="import-preview">
-                      <h3>
-                        解析结果{" "}
-                        <span>
-                          {proxyRows.filter((r) => r.node).length} 条有效 /{" "}
-                          {proxyRows.filter((r) => r.error).length} 条无效
-                        </span>
-                      </h3>
-                      {proxyRows.map((r) => (
-                        <div
-                          key={r.line}
-                          className={r.error ? "invalid-row" : ""}
-                        >
-                          {r.node ? (
-                            <CheckCircle2 size={15} />
-                          ) : (
-                            <TriangleAlert size={15} />
-                          )}
-                          <span>第 {r.line} 行</span>
-                          <strong>
-                            {r.node
-                              ? `${r.node.type}://${r.node.host}:${r.node.port}`
-                              : r.error}
-                          </strong>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </>
-              )}
-              {dialog.kind === "restore" && (
-                <>
-                  <div className="target-info">
-                    <HardDrive size={18} />
-                    {dialog.name}
-                  </div>
-                  <p>
-                    该快照包含{" "}
-                    <strong>{dialog.snapshot.environments.length}</strong>{" "}
-                    个环境和 <strong>{dialog.snapshot.proxies.length}</strong>{" "}
-                    个代理。恢复会替换当前原型工作区配置。
-                  </p>
-                  <div className="form-note">
-                    <TriangleAlert size={18} />
-                    <span>
-                      请先关闭所有模拟运行的环境并备份当前配置。恢复保留原种子，代理密码需重新填写，代理状态重置为待检查。
-                    </span>
-                  </div>
-                </>
-              )}
-              {dialog.kind === "kernel" && (
-                <>
-                  <div className="kernel-modal-title">
-                    <Box size={30} />
-                    <div>
-                      <h3>fingerprint-chromium {dialog.core.version}</h3>
-                      <p>
-                        Windows x64 ·{" "}
-                        {dialog.core.available ? "可审查源码基线" : "候选构建"}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="generated-fields">
-                    {[
-                      ["可执行文件校验", "待真实桌面服务接入"],
-                      ["浏览器版本与 UA 一致性", "必须在实际运行后核对"],
-                      ["固定种子与独立目录", "作为启动必需参数"],
-                      ["代理认证", "本地代理桥接，失败阻止启动"],
-                      ["完整能力报告", "见内核适配合同"],
-                    ].map(([a, b]) => (
-                      <div key={a}>
-                        <span>{a}</span>
-                        <strong>{b}</strong>
-                      </div>
-                    ))}
-                  </div>
-                  <p className="field-hint">
-                    原型没有下载、安装或检测内核。切换版本不自动迁移已有环境；升级需完整备份与兼容性验证。
-                  </p>
-                </>
-              )}
-              {dialog.kind === "proxy-edit" && (
-                <>
-                  <p className="modal-intro">
-                    保存后需重新检查。修改网络不会自动改写环境指纹、语言或时区。
-                  </p>
-                  <Field label="代理名称">
-                    <input
-                      value={dialog.proxy.name}
-                      onChange={(e) =>
-                        setDialog({
-                          ...dialog,
-                          proxy: { ...dialog.proxy, name: e.target.value },
-                        })
-                      }
-                    />
-                  </Field>
-                  <div className="field-row">
-                    <Field label="协议">
-                      <select
-                        value={dialog.proxy.type}
-                        onChange={(e) =>
-                          setDialog({
-                            ...dialog,
-                            proxy: {
-                              ...dialog.proxy,
-                              type: e.target.value as ProxyNode["type"],
-                            },
-                          })
-                        }
-                      >
-                        {["http", "https", "socks5"].map((t) => (
-                          <option key={t}>{t}</option>
-                        ))}
-                      </select>
-                    </Field>
-                    <Field label="预设地区">
-                      <select
-                        value={dialog.proxy.country}
-                        onChange={(e) =>
-                          setDialog({
-                            ...dialog,
-                            proxy: { ...dialog.proxy, country: e.target.value },
-                          })
-                        }
-                      >
-                        {Object.entries(regions).map(([k, r]) => (
-                          <option key={k} value={k}>
-                            {r.label}
-                          </option>
-                        ))}
-                      </select>
-                    </Field>
-                  </div>
-                  <div className="field-row">
-                    <Field label="地址">
-                      <input
-                        value={dialog.proxy.host}
-                        onChange={(e) =>
-                          setDialog({
-                            ...dialog,
-                            proxy: { ...dialog.proxy, host: e.target.value },
-                          })
-                        }
-                      />
-                    </Field>
-                    <Field label="端口">
-                      <input
-                        type="number"
-                        value={dialog.proxy.port}
-                        onChange={(e) =>
-                          setDialog({
-                            ...dialog,
-                            proxy: {
-                              ...dialog.proxy,
-                              port: Number(e.target.value),
-                            },
-                          })
-                        }
-                      />
-                    </Field>
-                  </div>
-                  <div className="field-row">
-                    <Field label="用户名">
-                      <input
-                        autoComplete="off"
-                        value={dialog.proxy.username}
-                        onChange={(e) =>
-                          setDialog({
-                            ...dialog,
-                            proxy: {
-                              ...dialog.proxy,
-                              username: e.target.value,
-                            },
-                          })
-                        }
-                      />
-                    </Field>
-                    <Field label="密码（请使用演示值）">
-                      <input
-                        type="password"
-                        autoComplete="new-password"
-                        value={dialog.proxy.password}
-                        onChange={(e) =>
-                          setDialog({
-                            ...dialog,
-                            proxy: {
-                              ...dialog.proxy,
-                              password: e.target.value,
-                            },
-                          })
-                        }
-                      />
-                    </Field>
-                  </div>
-                  <label className="checkbox-card">
-                    <input
-                      type="checkbox"
-                      checked={Boolean(dialog.proxy.simulateFailure)}
-                      onChange={(e) =>
-                        setDialog({
-                          ...dialog,
-                          proxy: {
-                            ...dialog.proxy,
-                            simulateFailure: e.target.checked,
-                          },
-                        })
-                      }
-                    />
-                    <span>
-                      <strong>模拟连接失败</strong>
-                      <small>用于验收故障阻断；关闭后检查展示模拟成功。</small>
-                    </span>
-                  </label>
-                </>
-              )}
-              {dialog.kind === "group" && (
-                <>
-                  <Field label="分组名称">
-                    <input
-                      aria-label="分组名称"
-                      value={groupName}
-                      disabled={groupPending}
-                      onChange={(e) => setGroupName(e.target.value)}
-                      placeholder="例如：新品测试"
-                      list="existing-groups"
-                    />
-                    <datalist id="existing-groups">
-                      {groups.map((g) => (
-                        <option key={g}>{g}</option>
-                      ))}
-                    </datalist>
-                  </Field>
-                  <p className="group-scope-note">将明确选定的 <strong>{dialog.ids.length}</strong> 个环境归入此名称。<br />筛选与翻页不会扩大这次范围。</p>
-                  <p>这是环境记录的分组标签，不创建独立空分组。普通分组修改保留 seed、内核、代理与浏览数据。</p>
-                </>
-              )}
+              <Field label="分组名称">
+                <input
+                  aria-label="分组名称"
+                  value={groupName}
+                  disabled={groupPending}
+                  onChange={(e) => setGroupName(e.target.value)}
+                  placeholder="例如：新品测试"
+                  list="existing-groups"
+                />
+                <datalist id="existing-groups">
+                  {groups.map((g) => (
+                    <option key={g}>{g}</option>
+                  ))}
+                </datalist>
+              </Field>
+              <p className="group-scope-note">将明确选定的 <strong>{legacyDialog.ids.length}</strong> 个环境归入此名称。<br />筛选与翻页不会扩大这次范围。</p>
+              <p>这是环境记录的分组标签，不创建独立空分组。普通分组修改保留 seed、内核、代理与浏览数据。</p>
               {formError && (
                 <div className="form-error" role="alert">
                   <TriangleAlert size={16} />
@@ -2550,96 +1655,13 @@ export default function App({ application }: { application: ApplicationService }
             </div>
             <div className="modal-footer">
               <Button disabled={groupPending} onClick={() => setDialog(null)}>取消</Button>
-              {dialog.kind === "proxy-edit" && (
-                <Button
-                  className="primary"
-                  onClick={() => {
-                    const p = dialog.proxy;
-                    const parsed = parseProxyText(
-                      `${p.type}://${p.host}:${p.port}`,
-                    )[0];
-                    if (
-                      !p.name.trim() ||
-                      !parsed?.node ||
-                      p.host.includes("@") ||
-                      /[\s/?#]/.test(p.host) ||
-                      !Number.isInteger(p.port) ||
-                      p.port < 1 ||
-                      p.port > 65535
-                    ) {
-                      setFormError("请填写有效的名称、地址和端口。");
-                      return;
-                    }
-                    if (!update((s) => ({
-                      ...s,
-                      proxies: s.proxies.map((i) =>
-                        i.id === p.id
-                          ? {
-                              ...p,
-                              name: p.name.trim(),
-                              status: "unchecked",
-                              latency: undefined,
-                            }
-                          : i,
-                      ),
-                    }), log("修改代理", p.name, "配置已保存，等待重新检查。"))) return;
-                    setDialog(null);
-                    notify("代理已保存，请重新检查");
-                  }}
-                >
-                  保存代理
-                </Button>
-              )}
-              {dialog.kind === "proxy" && (
-                <Button
-                  className="primary"
-                  disabled={!proxyRows.length || !proxyRows.some((r) => r.node)}
-                  onClick={() => {
-                    const nodes = proxyRows.flatMap((r) =>
-                      r.node ? [r.node] : [],
-                    );
-                    if (!update((s) => ({
-                      ...s,
-                      proxies: [...s.proxies, ...nodes],
-                    }), log(
-                      "导入代理",
-                      `${nodes.length} 条`,
-                      "有效行已导入，无效行未保存；等待连接检查。",
-                    ))) return;
-                    if (drawerRef.current && nodes[0]) patchDraft({ proxyId: nodes[0].id });
-                    setDialog(null);
-                    notify(`已导入 ${nodes.length} 条代理，待检查`);
-                  }}
-                >
-                  导入 {proxyRows.filter((r) => r.node).length} 个代理
-                </Button>
-              )}
-              {dialog.kind === "restore" && (
-                <Button className="primary" onClick={confirmRestore}>
-                  确认恢复
-                </Button>
-              )}
-              {dialog.kind === "kernel" && (
-                <Button
-                  className="primary"
-                  onClick={() => {
-                    setDialog(null);
-                    setDocTab("kernel");
-                    navigate("guide");
-                  }}
-                >
-                  阅读适配文档
-                </Button>
-              )}
-              {dialog.kind === "group" && (
-                <Button
-                  className="primary"
-                  disabled={groupPending || !dialog.ids.length || !groupName.trim()}
-                  onClick={() => void assignSelectedGroup()}
-                >
-                  应用到所选环境
-                </Button>
-              )}
+              <Button
+                className="primary"
+                disabled={groupPending || !legacyDialog.ids.length || !groupName.trim()}
+                onClick={() => void assignSelectedGroup()}
+              >
+                应用到所选环境
+              </Button>
             </div>
           </div>
         </div>
@@ -2663,7 +1685,7 @@ export default function App({ application }: { application: ApplicationService }
           </Button>
         </div>
       )}
-      {environmentConfirmation && <div className="overlay modal-overlay environment-confirmation-overlay" inert={Boolean(storageIssue)}>
+      {environmentConfirmation && <div className="overlay modal-overlay environment-confirmation-overlay" style={{ zIndex: confirmationLayer }} inert={Boolean(storageIssue)} data-app-inert={String(Boolean(storageIssue))}>
         {environmentConfirmation.kind === "dirty" ? <EnvironmentConfirmation title="放弃未保存修改？" titleId="environment-dirty-title"
           dialogRef={confirmationOverlayRef} onCancel={cancelEnvironmentConfirmation} onConfirm={confirmEnvironmentAction} confirmLabel="放弃修改">
           <p>本次编辑未保存，放弃后已保存身份与数据保持不变。</p>

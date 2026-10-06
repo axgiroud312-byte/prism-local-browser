@@ -1,6 +1,12 @@
 import { expect, test } from "@playwright/test";
 import { nativeReferenceBridge } from "./fixtures/native-reference-bridge";
 
+test.beforeEach(async ({ page, baseURL }) => {
+  const origin = new URL(baseURL!).origin;
+  await page.route("**/*", route => new URL(route.request().url()).origin === origin ? route.continue() : route.abort("blockedbyclient"));
+  await page.routeWebSocket("**/*", socket => socket.close());
+});
+
 test("a broken native bridge keeps keyboard focus inside the blocking workspace dialog", async ({ page }) => {
   await page.addInitScript(() => {
     Object.defineProperty(window, "localStorage", { get() { throw new Error("native blocker must never fall back to demo storage"); } });

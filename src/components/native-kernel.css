@@ -9,6 +9,7 @@
 .kernel35-verified { color: #21ba45 !important; }
 .kernel35-source > span { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .kernel35-details { transform: none; }
+.kernel35-details .reference-modal-footer { min-height: 71px; padding: 20px; }
 .kernel35-details .reference-modal-body { padding-bottom: 20px; }
 .kernel35-evidence { display: grid; grid-template-columns: 100px minmax(0, 1fr); gap: 10px; margin: 18px 0 24px; font-size: 12px; }
 .kernel35-evidence dt { color: #8c8c8c; }

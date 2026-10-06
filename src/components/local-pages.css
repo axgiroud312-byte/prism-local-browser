@@ -16,7 +16,7 @@
 :is(.local-page, .local-page-window) .local-page-table-scroll .local-page-table { width: 100%; min-width: 700px; table-layout: fixed; border-collapse: separate; border-spacing: 0 10px; font-size: 12px; text-align: left; white-space: normal; }
 .local-page-table thead { height: 40px; }
 .local-page-table tr { box-shadow: 0 3px 14px #0000000d; }
-:is(.local-page, .local-page-window) .local-page-table-scroll .local-page-table th { height: 40px; font-weight: 400; padding: 0 12px; border: 0; color: #595959; }
+:is(.local-page, .local-page-window) .local-page-table-scroll .local-page-table th { height: 40px; font-weight: 700; padding: 0 12px; border: 0; color: #595959; }
 :is(.local-page, .local-page-window) .local-page-table-scroll .local-page-table td { height: 48px; padding: 0 12px; border: 0; overflow-wrap: anywhere; }
 .local-page-table tr > :first-child { border-radius: 8px 0 0 8px; }
 .local-page-table tr > :last-child { border-radius: 0 8px 8px 0; }

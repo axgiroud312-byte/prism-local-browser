@@ -6,6 +6,8 @@
 
 **结论：所属模块可交付集成；不是 #36 已关闭、生产 App 全部接入或全产品 1:1 通过。** demo/记录/帮助页面的 App 替换、旧标题/restore overlay 移除与整体终验由 MAIN/#37 负责。备份/恢复/诊断原有 native 挂载已使用本票组件；另有实际 App 的工作区故障优先级用例。其余组件证据来自明确标记的独立 wiring harness，不能冒充主入口已验收。
 
+后续主App接入已完成：demo/记录/帮助已替换，旧toolbar与重复restore overlay移除；快照写失败、精确离页备份范围、准确会话确认及四文档下载在实际App通过。原78张阶段截图不重标成最新App，最终取证/审查/共享结果见 [#37](issue37.md)。
+
 ## 实现与保留边界
 
 - `BackupManagementPage` 分流既有 native 完整包与 demo JSON；`DemoBackupPage` 使用原创建/恢复/下载回调，不另造 adapter。写入成功才退出，失败保留原状态与窗口；兼容格式、示例 Cookie、代理密码排除与运行中恢复阻断不变。

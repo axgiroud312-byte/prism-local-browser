@@ -2,23 +2,14 @@ import { useId, useLayoutEffect, useRef, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { ChevronLeft, ChevronRight, CircleAlert } from "lucide-react";
 import { ReferenceButton, ReferenceModalFrame } from "./ReferenceUi";
+import { lockBodyScroll, lockModalBackground, modalLayer, ownsTopModal, restoreModalFocus } from "./modal-lifecycle";
 import "./local-pages.css";
 
 // #36 owns these windows. The frame is visual only; one capture listener per
 // top window prevents App's lower Escape/Tab handlers from also firing.
 type WindowOwner = { element: HTMLElement; returnFocus: HTMLElement | null };
 const windows: WindowOwner[] = [];
-const inertOwners = new Map<HTMLElement, { count: number; previous: boolean; previousUnderlay: boolean }>();
-let bodyOverflow = "";
 let handoffFocus: HTMLElement | null = null;
-const modalLayer = (modal: HTMLElement) => {
-  let highest = 0;
-  for (let node: HTMLElement | null = modal; node; node = node.parentElement) {
-    const z = Number(getComputedStyle(node).zIndex);
-    if (Number.isFinite(z)) highest = Math.max(highest, z);
-  }
-  return highest;
-};
 const visibleModals = () => [...document.querySelectorAll<HTMLElement>('[aria-modal="true"]')].filter(modal => modal.getClientRects().length && !modal.closest("[inert]"));
 
 export function LocalPageWindow({ title, children, footer, onClose, busy = false, width = 500, height, className = "" }: {
@@ -31,7 +22,7 @@ export function LocalPageWindow({ title, children, footer, onClose, busy = false
     const element = root.current!;
     const owner: WindowOwner = { element, returnFocus: handoffFocus ?? document.activeElement as HTMLElement | null };
     handoffFocus = null;
-    if (!windows.length) { bodyOverflow = document.body.style.overflow; document.body.style.overflow = "hidden"; }
+    const releaseScroll = lockBodyScroll();
     windows.push(owner);
     // An existing fault blocker remains above an older task window; a child
     // opened from that blocker must, however, paint above it as well as focus.
@@ -44,22 +35,16 @@ export function LocalPageWindow({ title, children, footer, onClose, busy = false
       const shell = child.querySelector<HTMLElement>(":scope > .app-shell");
       return shell ? [...shell.children].filter((region): region is HTMLElement => region instanceof HTMLElement) : [child];
     });
-    for (const child of background) {
-      const owner = inertOwners.get(child) ?? { count: 0, previous: child.inert, previousUnderlay: child.classList.contains("local-page-managed-underlay") };
-      owner.count++; inertOwners.set(child, owner); child.inert = true;
-      if (child.matches(".overlay")) child.classList.add("local-page-managed-underlay");
-    }
+    const releaseBackground = lockModalBackground(background, true);
     const tabbables = () => [...element.querySelectorAll<HTMLElement>('button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), a[href], summary, [tabindex="0"]')].filter(item => item.getClientRects().length && !item.closest("[inert]"));
     const focusFirst = () => (tabbables()[0] ?? element).focus();
     const isTop = () => {
       if (windows.at(-1) !== owner) return false;
-      const top = visibleModals().reduce<HTMLElement | undefined>((current, modal) => !current || modalLayer(modal) >= modalLayer(current) ? modal : current, undefined);
-      return !top || element.contains(top);
+      return ownsTopModal(element);
     };
     // React owns inert too, and host faults may appear after this mount. Keep
     // our regions protected and only the visually effective top mask opaque.
     const refreshBackground = () => {
-      for (const child of background) if (inertOwners.get(child)?.count && !child.inert) child.inert = true;
       element.toggleAttribute("data-local-page-underlay", !isTop());
     };
     const backgroundChanges = new MutationObserver(refreshBackground);
@@ -67,7 +52,7 @@ export function LocalPageWindow({ title, children, footer, onClose, busy = false
     refreshBackground();
     focusFirst();
     const key = (event: KeyboardEvent) => {
-      if (!isTop()) return;
+      if (event.defaultPrevented || !isTop()) return;
       if (event.key === "Escape") { event.preventDefault(); event.stopImmediatePropagation(); if (!locked.current) close.current(); }
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") { event.preventDefault(); event.stopImmediatePropagation(); }
       if (event.key !== "Tab") return;
@@ -85,23 +70,16 @@ export function LocalPageWindow({ title, children, footer, onClose, busy = false
       // A flow can replace a window, or remove both a parent and its nested
       // confirmation in one commit. Keep the original connected return target.
       for (const remaining of windows) if (remaining.returnFocus && element.contains(remaining.returnFocus)) remaining.returnFocus = owner.returnFocus;
-      for (const child of background) {
-        const owner = inertOwners.get(child)!; owner.count--;
-        if (!owner.count) {
-          const hostStillBlocks = child.matches(".sidebar, .main-shell") && !!document.querySelector('#root [aria-modal="true"]');
-          child.inert = owner.previous || hostStillBlocks;
-          child.classList.toggle("local-page-managed-underlay", owner.previousUnderlay); inertOwners.delete(child);
-        }
-      }
+      releaseBackground();
       const top = windows.at(-1);
-      if (!top) { document.body.style.overflow = bodyOverflow; handoffFocus = owner.returnFocus; }
+      releaseScroll();
+      if (!top) handoffFocus = owner.returnFocus;
       // Layout cleanup precedes React's disabled/DOM updates. Wait until that
       // commit finishes, and never steal focus from a newly opened top window.
       queueMicrotask(() => {
         if (windows.at(-1) !== top) return;
-        if (!top) document.body.style.overflow = document.querySelector('#root [aria-modal="true"]') ? "hidden" : bodyOverflow;
         const previous = owner.returnFocus;
-        if (previous?.isConnected && !previous.closest("[inert]") && !previous.matches(":disabled")) previous.focus();
+        if (previous?.isConnected && !previous.closest("[inert]") && !previous.matches(":disabled")) restoreModalFocus(previous);
         else top?.element.querySelector<HTMLElement>("button:not(:disabled)")?.focus();
         if (!top && handoffFocus === previous) handoffFocus = null;
       });

@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight, LoaderCircle } from "lucide-react";
 import { mergeOperation, operationIsTerminal, type ApplicationResult, type ApplicationService, type NativeBatchPage, type NativeBatchPreviewRequest, type Operation, type WorkspaceView } from "../application/contract";
 import { mergeBatchPage } from "../application/batch-model";
 import { EnvironmentTaskResult, EnvironmentWindowFrame } from "./EnvironmentDialogParts";
+import { lockBodyScroll, ownsTopModal, restoreModalFocus } from "./modal-lifecycle";
 import "./environment-batch.css";
 
 export interface NativeBatchDialogInput { kind: "create" | "clone" | "assign" | "history"; sourceIds?: string[]; initialPage?: NativeBatchPage }
@@ -47,9 +48,10 @@ export function NativeBatchDialog({ application, workspace, input, onClose }: { 
   useEffect(() => {
     mounted.current = true;
     const previous = document.activeElement as HTMLElement | null;
-    const overflow = document.body.style.overflow; document.body.style.overflow = "hidden";
-    modal.current?.querySelector<HTMLElement>("button")?.focus();
+    const releaseScroll = lockBodyScroll();
+    if (ownsTopModal(modal.current)) modal.current?.querySelector<HTMLElement>("button")?.focus();
     const key = (event: KeyboardEvent) => {
+      if (event.defaultPrevented || !ownsTopModal(modal.current)) return;
       if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); closeRef.current(); }
       if ((event.ctrlKey || event.metaKey) && event.key === "k") { event.preventDefault(); event.stopPropagation(); }
       if (event.key !== "Tab") return;
@@ -60,10 +62,11 @@ export function NativeBatchDialog({ application, workspace, input, onClose }: { 
       if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
     };
     document.addEventListener("keydown", key); void application.refresh?.();
-    return () => { mounted.current = false; generation.current++; document.body.style.overflow = overflow; document.removeEventListener("keydown", key); if (previous?.isConnected) previous.focus(); };
+    return () => { mounted.current = false; generation.current++; releaseScroll(); document.removeEventListener("keydown", key); restoreModalFocus(previous); };
   }, [application]);
 
   useEffect(() => {
+    if (!ownsTopModal(modal.current)) return;
     if (showResult) modal.current?.querySelector<HTMLElement>("button:not(:disabled)")?.focus();
     else if (previousResultOpen.current) resultTrigger.current?.focus();
     previousResultOpen.current = showResult;

@@ -1,25 +1,11 @@
 import { useId, useLayoutEffect, useRef, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { ReferenceModalFrame } from "./ReferenceUi";
+import { lockBodyScroll, lockModalBackground, ownsTopModal, restoreModalFocus } from "./modal-lifecycle";
 import "./proxy-kernel35.css";
 
 const layers: HTMLElement[] = [];
-const inertOwners = new Map<HTMLElement, { count: number; previous: boolean }>();
-let locks = 0, originalOverflow = "";
 const tabbables = (element: HTMLElement) => [...element.querySelectorAll<HTMLElement>("button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), a[href], summary, [tabindex='0']")].filter(item => !item.closest("[inert], [hidden]") && item.getClientRects().length > 0);
-
-function topModal() {
-  const modals = [...document.querySelectorAll<HTMLElement>("[aria-modal='true']")].filter(item => item.getClientRects().length > 0 && !item.closest("[inert]"));
-  const level = (item: HTMLElement) => {
-    let highest = 0;
-    for (let node: HTMLElement | null = item; node; node = node.parentElement) {
-      const value = Number(getComputedStyle(node).zIndex);
-      if (Number.isFinite(value)) highest = Math.max(highest, value);
-    }
-    return highest;
-  };
-  return modals.reduce<HTMLElement | undefined>((top, item) => !top || level(item) >= level(top) ? item : top, undefined);
-}
 
 /** Ticket-scoped lifecycle. Parent-managed mode is available to the App layer. */
 export function ProxyKernelModal({ title, onClose, children, footer, width = 620, height, busy = false, className = "", lifecycle = "self", variant = "dialog" }: {
@@ -39,18 +25,16 @@ export function ProxyKernelModal({ title, onClose, children, footer, width = 620
       ...(shell ? shell.querySelectorAll<HTMLElement>(":scope > .sidebar, :scope > .main-shell, :scope > .overlay:not(.workspace-blocker)") : []),
       ...[...document.body.children].filter((item): item is HTMLElement => item instanceof HTMLElement && item !== element && !item.contains(shell) && !["SCRIPT", "STYLE"].includes(item.tagName) && !item.matches(".workspace-blocker") && !item.querySelector("[role='alertdialog']")),
     ];
-    for (const sibling of siblings) {
-      const owner = inertOwners.get(sibling) ?? { count: 0, previous: sibling.inert };
-      owner.count++; inertOwners.set(sibling, owner); sibling.inert = true;
-    }
-    if (!locks++) { originalOverflow = document.body.style.overflow; document.body.style.overflow = "hidden"; }
+    const releaseBackground = lockModalBackground(siblings);
+    const releaseScroll = lockBodyScroll();
     layers.push(element);
-    if (element.contains(topModal() ?? null)) (tabbables(element).find(item => item.matches("textarea,input,select")) ?? tabbables(element)[0] ?? element).focus();
+    if (ownsTopModal(element)) (tabbables(element).find(item => item.matches("textarea,input,select")) ?? tabbables(element)[0] ?? element).focus();
     const key = (event: KeyboardEvent) => {
-      if (layers.at(-1) !== element || element.inert) return;
+      if (event.defaultPrevented || layers.at(-1) !== element || element.inert) return;
       // Higher workspace/restore windows own their own keyboard lifecycle.
-      if (!element.contains(topModal() ?? null)) return;
+      if (!ownsTopModal(element)) return;
       if (event.key === "Escape") { event.preventDefault(); event.stopImmediatePropagation(); if (!blocked.current) close.current(); }
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") { event.preventDefault(); event.stopImmediatePropagation(); }
       if (event.key === "Tab") {
         event.preventDefault(); event.stopImmediatePropagation();
         const items = tabbables(element), index = items.indexOf(document.activeElement as HTMLElement);
@@ -62,12 +46,11 @@ export function ProxyKernelModal({ title, onClose, children, footer, width = 620
     return () => {
       document.removeEventListener("keydown", key, true);
       const index = layers.indexOf(element); if (index >= 0) layers.splice(index, 1);
-      for (const sibling of siblings) {
-        const owner = inertOwners.get(sibling); if (!owner) continue;
-        if (!--owner.count) { sibling.inert = owner.previous; inertOwners.delete(sibling); }
-      }
-      if (!--locks) document.body.style.overflow = originalOverflow;
-      if (trigger?.isConnected && !trigger.closest("[inert]") && !(trigger as HTMLButtonElement).disabled) trigger.focus();
+      releaseBackground();
+      releaseScroll();
+      // Layout cleanup precedes removal of this portal; restore only after that
+      // commit, still respecting a new or remaining higher-priority owner.
+      queueMicrotask(() => restoreModalFocus(trigger));
     };
   }, [lifecycle]);
   const frame = <ReferenceModalFrame title={title} titleId={id} width={width} height={height} onClose={onClose} busy={busy} footer={footer} variant={variant} className={`pk35-modal ${className}`}>{children}</ReferenceModalFrame>;

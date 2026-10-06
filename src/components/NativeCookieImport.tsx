@@ -4,6 +4,7 @@ import type { Environment } from "../domain";
 import { mergeOperation, operationIsTerminal, type ApplicationResult, type ApplicationService, type CookieCommitRequest, type CookieImportPreview, type CookieItemResult, type Operation, type WorkspaceView } from "../application/contract";
 import { cookieStartupAllowed, cookieWriteAllowed, currentCookieOperation } from "../application/cookie-import";
 import { EnvironmentTaskResult, EnvironmentWindowFrame } from "./EnvironmentDialogParts";
+import { lockBodyScroll, ownsTopModal, restoreModalFocus } from "./modal-lifecycle";
 import "./native-cookie.css";
 
 const errorText = (result: ApplicationResult<unknown> | undefined) => !result ? "当前桌面服务不支持此操作，没有模拟成功。" : result.ok ? "" : `${result.error.code}：${result.error.message}`;
@@ -48,9 +49,10 @@ export function NativeCookieImport({ application, workspace, environment, onClos
     mounted.current = true;
     void application.refresh?.();
     const before = document.activeElement as HTMLElement | null;
-    const overflow = document.body.style.overflow; document.body.style.overflow = "hidden";
-    modal.current?.querySelector<HTMLElement>("button")?.focus();
+    const releaseScroll = lockBodyScroll();
+    if (ownsTopModal(modal.current)) modal.current?.querySelector<HTMLElement>("button")?.focus();
     const key = (event: KeyboardEvent) => {
+      if (event.defaultPrevented || !ownsTopModal(modal.current)) return;
       if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); closeRef.current(); }
       if ((event.ctrlKey || event.metaKey) && event.key === "k") { event.preventDefault(); event.stopPropagation(); }
       if (event.key !== "Tab") return;
@@ -65,11 +67,12 @@ export function NativeCookieImport({ application, workspace, environment, onClos
       mounted.current = false; generation.current++;
       void application.discardCookieImport?.("");
       if (fileInput.current) fileInput.current.value = "";
-      document.body.style.overflow = overflow; document.removeEventListener("keydown", key); if (before?.isConnected) before.focus();
+      releaseScroll(); document.removeEventListener("keydown", key); restoreModalFocus(before);
     };
   }, [application]);
 
   useEffect(() => {
+    if (!ownsTopModal(modal.current)) return;
     if (fileOpen) modal.current?.querySelector<HTMLElement>("button:not(:disabled)")?.focus();
     else if (previousFileOpen.current) fileTrigger.current?.focus();
     previousFileOpen.current = fileOpen;

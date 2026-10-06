@@ -3,6 +3,7 @@ import { RotateCcw, Trash2, X } from "lucide-react";
 import { mergeOperation, operationIsTerminal, type ApplicationResult, type ApplicationService, type NativeRecycleAction, type NativeRecyclePage, type NativeRecyclePageRequest, type Operation, type WorkspaceView } from "../application/contract";
 import { confirmsRecycleRequest } from "../application/recycle-model";
 import { EnvironmentConfirmation, EnvironmentTaskResult, EnvironmentWindowFrame } from "./EnvironmentDialogParts";
+import { lockBodyScroll, ownsTopModal, restoreModalFocus } from "./modal-lifecycle";
 import "./environment-recycle.css";
 
 const actions = { remove: "移入回收区", restore: "找回原环境", purge: "永久删除" };
@@ -29,9 +30,10 @@ export function NativeRecycleManager({ application, workspace, selectedIds, onCl
 
   useEffect(() => {
     mounted.current = true;
-    const previous = document.activeElement as HTMLElement | null, overflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden"; modal.current?.querySelector("button")?.focus();
+    const previous = document.activeElement as HTMLElement | null, releaseScroll = lockBodyScroll();
+    if (ownsTopModal(modal.current)) modal.current?.querySelector("button")?.focus();
     const key = (event: KeyboardEvent) => {
+      if (event.defaultPrevented || !ownsTopModal(modal.current)) return;
       if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); closeRef.current(); }
       if ((event.ctrlKey || event.metaKey) && event.key === "k") { event.preventDefault(); event.stopPropagation(); }
       if (event.key !== "Tab") return;
@@ -50,10 +52,11 @@ export function NativeRecycleManager({ application, workspace, selectedIds, onCl
       else if (!original && selectedIds?.length) void preview("remove", selectedIds);
       else void load({ offset: 0, pageSize: 25 });
     }
-    return () => { mounted.current = false; document.body.style.overflow = overflow; document.removeEventListener("keydown", key); if (previous?.isConnected) previous.focus(); };
+    return () => { mounted.current = false; releaseScroll(); document.removeEventListener("keydown", key); restoreModalFocus(previous); };
   }, [application]);
 
   useEffect(() => {
+    if (!ownsTopModal(modal.current)) return;
     if (previousView.current !== viewKey) modal.current?.querySelector<HTMLElement>('button:not(:disabled), input:not(:disabled), summary')?.focus();
     previousView.current = viewKey;
   }, [viewKey]);
