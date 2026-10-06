@@ -117,10 +117,11 @@ main { padding: 50px 10px 10px; min-width: 0; }
 .environment-runtime-popup { padding: 16px; }
 .environment-runtime-popup h3 { font-size: 12px; margin-bottom: 10px; }
 .environment-runtime-popup p { margin: 6px 0; overflow-wrap: anywhere; }
+.reference-popover.environment-runtime-popup { bottom: calc(anchor(--environment-pagination top) + 8px); height: fit-content; max-height: stretch; overscroll-behavior: contain; }
 .native-runtime-network-details { white-space: normal; font-size: 12px; max-width: 420px; }
 .native-runtime-network-details summary { cursor: pointer; color: var(--blue); }
 .native-runtime-network-details p, .native-runtime-network-details li { overflow-wrap: anywhere; }
-.environment-pagination { margin: 10px 10px 0; height: 30px; padding: 0; display: flex; align-items: center; justify-content: center; gap: 12px; border: 0; font-size: 12px; }
+.environment-pagination { margin: 10px 10px 0; height: 30px; padding: 0; display: flex; align-items: center; justify-content: center; gap: 12px; border: 0; font-size: 12px; anchor-name: --environment-pagination; }
 .footer-separator { margin-inline: 8px; }
 .pagination { display: flex; align-items: center; gap: 10px; }
 .pagination > span:first-of-type { background: var(--blue); color: #fff; border-radius: 3px; min-width: 24px; height: 26px; display: grid; place-items: center; box-shadow: 0 1px 4px #0003; }
@@ -155,7 +156,17 @@ main { padding: 50px 10px 10px; min-width: 0; }
 .environment-outcomes li > span:nth-child(2) { flex: 1; min-width: 160px; overflow-wrap: anywhere; }
 .outcome-error { color: #f5222d; }
 .outcome-success svg { color: #21ba45; }
-.environment-table-panel:has(.environment-outcomes) .environment-table tbody { height: calc(100dvh - 460px); }
+/* Safety bands take their natural height; only the remaining table area is budgeted. */
+.environment-workspace:has(.environment-table-panel > :is(.environment-outcomes, .selection-bar)):not(:has(.environment-empty-row)) { height: 100dvh; display: flex; flex-direction: column; }
+.environment-workspace > .prototype-notice { flex-shrink: 0; }
+.environment-list-panel:has(.environment-table-panel > :is(.environment-outcomes, .selection-bar)):not(:has(.environment-empty-row)) { flex: 1; min-height: 0; }
+.environment-table-panel:has(> :is(.environment-outcomes, .selection-bar)):not(:has(.environment-empty-row)) { display: flex; flex-direction: column; min-height: 0; }
+.environment-table-panel > :is(.environment-outcomes, .selection-bar, .environment-pagination) { flex-shrink: 0; }
+.environment-table-panel:has(> :is(.environment-outcomes, .selection-bar)):not(:has(.environment-empty-row)) .environment-table-scroll { flex: 1; min-height: 0; container-type: size; }
+.environment-table-panel:has(> :is(.environment-outcomes, .selection-bar)):not(:has(.environment-empty-row)) .environment-table { height: 100%; }
+/* n full 48px rows + 10px gaps/padding, with at most one unused row step. */
+.environment-table-panel:has(> :is(.environment-outcomes, .selection-bar)):not(:has(.environment-empty-row)) .environment-table tbody { height: calc(round(down, 100cqh - 50px, 58px) + 10px); min-height: 68px; scroll-snap-type: y mandatory; scroll-padding-top: 10px; }
+.environment-table-panel:has(> :is(.environment-outcomes, .selection-bar)):not(:has(.environment-empty-row)) .environment-table tbody tr { scroll-snap-align: start; }
 .environment-groups-page { min-height: calc(100dvh - 60px); }
 .group-category { display: inline-flex; height: 29px; align-items: center; padding: 0 24px; background: var(--blue); color: white; border-radius: 3px; margin-bottom: 10px; }
 .group-list-panel { padding: 0 10px; min-height: calc(100dvh - 99px); background: white; box-shadow: 0 2px 3px #0000000d; border-radius: 3px; }
