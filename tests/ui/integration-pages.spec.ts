@@ -35,9 +35,9 @@ const restoreWrites = (page: Page) => page.evaluate(() => (window as unknown as 
 
 // Extend the existing independent proxy bridge only for this test's App-owned
 // draft/runtime seams. Unimplemented operations still fail closed.
-async function native(page: Page, outcome: "failure" | "unknown" | "completed" = "completed", activity = false) {
+async function native(page: Page, outcome: "failure" | "unknown" | "completed" = "completed", activity = false, canControl = true) {
   await proxyKernelBridge(page, outcome);
-  await page.addInitScript(({ activity }) => {
+  await page.addInitScript(({ activity, canControl }) => {
     type ProxyFixture = { calls: NativeRequest[]; view(): WorkspaceView; setOutcome(value: string): void };
     const fixture = (window as unknown as { __proxyKernel: ProxyFixture }).__proxyKernel;
     const host = (window as unknown as { go: { main: { DesktopApp: { Call(request: NativeRequest): Promise<unknown> } } } }).go.main.DesktopApp;
@@ -51,7 +51,7 @@ async function native(page: Page, outcome: "failure" | "unknown" | "completed" =
     const activities = activity ? [{ id: "synthetic-current-record", action: "合成会话待处理", target: "合成环境 A", detail: "合成记录，不是实际桌面执行。", result: "error" as const, time: "2026-10-06T01:00:00Z", environmentId: "synthetic-environment", sessionId: "synthetic-current-session" }] : [];
     if (activity) {
       base.state.environments[0].status = "error";
-      sessions["synthetic-environment"] = { mode: "native", environmentId: "synthetic-environment", sessionId: "synthetic-current-session", operationId: "synthetic-runtime-operation", state: "error", revision: 1, fingerprintRevision: 1, kernelId: "synthetic-build-a", userDataRef: "environments/synthetic-environment/user-data", networkPolicy: "proxy", proxyId: "synthetic-proxy-a", proxyRevision: 1, canControl: true, canForce: true, needsReconcile: false, persistencePending: false, pid: 32035 };
+      sessions["synthetic-environment"] = { mode: "native", environmentId: "synthetic-environment", sessionId: "synthetic-current-session", operationId: "synthetic-runtime-operation", state: "error", revision: 1, fingerprintRevision: 1, kernelId: "synthetic-build-a", userDataRef: "environments/synthetic-environment/user-data", networkPolicy: "proxy", proxyId: "synthetic-proxy-a", proxyRevision: 1, canControl, canForce: true, needsReconcile: false, persistencePending: false, pid: 32035 };
     }
     function preview(environment: Environment, previewId: string): EnvironmentPreview {
       const kernel = base.kernelRecords!.find(kernel => kernel.id === environment.coreId)!;
@@ -83,7 +83,7 @@ async function native(page: Page, outcome: "failure" | "unknown" | "completed" =
       if (request.method === "Preview.Discard") { previews.delete(String(payload.previewId)); return ok({ status: "discarded" }); }
       return ok({ status: "accepted", operation: { id: "synthetic-force-operation", kind: "runtime-stop", state: "completed", total: 1, completedIds: [payload.environmentId], cancelRequested: false, environmentId: payload.environmentId } });
     };
-  }, { activity });
+  }, { activity, canControl });
 }
 const nativeCalls = (page: Page, method: string) => page.evaluate(method => (window as unknown as { __proxyKernel: { calls: NativeRequest[] } }).__proxyKernel.calls.filter(call => call.method === method), method);
 
@@ -307,9 +307,11 @@ test("App native backup freezes exact selected IDs before cross-page navigation"
   expect(requests).toHaveLength(1); expect(requests[0].payload).toMatchObject({ scope: "selected", environmentIds: ["synthetic-reference-1", "synthetic-reference-11"] });
 });
 
-for (const change of ["none", "ownership", "session"] as const) {
+for (const change of ["none", "control", "ownership", "session", "reconcile"] as const) {
   test(`App activity detail force confirmation paints above its owner and revalidates ${change}`, async ({ page }) => {
-    await native(page, "completed", true); await page.goto("/#/activity");
+    // "none" starts with the normal channel already lost; "control" loses it
+    // while the warning is open. Both retain the service's owned force authority.
+    await native(page, "completed", true, change === "control"); await page.goto("/#/activity");
     await page.getByRole("button", { name: "合成会话待处理 合成环境 A 详情", exact: true }).click();
     const detail = page.getByRole("dialog", { name: "操作记录详情", exact: true });
     await detail.getByRole("button", { name: "强制结束此会话", exact: true }).click();
@@ -327,14 +329,24 @@ for (const change of ["none", "ownership", "session"] as const) {
       const count = (await nativeCalls(page, "Workspace.Read")).length;
       await page.evaluate(change => {
         const session = (window as unknown as { __integration: { sessions: Record<string, RuntimeSession> } }).__integration.sessions["synthetic-environment"];
-        if (change === "ownership") session.canControl = false; else session.sessionId = "synthetic-new-session";
+        if (change === "control") session.canControl = false;
+        if (change === "ownership") session.canForce = false;
+        if (change === "session") session.sessionId = "synthetic-new-session";
+        if (change === "reconcile") session.needsReconcile = true;
       }, change);
       await expect.poll(async () => (await nativeCalls(page, "Workspace.Read")).length).toBeGreaterThan(count);
     }
     await confirmation.getByRole("button", { name: "确认强制结束", exact: true }).click();
     const requests = await nativeCalls(page, "Runtime.ForceStop");
-    if (change === "none") { expect(requests).toHaveLength(1); expect(requests[0].payload).toMatchObject({ environmentId: "synthetic-environment", sessionId: "synthetic-current-session" }); }
-    else expect(requests).toHaveLength(0);
+    await expect(confirmation).toHaveCount(0);
+    if (change === "none" || change === "control") {
+      expect(requests).toHaveLength(1);
+      expect(requests[0].payload).toEqual({ environmentId: "synthetic-environment", sessionId: "synthetic-current-session", requestId: expect.any(String) });
+    } else {
+      expect(requests).toHaveLength(0);
+      await expect(page.locator(".toast-error")).toBeVisible();
+      expect(await page.evaluate(() => (window as unknown as { __integration: { sessions: Record<string, RuntimeSession> } }).__integration.sessions["synthetic-environment"].pid)).toBe(32035);
+    }
   });
 }
 

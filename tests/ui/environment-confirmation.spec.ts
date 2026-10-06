@@ -4,6 +4,16 @@ import type { DeviceProfile, EnvironmentPreview, WorkspaceView } from "../../src
 import type { NativeRequest } from "../../src/application/wails-adapter.ts";
 import { nativeReferenceBridge, nativeReferenceView } from "./fixtures/native-reference-bridge.ts";
 
+const errors = new WeakMap<Page, string[]>();
+test.beforeEach(async ({ page, baseURL }) => {
+  const messages: string[] = []; errors.set(page, messages);
+  page.on("pageerror", error => messages.push(error.message));
+  const origin = new URL(baseURL!).origin;
+  await page.route("**/*", route => new URL(route.request().url()).origin === origin ? route.continue() : route.abort("blockedbyclient"));
+  await page.routeWebSocket("**/*", socket => socket.close());
+});
+test.afterEach(async ({ page }) => { expect(errors.get(page)).toEqual([]); });
+
 async function demo(page: Page) {
   const state = seedState();
   state.environments.forEach(environment => { environment.status = "ready"; });
@@ -131,8 +141,15 @@ test("a late fingerprint changes the frozen draft: stale discard never discards 
   expect((await nativeReferenceView(page)).calls.filter(call => call.method === "Preview.Discard")).toHaveLength(1);
 });
 
-test("force warning cancels without a request and confirms only the frozen exact session once", async ({ page }) => {
-  await nativeReferenceBridge(page, true); await page.goto("/#/environments");
+for (const canControl of [true, false]) {
+test(`force warning with ${canControl ? "available" : "channel-lost"} normal control cancels without a request and confirms only the frozen exact session once`, async ({ page }) => {
+  await nativeReferenceBridge(page, true);
+  await page.addInitScript(canControl => {
+    const session = (window as unknown as { __referenceNative: { view: WorkspaceView } }).__referenceNative.view.runtimeSessions!["synthetic-reference-6"];
+    session.canControl = canControl;
+  }, canControl);
+  await page.goto("/#/environments");
+  expect((await nativeReferenceView(page)).view.runtimeSessions!["synthetic-reference-6"]).toMatchObject({ canControl, canForce: true, needsReconcile: false });
   await forceButton(page).click();
   await expect(forceWarning(page)).toBeVisible();
   await expect(forceWarning(page)).toHaveCSS("width", "400px");
@@ -149,8 +166,25 @@ test("force warning cancels without a request and confirms only the frozen exact
   expect(requests[0].payload).toMatchObject({ environmentId: "synthetic-reference-6", sessionId: "synthetic-session-6", requestId: expect.any(String) });
   expect(Object.keys(requests[0].payload as object).sort()).toEqual(["environmentId", "requestId", "sessionId"]);
 });
+}
 
-for (const change of ["session", "control", "force", "reconcile"] as const) {
+test("force confirmation permits fresh normal-channel loss when exact owned force authority remains", async ({ page }) => {
+  await nativeReferenceBridge(page, true); await page.goto("/#/environments");
+  await forceButton(page).click(); await expect(forceWarning(page)).toBeVisible();
+  const before = (await nativeReferenceView(page)).calls.filter(call => call.method === "Workspace.Read").length;
+  await page.evaluate(() => {
+    (window as unknown as { __referenceNative: { view: WorkspaceView } }).__referenceNative.view.runtimeSessions!["synthetic-reference-6"].canControl = false;
+  });
+  await expect.poll(async () => (await nativeReferenceView(page)).calls.filter(call => call.method === "Workspace.Read").length).toBeGreaterThan(before);
+  expect((await nativeReferenceView(page)).calls.filter(call => call.method === "Runtime.ForceStop")).toHaveLength(0);
+  await forceWarning(page).getByRole("button", { name: "确认强制结束", exact: true }).click();
+  const requests = (await nativeReferenceView(page)).calls.filter(call => call.method === "Runtime.ForceStop");
+  expect(requests).toHaveLength(1);
+  expect(requests[0].payload).toEqual({ environmentId: "synthetic-reference-6", sessionId: "synthetic-session-6", requestId: expect.any(String) });
+  await expect(forceWarning(page)).toHaveCount(0);
+});
+
+for (const change of ["session", "ownership", "force", "reconcile"] as const) {
   test(`force confirmation rechecks fresh ${change} state before any request`, async ({ page }) => {
     await nativeReferenceBridge(page, true); await page.goto("/#/environments");
     await forceButton(page).click(); await expect(forceWarning(page)).toBeVisible();
@@ -159,7 +193,8 @@ for (const change of ["session", "control", "force", "reconcile"] as const) {
       const view = (window as unknown as { __referenceNative: { view: WorkspaceView } }).__referenceNative.view;
       const session = view.runtimeSessions!["synthetic-reference-6"];
       if (change === "session") session.sessionId = "synthetic-new-session-must-not-stop";
-      if (change === "control") session.canControl = false;
+      // Losing the normal channel alone is not lost Job authority.
+      if (change === "ownership") { session.canControl = false; session.canForce = false; }
       if (change === "force") session.canForce = false;
       if (change === "reconcile") session.needsReconcile = true;
     }, change);

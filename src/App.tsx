@@ -1022,7 +1022,7 @@ export default function App({ application }: { application: ApplicationService }
     const networkSession = snapshot.networkResources?.[id];
     if (action === "force" ? !session || session.sessionId !== expectedSessionId : networkSession !== expectedSessionId && session?.sessionId !== expectedSessionId) { notify("这条记录属于旧会话，未操作现在的浏览器；请重新读取状态。", true); return false; }
     if (action === "force") {
-      if (!application.forceStopRuntime || !session?.canForce || !session.canControl || session.needsReconcile) { notify("尚未满足指定会话强制结束条件。请先正常关闭；不会按PID结束进程。", true); return false; }
+      if (!application.forceStopRuntime || !session?.canForce || session.needsReconcile) { notify("尚未满足指定会话强制结束条件。请先正常关闭；不会按PID结束进程。", true); return false; }
     } else if (!application.reconcileRuntime) { notify("当前桌面版本未提供会话核对。", true); return false; }
     return true;
   }
