@@ -177,6 +177,8 @@ export interface ApplicationService {
   migrationAction?(operationId: string, action: "stop" | "commit" | "recover"): Promise<ApplicationResult<Operation>>;
   previewMigrationRollback?(operationId: string): Promise<ApplicationResult<NativeRestorePreview>>;
   discardMigrationRollback?(): Promise<void>;
+  /** Volatile cleanup ownership only; never exposes source tokens or paths. */
+  getMigrationRollbackCleanup?(): { operationId: string; previewId?: string; pending: boolean } | undefined;
   consumeMigrationRollback?(previewId: string): void;
   getPendingMigration?(): { request: NativeMigrationRequest; operationId?: string } | undefined;
   wasMigrationNotAccepted?(requestId: string): boolean;

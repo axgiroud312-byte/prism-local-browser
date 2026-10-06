@@ -238,6 +238,137 @@ test("remounted restore retry shares its in-flight acceptance before deferred cl
   assert.equal(calls.filter(c => c.method === "Backup.DiscardRestore").length, 1);
 });
 
+// M22: these projections never expose the private source token to consumers.
+const rollbackCleanup = (app: WailsAdapter) => (app as WailsAdapter & {
+  getMigrationRollbackCleanup?(): { operationId: string; previewId?: string; pending: boolean } | undefined;
+}).getMigrationRollbackCleanup?.();
+const finishedMigration = () => {
+  const task = migrationOperation(); task.state = "completed";
+  task.migrationReport = { ...task.migrationReport!, committed: true, trialExited: true, protected: false };
+  return task;
+};
+
+test("M22 rollback cleanup retains every unknown invalid or refused receipt and retries exact original references", async () => {
+  const receipts = [rejected, { ok: false, mode: "native", error: { code: "VALIDATION_FAILED", message: "refused", retryable: false } },
+    ok(null), ok({}), ok({ status: "accepted" }), ok({ status: "discarded", previewId: "foreign-preview" }),
+    { ...ok({ status: "discarded" }), mode: "demo" }, "throw"] as const;
+  for (const receipt of receipts) {
+    const task = finishedMigration(); let known = false;
+    const { app, calls } = fixture(r => {
+      if (r.method === "Operation.Read") return ok(task);
+      if (r.method === "Migration.SelectRollback") return ok({ sourceToken: "M22-private-original-token", archiveSha256: "a".repeat(64) });
+      if (r.method === "Backup.PreviewRestore") return ok(restorePreview());
+      if (r.method === "Workspace.Read") return ok(empty());
+      if (known) return ok({ status: "discarded" });
+      if (receipt === "throw") throw new Error("M22_PRIVATE_TRANSPORT");
+      return receipt as ApplicationResult<unknown>;
+    });
+    assert.ok((await app.previewMigrationRollback(task.id)).ok);
+    await app.discardMigrationRollback();
+    assert.deepEqual(rollbackCleanup(app), { operationId: task.id, previewId: restorePreview().previewId, pending: false });
+    assert.ok(!JSON.stringify(rollbackCleanup(app)).includes("private"));
+    const count = calls.length;
+    assert.equal((await app.previewMigrationRollback("another-migration")).ok, false);
+    assert.equal((await app.selectRestoreSource()).ok, false);
+    assert.equal((await app.previewRestore("another-source")).ok, false);
+    assert.equal((await app.applyRestore(restoreRequest())).ok, false);
+    assert.equal(calls.length, count, "no new select, preflight or restore while cleanup is unconfirmed");
+    known = true; await app.discardMigrationRollback();
+    assert.equal(rollbackCleanup(app), undefined);
+    const discards = calls.filter(c => c.method === "Backup.DiscardRestore");
+    assert.equal(discards.length, 2); assert.deepEqual(discards[0], discards[1]);
+    assert.deepEqual(discards[0].payload, { previewId: restorePreview().previewId, sourceToken: "M22-private-original-token" });
+    assert.ok((await app.previewMigrationRollback(task.id)).ok);
+  }
+});
+
+test("M22 simultaneous cleanup calls share one original flight and stale consumption cannot release it", async () => {
+  const task = finishedMigration(); let deliver!: (r: ApplicationResult<unknown>) => void;
+  const { app, calls } = fixture(r => r.method === "Operation.Read" ? ok(task) : r.method === "Migration.SelectRollback" ? ok({ sourceToken: "M22-serial-token", archiveSha256: "a".repeat(64) }) : r.method === "Backup.PreviewRestore" ? ok(restorePreview()) : new Promise(resolve => { deliver = resolve; }));
+  await app.previewMigrationRollback(task.id);
+  const first = app.discardMigrationRollback(), second = app.discardMigrationRollback();
+  assert.equal(first, second); assert.equal(rollbackCleanup(app)?.pending, true);
+  app.consumeMigrationRollback(restorePreview().previewId);
+  assert.ok(rollbackCleanup(app), "a stale UI callback cannot consume an unconfirmed cleanup");
+  assert.equal((await app.previewMigrationRollback(task.id)).ok, false);
+  assert.equal(calls.filter(c => c.method === "Backup.DiscardRestore").length, 1);
+  deliver(ok({ status: "discarded" })); await first;
+  assert.equal(rollbackCleanup(app), undefined);
+  assert.ok((await app.previewMigrationRollback(task.id)).ok);
+  app.consumeMigrationRollback("foreign-preview");
+  assert.equal((await app.previewMigrationRollback(task.id)).ok, false, "old unrelated consumption cannot release the new owner");
+});
+
+for (const method of ["Migration.SelectRollback", "Backup.PreviewRestore"] as const) {
+  test(`M22 cancelled late ${method} retains ownership through one late cleanup and exact retry`, async () => {
+    const task = finishedMigration(); let deliver!: (r: ApplicationResult<unknown>) => void, finishCleanup!: (r: ApplicationResult<unknown>) => void, retry = false;
+    const { app, calls } = fixture(r => {
+      if (r.method === "Operation.Read") return ok(task);
+      if (r.method === method) return new Promise(resolve => { deliver = resolve; });
+      if (r.method === "Migration.SelectRollback") return ok({ sourceToken: "M22-late-token", archiveSha256: "a".repeat(64) });
+      if (r.method === "Backup.PreviewRestore") return ok(restorePreview());
+      return retry ? ok({ status: "discarded" }) : new Promise(resolve => { finishCleanup = resolve; });
+    });
+    const preview = app.previewMigrationRollback(task.id);
+    while (!deliver) await Promise.resolve();
+    const cancellation = app.discardMigrationRollback();
+    assert.ok(rollbackCleanup(app), "cancellation is observable before any late response");
+    await cancellation; await app.discardMigrationRollback();
+    assert.equal(rollbackCleanup(app)?.pending, true);
+    assert.equal(calls.filter(c => c.method === "Backup.DiscardRestore").length, 0, "wait for the original in-flight response before cleanup");
+    assert.equal((await app.previewMigrationRollback(task.id)).ok, false);
+    deliver(method === "Migration.SelectRollback" ? ok({ sourceToken: "M22-late-token", archiveSha256: "a".repeat(64) }) : ok(restorePreview()));
+    while (!finishCleanup) await Promise.resolve();
+    assert.equal(rollbackCleanup(app)?.pending, true);
+    assert.equal((await app.previewMigrationRollback(task.id)).ok, false);
+    finishCleanup(rejected); assert.equal((await preview).ok, false);
+    assert.equal(rollbackCleanup(app)?.pending, false);
+    assert.equal(calls.filter(c => c.method === "Backup.DiscardRestore").length, 1);
+    retry = true; await app.discardMigrationRollback();
+    const discards = calls.filter(c => c.method === "Backup.DiscardRestore"); assert.deepEqual(discards[0], discards[1]);
+    assert.deepEqual(discards[0].payload, { previewId: method === "Migration.SelectRollback" ? "" : restorePreview().previewId, sourceToken: "M22-late-token" });
+    assert.equal(rollbackCleanup(app), undefined);
+    assert.equal(calls.filter(c => c.method === "Backup.PreviewRestore").length, method === "Migration.SelectRollback" ? 0 : 1);
+  });
+}
+
+test("M22 invalid rollback preflight finally retains its original cleanup until confirmed", async () => {
+  const task = finishedMigration(); let known = false;
+  const { app, calls } = fixture(r => r.method === "Operation.Read" ? ok(task) : r.method === "Migration.SelectRollback" ? ok({ sourceToken: "M22-mismatch-token", archiveSha256: "a".repeat(64) }) : r.method === "Backup.PreviewRestore" ? ok({ ...restorePreview(), archiveSha256: "c".repeat(64) }) : known ? ok({ status: "discarded" }) : ok({ status: "unknown" }));
+  assert.equal((await app.previewMigrationRollback(task.id)).ok, false);
+  assert.deepEqual(rollbackCleanup(app), { operationId: task.id, previewId: restorePreview().previewId, pending: false });
+  assert.equal((await app.previewMigrationRollback(task.id)).ok, false);
+  known = true; await app.discardMigrationRollback();
+  const discards = calls.filter(c => c.method === "Backup.DiscardRestore"); assert.deepEqual(discards[0], discards[1]);
+  assert.equal(rollbackCleanup(app), undefined);
+});
+
+test("M22 deferred refusal leaves failed cleanup recoverable without changing original restore authority", async () => {
+  const task = finishedMigration(); let deliver!: (r: ApplicationResult<unknown>) => void, known = false;
+  const { app, calls } = fixture(r => r.method === "Operation.Read" ? ok(task) : r.method === "Migration.SelectRollback" ? ok({ sourceToken: "M22-deferred-token", archiveSha256: "a".repeat(64) }) : r.method === "Backup.PreviewRestore" ? ok(restorePreview()) : r.method === "Backup.ApplyRestore" ? new Promise(resolve => { deliver = resolve; }) : r.method === "Workspace.Read" ? ok(empty()) : known ? ok({ status: "discarded" }) : rejected);
+  await app.previewMigrationRollback(task.id);
+  const first = app.applyRestore(restoreRequest()); await app.discardMigrationRollback();
+  const retry = app.applyRestore(restoreRequest()); assert.equal(first, retry);
+  assert.equal(rollbackCleanup(app), undefined); assert.equal(calls.filter(c => c.method === "Backup.DiscardRestore").length, 0);
+  deliver({ ok: false, mode: "native", error: { code: "RESTORE_NOT_ACCEPTED", message: "absent", retryable: true } }); await first;
+  assert.deepEqual(calls.find(c => c.method === "Backup.ApplyRestore")?.payload, restoreRequest());
+  assert.equal(app.getPendingRestore(), undefined); assert.ok(app.wasRestoreNotAccepted(restoreRequest().requestId));
+  assert.ok(rollbackCleanup(app)); assert.equal((await app.applyRestore(restoreRequest())).ok, false);
+  known = true; await app.discardMigrationRollback();
+  const discards = calls.filter(c => c.method === "Backup.DiscardRestore"); assert.deepEqual(discards[0], discards[1]);
+});
+
+test("M22 source-selection transport loss without a token cannot invent cleanup or a replacement source", async () => {
+  const task = finishedMigration();
+  const { app, calls } = fixture(r => r.method === "Operation.Read" ? ok(task) : rejected);
+  assert.equal((await app.previewMigrationRollback(task.id)).ok, false);
+  assert.deepEqual(rollbackCleanup(app), { operationId: task.id, pending: false });
+  await app.discardMigrationRollback();
+  assert.equal((await app.previewMigrationRollback(task.id)).ok, false);
+  assert.equal(calls.filter(c => c.method === "Migration.SelectRollback").length, 1);
+  assert.equal(calls.filter(c => c.method === "Backup.DiscardRestore").length, 0, "empty IDs do not prove that an unknown source was cleaned");
+});
+
 test("recycle commit projects explicit original confirmation without paths or client identities", async () => {
   const task = recycleOperation();
   const { app, calls } = fixture(r => r.method === "Workspace.Read" ? ok({ ...empty(), recycleOperations: [task], recycleMaintenance: task }) : ok({ status: "accepted", operation: task }));
