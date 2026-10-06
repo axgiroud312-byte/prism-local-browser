@@ -20,6 +20,7 @@ test("native proxy import hides without clearing preview, errors or input across
   await expect(dialog.getByText("代理格式错误", { exact: true })).toBeVisible();
   await dialog.getByRole("button", { name: "保存所选有效行", exact: true }).click();
   await expect(dialog.getByRole("status")).toContainText("STORAGE_WRITE_FAILED");
+  await expect(dialog.locator("footer")).toContainText("STORAGE_WRITE_FAILED");
   await dialog.getByRole("button", { name: "取消", exact: true }).click();
   await page.getByRole("link", { name: "内核管理", exact: true }).click();
   await page.getByRole("link", { name: "代理管理", exact: true }).click();
@@ -39,6 +40,7 @@ test("unknown proxy commit freezes original receipt; success cannot replay commi
   await dialog.getByLabel("原始代理导入文本").fill("http://203.0.113.55:8080\ninvalid-line");
   await dialog.getByRole("button", { name: "解析预览", exact: true }).click();
   await dialog.getByRole("button", { name: "保存所选有效行", exact: true }).click();
+  await expect(dialog.locator("footer")).toContainText("原请求结果未知");
   await expect(dialog.getByLabel("原始代理导入文本")).toBeDisabled();
   await expect(dialog.getByRole("button", { name: "清除输入与预览" })).toBeDisabled();
   await dialog.getByRole("button", { name: "取消", exact: true }).click();
@@ -94,6 +96,36 @@ test("kernel prepare uses explicit trusted source; persistence-pending isn't ter
   await expect(page.getByRole("button", { name: "重试同一精确构建任务", exact: true })).toBeEnabled();
 });
 
+test("kernel prepare accepted receipt survives a rejected workspace refresh without replay", async ({ page }) => {
+  await proxyKernelBridge(page);
+  await openProxyKernelHarness(page, "kernels");
+  await page.getByRole("button", { name: "准备精确内核", exact: true }).click();
+  const prepare = page.getByRole("dialog", { name: "安装精确内核", exact: true });
+  await prepare.getByLabel("精确发行版本").fill("151.0.9000.11");
+  await prepare.getByLabel("预期归档 SHA-256").fill("a".repeat(64));
+  await page.evaluate(async () => {
+    const modulePath = "/src/application/wails-adapter.ts";
+    const { WailsAdapter } = await import(modulePath);
+    const refresh = WailsAdapter.prototype.refresh;
+    WailsAdapter.prototype.refresh = async function () {
+      WailsAdapter.prototype.refresh = refresh;
+      throw new Error("synthetic rejected refresh after acceptance");
+    };
+  });
+  await prepare.getByRole("button", { name: "安装并核验", exact: true }).click();
+  const progress = page.getByRole("dialog", { name: "内核任务", exact: true });
+  await expect(progress).toContainText("synthetic-task-1");
+  await expect(progress).toContainText("任务已受理；工作区刷新未确认");
+  await progress.getByRole("button", { name: "关闭", exact: true }).click();
+  await expect(page.getByRole("button", { name: "核实原内核请求", exact: true })).toHaveCount(0);
+  await page.getByRole("link", { name: "代理管理", exact: true }).click();
+  await page.getByRole("link", { name: "内核管理", exact: true }).click();
+  await page.getByRole("button", { name: "查看内核任务", exact: false }).click();
+  await expect(progress).toContainText("synthetic-task-1");
+  const installs = await page.evaluate(() => (window as unknown as { __proxyKernel: { calls: { method: string }[] } }).__proxyKernel.calls.filter(call => call.method === "Kernel.Install"));
+  expect(installs).toHaveLength(1);
+});
+
 test("demo exported import shares controller with environment return, preserves draft and masks preview", async ({ page }) => {
   await openProxyKernelHarness(page, "environments");
   await page.getByLabel("环境名称").fill("合成未保存名称");
@@ -124,6 +156,9 @@ test("file import retains UTF-8 input and filename across hide, traps Tab, and C
   const file = page.getByRole("dialog", { name: "批量导入代理", exact: true });
   const text = "socks5://203.0.113.55:1080\ninvalid-line";
   await file.getByLabel("选择UTF-8文本文件").setInputFiles({ name: "synthetic-proxies.txt", mimeType: "text/plain", buffer: Buffer.from(text) });
+  await expect(file).toContainText("synthetic-proxies.txt");
+  await file.getByLabel("选择UTF-8文本文件").setInputFiles({ name: "synthetic-invalid.txt", mimeType: "text/plain", buffer: Buffer.from([0xff, 0x80]) });
+  await expect(file.locator("footer")).toContainText("文本文件需为有效 UTF-8");
   await expect(file).toContainText("synthetic-proxies.txt");
   await page.keyboard.press("Tab");
   expect(await file.evaluate(element => element.contains(document.activeElement))).toBe(true);
@@ -225,8 +260,11 @@ test("a workspace fault stays above the kernel modal and recovery preserves the 
   expect(await blocker.evaluate(element => element.contains(document.activeElement))).toBe(true);
   await page.keyboard.press("Escape");
   await expect(blocker).toBeVisible();
-  await page.evaluate(() => (window as unknown as { __proxyKernel: { setWorkspaceFailure(value: boolean): void } }).__proxyKernel.setWorkspaceFailure(false));
-  await blocker.getByRole("button", { name: "重新读取本机工作区", exact: true }).click();
+  const recover = blocker.getByRole("button", { name: "重新读取本机工作区", exact: true });
+  // Release the synthetic read fault on this exact user click, not in a gap
+  // where another already-pending refresh could remove the recovery target.
+  await recover.evaluate(element => element.addEventListener("click", () => (window as unknown as { __proxyKernel: { setWorkspaceFailure(value: boolean): void } }).__proxyKernel.setWorkspaceFailure(false), { once: true, capture: true }));
+  await recover.click();
   await expect(blocker).toHaveCount(0);
   await expect(page.getByRole("dialog", { name: "内核任务", exact: true })).toContainText("synthetic-task-1");
   const installs = await page.evaluate(() => (window as unknown as { __proxyKernel: { calls: { method: string }[] } }).__proxyKernel.calls.filter(call => call.method === "Kernel.Install"));

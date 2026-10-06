@@ -5,7 +5,7 @@ export type ProxyImportView = Omit<ProxyImportPreview, "mode">;
 type ImportRequest = { previewId: string; selectedRows: number[]; requestId: string };
 export interface ProxyImportState {
   text: string; showText: boolean; preview?: ProxyImportView; selected: number[]; busy: boolean;
-  unknown: boolean; message: string; request?: ImportRequest; fileName?: string;
+  unknown: boolean; failure: boolean; message: string; request?: ImportRequest; fileName?: string;
   singleDraft?: { type: "http" | "https" | "socks5"; host: string; port: string; username: string; password: string };
 }
 export const proxyFailureIsKnown = (code: string) => ["VALIDATION_FAILED", "PREVIEW_EXPIRED", "PROXY_INVALID", "NOT_FOUND", "REVISION_CONFLICT", "REQUEST_ID_REUSED", "PROFILE_BUSY", "DISK_FULL", "STORAGE_WRITE_FAILED", "STORAGE_READ_FAILED", "CREDENTIALS_UNAVAILABLE", "CAPABILITY_UNSUPPORTED"].includes(code);
@@ -19,7 +19,7 @@ export function getProxyImportSession(application: ApplicationService) {
 }
 
 export class ProxyImportSession {
-  private state: ProxyImportState = { text: "", showText: false, selected: [], busy: false, unknown: false, message: "" };
+  private state: ProxyImportState = { text: "", showText: false, selected: [], busy: false, unknown: false, failure: false, message: "" };
   private listeners = new Set<() => void>();
   private demoNodes = new Map<number, ProxyNode>();
   private generation = 0;
@@ -34,7 +34,7 @@ export class ProxyImportSession {
   }
   setText = (text: string) => {
     if (this.state.busy || this.state.unknown) return;
-    this.discard(); this.patch({ text, preview: undefined, selected: [], request: undefined, message: "", fileName: undefined, singleDraft: undefined });
+    this.discard(); this.patch({ text, preview: undefined, selected: [], request: undefined, failure: false, message: "", fileName: undefined, singleDraft: undefined });
   };
   setSingle = (change: Partial<NonNullable<ProxyImportState["singleDraft"]>>) => {
     if (this.state.busy || this.state.unknown) return;
@@ -53,28 +53,28 @@ export class ProxyImportSession {
   };
   clear = () => {
     if (this.state.busy || this.state.unknown) return;
-    this.discard(); this.patch({ text: "", showText: false, preview: undefined, selected: [], request: undefined, fileName: undefined, singleDraft: undefined, message: "输入与预览已明确清除；已经保存的代理不受影响。" });
+    this.discard(); this.patch({ text: "", showText: false, preview: undefined, selected: [], request: undefined, fileName: undefined, singleDraft: undefined, failure: false, message: "输入与预览已明确清除；已经保存的代理不受影响。" });
   };
   async loadFile(file: File) {
     if (this.state.busy || this.state.unknown) return;
-    if (file.size > 2 * 1024 * 1024) { this.patch({ message: "文本文件不能超过 2MiB；可分文件导入，这不是代理数量限制。" }); return; }
-    const generation = this.generation; this.patch({ busy: true, message: "" });
+    if (file.size > 2 * 1024 * 1024) { this.patch({ failure: true, message: "文本文件不能超过 2MiB；可分文件导入，这不是代理数量限制。" }); return; }
+    const generation = this.generation; this.patch({ busy: true, failure: false, message: "" });
     try {
       const text = new TextDecoder("utf-8", { fatal: true }).decode(await file.arrayBuffer());
       if (this.generation !== generation) return;
-      this.discard(); this.patch({ text, preview: undefined, selected: [], request: undefined, fileName: file.name, singleDraft: undefined, message: "文件已读取，尚未保存；请解析预览。" });
-    } catch { this.patch({ message: "文本文件需为有效 UTF-8；没有保存或执行内容。" }); }
+      this.discard(); this.patch({ text, preview: undefined, selected: [], request: undefined, fileName: file.name, singleDraft: undefined, failure: false, message: "文件已读取，尚未保存；请解析预览。" });
+    } catch { this.patch({ failure: true, message: "文本文件需为有效 UTF-8；没有保存或执行内容。" }); }
     finally { this.patch({ busy: false }); }
   }
   async parse() {
     if (this.state.busy || this.state.unknown || this.application.getSnapshot().issue) return;
     this.discard(); const generation = this.generation;
-    this.patch({ busy: true, preview: undefined, selected: [], request: undefined, message: "" });
+    this.patch({ busy: true, preview: undefined, selected: [], request: undefined, failure: false, message: "" });
     try {
       let preview: ProxyImportView;
       if (this.application.mode === "native") {
         const result = await this.application.parseProxyImport?.(this.state.text);
-        if (!result?.ok) { this.patch({ message: result ? `${result.error.code}：${result.error.message}` : "当前桌面服务不支持导入，没有模拟保存。" }); return; }
+        if (!result?.ok) { this.patch({ failure: true, message: result ? `${result.error.code}：${result.error.message}` : "当前桌面服务不支持导入，没有模拟保存。" }); return; }
         if (generation !== this.generation) { void this.application.discardProxyImport?.(result.data.previewId); return; }
         preview = result.data;
       } else {
@@ -93,37 +93,37 @@ export class ProxyImportSession {
         preview = { previewId: uid("demo-proxy-preview"), expiresAt: "", rows: safeRows, ignoredLines: this.state.text.split(/\r?\n/).length - rows.length, duplicateGroups: groups };
       }
       this.patch({ preview, selected: preview.rows.filter(row => row.configuration && !row.error && !row.duplicateCount && !row.existingCount).map(row => row.line), message: preview.rows.length ? "已解析，尚未保存。重复候选默认不选；地址相同不代表认证相同。" : "请先输入至少一条代理。" });
-    } catch { this.patch({ message: "解析未确认，请重试；原始输入保留。" }); }
+    } catch { this.patch({ failure: true, message: "解析未确认，请重试；原始输入保留。" }); }
     finally { this.patch({ busy: false }); }
   }
   async commit(): Promise<string[] | undefined> {
     if (this.state.busy || !this.state.preview || !this.state.selected.length || this.application.getSnapshot().issue) return;
     const request = this.state.request ?? { previewId: this.state.preview.previewId, selectedRows: [...this.state.selected].sort((a, b) => a - b), requestId: crypto.randomUUID() };
-    this.patch({ busy: true, request, message: "" });
+    this.patch({ busy: true, request, failure: false, message: "" });
     try {
       let ids: string[], lines: number[];
       if (this.application.mode === "native") {
         const result = await this.application.commitProxyImport?.(request);
         if (!result?.ok) {
           const unknown = !!result && !proxyFailureIsKnown(result.error.code);
-          this.patch({ unknown, message: result ? `${result.error.code}：${result.error.message}${unknown ? " 原请求结果未知，输入与所选行已冻结；只能核实原请求，关闭不取消提交。" : " 输入与预览已保留，可修正或重试。"}` : "导入服务不可用，没有模拟保存。" }); return;
+          this.patch({ unknown, failure: true, message: result ? `${result.error.code}：${result.error.message}${unknown ? " 原请求结果未知，输入与所选行已冻结；只能核实原请求，关闭不取消提交。" : " 输入与预览已保留，可修正或重试。"}` : "导入服务不可用，没有模拟保存。" }); return;
         }
         const data = result.data;
         if (data.status !== "completed" || !Array.isArray(data.importedIds) || !Array.isArray(data.importedLines) || data.importedIds.length !== data.importedLines.length || data.importedLines.length !== request.selectedRows.length || new Set(data.importedIds).size !== data.importedIds.length || data.importedIds.some(id => typeof id !== "string" || !id) || [...data.importedLines].sort((a,b) => a-b).some((line, index) => line !== request.selectedRows[index])) {
-          this.patch({ unknown: true, message: "PROXY_RESULT_UNCONFIRMED：导入回执与原所选行不符，保留原请求核实；没有重新导入。" }); return;
+          this.patch({ unknown: true, failure: true, message: "PROXY_RESULT_UNCONFIRMED：导入回执与原所选行不符，保留原请求核实；没有重新导入。" }); return;
         }
         ids = data.importedIds; lines = data.importedLines;
       } else {
         const nodes = request.selectedRows.flatMap(line => { const node = this.demoNodes.get(line); return node ? [node] : []; });
         const result = this.application.compatibility?.update(state => ({ ...state, proxies: [...state.proxies, ...nodes], activities: [{ id: uid("log"), action: "导入代理", target: `${nodes.length} 条`, detail: "有效所选行已保存到演示工作区；没有真实检测。", result: "success" as const, time: new Date().toISOString() }, ...state.activities].slice(0, 300) }));
-        if (!result?.ok) { this.patch({ message: result ? `${result.error.code}：${result.error.message}` : "演示保存服务不可用。" }); return; }
+        if (!result?.ok) { this.patch({ failure: true, message: result ? `${result.error.code}：${result.error.message}` : "演示保存服务不可用。" }); return; }
         ids = nodes.map(node => node.id); lines = request.selectedRows;
       }
       const saved = new Set(lines), remaining = this.state.text.split(/\r?\n/).filter((_, index) => !saved.has(index + 1)).join("\n");
       this.demoNodes.clear(); this.generation++;
-      this.patch({ text: remaining, preview: undefined, selected: [], request: undefined, singleDraft: undefined, unknown: false, showText: false, message: `已保存 ${ids.length} 个代理；${remaining.trim() ? "未选与错误行仍保留，可修正后重新解析。" : "原始凭据输入已清除。"}` });
+      this.patch({ text: remaining, preview: undefined, selected: [], request: undefined, singleDraft: undefined, unknown: false, failure: false, showText: false, message: `已保存 ${ids.length} 个代理；${remaining.trim() ? "未选与错误行仍保留，可修正后重新解析。" : "原始凭据输入已清除。"}` });
       return ids;
-    } catch { this.patch({ unknown: true, message: "原导入结果未知；保留原 requestId、预览与所选行，请核实原请求。" }); }
+    } catch { this.patch({ unknown: true, failure: true, message: "原导入结果未知；保留原 requestId、预览与所选行，请核实原请求。" }); }
     finally { this.patch({ busy: false }); }
   }
 }

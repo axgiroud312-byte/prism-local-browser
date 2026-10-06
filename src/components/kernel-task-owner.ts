@@ -36,7 +36,11 @@ class KernelTaskOwner {
       const operation = result.data.operation;
       if (!operation?.id || operation.kind !== `kernel-${owner.kind}` || owner.kind !== "install" && operation.kernelId && operation.kernelId !== owner.kernelId) { this.patch({ unknown: true, message: "KERNEL_RESULT_UNCONFIRMED：内核回执身份不符，保留原请求核实。" }); return false; }
       this.patch({ pending: undefined, lastRequest: owner, unknown: false, operation, message: "内核任务已受理，尚不等于完成或可用。" });
-      await this.application.refresh?.(); return true;
+      // Admission is already confirmed. A later read failure must not erase
+      // that receipt or turn it into an unknown request with no replay owner.
+      try { await this.application.refresh?.(); }
+      catch { this.message("内核任务已受理；工作区刷新未确认，请重新读取，不重复提交。"); }
+      return true;
     } catch { this.patch({ unknown: true, message: "原内核提交结果未知，保留原请求核实，不另建任务。" }); return false; }
     finally { this.patch({ busy: false }); }
   }
