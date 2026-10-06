@@ -19,6 +19,10 @@ async function denyWrites(page: Page) {
 async function restoreWrites(page: Page) {
   await page.evaluate(() => (window as unknown as { restoreTestStorage: () => void }).restoreTestStorage());
 }
+async function advanced(page: Page) {
+  const details = page.getByRole("dialog").locator("details").first();
+  if (await details.getAttribute("open") === null) await details.locator("summary").click();
+}
 test.beforeEach(async ({ page }) => {
   const initial = seedState();
   initial.environments.forEach(e => { e.status = "ready"; });
@@ -33,15 +37,14 @@ test("create, edit and reopen preserve the selected seed, kernel and proxy", asy
   await page.getByRole("button", { name: "新建环境", exact: true }).click();
   await page.getByLabel("环境名称", { exact: true }).fill("UI 合成环境");
   await page.getByLabel("绑定代理").selectOption("px-gb");
-  await page.getByRole("button", { name: "设备指纹", exact: true }).click();
   const seed = await page.getByLabel("固定指纹种子").inputValue();
-  await page.getByRole("button", { name: "创建环境", exact: true }).click();
+  await page.getByRole("button", { name: "创建", exact: true }).click();
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await expect.poll(async () => (await stored(page)).environments.some(e => e.name === "UI 合成环境")).toBe(true);
   await page.reload();
   await edit(page, "UI 合成环境");
   await page.getByLabel("环境名称", { exact: true }).fill("UI 修改环境");
-  await page.getByRole("button", { name: "保存配置", exact: true }).click();
+  await page.getByRole("button", { name: "保存", exact: true }).click();
   await expect(page.getByText("环境配置已保存", { exact: true })).toBeVisible();
   await page.reload();
   const saved = (await stored(page)).environments.find(e => e.name === "UI 修改环境")!;
@@ -57,9 +60,9 @@ test("create, edit and reopen preserve the selected seed, kernel and proxy", asy
 test("cancel regenerated edit leaves persistent state unchanged and restores focus", async ({ page }) => {
   const before = await stored(page);
   await edit(page, "北美主店");
-  await page.getByRole("button", { name: "设备指纹", exact: true }).click();
+  await page.getByLabel("环境名称", { exact: true }).fill("取消后不应保存的合成名字");
   const seed = await page.getByLabel("固定指纹种子").inputValue();
-  await page.getByRole("button", { name: "重新生成", exact: true }).click();
+  await page.getByRole("button", { name: "换一套", exact: true }).click();
   await expect(page.getByLabel("固定指纹种子")).not.toHaveValue(seed);
   page.once("dialog", dialog => dialog.accept());
   await page.keyboard.press("Escape");
@@ -75,19 +78,19 @@ test("cancel regenerated edit leaves persistent state unchanged and restores foc
 
 test("invalid and duplicate names, URL and quantity are rejected by the service", async ({ page }) => {
   await page.getByRole("button", { name: "新建环境", exact: true }).click();
-  await page.getByRole("button", { name: "创建环境", exact: true }).click();
+  await page.getByRole("button", { name: "创建", exact: true }).click();
   await expect(page.getByRole("alert")).toContainText("名称");
   await page.getByLabel("环境名称", { exact: true }).fill("北美主店");
-  await page.getByRole("button", { name: "创建环境", exact: true }).click();
+  await page.getByRole("button", { name: "创建", exact: true }).click();
   await expect(page.getByRole("alert")).toContainText("同名");
   await page.getByLabel("环境名称", { exact: true }).fill("校验样本");
+  await advanced(page);
   await page.getByLabel("创建数量").fill("0");
-  await page.getByRole("button", { name: "创建环境", exact: true }).click();
+  await page.getByRole("button", { name: "创建", exact: true }).click();
   await expect(page.getByRole("alert")).toContainText("正整数");
   await page.getByLabel("创建数量").fill("1");
-  await page.getByRole("button", { name: "浏览器偏好", exact: true }).click();
   await page.getByLabel("启动网址").fill("about:blank");
-  await page.getByRole("button", { name: "创建环境", exact: true }).click();
+  await page.getByRole("button", { name: "创建", exact: true }).click();
   await expect(page.getByRole("alert")).toContainText("http");
   expect((await stored(page)).environments).toHaveLength(8);
 });
@@ -97,13 +100,13 @@ test("storage write failure keeps the editor and old record; retry commits", asy
   await edit(page, "北美主店");
   await page.getByLabel("环境名称", { exact: true }).fill("失败后重试");
   await denyWrites(page);
-  await page.getByRole("button", { name: "保存配置", exact: true }).click();
+  await page.getByRole("button", { name: "保存", exact: true }).click();
   await expect(page.getByRole("alert")).toContainText("未保存");
   await expect(page.getByRole("dialog", { name: "编辑浏览器环境" })).toBeVisible();
   expect(await stored(page)).toEqual(before);
   await expect(page.getByText("环境配置已保存", { exact: true })).toHaveCount(0);
   await restoreWrites(page);
-  await page.getByRole("button", { name: "保存配置", exact: true }).click();
+  await page.getByRole("button", { name: "保存", exact: true }).click();
   await expect(page.getByText("环境配置已保存", { exact: true })).toBeVisible();
   await page.reload();
   expect((await stored(page)).environments[0].name).toBe("失败后重试");
@@ -160,6 +163,15 @@ test("compatibility snapshot and Cookie writes preserve inputs and never overrid
   await page.getByRole("button", { name: "导入到原型记录", exact: true }).click();
   await expect(page.getByRole("dialog")).toHaveCount(0);
   expect((await stored(page)).environments[0].cookies[0].value).toBe("");
+  const row = page.getByRole("row").filter({ hasText: "北美主店" });
+  await row.getByRole("button", { name: "打开", exact: true }).click();
+  await expect(row).toContainText("运行中");
+  await row.getByRole("button", { name: "关闭", exact: true }).click();
+  await expect(row).toContainText("待启动");
+  await row.getByRole("button", { name: "打开", exact: true }).click();
+  await expect(row).toContainText("运行中");
+  await page.reload();
+  expect((await stored(page)).environments[0].cookies[0]).toMatchObject({ name: "synthetic-session", value: "", domain: "example.test" });
 });
 
 test("a second tab blocks the stale editor without overwriting the newer workspace", async ({ page, context }) => {
@@ -168,7 +180,7 @@ test("a second tab blocks the stale editor without overwriting the newer workspa
   await edit(second, "北美主店");
   await edit(page, "北美主店");
   await page.getByLabel("环境名称", { exact: true }).fill("跨页最新修改");
-  await page.getByRole("button", { name: "保存配置", exact: true }).click();
+  await page.getByRole("button", { name: "保存", exact: true }).click();
   await expect(second.getByRole("alertdialog")).toContainText("另一个页面");
   expect((await stored(page)).environments[0].name).toBe("跨页最新修改");
   await second.close();
@@ -177,6 +189,7 @@ test("a second tab blocks the stale editor without overwriting the newer workspa
 test("a large create batch can be cancelled and reopening retains only completed items", async ({ page }) => {
   await page.getByRole("button", { name: "新建环境", exact: true }).click();
   await page.getByLabel("环境名称", { exact: true }).fill("批次取消");
+  await advanced(page);
   await page.getByLabel("创建数量").fill("1000");
   await page.getByRole("button", { name: "创建 1000 个环境", exact: true }).click();
   await page.getByRole("button", { name: "取消余下任务", exact: true }).click();
@@ -196,6 +209,102 @@ test("all six pages and narrow-window creation remain usable", async ({ page }) 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.getByRole("button", { name: "新建环境", exact: true }).click();
   await expect(page.getByLabel("环境名称", { exact: true })).toBeVisible();
+  await page.getByLabel("环境名称", { exact: true }).fill("窄窗口合成环境");
+  await expect(page.getByLabel("绑定代理")).toBeVisible();
+  await expect(page.getByRole("button", { name: "创建并打开", exact: true })).toBeInViewport();
+  await page.getByRole("button", { name: "创建并打开", exact: true }).click();
+  await expect.poll(async () => (await stored(page)).environments.find(e => e.name === "窄窗口合成环境")?.status).toBe("running");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.getByLabel("搜索环境").fill("窄窗口合成环境");
+  const row = page.getByRole("row").filter({ hasText: "窄窗口合成环境" });
+  await row.getByRole("button", { name: "关闭", exact: true }).click();
+  await expect(row).toContainText("待启动");
+  await page.getByRole("button", { name: "新建环境", exact: true }).click();
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog")).toHaveCount(0);
+});
+
+test("one window selects service kernels and saves an automatically generated fingerprint", async ({ page }) => {
+  const initial = await stored(page);
+  initial.kernels.push({ id: "synthetic-other-build", version: "151.0.9000.11", available: true, source: "fingerprint-chromium", note: "合成服务版本，不是本机安装证据" });
+  await page.evaluate(({ key, initial }) => localStorage.setItem(key, JSON.stringify(initial)), { key: STORAGE_KEY, initial });
+  await page.reload();
+  await page.getByRole("button", { name: "新建环境", exact: true }).click();
+  const editor = page.getByRole("dialog", { name: "新建浏览器环境" });
+  await expect(editor.getByLabel("环境名称", { exact: true })).toBeVisible();
+  await expect(editor.getByLabel("绑定代理")).toBeVisible();
+  await expect(editor.getByRole("button", { name: "换一套", exact: true })).toBeVisible();
+  await expect(editor).not.toContainText("批次计划");
+  await editor.getByLabel("环境名称", { exact: true }).fill("自动指纹合成环境");
+  await editor.getByLabel("分组", { exact: true }).fill("合成分组");
+  await editor.getByLabel("浏览器内核").selectOption("synthetic-other-build");
+  const original = await editor.getByLabel("固定指纹种子").inputValue();
+  await editor.getByRole("button", { name: "换一套", exact: true }).click();
+  await expect(editor.getByLabel("固定指纹种子")).not.toHaveValue(original);
+  const seed = await editor.getByLabel("固定指纹种子").inputValue();
+  expect(initial.environments.map(e => e.seed)).not.toContain(seed);
+  await editor.getByRole("button", { name: "创建", exact: true }).click();
+  await expect(editor).toHaveCount(0);
+  const saved = (await stored(page)).environments.find(e => e.name === "自动指纹合成环境")!;
+  expect(saved).toMatchObject({ seed, coreId: "synthetic-other-build", proxyId: "", group: "合成分组", status: "ready" });
+  await page.getByLabel("搜索环境").fill(saved.name);
+  const row = page.getByRole("row").filter({ hasText: saved.name });
+  await expect(row).toContainText("151.0.9000.11");
+  await expect(row).toContainText("直连");
+  await expect(row).toContainText("合成分组");
+  await row.getByRole("button", { name: "打开", exact: true }).click();
+  await expect(row).toContainText("运行中");
+  await row.getByRole("button", { name: "关闭", exact: true }).click();
+  await expect(row).toContainText("待启动");
+  await row.getByRole("button", { name: "打开", exact: true }).click();
+  await expect(row).toContainText("运行中");
+  await page.reload();
+  expect((await stored(page)).environments.find(e => e.id === saved.id)).toMatchObject({ seed, coreId: "synthetic-other-build", group: "合成分组" });
+});
+
+test("proxy import returns to the unchanged environment draft", async ({ page }) => {
+  await page.getByRole("button", { name: "新建环境", exact: true }).click();
+  await page.getByLabel("环境名称", { exact: true }).fill("代理往返草稿");
+  await page.getByLabel("分组", { exact: true }).fill("合成往返分组");
+  const seed = await page.getByLabel("固定指纹种子").inputValue();
+  await page.getByRole("button", { name: "导入代理", exact: true }).click();
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog", { name: "新建浏览器环境" })).toBeVisible();
+  await expect(page.getByLabel("环境名称", { exact: true })).toHaveValue("代理往返草稿");
+  await page.getByRole("button", { name: "导入代理", exact: true }).click();
+  await page.getByLabel("代理文本").fill("socks5://192.0.2.99:1080");
+  await page.getByRole("button", { name: "解析预览", exact: true }).click();
+  await page.getByRole("button", { name: /导入 1 个代理/ }).click();
+  await expect(page.getByRole("dialog", { name: "新建浏览器环境" })).toBeVisible();
+  await expect(page.getByLabel("环境名称", { exact: true })).toHaveValue("代理往返草稿");
+  await expect(page.getByLabel("分组", { exact: true })).toHaveValue("合成往返分组");
+  await expect(page.getByLabel("固定指纹种子")).toHaveValue(seed);
+  const imported = (await stored(page)).proxies.find(p => p.host === "192.0.2.99")!;
+  await page.getByLabel("绑定代理").selectOption(imported.id);
+  await page.getByRole("button", { name: "创建", exact: true }).click();
+  await expect.poll(async () => (await stored(page)).environments.find(e => e.name === "代理往返草稿")?.proxyId).toBe(imported.id);
+});
+
+test("group and search keep a precise batch scope and failures remain retryable", async ({ page }) => {
+  await page.getByLabel("筛选分组").selectOption("日常运营");
+  await expect(page.getByRole("row").filter({ hasText: "北美选品环境" })).toHaveCount(0);
+  await page.getByLabel("搜索环境").fill("没有这个合成环境");
+  await expect(page.getByRole("heading", { name: /没有.*环境|未找到/ })).toBeVisible();
+  await page.getByRole("button", { name: "清除筛选", exact: true }).click();
+  await page.getByLabel("选择 北美主店", { exact: true }).check();
+  await page.getByLabel("选择 欧洲家居店", { exact: true }).check();
+  await page.getByRole("button", { name: "批量打开", exact: true }).click();
+  const success = page.getByRole("row").filter({ hasText: "北美主店" });
+  const failure = page.getByRole("row").filter({ hasText: "欧洲家居店" });
+  await expect(success).toContainText("运行中");
+  await expect(failure).toContainText("需处理");
+  const after = await stored(page);
+  expect(after.environments[0].status).toBe("running");
+  expect(after.environments[2]).toMatchObject({ status: "error", proxyId: "px-de", seed: "162776995" });
+  expect(after.environments.filter(e => e.status === "running")).toHaveLength(1);
+  await page.getByRole("button", { name: "批量关闭", exact: true }).click();
+  await expect(success).toContainText("待启动");
+  await failure.getByRole("button", { name: /打开|重试/, exact: true }).click();
+  await expect(failure).toContainText("需处理");
+  expect((await stored(page)).environments[2].proxyId).toBe("px-de");
 });
