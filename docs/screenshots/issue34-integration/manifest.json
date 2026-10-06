@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "title": "#34 actual source mounting evidence",
-  "sourceCommit": "c7fbbf33e21955a3dd7cc6a44eeb907794e20120",
+  "sourceCommit": "12303a1e24942bd283f7bd8ad309c615d7141400",
   "renderer": "Vite actual src/App.tsx; no source transforms",
   "frozenReference": "202609160208",
   "publicAssets": "Prism + Lucide + synthetic data only; original references remain external",
@@ -18,7 +18,7 @@
       "mode": "demo",
       "reference": "environment-create",
       "referenceRelation": "direct-container-supported-fields-cropped",
-      "sourceCommit": "c7fbbf33e21955a3dd7cc6a44eeb907794e20120",
+      "sourceCommit": "12303a1e24942bd283f7bd8ad309c615d7141400",
       "geometry": {
         "frame": {
           "x": 780,
@@ -73,7 +73,7 @@
       "mode": "demo",
       "reference": "environment-create-fingerprint",
       "referenceRelation": "direct-container-supported-fields-cropped",
-      "sourceCommit": "c7fbbf33e21955a3dd7cc6a44eeb907794e20120",
+      "sourceCommit": "12303a1e24942bd283f7bd8ad309c615d7141400",
       "geometry": {
         "frame": {
           "x": 780,
@@ -110,8 +110,8 @@
         "dpr": 1,
         "visualScale": 1
       },
-      "sha256": "1369b7e45234938bb0a1246d8a43a7fd497b8a5940e5f68b0597bb8049192a9c",
-      "bytes": 118804,
+      "sha256": "0476fa8c34e21bda1d7922714a3608ec7ac04d98f14e59cb562dd13d024f21dc",
+      "bytes": 118879,
       "pageErrors": [],
       "consoleErrors": [],
       "outbound": [],
@@ -128,7 +128,7 @@
       "mode": "demo",
       "reference": "environment-edit",
       "referenceRelation": "direct-container-supported-fields-cropped",
-      "sourceCommit": "c7fbbf33e21955a3dd7cc6a44eeb907794e20120",
+      "sourceCommit": "12303a1e24942bd283f7bd8ad309c615d7141400",
       "geometry": {
         "frame": {
           "x": 780,
@@ -183,7 +183,7 @@
       "mode": "demo",
       "reference": "environment-edit",
       "referenceRelation": "mapped-container-not-same-execution-screen",
-      "sourceCommit": "c7fbbf33e21955a3dd7cc6a44eeb907794e20120",
+      "sourceCommit": "12303a1e24942bd283f7bd8ad309c615d7141400",
       "geometry": {
         "frame": {
           "x": 780,
@@ -238,7 +238,7 @@
       "mode": "demo",
       "reference": "group-delete-confirm",
       "referenceRelation": "mapped-container-not-same-execution-screen",
-      "sourceCommit": "c7fbbf33e21955a3dd7cc6a44eeb907794e20120",
+      "sourceCommit": "12303a1e24942bd283f7bd8ad309c615d7141400",
       "geometry": {
         "frame": {
           "x": 520,
@@ -288,7 +288,7 @@
       "mode": "synthetic-native",
       "reference": "group-delete-confirm",
       "referenceRelation": "mapped-container-not-same-execution-screen",
-      "sourceCommit": "c7fbbf33e21955a3dd7cc6a44eeb907794e20120",
+      "sourceCommit": "12303a1e24942bd283f7bd8ad309c615d7141400",
       "geometry": {
         "frame": {
           "x": 520,
@@ -320,8 +320,8 @@
         "dpr": 1,
         "visualScale": 1
       },
-      "sha256": "72578ee6b8424413ca66513f8d890b8a8cfa54032a34781baefa24235e432662",
-      "bytes": 105523,
+      "sha256": "f2de4d3cb69303e59c614366dbf3f52e8c62450bd226e0d99c1236814a00a470",
+      "bytes": 106355,
       "pageErrors": [],
       "consoleErrors": [],
       "outbound": [],
@@ -338,7 +338,7 @@
       "mode": "demo",
       "reference": "proxy-import-preview",
       "referenceRelation": "mapped-container-not-same-execution-screen",
-      "sourceCommit": "c7fbbf33e21955a3dd7cc6a44eeb907794e20120",
+      "sourceCommit": "12303a1e24942bd283f7bd8ad309c615d7141400",
       "geometry": {
         "frame": {
           "x": 195,
@@ -388,7 +388,7 @@
       "mode": "demo",
       "reference": "environment-delete-confirm",
       "referenceRelation": "mapped-container-not-same-execution-screen",
-      "sourceCommit": "c7fbbf33e21955a3dd7cc6a44eeb907794e20120",
+      "sourceCommit": "12303a1e24942bd283f7bd8ad309c615d7141400",
       "geometry": {
         "frame": {
           "x": 520,
@@ -438,7 +438,7 @@
       "mode": "demo",
       "reference": "environment-create",
       "referenceRelation": "direct-container-supported-fields-cropped",
-      "sourceCommit": "c7fbbf33e21955a3dd7cc6a44eeb907794e20120",
+      "sourceCommit": "12303a1e24942bd283f7bd8ad309c615d7141400",
       "geometry": {
         "frame": {
           "x": 620,
@@ -493,7 +493,7 @@
       "mode": "demo",
       "reference": "environment-create-fingerprint",
       "referenceRelation": "direct-container-supported-fields-cropped",
-      "sourceCommit": "c7fbbf33e21955a3dd7cc6a44eeb907794e20120",
+      "sourceCommit": "12303a1e24942bd283f7bd8ad309c615d7141400",
       "geometry": {
         "frame": {
           "x": 620,
@@ -530,8 +530,8 @@
         "dpr": 1,
         "visualScale": 1
       },
-      "sha256": "a36ad7410454d53822a07a815e8e658a6a7a12518b96dabc4ba2c23b38d4ec67",
-      "bytes": 89383,
+      "sha256": "5efbf6b27ccbce9a6929a6f9f893c782ec69b3d9b73675608fbe2a210720ac87",
+      "bytes": 89320,
       "pageErrors": [],
       "consoleErrors": [],
       "outbound": [],
@@ -548,7 +548,7 @@
       "mode": "demo",
       "reference": "environment-edit",
       "referenceRelation": "direct-container-supported-fields-cropped",
-      "sourceCommit": "c7fbbf33e21955a3dd7cc6a44eeb907794e20120",
+      "sourceCommit": "12303a1e24942bd283f7bd8ad309c615d7141400",
       "geometry": {
         "frame": {
           "x": 620,
@@ -603,7 +603,7 @@
       "mode": "demo",
       "reference": "environment-edit",
       "referenceRelation": "mapped-container-not-same-execution-screen",
-      "sourceCommit": "c7fbbf33e21955a3dd7cc6a44eeb907794e20120",
+      "sourceCommit": "12303a1e24942bd283f7bd8ad309c615d7141400",
       "geometry": {
         "frame": {
           "x": 620,
@@ -658,7 +658,7 @@
       "mode": "demo",
       "reference": "group-delete-confirm",
       "referenceRelation": "mapped-container-not-same-execution-screen",
-      "sourceCommit": "c7fbbf33e21955a3dd7cc6a44eeb907794e20120",
+      "sourceCommit": "12303a1e24942bd283f7bd8ad309c615d7141400",
       "geometry": {
         "frame": {
           "x": 440,
@@ -708,7 +708,7 @@
       "mode": "synthetic-native",
       "reference": "group-delete-confirm",
       "referenceRelation": "mapped-container-not-same-execution-screen",
-      "sourceCommit": "c7fbbf33e21955a3dd7cc6a44eeb907794e20120",
+      "sourceCommit": "12303a1e24942bd283f7bd8ad309c615d7141400",
       "geometry": {
         "frame": {
           "x": 440,
@@ -740,8 +740,8 @@
         "dpr": 1,
         "visualScale": 1
       },
-      "sha256": "cefe20d1d208127f6660c3da95c61b0be9b4bbf6ccf4ddb0a8b01b3e48db9e39",
-      "bytes": 90296,
+      "sha256": "fd6a30fbabe875b846c8dda75ef48ac70044f4bfb1c1d205222c0f53c8fbe3d7",
+      "bytes": 90917,
       "pageErrors": [],
       "consoleErrors": [],
       "outbound": [],
@@ -758,7 +758,7 @@
       "mode": "demo",
       "reference": "proxy-import-preview",
       "referenceRelation": "mapped-container-not-same-execution-screen",
-      "sourceCommit": "c7fbbf33e21955a3dd7cc6a44eeb907794e20120",
+      "sourceCommit": "12303a1e24942bd283f7bd8ad309c615d7141400",
       "geometry": {
         "frame": {
           "x": 115,
@@ -808,7 +808,7 @@
       "mode": "demo",
       "reference": "environment-delete-confirm",
       "referenceRelation": "mapped-container-not-same-execution-screen",
-      "sourceCommit": "c7fbbf33e21955a3dd7cc6a44eeb907794e20120",
+      "sourceCommit": "12303a1e24942bd283f7bd8ad309c615d7141400",
       "geometry": {
         "frame": {
           "x": 440,

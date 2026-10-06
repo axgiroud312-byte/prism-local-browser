@@ -24,15 +24,15 @@ npm run check:docs
 git diff --check
 ```
 
-- 源码定向 **49/49**，合入当前集成文档后再次实际运行 **1.2m**（合入前末次1.3m）；其中新增 `environment-confirmation.spec.ts` **15项**。类型、59份文档本地链接/12需求/6路由/4内嵌文档通过。既有3工作区/模态边界、精确跨页 ID/策略、分组失败子集以及原 ID 打开重试继续保留，不放宽断言。
+- 源码定向 **49/49**，合入当前集成文档后再次实际运行 **1.2m**（合入前末次1.3m）；其中新增 `environment-confirmation.spec.ts` **15项**。收尾同步 #35 模块集成 `c6371eb` 为 `12303a1` 后，同范围再跑 **49/49，1.3m**，类型及61份文档本地链接/12需求/6路由/4内嵌文档通过（此前59文档为原范围）。既有3工作区/模态边界、精确跨页 ID/策略、分组失败子集以及原 ID 打开重试继续保留，不放宽断言。
 - 新/编辑/换一套/取消、非法数量/重复名/网址、写失败重试、demo Cookie 写失败、普通 seed/内核/代理/空值保持、批次部分保存、代理取消/失败/成功返回、390×844创建与关闭均通过。
 - 新守护测试：dirty cancel/Escape/Tab/焦点/同原 preview 丢弃；迟到档案拒绝陈旧确认；pending / accepted / unknown 创建不能关窗丢请求；未知创建重试同一 payload/requestId、已受理核实原 operationId；force取消0调用、确认仅一次准确三ID请求；旧session/失control/失force/需reconcile均0调用；普通stop失败不自动force；工作区fault高于force并能恢复确认焦点；demo精确移除运行保护/写失败及Cookie错误拒绝。
 - RED→GREEN：初始两个新DOM确认缺失；之后合法迟到档案fixture修正；数量仅变化的 Escape 暴露旧回调闭包并用当前quantity ref修复；新测试菜单定位修正。未删除/跳过旧安全测试。`tdd` / `code-review` skill 不可用，使用实际行为回归和本次diff自审；#37独立审查仍待做。
 
 ## 视觉与剩余边界
 
-16张**全新正式源截图**与仓库外16组PNG并排裁剪全部实际读取。两视口100%/DPR1，错误/非允许请求均0，逐张尺寸及SHA-256核对；详见[图表与差异](../screenshots/issue34-integration/README.md)。drawer精确容器已匹配，dirty163 / force217 / demo移除181px高度为公开安全适配。400px原参考来自 `group-delete-confirm`；未找到同名 dirty/force 执行参考，不记为同名直接1:1。保存失败同样仅容器映射。
+16张**全新正式源截图**与仓库外16组PNG并排裁剪全部实际读取；同步 #35 后按 `12303a1` 重拍全部16张，12张SHA/几何与已读图一致，4张变化图及对应裁剪再次实际读取。两视口100%/DPR1，错误/非允许请求均0，逐张尺寸及SHA-256核对；详见[图表与差异](../screenshots/issue34-integration/README.md)。drawer精确容器已匹配，dirty163 / force217 / demo移除181px高度为公开安全适配。400px原参考来自 `group-delete-confirm`；未找到同名 dirty/force 执行参考，不记为同名直接1:1。保存失败同样仅容器映射。
 
-#35 唯一代理导入最终替换、#36模块接入及 #37跨页/嵌套/最终视觉和共享一次全套检查仍由集成负责人收尾。当前代理往返已验证名称/分组/备注/数量/网址/内核/seed，但不代替 #35最终窗口验收。未改变 ApplicationService、RPC、SQLite、后台、真实目录、精确构建或数据引用规则。
+#35 模块已合入但唯一代理导入最终替换、#36模块接入及 #37跨页/嵌套/最终视觉和共享一次全套检查仍由集成负责人收尾。当前demo代理往返已验证名称/分组/备注/数量/网址/内核/seed，但不代替 #35最终窗口验收；旧native嵌套导入frame须在MAIN接入时完整替换，不能与新self生命周期重复，49项不覆盖此新importer全链。未改变 ApplicationService、RPC、SQLite、后台、真实目录、精确构建或数据引用规则。
 
 未运行生产 build/package、完整 npm check、Go/Wails、新桌面、安装/UIA、真实内核/网络/目录探针。合成native bridge不是Windows实跑；历史正式4/21、旧候选及历史未验项不改写。
