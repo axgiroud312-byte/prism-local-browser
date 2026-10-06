@@ -1,64 +1,106 @@
 {
-  "verifiedAt": "2026-10-05T11:25:21.6099783Z",
-  "sourceCommit": "4b38dc8a94107325cbbca5050703a6bd80ca9e52",
-  "sourceTree": "f3c2f4798b6ad717d329519036d3199511dbc652",
+  "verifiedAt": "2026-10-06T02:59:50.4662167Z",
+  "sourceCommit": "67c98dbe2a106976eb42e9d37a14cbde2b10f015",
+  "sourceTree": "7e9432df114c089aee54c0827f560102f63e730d",
   "sourceDirty": false,
-  "version": "0.3.0-preview.4",
+  "version": "0.3.0-preview.6",
   "channel": "v1-candidate",
   "releaseStatus": "not-formally-accepted",
   "platform": "windows/amd64",
   "windows": "Windows 11 Home Chinese, build 26200",
   "kernelIncluded": false,
   "installer": {
-    "name": "prism-browser-0.3.0-preview.4-windows-amd64-setup.exe",
-    "bytes": 14763334,
-    "sha256": "0f1e29c50b64838c0ff0926127b6bf50b2375a2f955d208642f0aa72693fe324",
-    "authenticode": "NotSigned",
     "peArchitecture": "i386",
-    "windowsPEVersion": "0.3.0.4"
+    "name": "prism-browser-0.3.0-preview.6-windows-amd64-setup.exe",
+    "bytes": 14763567,
+    "windowsPEVersion": "0.3.0.6",
+    "sha256": "9f8c60df8bb6e6369c14a13d4b5e0c5a037404b98bf2b3445a9d765a9355b7a9",
+    "authenticode": "NotSigned"
   },
   "application": {
-    "sha256": "760ed062b7c4e4759c8a5a0207dc5d8c59720bcb302bf8e789686feea91ac254",
+    "sha256": "9dc30402677253f960b22b2c979ad77ff3b5b64f3a5ad191cc702a679cf0aaf4",
     "peArchitecture": "amd64",
     "windowsPEVersion": "0.3.0.0",
-    "windowVersion": "0.3.0-preview.4",
+    "windowVersion": "0.3.0-preview.6",
     "trimpath": true
   },
-  "dependencyVersions": { "node": "24.14.0", "npm": "11.9.0", "go": "1.27.1", "wails": "2.16.0", "nsis": "3.13" },
-  "bundledLicenseScopes": { "linkedGoModules": 26, "goRuntime": true, "frontendPackagesIncludingViteHelper": 108 },
-  "driver": "Actual silent NSIS, installed shortcuts, normal window close, read-only UIA/SQLite and nonce-owned native API fixture",
+  "dependencyVersions": {
+    "packageLockSHA256": "bda783ae056a528b887456117abddc0d3b5a968b6546d28ac21dbcf65c7949ef",
+    "goSumSHA256": "2f7e9144531adab3b4b43b9b1e52e0a3b95850836b8bb6be07695099a3522fa8",
+    "node": "v24.14.0",
+    "npm": "11.9.0",
+    "go": "go version go1.27.1 windows/amd64",
+    "wails": "v2.16.0",
+    "goModSHA256": "1c7234bc2aab80ac84df77f0aa280b19149642610ed1954b3b6084ec6fb3f393"
+  },
+  "bundledLicenseScopes": {
+    "linkedGoModules": 26,
+    "goRuntime": true,
+    "frontendPackagesIncludingViteHelper": 108
+  },
+  "driver": "Actual NSIS + shortcut launches/normal window close + native API fixture/read-only SQLite; no UI clicks",
   "uiClicks": false,
   "freshWindowsUser": false,
   "freshProductStateAtStart": true,
-  "existingDataInstallationRegistryAndBothShortcutsAbsent": true,
+  "unknownShortcutsAbsentAtStart": true,
   "actualDefaultKnownFolders": true,
   "environmentOverrides": false,
-  "installerExitCodes": [0, 0, 25, 0, 0, 0],
-  "appProcessIds": [34860, 32040, 82964, 15908, 29692, 32404],
+  "upgradeFixture": {
+    "version": "0.3.0-preview.5",
+    "sameSourceCommit": "67c98dbe2a106976eb42e9d37a14cbde2b10f015",
+    "installer": {
+      "peArchitecture": "i386",
+      "name": "prism-browser-0.3.0-preview.5-windows-amd64-setup.exe",
+      "bytes": 14763499,
+      "windowsPEVersion": "0.3.0.5",
+      "sha256": "e44720f7b512fa00afbb143456123f7953b5988b7016c0d9e6b3d5488f1ea22b",
+      "authenticode": "NotSigned"
+    }
+  },
   "allSixAppProcessesNormalExitZero": true,
   "allSixNativePagesReadOnlyVerified": true,
   "allFiveRequiredSyntheticRecordReadsVisible": true,
   "checks": {
     "firstAndSecondStart": true,
     "nativeAPICreateAndEdit": true,
-    "upgrade3To4PreservesIdentityAndPreferences": true,
+    "upgrade5To6PreservesIdentityAndPreferences": true,
     "downgradeRejectedExit25": true,
     "silentDefaultUninstallRetainsData": true,
     "reinstallFindsSameData": true,
     "explicitDeleteOnlyOwnedSyntheticWorkspace": true,
-    "finalDataProgramRegistryAndShortcutsAbsent": true,
-    "ownedAppProcessesStillPresent": 0
+    "finalDataProgramRegistryAndShortcutsAbsent": true
   },
   "uninstallDataCheckbox": "not-observed; silent path does not verify wizard defaults",
-  "rawInstallerEvidence": "output/goal/V1-final/install-no-clicks/installer-verification.json",
-  "rawInstallerEvidenceSHA256": "69115746083eca3f841382c0e860b7777f26d914060a13803e4d58a9468fc14a",
-  "binaryPrivacyEvidence": "output/goal/V1-final/binary-path-privacy.json",
+  "rawInstallerEvidence": "output/goal/V1-local-acceptance/install-no-clicks/installer-verification.json",
+  "rawInstallerEvidenceSHA256": "3aa4b8a6879496d694f62ff67f8fb27fe16a7da2eac55df5c3703335cf7beb89",
+  "binaryPrivacyEvidence": "output/goal/V1-local-acceptance/binary-privacy.json",
   "sourceArchive": {
-    "name": "prism-source-4b38dc8.zip",
-    "sha256": "edc335a8026171a9f9dc4cb59f55ae97944b30c4a21ad2530df9e08b7781efb7"
+    "name": "prism-source-67c98db.zip",
+    "sha256": "b182dbf6e5c6930e3a34ec68ac543b7f4b4d9c867e9b85c1807de1a842c437b5",
+    "bytes": 2445444
   },
-  "remaining": ["independent remote egress matrix", "manual native product flows", "clean Windows user or VM", "unsupported OS/kernel combinations", "remaining real fault scenarios"],
-  "remoteFollowup": { "date": "2026-10-06", "authenticationVerified": true, "initialPushCommit": "b8adc310cb3843e670644ee681ef404243b3fafe", "draftPullRequest": "https://github.com/axgiroud312-byte/prism-local-browser/pull/27", "initialFailedWorkflowRun": "https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37400229514", "successfulRetestCommit": "6cf17688811018434f0f32aa2acdd20691d32a90", "workflowRun": "https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37401271261", "workflowStatus": "success", "node22And24ChecksPassed": true, "desktopCheckPassed": true, "all17EvidenceCommentsPublished": true, "uiClicks": false, "productInstallerVerificationExecutedOnRunner": false, "issuesClosed": false, "details": "docs/verification/V1-remote-sync.json" },
+  "productionCorrection": "Batch directory preparation failures return a true nil lease interface, preserving progress instead of panicking during cleanup.",
+  "localGapAcceptance": "docs/verification/V1-local-acceptance.json",
+  "previousCandidate": {
+    "version": "0.3.0-preview.4",
+    "sourceCommit": "4b38dc8a94107325cbbca5050703a6bd80ca9e52",
+    "receipt": "docs/verification/V1-candidate.4-acceptance.json",
+    "status": "historical; superseded after real directory failure cleanup fix"
+  },
+  "remoteFollowup": {
+    "draftPullRequest": "https://github.com/axgiroud312-byte/prism-local-browser/pull/27",
+    "sourceCommit": "67c98dbe2a106976eb42e9d37a14cbde2b10f015",
+    "sourceCI": "https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37406703053",
+    "status": "recorded separately; do not infer product installation from builds"
+  },
+  "remaining": [
+    "independent remote egress matrix",
+    "manual native product flows and dialogs",
+    "exact delivered binary on clean Windows/new-user/VM and missing WebView2",
+    "cross-Windows-login/reboot recovery",
+    "actual NTFS disk full and OS memory/process resource exhaustion",
+    "broader OS/kernel/site compatibility"
+  ],
   "formallyAcceptedTasks": 4,
   "totalTasks": 21
 }

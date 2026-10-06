@@ -47,7 +47,7 @@ ENV-003、PRX-001、DATA-001阶段2：[`独立持久资源日志`](../internal/k
 
 - ENV-001/002/DATA-001：[`生产批次wrapper`](../internal/workspace/batch_worker.go)转换接口前规范化nil lease，避免真实目录失败的清理崩溃；有效lease/归属核验与身份保留不变。[默认回归](../internal/workspace/batch_prepare_failure_test.go)、[无seam实际ACL/257项续跑](../internal/workspace/safe_gap_windows_test.go)通过。
 - ENV-003、CK-001、BKP-001：普通停止超时→ForceStop、Cookie边界、12项真实队列、两运行环境完整包/三存储恢复、备份/预检ACL、恢复ACL/SQLITE_FULL与永久删除权限原任务收尾均通过。[结果/源码SHA](verification/V1-local-acceptance.md)区分真实浏览器和合成目录，不将SQLite容量当NTFS满、本机上游当独立出口。
-- 131 Node、342 Go顶层PASS/30 opt-in/helper SKIP、全包vet通过；11个新opt-in另行通过。无自动点击/真实数据/服务故障实验/新依赖。生产变化须重建候选，旧`.4`是历史版本；正式4/21与blocking不变。
+- 131 Node、342 Go顶层PASS/30 opt-in/helper SKIP、全包vet通过；11个新opt-in另行通过。新干净67c98db候选`.5/.6`构建/本机无点击安装通过，来源commit远程三job也通过。默认CI新增一次性Windows无点击安装，旧四个点击分支仍显式opt-in，Go junction只指向固定setup-go工具、收据脱敏；实际新CI结果另记。[回执](verification/V1-local-remote.json)。无真实数据/服务故障实验/新产品依赖，旧`.4`仅历史；正式4/21与blocking不变。
 
 ### T11 隔离可行性增量（历史独立实验，不覆盖当前正式结果）
 

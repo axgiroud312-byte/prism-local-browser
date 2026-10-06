@@ -6,7 +6,7 @@
 
 [统一12项结果](verification/V1-local-acceptance.md)及[源码/脱敏观测回执](verification/V1-local-acceptance.json)：实际普通停止超时→ForceStop、Cookie分区/过期/冲突/清空/取消、257个真实空目录、12项真实队列、两运行环境正常停/完整包/三存储恢复、真实ACL与SQLite容量回滚、永久删除权限恢复均通过。131项前端后台、Go全包342顶层PASS/30 opt-in/helper SKIP及vet exit0；11个新opt-in另行实跑通过，不把SKIP算通过。
 
-实际目录拒绝揭示生产typed-nil清理崩溃，wrapper转换前规范化nil，无seamACL回归/保身份续跑通过，原FAIL保留。没有削弱保护、删测试、提权、停服、填满系统盘、修改真实数据或自动点击。生产变化需新候选/无点击安装复验，旧`.4`只保留历史证据；最新见[总报告](verification/V1-final.md)。独立远端、人工、干净Windows、跨登录/重启、真正NTFS/OS资源故障仍待验，**正式4/21、#6–#22 OPEN不变**。下列“不改业务/无需重建”仅对应当时CI观测修订，不适用于本次生产修复。
+实际目录拒绝揭示生产typed-nil清理崩溃，wrapper转换前规范化nil，无seamACL回归/保身份续跑通过，原FAIL保留。没有削弱保护、删测试、提权、停服、填满系统盘、修改真实数据或自动点击。新干净67c98db来源`.5/.6`构建/本机无点击安装、升级/拒降级/保留卸载/重装通过，6工作台exit0及五产品位置清理已独立核对；trimpath/两exe路径扫描、9文件/全许可/SHA与同源源码ZIP齐全。[当前回执](verification/V1-candidate-acceptance.json)、[旧`.4`历史回执](verification/V1-candidate.4-acceptance.json)。默认CI新增一次性Windows的无点击产品安装，远程实际结果另记；不启用旧点击分支、不混用development-preview和candidate哈希。独立远端、人工、精确交付包干净Windows/缺WebView2、跨登录/重启、真正NTFS/OS资源故障仍待验，**正式4/21、#6–#22 OPEN不变**。下列“不改业务/无需重建”仅对应当时CI观测修订，不适用于本次生产修复。
 
 ## 远程同步接续（2026-10-06；不增加完整验收计数）
 

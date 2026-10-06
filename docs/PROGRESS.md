@@ -3,7 +3,7 @@
 更新时间：2026-10-06，本机缺口补验及批次目录失败修复。
 
 - Goal：正式验收**4/21**；T05–T21共17票均有本地实现/部分验证，保持OPEN，首版候选不等于正式交付。
-- 当前任务：新一轮本机安全补验12项全部通过；真实目录拒绝发现批次typed-nil清理崩溃已修，正在冻结干净源码重建候选并无点击复验。旧`.4`/4b38dc8是修复前历史产物，不再是最新程序。[包/SHA与逐票矩阵](verification/V1-final.md)、[补验结果](verification/V1-local-acceptance.md)为准确状态；尚未正式交付。
+- 当前任务：12项本机安全补验与批次typed-nil修复通过；新`.5/.6`干净67c98db构建/本机无点击安装闭环通过。主包`output/delivery/0.3.0-preview.6-v1-candidate/`，SHA=`9f8c60df8bb6e6369c14a13d4b5e0c5a037404b98bf2b3445a9d765a9355b7a9`，未签名/无内核。旧`.4`仅历史；默认CI新增一次性Windows无点击安装，实际远程结果另记。[总报告](verification/V1-final.md)、[补验](verification/V1-local-acceptance.md)，尚未正式交付。
 - 已有实跑：正式代理启动/关闭/重开、故障和资源恢复、FIFO/Cookie、真实148→150代理迁移/完整回退；direct三存储/回收/恢复五切点只算各自范围。
 - 现场：`goal/v1-remaining-integration`，主代理唯一写，子代理只读。四个交接修复保留并提交；无自动点击/停服/真实数据修改。2026-10-06已核对恢复登录，38个原本本地提交已推送，创建[草稿PR #27](https://github.com/axgiroud312-byte/prism-local-browser/pull/27)；修订默认无点击CI已通过，暂不合并或关闭票。
 

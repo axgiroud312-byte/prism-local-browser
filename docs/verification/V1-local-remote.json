@@ -1,0 +1,108 @@
+{
+  "recordedAt": "2026-10-06T03:06:30.314Z",
+  "draftPullRequest": "https://github.com/axgiroud312-byte/prism-local-browser/pull/27",
+  "candidateSourceCI": {
+    "commit": "67c98dbe2a106976eb42e9d37a14cbde2b10f015",
+    "runID": 37406703053,
+    "url": "https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37406703053",
+    "status": "completed",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "name": "desktop",
+        "conclusion": "success",
+        "url": "https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37406703053/job/112085759669"
+      },
+      {
+        "name": "check (22.12.0)",
+        "conclusion": "success",
+        "url": "https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37406703053/job/112085759932"
+      },
+      {
+        "name": "check (24)",
+        "conclusion": "success",
+        "url": "https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37406703053/job/112085759960"
+      }
+    ],
+    "automatedUIClicks": false,
+    "productInstallerVerificationExecuted": false,
+    "artifactChannel": "development-preview",
+    "deliveredCandidate": "0.3.0-preview.6 was built and installed locally from this same source; remote preview artifacts are not its exact binaries"
+  },
+  "evidenceComments": [
+    {
+      "issue": 8,
+      "state": "OPEN",
+      "commentURL": "https://github.com/axgiroud312-byte/prism-local-browser/issues/8#issuecomment-6008431181",
+      "closed": false,
+      "action": "created"
+    },
+    {
+      "issue": 12,
+      "state": "OPEN",
+      "commentURL": "https://github.com/axgiroud312-byte/prism-local-browser/issues/12#issuecomment-6008431527",
+      "closed": false,
+      "action": "created"
+    },
+    {
+      "issue": 13,
+      "state": "OPEN",
+      "commentURL": "https://github.com/axgiroud312-byte/prism-local-browser/issues/13#issuecomment-6008431869",
+      "closed": false,
+      "action": "created"
+    },
+    {
+      "issue": 14,
+      "state": "OPEN",
+      "commentURL": "https://github.com/axgiroud312-byte/prism-local-browser/issues/14#issuecomment-6008432190",
+      "closed": false,
+      "action": "created"
+    },
+    {
+      "issue": 15,
+      "state": "OPEN",
+      "commentURL": "https://github.com/axgiroud312-byte/prism-local-browser/issues/15#issuecomment-6008432528",
+      "closed": false,
+      "action": "created"
+    },
+    {
+      "issue": 16,
+      "state": "OPEN",
+      "commentURL": "https://github.com/axgiroud312-byte/prism-local-browser/issues/16#issuecomment-6008432903",
+      "closed": false,
+      "action": "created"
+    },
+    {
+      "issue": 17,
+      "state": "OPEN",
+      "commentURL": "https://github.com/axgiroud312-byte/prism-local-browser/issues/17#issuecomment-6008433234",
+      "closed": false,
+      "action": "created"
+    },
+    {
+      "issue": 18,
+      "state": "OPEN",
+      "commentURL": "https://github.com/axgiroud312-byte/prism-local-browser/issues/18#issuecomment-6008433592",
+      "closed": false,
+      "action": "created"
+    },
+    {
+      "issue": 19,
+      "state": "OPEN",
+      "commentURL": "https://github.com/axgiroud312-byte/prism-local-browser/issues/19#issuecomment-6008433908",
+      "closed": false,
+      "action": "created"
+    },
+    {
+      "issue": 20,
+      "state": "OPEN",
+      "commentURL": "https://github.com/axgiroud312-byte/prism-local-browser/issues/20#issuecomment-6008434397",
+      "closed": false,
+      "action": "created"
+    }
+  ],
+  "nextNoClickRunnerInstallation": "Workflow-only extension uses existing development-preview.1/.2 on the disposable Windows host; actual result will be recorded, not inferred",
+  "issuesClosed": false,
+  "formallyAcceptedTasks": 4,
+  "totalTasks": 21
+}
