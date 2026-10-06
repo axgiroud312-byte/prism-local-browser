@@ -352,11 +352,12 @@ export class DemoAdapter implements ApplicationService {
     this.operations.set(operation.id, operation);
     this.activeOperation = operation.id;
     const result = this.remember("create", request, this.success({ status: "accepted" as const, operation }, operation.id));
-    this.drafts.delete(request.previewId);
-    void this.runCreation(operation, draft.preview.environment, configuration(request.configuration));
+    // Retain the draft until something is committed. A zero-item storage
+    // failure must remain retryable without throwing away the form inputs.
+    void this.runCreation(operation, draft.preview.environment, configuration(request.configuration), request.previewId);
     return result;
   }
-  private async runCreation(operation: Operation, base: Environment, config: EnvironmentConfiguration) {
+  private async runCreation(operation: Operation, base: Environment, config: EnvironmentConfiguration, previewId: string) {
     let pendingError: ApplicationError | undefined;
     try {
       for (let offset = 0; offset < operation.total && !operation.cancelRequested; offset += 25) {
@@ -389,6 +390,7 @@ export class DemoAdapter implements ApplicationService {
     } catch { pendingError = error("RESOURCE_EXHAUSTED", "创建任务因资源错误中断，已保存条目仍在。请释放资源后重试。", true); }
     operation.state = pendingError ? "failed" : operation.cancelRequested ? "cancelled" : "completed";
     operation.error = pendingError;
+    if (operation.completedIds.length || operation.state === "completed") this.drafts.delete(previewId);
     this.activeOperation = undefined;
     this.publishOperation(operation);
   }
