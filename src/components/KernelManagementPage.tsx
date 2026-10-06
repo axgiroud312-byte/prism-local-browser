@@ -1,0 +1,25 @@
+import { useState, type ReactNode } from "react";
+import { Box, Info, RefreshCw, Search, Trash2 } from "lucide-react";
+import "./proxy-kernel35.css";
+import "./native-kernel.css";
+
+export interface KernelListRecord {
+  id: string; version: string; source: string; architecture: string; available: boolean; statusText: string;
+  archiveHash?: string; executableHash?: string; usedCount: number; isDefault?: boolean; deleteProtected?: boolean;
+}
+export function KernelManagementPage({ records, native, waiting = false, onPrepare, onInspect, onVerify, onDelete, onDefault, onManualDefault, onRefresh, onHistory, onMigration, message, children }: {
+  records: KernelListRecord[]; native: boolean; waiting?: boolean; onPrepare?: () => void; onInspect: (id: string) => void;
+  onVerify?: (id: string) => void; onDelete?: (id: string) => void; onDefault?: (id: string) => void;
+  onManualDefault?: () => void; onRefresh?: () => void; onHistory?: () => void; onMigration?: () => void;
+  message?: string; children?: ReactNode;
+}) {
+  const [search, setSearch] = useState(""), [filter, setFilter] = useState("all"), [page, setPage] = useState(1);
+  const filtered = records.filter(record => `${record.version} ${record.id}`.includes(search) && (filter === "all" || (filter === "available") === record.available));
+  const maxPage = Math.max(1, Math.ceil(filtered.length / 10)), currentPage = Math.min(page, maxPage), items = filtered.slice((currentPage - 1) * 10, currentPage * 10);
+  return <div className="kernel35-page pk35-page"><div className="pk35-tabs"><span className="selected">内核管理</span><span className="pk35-mode">{native ? "精确构建 · 默认仅影响后续新建" : "演示元数据 · 不等于已安装"}</span></div><section className="pk35-list-panel" aria-label="内核列表">
+    <div className="pk35-toolbar">{onPrepare && <button className="button primary" disabled={waiting} onClick={onPrepare}><Box size={14} />准备精确内核</button>}{onRefresh && <button className="button primary" onClick={onRefresh}><RefreshCw size={14} />重新读取</button>}<label className="pk35-search"><input aria-label="搜索内核" placeholder="输入精确版本 / 构建 ID" value={search} onChange={event => { setSearch(event.target.value); setPage(1); }} /><Search size={14} /></label><select aria-label="内核可用状态" value={filter} onChange={event => { setFilter(event.target.value); setPage(1); }}><option value="all">全部状态</option><option value="available">可用</option><option value="missing">不可用 / 待验证</option></select><span className="pk35-toolbar-tail" />{onManualDefault && <button className="button" disabled={waiting} onClick={onManualDefault}>新建时手动选择</button>}{onHistory && <button className="button" onClick={onHistory}>最近内核任务</button>}{onMigration && <button className="button primary" onClick={onMigration}>选定环境迁移</button>}</div>
+    <div className="pk35-table-scroll"><table className="pk35-table kernel35-table"><thead><tr><th>精确版本</th><th>来源 / 架构</th><th>状态</th><th>归档 / 程序摘要</th><th>使用环境</th><th>后续新建默认</th><th>操作</th></tr></thead><tbody>{items.length ? items.map(record => <tr key={record.id}><td><strong>{record.version}</strong><span className="pk35-secondary">{record.id}</span></td><td className="kernel35-source"><span title={record.source}>{record.source}</span><span className="pk35-secondary" title={record.architecture}>{record.architecture}</span></td><td className={record.available ? "kernel35-verified" : "pk35-warning"}>{record.statusText}</td><td className="kernel35-digest">{record.archiveHash ? `归档 ${record.archiveHash.slice(0, 12)}…` : "未核验摘要"}<span className="pk35-secondary">{record.executableHash ? `程序 ${record.executableHash.slice(0, 12)}…` : "没有真实程序摘要"}</span></td><td>{record.usedCount} 个</td><td>{record.isDefault ? "当前默认" : "—"}</td><td><div className="pk35-row-actions"><button className="pk35-link" onClick={() => onInspect(record.id)}><Info size={14} />能力详情</button>{onDefault && <button className="pk35-link" disabled={waiting || !record.available || record.isDefault} onClick={() => onDefault(record.id)}>设为默认</button>}{onVerify && <button className="pk35-link" disabled={waiting} onClick={() => onVerify(record.id)}>重新核验</button>}{onDelete && <button className="icon-button pk35-danger" aria-label={`移除此构建 ${record.version}`} title={record.deleteProtected ? "被引用或默认构建不能移除" : "移除精确构建"} disabled={waiting || record.deleteProtected} onClick={() => onDelete(record.id)}><Trash2 size={15} /></button>}</div></td></tr>) : <tr><td className="pk35-empty" colSpan={7}>{records.length ? "没有匹配内核" : <><h3>还没有已登记的真实内核</h3><p>准备精确构建并完成核验；旧的未安装档案不会自动重绑定。</p></>}</td></tr>}</tbody></table></div>
+    <div className="pk35-pagination"><span>共 {filtered.length} 条</span><span>10条/页</span><button disabled={currentPage <= 1} onClick={() => setPage(currentPage - 1)}>‹</button><span className="pk35-current-page">{currentPage}</span><button disabled={currentPage >= maxPage} onClick={() => setPage(currentPage + 1)}>›</button></div>
+    <p className="pk35-page-boundary">{native ? "来源、精确版本、SHA-256 与该构建报告来自服务。安装探测不等于当前环境读值；实际桌面兼容性与独立出口仍按既有证据范围验收。" : "不会下载、安装或运行 Chromium。版本来自当前演示服务，不使用参考归档版本。"}旧环境保持原构建；升级数据不能直接交给旧内核。</p>{message && <p role="status" className="pk35-message">{message}</p>}{children}
+  </section></div>;
+}
