@@ -1,0 +1,137 @@
+[
+  {
+    "source": "1280x800/native-proxy-import-preview.png",
+    "file": "crops/1280-native-proxy-import-preview-dialog.png",
+    "syntheticOnly": true,
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "rect": {
+      "height": 610,
+      "x": 115,
+      "width": 1050,
+      "y": 103
+    },
+    "sha256": "7e072b37ab10ccf30b038e660cdce19f66022866423b12b0ee58ccc4b93b9436",
+    "region": "dialog",
+    "originalAssets": false
+  },
+  {
+    "source": "1280x800/native-proxy-import-file-error.png",
+    "file": "crops/1280-native-proxy-import-file-error-dialog.png",
+    "syntheticOnly": true,
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "rect": {
+      "height": 360,
+      "x": 390,
+      "width": 500,
+      "y": 228
+    },
+    "sha256": "a175b7e194d4c4291f90272808e0e5adbf4644aa73cf55230f94c59baeab4ac8",
+    "region": "dialog",
+    "originalAssets": false
+  },
+  {
+    "source": "1280x800/native-proxy-save-error.png",
+    "file": "crops/1280-native-proxy-save-error-dialogFooter.png",
+    "syntheticOnly": true,
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "rect": {
+      "height": 79,
+      "x": 115,
+      "width": 1050,
+      "y": 634
+    },
+    "sha256": "75e3c51c0cf1b460de4cb2e85710a17af38580a6ffa188b288124efbd9f140a1",
+    "region": "dialogFooter",
+    "originalAssets": false
+  },
+  {
+    "source": "1280x800/native-proxy-import-unknown.png",
+    "file": "crops/1280-native-proxy-import-unknown-dialogFooter.png",
+    "syntheticOnly": true,
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "rect": {
+      "height": 79,
+      "x": 115,
+      "width": 1050,
+      "y": 634
+    },
+    "sha256": "fac54a799ccbf182c8cf7fe36bb8cf0e97d567a2f4d298b3bd799c8f32785ca1",
+    "region": "dialogFooter",
+    "originalAssets": false
+  },
+  {
+    "source": "1280x800/demo-proxy-bound.png",
+    "file": "crops/1280-demo-proxy-bound-dialog.png",
+    "syntheticOnly": true,
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "rect": {
+      "height": 592,
+      "x": 120,
+      "width": 1040,
+      "y": 112
+    },
+    "sha256": "dc175f4b20456426b2956d1d9cbf4d3b35eaf89d3a0bb3be118a29808d12b8f0",
+    "region": "dialog",
+    "originalAssets": false
+  },
+  {
+    "source": "1280x800/native-kernel-prepare.png",
+    "file": "crops/1280-native-kernel-prepare-dialog.png",
+    "syntheticOnly": true,
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "rect": {
+      "height": 420,
+      "x": 330,
+      "width": 620,
+      "y": 198
+    },
+    "sha256": "b71bb6c570012269d47b4fcd860920aa66aa115b6983addb7157f1f79173339a",
+    "region": "dialog",
+    "originalAssets": false
+  },
+  {
+    "source": "1280x800/native-kernel-prepare-local.png",
+    "file": "crops/1280-native-kernel-prepare-local-dialog.png",
+    "syntheticOnly": true,
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "rect": {
+      "height": 530,
+      "x": 330,
+      "width": 620,
+      "y": 143
+    },
+    "sha256": "629d5a0e135483b06fdc08c3f30183f51165de1025b9b65572b63ba20c4b3b84",
+    "region": "dialog",
+    "originalAssets": false
+  },
+  {
+    "source": "1280x800/native-kernel-accepted-refresh-error.png",
+    "file": "crops/1280-native-kernel-accepted-refresh-error-dialog.png",
+    "syntheticOnly": true,
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "rect": {
+      "height": 346,
+      "x": 440,
+      "width": 400,
+      "y": 235
+    },
+    "sha256": "5fc88a241d99fb769f3dd4b837817a3020e6fe665f5d56590864781e9f240383",
+    "region": "dialog",
+    "originalAssets": false
+  },
+  {
+    "source": "1280x800/native-migration-diff.png",
+    "file": "crops/1280-native-migration-diff-dialog.png",
+    "syntheticOnly": true,
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "rect": {
+      "height": 592,
+      "x": 120,
+      "width": 1040,
+      "y": 112
+    },
+    "sha256": "6e265d24cd0719b9c50cec60f53d358be4251263ae950141fea4aadce9c0371c",
+    "region": "dialog",
+    "originalAssets": false
+  }
+]
