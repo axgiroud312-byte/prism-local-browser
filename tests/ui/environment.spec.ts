@@ -87,7 +87,7 @@ test("cancel regenerated edit leaves persistent state unchanged and restores foc
   await expect(create).toBeFocused();
 });
 
-test("invalid and duplicate names, URL and quantity are rejected by the service", async ({ page }) => {
+test("invalid and duplicate names, URL and quantity are rejected without saving", async ({ page }) => {
   await page.getByRole("button", { name: "新建环境", exact: true }).click();
   await page.getByRole("button", { name: "创建", exact: true }).click();
   await expect(page.getByRole("alert")).toContainText("名称");
