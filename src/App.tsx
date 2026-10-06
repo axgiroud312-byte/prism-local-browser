@@ -530,6 +530,13 @@ export default function App({ application }: { application: ApplicationService }
     overlay?.querySelector('[role="alert"]')?.scrollIntoView({ block: "nearest" });
   }, [formError, Boolean(legacyDialog), drawerVisible]);
   useEffect(() => {
+    if (environmentConfirmation?.kind !== "force") return;
+    const lowerLayers = [...document.querySelectorAll<HTMLElement>(
+      '.app-shell > .overlay:not(.workspace-blocker), body > .pk35-overlay, body > .local-page-overlay',
+    )].filter(element => modalLayer(element) < confirmationLayer);
+    return lockModalBackground(lowerLayers, true);
+  }, [environmentConfirmation?.kind, confirmationLayer]);
+  useEffect(() => {
     if (!storageIssue) return;
     const lowerLayers = [...document.querySelectorAll<HTMLElement>(
       '.app-shell > .overlay:not(.workspace-blocker), body > .pk35-overlay, body > .local-page-overlay',

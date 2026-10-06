@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
+import { createHash } from "node:crypto";
 import { seedState, STORAGE_KEY } from "../../src/domain";
-import type { WorkspaceView } from "../../src/application/contract";
+import type { DiagnosticPreview, WorkspaceView } from "../../src/application/contract";
 import type { NativeRequest } from "../../src/application/wails-adapter";
 import { nativeReferenceBridge, nativeReferenceView } from "./fixtures/native-reference-bridge";
 import { localPagesNativeBridge } from "./fixtures/local-pages-native-bridge";
@@ -52,6 +53,30 @@ async function entry(page: Page, route: "environments" | "activity") {
   return page.getByRole("row").filter({ hasText: "测试环境 C 6" }).getByRole("button", { name: "强制结束", exact: true });
 }
 
+async function syntheticDiagnostics(page: Page) {
+  const report: DiagnosticPreview["report"] = {
+    format: "prism-local-diagnostics", schemaVersion: 1, generatedAt: "2026-10-06T01:00:00Z",
+    application: { version: "0.0.0-synthetic-only", platform: "windows", architecture: "amd64", goVersion: "synthetic-not-run", signature: "not-checked" },
+    proxyProtection: "unavailable", excluded: ["names", "private-paths", "credentials", "cookie-values", "browser-content", "seeds", "raw-ids", "raw-logs"],
+    workspace: { status: "unavailable", startupCode: "NATIVE_UNAVAILABLE", counts: { environments: 0, proxies: 0, kernels: 0 }, maintenance: [], operations: [], sessions: [], kernels: [], unavailableSections: ["live-observations"], omittedRecords: 0, observationSource: "saved-only", operationLimit: 100, sessionLimit: 100, kernelLimit: 20 },
+  };
+  const diagnostic: DiagnosticPreview = { reportId: "00000000-0000-4000-8000-000000000037", sha256: createHash("sha256").update(JSON.stringify(report)).digest("hex"), bytes: Buffer.byteLength(JSON.stringify(report)), expiresAt: "2030-01-01T00:00:00Z", report };
+  await page.addInitScript(diagnostic => {
+    const host = window as unknown as { go: { main: { DesktopApp: { Call(request: NativeRequest): Promise<unknown> } } }; __referenceNative: { calls: NativeRequest[] } };
+    const original = host.go.main.DesktopApp.Call;
+    host.go.main.DesktopApp.Call = request => {
+      if (request.method !== "Diagnostics.Preview") return original(request);
+      host.__referenceNative.calls.push(structuredClone(request));
+      return Promise.resolve({ ok: true, mode: "native", data: structuredClone(diagnostic) });
+    };
+  }, diagnostic);
+}
+
+const effectiveMasks = (page: Page) => page.locator(".overlay, .pk35-overlay, .local-page-overlay").evaluateAll(elements => elements.filter(element => {
+  const style = getComputedStyle(element);
+  return element.getClientRects().length && style.backgroundColor === "rgba(0, 0, 0, 0.4)";
+}).length);
+
 for (const route of ["environments", "activity"] as const) {
   test(`channel-lost ${route} force pending blocks duplicate actions and preserves exact request`, async ({ page }) => {
     await ownedControlLost(page, true);
@@ -101,6 +126,109 @@ for (const route of ["environments", "activity"] as const) {
 }
 
 for (const viewport of [{ width: 1440, height: 900 }, { width: 1280, height: 800 }]) {
+  test.describe(`${viewport.width}x${viewport.height} actual App force portal`, () => {
+    test.use({ viewport });
+    for (const exit of ["Escape", "cancel"] as const) {
+      test(`nested force warning makes its Activity detail inert and ${exit} restores only the original trigger`, async ({ page }, testInfo) => {
+        await ownedControlLost(page);
+        const action = await entry(page, "activity");
+        const detail = page.getByRole("dialog", { name: "操作记录详情", exact: true, includeHidden: true });
+        const lowerReturn = detail.getByRole("button", { name: "返回记录", exact: true, includeHidden: true });
+        await action.click(); await expect(warning(page)).toBeVisible();
+        const frames = await page.locator('[aria-modal="true"]').evaluateAll(elements => elements.map(element => ({
+          role: element.getAttribute("role"), title: element.querySelector("h2")?.textContent,
+          inert: !!element.closest("[inert]"), layer: getComputedStyle(element.parentElement!).zIndex,
+          focusInside: element.contains(document.activeElement),
+        })));
+        await testInfo.attach("force-owner-frames", { body: JSON.stringify({ syntheticOnly: true, viewport, frames }, null, 2), contentType: "application/json" });
+        await testInfo.attach("force-owner", { body: await page.screenshot(), contentType: "image/png" });
+        expect(await detail.evaluate(element => !!element.closest("[inert]"))).toBe(true);
+        // Role attributes may remain on an inert lower frame; Playwright's
+        // role matcher does not represent native inert interaction semantics.
+        expect(await page.locator('[aria-modal="true"]').evaluateAll(elements => elements.filter(element => !element.closest("[inert]")).length)).toBe(1);
+        await expect(detail).toBeAttached(); expect(await effectiveMasks(page)).toBe(1);
+        await lowerReturn.evaluate(button => (button as HTMLButtonElement).focus());
+        expect(await warning(page).evaluate(element => element.contains(document.activeElement))).toBe(true);
+        for (const key of ["Tab", "Shift+Tab", "Control+k"]) {
+          await page.keyboard.press(key);
+          expect(await warning(page).evaluate(element => element.contains(document.activeElement))).toBe(true);
+        }
+        const box = (await lowerReturn.boundingBox())!;
+        await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+        await expect(warning(page)).toBeVisible(); await expect(detail).toBeAttached();
+        expect(await calls(page)).toHaveLength(0);
+        if (exit === "Escape") await page.keyboard.press("Escape");
+        else await warning(page).getByRole("button", { name: "取消", exact: true }).click();
+        await expect(warning(page)).toHaveCount(0); await expect(action).toBeFocused();
+        expect(await detail.evaluate(element => !!element.closest("[inert]"))).toBe(false);
+        await expect(page.getByRole("dialog", { name: "操作记录详情", exact: true })).toBeVisible();
+        await expect(page.locator(".sidebar")).toHaveJSProperty("inert", true);
+        await expect(page.locator(".main-shell")).toHaveJSProperty("inert", true);
+        await expect(page.locator("body")).toHaveCSS("overflow", "hidden");
+        expect(await effectiveMasks(page)).toBe(1); expect(await calls(page)).toHaveLength(0);
+        await lowerReturn.click(); await expect(detail).toHaveCount(0);
+        await expect(page.locator(".sidebar")).toHaveJSProperty("inert", false);
+        await expect(page.locator(".main-shell")).toHaveJSProperty("inert", false);
+        await expect(page.locator("body")).not.toHaveCSS("overflow", "hidden");
+        await expect(page.getByRole("button", { name: "合成正常关闭失败 测试环境 C 6 详情", exact: true })).toBeFocused();
+        const view = await nativeReferenceView(page);
+        expect(view.calls.filter(call => ["Runtime.ForceStop", "Runtime.Stop", "Runtime.Reconcile"].includes(call.method))).toHaveLength(0);
+        expect(view.view.runtimeSessions!["synthetic-reference-6"]).toMatchObject({ sessionId: "synthetic-session-6", canControl: false, canForce: true, pid: 31006 });
+      });
+    }
+
+    test("nested force warning keeps workspace 160 and new diagnostic 162 above its lower-portal lock", async ({ page }) => {
+      await ownedControlLost(page); await syntheticDiagnostics(page);
+      const action = await entry(page, "activity");
+      const detail = page.getByRole("dialog", { name: "操作记录详情", exact: true, includeHidden: true });
+      await action.click(); await expect(warning(page)).toBeVisible();
+      expect(await detail.evaluate(element => !!element.closest("[inert]"))).toBe(true);
+      await page.evaluate(() => {
+        (window as unknown as { __referenceNative: { view: WorkspaceView } }).__referenceNative.view.issue = { code: "NATIVE_UNAVAILABLE", message: "合成工作区故障，最高诊断不得被低层强制结束锁阻断。", retryable: true };
+      });
+      const blocker = page.getByRole("alertdialog", { name: "工作区需要处理", exact: true, includeHidden: true });
+      await expect(blocker).toBeVisible();
+      expect(await blocker.evaluate(element => !!element.closest("[inert]"))).toBe(false);
+      await expect(blocker.locator("..")).toHaveCSS("z-index", "160");
+      expect(await warning(page, true).evaluate(element => !!element.closest("[inert]"))).toBe(true);
+      await blocker.getByRole("button", { name: "生成诊断预览", exact: true }).click();
+      const diagnostic = page.getByRole("dialog", { name: "脱敏诊断预览", exact: true });
+      await expect(diagnostic).toContainText("公开字段摘要");
+      await expect(diagnostic.locator("..")).toHaveCSS("z-index", "162");
+      expect(await diagnostic.evaluate(element => !!element.closest("[inert]"))).toBe(false);
+      expect(await blocker.evaluate(element => !!element.closest("[inert]"))).toBe(true);
+      expect(await detail.evaluate(element => !!element.closest("[inert]"))).toBe(true);
+      expect(await effectiveMasks(page)).toBe(1);
+      for (const key of ["Tab", "Shift+Tab", "Control+k"]) {
+        await page.keyboard.press(key);
+        expect(await diagnostic.evaluate(element => element.contains(document.activeElement))).toBe(true);
+      }
+      await page.keyboard.press("Escape"); await expect(diagnostic).toHaveCount(0);
+      await expect(blocker).toBeVisible();
+      expect(await blocker.evaluate(element => !!element.closest("[inert]"))).toBe(false);
+      await expect.poll(() => blocker.evaluate(element => element.contains(document.activeElement))).toBe(true);
+      await expect(warning(page, true)).toBeAttached();
+      await page.keyboard.press("Escape"); await expect(blocker).toBeVisible();
+      await expect(warning(page, true)).toBeAttached();
+      await page.evaluate(() => { delete (window as unknown as { __referenceNative: { view: WorkspaceView } }).__referenceNative.view.issue; });
+      await expect(blocker).toHaveCount(0); await expect(warning(page)).toBeVisible();
+      expect(await detail.evaluate(element => !!element.closest("[inert]"))).toBe(true);
+      expect(await warning(page).evaluate(element => !!element.closest("[inert]"))).toBe(false);
+      await expect.poll(() => warning(page).evaluate(element => element.contains(document.activeElement))).toBe(true);
+      expect(await effectiveMasks(page)).toBe(1);
+      await warning(page).getByRole("button", { name: "取消", exact: true }).click();
+      await expect(action).toBeFocused();
+      expect(await detail.evaluate(element => !!element.closest("[inert]"))).toBe(false);
+      await detail.getByRole("button", { name: "返回记录", exact: true }).click();
+      await expect(page.locator(".sidebar")).toHaveJSProperty("inert", false);
+      await expect(page.locator(".main-shell")).toHaveJSProperty("inert", false);
+      await expect(page.locator("body")).not.toHaveCSS("overflow", "hidden");
+      const view = await nativeReferenceView(page);
+      expect(view.calls.filter(call => ["Runtime.ForceStop", "Runtime.Stop", "Runtime.Reconcile", "Diagnostics.Export"].includes(call.method))).toHaveLength(0);
+      expect(view.calls.filter(call => call.method === "Diagnostics.Preview")).toHaveLength(1);
+    });
+  });
+
   test.describe(`${viewport.width}x${viewport.height} actual App upload`, () => {
     test.use({ viewport });
     for (const mode of ["demo", "native"] as const) {
