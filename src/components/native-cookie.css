@@ -10,6 +10,7 @@
 .env34-cookie-file-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: #2f54eb; color: white; padding: 12px; }
 .env34-cookie-file-header strong { font-size: 12px; }
 .env34-cookie-file-header .button { color: white; background: transparent; border-color: #ffffff80; }
+.env34-cookie-file-header .button:hover { color: white; border-color: white; background: #ffffff1a; }
 .env34-cookie-file-input { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); }
 .env34-cookie-file-zone > p { padding: 12px; margin: 0; }
 .env34-cookie-file .env34-window-footer { padding: 10px; min-height: 51px; }

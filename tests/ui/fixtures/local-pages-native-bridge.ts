@@ -55,6 +55,8 @@ export async function localPagesNativeBridge(page: Page, scenario: LocalPageScen
     Object.assign(window, { go: { main: { DesktopApp: { Call: async (request: NativeRequest) => {
       calls.push(copy(request)); const p = request.payload as Record<string, unknown>;
       if (request.method === "Workspace.Read") { const all = view.state.environments, query = p.environmentQuery as { page?: number; pageSize?: number } | undefined; const page = query?.page ?? 1, pageSize = query?.pageSize ?? 10; return ok({ ...view, state: { ...view.state, environments: all.slice((page - 1) * pageSize, page * pageSize) }, environmentPage: { page, pageSize, total: all.length, filteredTotal: all.length, groups: ["工作环境", "测试环境"], runningCount: 0, errorCount: 0 } }); }
+      // This fixture has no Cookie preview. Only the owner's empty-preview cleanup is supported.
+      if (request.method === "Cookie.DiscardImport" && p.previewId === "") return ok({ status: "discarded" });
       if (request.method === "Backup.SelectDestination") { if (scenario === "backup-cancel") return ok({ status: "cancelled" }); destination = true; return ok({ status: "selected", destinationToken: "synthetic-destination", name: "synthetic.prismbackup" }); }
       if (request.method === "Backup.SelectRestoreSource") { if (scenario === "source-cancel") return ok({ status: "cancelled" }); source = true; return ok({ status: "selected", sourceToken: "synthetic-source", name: "synthetic.prismbackup" }); }
       if (request.method === "Backup.PreviewRestore") {
