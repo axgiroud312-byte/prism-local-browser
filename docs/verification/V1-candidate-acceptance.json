@@ -57,7 +57,8 @@
     "name": "prism-source-4b38dc8.zip",
     "sha256": "edc335a8026171a9f9dc4cb59f55ae97944b30c4a21ad2530df9e08b7781efb7"
   },
-  "remaining": ["independent remote egress matrix", "manual native product flows", "clean Windows user or VM", "unsupported OS/kernel combinations", "remote authentication and CI"],
+  "remaining": ["independent remote egress matrix", "manual native product flows", "clean Windows user or VM", "unsupported OS/kernel combinations", "remaining real fault scenarios", "remote desktop CI permission-regression failure"],
+  "remoteFollowup": { "date": "2026-10-06", "authenticationVerified": true, "initialPushCommit": "b8adc310cb3843e670644ee681ef404243b3fafe", "draftPullRequest": "https://github.com/axgiroud312-byte/prism-local-browser/pull/27", "workflowRun": "https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37400229514", "workflowStatus": "failure", "node22And24ChecksPassed": true, "all17EvidenceCommentsPublished": true, "uiClicks": false, "issuesClosed": false, "details": "docs/verification/V1-remote-sync.json" },
   "formallyAcceptedTasks": 4,
   "totalTasks": 21
 }

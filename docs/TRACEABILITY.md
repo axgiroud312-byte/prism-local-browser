@@ -2,7 +2,7 @@
 
 # 需求到实现的追踪表
 
-版本：1.0 · 更新日期：2026-10-05
+版本：1.0 · 更新日期：2026-10-06
 
 本表关联12项需求、原型与native入口。源码入口不代表完整验收；[本轮逐票矩阵](verification/V1-final.md)明确区分服务回归、真实桌面、本机/独立网络及候选交付。[ACCEPTANCE](ACCEPTANCE.md)为实际结果索引；正式计数仍4/21。
 
@@ -29,7 +29,7 @@
 
 ### 首版范围与执行顺序（2026-10-05）
 
-ENV-003/PRX-001按正常Windows隔离前提验收，底层服务损坏转后续；正式生产代理及本机三种故障/旧端口接管/资源恢复已验证，独立远端全路径仍缺。阶段5–6结果、候选身份与每票缺口见[报告](verification/V1-final.md)；T05–T21共17票仍待完整验收，GitHub失效不伪称同步。
+ENV-003/PRX-001按正常Windows隔离前提验收，底层服务损坏转后续；正式生产代理及本机三种故障/旧端口接管/资源恢复已验证，独立远端全路径仍缺。阶段5–6结果、候选身份与每票缺口见[报告](verification/V1-final.md)；2026-10-06认证恢复后成果已推送[草稿PR #27](https://github.com/axgiroud312-byte/prism-local-browser/pull/27)，17票实测/缺口评论已同步。首轮无点击CI两Node检查通过，desktop权限恢复回归失败，范围见[回执](verification/V1-remote-sync.json)。T05–T21仍待完整验收，不因推送解锁blocking或增加计数。
 
 ENV-003、PRX-001、DATA-001阶段2：[`独立持久资源日志`](../internal/kernel/network_journal.go)已接正式容器、差量ACL恢复及启动入口；真实内核与应用服务两轮代理启动/停止/重开均通过，三种存储保留。外部全路径、故障矩阵及人工UI仍待验；[本轮证据与边界](verification/T11-production.md)。
 
@@ -40,6 +40,8 @@ ENV-003、PRX-001、DATA-001阶段2：[`独立持久资源日志`](../internal/k
 - ENV-001/002/DATA-001：[`production目录批次回归`](../internal/workspace/batch_test.go)使用实际Windows空目录，源合成登录文件未动，clone新seed/ref，31项分页/重复请求通过；百万项仍只虚拟预览，不冒称实际规模。
 - BKP-001/CORE-001/PRX-001：[`预检回归`](../internal/workspace/restore_preview_test.go)核对同精确build不同ID候选且错hash拒绝；真实DPAPI当前用户可用、拒解注入后提示重输，密文原样/响应无秘密。不是跨SID实测。恢复/回收/迁移新增硬中断结果见报告。
 - DOC-001/UX-001：候选窗口/前端/manifest三层标记，全许可/指南与9文件hash一致，无内核再分发；最终`.3/.4`同干净4b38dc8/trimpath构建成功，NSIS首次PS5传参FAIL修复后通过；首轮含编译路径包不分发。无点击安装绑定SHA/source并拒已有五位置，nonce/只读空库保护；本机6次native加载/正常关闭、升级、保留卸载/重装、仅自有合成删除通过。[实际回执](verification/V1-candidate-acceptance.json)，不当作人工/干净机器。
+
+2026-10-06 DATA-001/PRX-001测试观测增量：首轮CI在DACL-only查询的完整SDDL字符串比较失败。经用户确认，仅修[`原目录恢复回归`](../internal/kernel/network_store_windows_test.go)为显式owner/group/DACL查询和[`实际权限快照`](../internal/kernel/network_acl_snapshot_windows_test.go)，逐字节/原顺序比ACE和继承保护，不把系统AI完成标记当授权变化；owner/group缺失、NULL DACL及任何权限扩大/deny/身份/继承/顺序差异仍拒。4顶层/12子例及vet本机通过，生产授权/恢复未改，待原runner同一实际目录回归复验。
 
 ### T11 隔离可行性增量（历史独立实验，不覆盖当前正式结果）
 

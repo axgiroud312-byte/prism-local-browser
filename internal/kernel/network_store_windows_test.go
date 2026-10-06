@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
 	"testing"
 
@@ -36,7 +35,12 @@ func TestNetworkStoreRecoversPartialTreeGrantIncludingNewFiles(t *testing.T) {
 	if err = os.WriteFile(file, []byte("synthetic-data"), 0600); err != nil {
 		t.Fatal(err)
 	}
-	original, err := windows.GetNamedSecurityInfo(file, windows.SE_FILE_OBJECT, windows.DACL_SECURITY_INFORMATION)
+	const securityInformation = windows.OWNER_SECURITY_INFORMATION | windows.GROUP_SECURITY_INFORMATION | windows.DACL_SECURITY_INFORMATION
+	original, err := windows.GetNamedSecurityInfo(file, windows.SE_FILE_OBJECT, securityInformation)
+	if err != nil {
+		t.Fatal(err)
+	}
+	beforePermissions, err := snapshotNetworkACLPermissions(original)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -62,10 +66,16 @@ func TestNetworkStoreRecoversPartialTreeGrantIncludingNewFiles(t *testing.T) {
 	if err = store.Recover(context.Background(), i); err != nil {
 		t.Fatal(err)
 	}
-	after, err := windows.GetNamedSecurityInfo(file, windows.SE_FILE_OBJECT, windows.DACL_SECURITY_INFORMATION)
-	if err != nil || after.String() != original.String() {
-		redact := regexp.MustCompile(`S-1-[0-9-]+`)
-		t.Fatalf("unrelated permissions changed: %v; before=%s after=%s", err, redact.ReplaceAllString(original.String(), "REDACTED-SID"), redact.ReplaceAllString(after.String(), "REDACTED-SID"))
+	after, err := windows.GetNamedSecurityInfo(file, windows.SE_FILE_OBJECT, securityInformation)
+	if err != nil {
+		t.Fatal(err)
+	}
+	afterPermissions, err := snapshotNetworkACLPermissions(after)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := compareNetworkACLPermissions(beforePermissions, afterPermissions); err != nil {
+		t.Fatal("unrelated permissions changed:", err)
 	}
 	for _, file := range []string{file, newFile} {
 		data, err := os.ReadFile(file)

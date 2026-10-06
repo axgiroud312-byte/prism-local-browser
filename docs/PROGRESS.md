@@ -1,17 +1,17 @@
 # Goal 当前执行位置
 
-更新时间：2026-10-05，本轮六阶段接续。
+更新时间：2026-10-06，GitHub登录恢复与远程同步。
 
 - Goal：正式验收**4/21**；T05–T21共17票均有本地实现/部分验证，保持OPEN，首版候选不等于正式交付。
 - 当前任务：阶段5本地检查、阶段6候选/无点击安装闭环与资料已完成；尚未正式交付。[包/SHA、逐票矩阵和缺口](verification/V1-final.md)为准确状态。主包`output/delivery/0.3.0-preview.4-v1-candidate/`，最终源码`4b38dc8`，已trimpath、未签名/无内核。
 - 已有实跑：正式代理启动/关闭/重开、故障和资源恢复、FIFO/Cookie、真实148→150代理迁移/完整回退；direct三存储/回收/恢复五切点只算各自范围。
-- 现场：`goal/v1-remaining-integration`，主代理唯一写，子代理只读。四个交接未提交修复保留并复核；新增Cookie旧UI门禁/许可/安装验证修订。无自动点击/停服/真实数据修改；GitHub认证仍失效，未推送/PR/CI。
+- 现场：`goal/v1-remaining-integration`，主代理唯一写，子代理只读。四个交接修复保留并提交；无自动点击/停服/真实数据修改。2026-10-06已核对恢复登录，38个本地提交推送至远端，创建[草稿PR #27](https://github.com/axgiroud312-byte/prism-local-browser/pull/27)，默认无点击CI已启动，暂不合并或关闭票。
 
 ## 当前阻塞与恢复入口
 
 - 正式provider、proxy迁移副本及本机故障矩阵已验证；跨登录/重启及独立外部全路径仍待验，未知清理继续占用。
 - 148/150均已获核验并运行；专用外部代理/独立观察器未发现，开发HTTP_PROXY不算授权资源。最小配置与人工步骤见报告；干净Windows/runner仍缺，本机空产品根不是干净用户。
-- 用户在本机`gh auth login -h github.com`恢复失效登录前只做本地提交；不反复401，不伪称远程同步，不关闭未满足完整验收的票。
+- GitHub认证/推送/开PR阻塞已解除；[首轮CI](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37400229514)两Node检查通过、desktop权限回归失败。用户已确认修复：显式读取owner/group/DACL，逐条比较实际权限与继承保护；4项定向/12子例及vet本机通过，生产代码未改，待同PR远程复验。[同步回执](verification/V1-remote-sync.json)。独立远端、特殊真实场景、人工与干净Windows仍缺。
 
 ## 任务状态
 
@@ -21,17 +21,17 @@
 | T02 | #3 | 已完成 | 代码 `134dc66`、记录 `fc4aa47`、合入 `44517c5`；[记录](verification/T02.md)；[PR #24](https://github.com/axgiroud312-byte/prism-local-browser/pull/24)，最终 CI 全通过 |
 | T03 | #4 | 已完成 | 代码`62dae8e`、合入`99c6a36`；[验收](verification/T03.md)、[PR #25](https://github.com/axgiroud312-byte/prism-local-browser/pull/25)，Windows11/干净runner闭环与CI全通过 |
 | T04 | #5 | 已完成 | 代码`89e94d7`、合入`dc0a148`、[PR #26](https://github.com/axgiroud312-byte/prism-local-browser/pull/26)；[验收](verification/T04.md)/[证据](verification/T04-kernel-acceptance.json)，CI全通过 |
-| T05 | #6 | 已实现待验收 | 本地 `f6e7314`；[验收清单](verification/T05.md)，未推送/PR，最终UI/构建/全量/CI待补 |
-| T06 | #7 | 已实现待验收 | 本地 `ead0bc6`；[验收清单](verification/T06.md)，无推送/PR，原blocking状态保留 |
-| T07 | #8 | 已实现待验收 | 本地 `e4e427f`；[验收清单](verification/T07.md)，原blocking #7仍OPEN，无PR/推送 |
-| T08 | #9 | 已实现待验收 | 本地 `f020076`；[验收清单](verification/T08.md)，blocking #3 CLOSED，无PR/推送 |
-| T09 | #10 | 已实现待验收 | 本地 `f6ebca1`；[验收清单](verification/T09.md)，原blocking #7/#9仍OPEN，无PR/推送 |
-| T10 | #11 | 已实现待验收 | 本地 `88ba61a`；[验收清单](verification/T10.md)，唯一blocking #10仍OPEN，无PR/推送 |
-| T11 | #12 | 正式保护/故障本机已验证，完整验收待补 | [启动](verification/T11-production.md)、[故障](verification/T11-recovery.md)；独立远端/跨登录及人工待验，无PR/推送 |
-| T12 | #13 | 已实现待验收 | 本地c3ff618；[清单](verification/T12.md)，无推送/PR；#7仍OPEN |
-| T13 | #14 | 已实现待验收 | 本地`54d8be9`；[清单](verification/T13.md)，blocking #8/#9仍OPEN，按D007消费本地T07/T08；无推送/PR |
+| T05 | #6 | 已实现待验收 | `f6e7314`及后续修订已推送PR #27；[清单](verification/T05.md)，人工抽屉待验 |
+| T06 | #7 | 已实现待验收 | `ead0bc6`及后续修订已推送PR #27；[清单](verification/T06.md)，原blocking和人工完整流程保留 |
+| T07 | #8 | 已实现待验收 | `e4e427f`及后续修订已推送PR #27；[清单](verification/T07.md)，#7仍OPEN，实际ForceStop等待验 |
+| T08 | #9 | 已实现待验收 | `f020076`及后续修订已推送PR #27；[清单](verification/T08.md)，#3 CLOSED，外部与人工待验 |
+| T09 | #10 | 已实现待验收 | `f6ebca1`及后续修订已推送PR #27；[清单](verification/T09.md)，#7/#9仍OPEN，独立远端待验 |
+| T10 | #11 | 已实现待验收 | `88ba61a`已推送PR #27；[清单](verification/T10.md)，#10仍OPEN，真实SOCKS5/DNS待验 |
+| T11 | #12 | 正式保护/故障本机已验证，完整验收待补 | PR #27；[启动](verification/T11-production.md)、[故障](verification/T11-recovery.md)；独立远端/跨登录及人工待验 |
+| T12 | #13 | 已实现待验收 | `c3ff618`及后续修订已推送PR #27；[清单](verification/T12.md)，#7仍OPEN，完整真实矩阵待验 |
+| T13 | #14 | 已实现待验收 | `54d8be9`及后续修订已推送PR #27；[清单](verification/T13.md)，#8/#9仍OPEN，原D007及验收边界保留 |
 | T14 | #15 | FIFO队列已实现，本机集成已验证 | [记录](verification/T14.md)，取消/重试/迟到就绪回归及双代理环境实跑通过；远端/UI完整验收待补 |
-| T15 | #16 | 已实现待验收 | 本地`010b35a`（42文件）；[清单](verification/T15.md)；blocking #8/#9仍OPEN，按D007消费本地成果；无推送/PR |
+| T15 | #16 | 已实现待验收 | `010b35a`及后续修订已推送PR #27；[清单](verification/T15.md)，#8/#9仍OPEN，多真实环境/资源故障待验 |
 | T16 | #17 | 服务回归/凭据/精确build候选通过，人工待验 | [清单](verification/T16.md)、[集中结果](verification/V1-final.md)；拒解为注入，不假报跨SID实测 |
 | T17 | #18 | 服务回归/选定A真实三存储恢复通过 | [清单](verification/T17.md)；多真实环境/人工/实际权限空间待验 |
 | T18 | #19 | 五主切点真实读回、占用及回滚再中断通过 | [清单](verification/T18.md)、[集中结果](verification/V1-final.md)；未闭票 |
@@ -40,6 +40,8 @@
 | T21 | #22 | 诊断/候选/本机无点击安装闭环通过，正式待验 | [报告](verification/V1-final.md)、[回执](verification/V1-candidate-acceptance.json)；独立远端、人工、干净Windows/CI仍缺 |
 
 ## 最近检查与当前工作
+
+- 2026-10-06远程接续：恢复登录已核对；origin/main无新增分叉，38提交普通push成功，无强制覆盖；[草稿PR #27](https://github.com/axgiroud312-byte/prism-local-browser/pull/27)已创建并关联会话。17票结果评论已发布且全部OPEN；首轮默认CI两Node检查通过、desktop原SDDL字符串断言失败，安装构建/真实内核步骤未执行，首轮FAIL保留。用户明确确认方案后，仅修测试观测：显式owner/group/DACL，保持owner/group、每条ACE字节/顺序/继承标记及DACL保护一致；自动继承完成元数据AI不当成授权差异。12子例验证权限扩大、deny改变、SID/顺序/保护等都拒绝；不完整/NULL DACL拒绝。原实际目录恢复和占用回归仍执行，本机4项与vet通过，生产保护代码/候选不改，远程复验待实际结果。
 
 - 阶段6：最终候选`.3/.4`同一干净`4b38dc8`source/trimpath构建、全部许可和9文件清单、无点击实际NSIS安装/启动重开/升级/拒降级/默认保留卸载/重装/仅删自有合成根通过。6次native只读页面与正常exit0、同一ID/seed/偏好已核对，最终数据/程序/注册/快捷方式均清理，无自有工作台进程。主`.4`SHA=`0f1e29c50b64838c0ff0926127b6bf50b2375a2f955d208642f0aa72693fe324`；未签名、无内核。不是干净Windows或人工流程验收，不闭票；首轮NSIS FAIL已修并保留，首轮含编译路径包撤出分享目录。
 

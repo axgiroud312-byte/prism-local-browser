@@ -1,12 +1,12 @@
 # 首版候选集中验收报告
 
-日期：2026-10-05。分支`goal/v1-remaining-integration`。覆盖正在处理的T05–T21 / Issues #6–#22；**正式验收仍4/21，本报告不自动关闭任何票。** 本机代码、实际运行、候选产物和正式交付分别记录。
+本机验收日期：2026-10-05；远程接续：2026-10-06。分支`goal/v1-remaining-integration`。覆盖T05–T21 / Issues #6–#22；**正式验收仍4/21，本报告不自动关闭任何票。** 本机代码、实际运行、候选产物和正式交付分别记录。
 
 ## 结论与当前产物
 
 最终分享前发现并修复构建隐私缺口：首轮46649c0主程序带编译机路径，Wails改用官方`-trimpath`，不改业务逻辑。**最终4b38dc8包已重新构建且无点击复验通过**；主程序buildinfo确认trimpath=true，主程序/维护helper路径扫描未发现Windows编译用户路径。旧包仅在本机忽略的历史证据目录，不对外分发。
 
-后台回归、本机真实固定档案、正式代理保护链、三种存储、备份恢复及硬中断均有下列证据。独立远端出口、人工完整页面、干净Windows及远程CI尚缺，**未达到正式交付条件**。候选仅用于合成数据检查，不用于真实账号/凭据。
+后台回归、本机真实固定档案、正式代理保护链、三种存储、备份恢复及硬中断均有下列证据。GitHub登录/推送/草稿PR/17票评论同步已完成；首轮远程CI两Node检查通过，desktop权限恢复回归失败，见[远程回执](V1-remote-sync.json)和[PR #27](https://github.com/axgiroud312-byte/prism-local-browser/pull/27)。CI修复、独立远端、特殊真实场景、人工完整页面和干净Windows仍缺，**未达到正式交付条件**。候选仅用于合成数据检查，不用于真实账号/凭据。
 
 **候选已构建并完成本机无点击安装闭环。** 主交付目录`output/delivery/0.3.0-preview.4-v1-candidate/`，主包`prism-browser-0.3.0-preview.4-windows-amd64-setup.exe`，14,763,334字节；SHA-256：
 
@@ -117,13 +117,19 @@ NSIS bootstrap为i386是既有体系行为，安装限定x64，主程序和维�
 4. A/B正常停后完整备份，改合成三存储，预检→明确恢复→重开；A回收/找回再核对，复制环境必须新seed/空目录，只对自有复制项永久删除。检查中断/占用重试和未知结果不会另建任务。
 5. 选定停止A做148→150工作副本试用、正常停止、切换及原备份退回；不宣称所有目标网站兼容。活动页诊断先取消保存再新文件保存/核实，确认报告不含身份/路径/凭据/Cookie。
 
-自动化无点击**复验必须使用构建来源4b38dc8的干净Git checkout**，不能用后续报告提交或只有源码ZIP的无Git目录冒充同源码；可在隔离测试位置新建detached worktree，不回退/重置本工作区。脚本需要项目局部`.tools/go/bin/go.exe`及Node开发工具；这不是产品安装依赖。普通用户的人工清单只需WebView2与明确选择的内核。现有CI默认不自动点击，旧点击分支保持显式opt-in，本轮没有触发任何CI。
+自动化无点击**复验必须使用构建来源4b38dc8的干净Git checkout**，不能用后续报告提交或只有源码ZIP的无Git目录冒充同源码；可在隔离测试位置新建detached worktree，不回退/重置本工作区。脚本需要项目局部`.tools/go/bin/go.exe`及Node开发工具；这不是产品安装依赖。普通用户的人工清单只需WebView2与明确选择的内核。现有CI默认不自动点击，旧点击分支保持显式opt-in；10月5日未触发CI，10月6日创建PR后仅触发默认无点击路径。
 
 独立出口用上表资源单独验收；人工界面顺利不替代网络/进程/目录证据。禁止自动点击仍生效；不要求逐步询问“是否继续”。
 
 ## 远程收尾与未关闭原因
 
-`gh auth status --hostname github.com`明确token失效。用户在本机执行`gh auth login -h github.com`后再核对身份；本轮不伪称推送/PR/Issue关闭。待同步评论和PR材料应包含此矩阵、实际检查及剩余边界，符合仓库模板；blocking/所有验收未满足前保持OPEN。
+10月5日认证失效，10月6日用户恢复后`gh auth status --hostname github.com`已核对正确身份。38个本地提交普通push成功，创建并关联[草稿PR #27](https://github.com/axgiroud312-byte/prism-local-browser/pull/27)，不强制覆盖、不合并或关闭任务。#6–#22共17条实际结果/缺口评论已发布，再读确认全部OPEN，原blocking保留；URL见[同步回执](V1-remote-sync.json)。
+
+[首轮远程CI](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37400229514)对应b8adc31：两Node后台检查通过，desktop在`TestNetworkStoreRecoversPartialTreeGrantIncludingNewFiles`失败。测试只请求DACL却比较完整SDDL，日志ACE条目相同，owner/group及AI呈现不同；尚须按实际owner/group、ACE、继承保护核实，不能直接视为误报或删安全测试。安装构建/真实内核步骤未执行，artifact上传无文件是前序未产包的后果；首轮整轮FAIL保留。修复方案为先核对实质权限，再修根因并定向/CI复验，待用户确认。
+
+**修复已获用户明确确认，并完成本机定向验证。** 仅测试修改：GetNamedSecurityInfo显式请求owner/group/DACL，比较实际所有者/组SID、全部ACE原字节和顺序、每条继承标记、DACL继承保护；不比较AUTO_INHERITED完成元数据或未请求的描述字段。新增12子例区分允许/拒绝、权限扩大、SID/顺序/继承与保护改变，并拒绝部分或NULL DACL，不能通过删除安全回归绕过。原实际目录恢复/新文件授权撤销和根替换占用回归继续执行。`go test -p 1 -count=1 -v ./internal/kernel -run '^Test(NetworkStore|NetworkACLPermissionSnapshot)'`4个顶层/12子例通过，kernel vet通过；生产ACL/provider未改，原失败runner是否通过需待CI实跑，不仅凭本机判定。
+
+CI旧点击步骤未启用，当前workflow也没有运行新候选无点击安装脚本；不能用runner上的后台检查推导干净Windows产品安装验收。候选来源仍4b38dc8，本次状态文档不改变原二进制或哈希。
 
 本轮提交（另含最终验收记录提交）：`493da0b`修复原检查/退出与Cookie UI；`86d7b4e`候选/许可/无点击验证与逐票文档；`46649c0`修复PS5/NSIS参数；`5791be1`首轮验收记录；`4b38dc8`Wails trimpath隐私修订（最终包来源）。前轮`bc56c90`/`7b1f8bb`/`07e4049`正式保护、恢复与共用队列成果均保留。最终记录提交只更新非嵌入报告/进度，不改变交付二进制来源，无需重新构建。
 

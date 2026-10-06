@@ -1,6 +1,6 @@
 # 首版六阶段执行与验收
 
-2026-10-05，沿用`goal/v1-remaining-integration`。阶段2–4正式接入和本机集成已有结果，当前阶段5–6集中验收/候选安装。正式验收仍4/21，T05–T21共17票保留OPEN；实现、本机验证和正式交付分开。实际结果见[报告](verification/V1-final.md)与[进度](PROGRESS.md)。
+2026-10-05首版计划，2026-10-06远程同步接续。沿用`goal/v1-remaining-integration`，本地集中检查/候选安装已完成，成果已推送草稿PR #27，17票结果已同步；首轮远程CI两Node检查通过、desktop权限恢复回归失败。正式验收仍4/21，T05–T21共17票保留OPEN。实现、本机验证和正式交付分开，实际结果见[报告](verification/V1-final.md)与[进度](PROGRESS.md)。
 
 ## 支持条件与范围决策
 
@@ -42,7 +42,7 @@ Windows Home、原生Chromium沙箱、固定seed/原数据引用保持要求。�
 | 两个不同版本已核验真实内核 | 阶段 5 迁移回退 | 148与150均已实算SHA并运行；代理迁移/完整回退已有本机证据，无需重新下载 |
 | 干净 Windows 或合适 runner | 阶段 6 | 当前仅已知本机 Home；旧 T03 runner 证据不等于本版运行器可用 |
 | 少量人工界面操作 | 阶段 2 产品闭环、阶段 6 最终验收 | 遵守不自动点击；准备可运行产物后提供最短人工操作及观测入口 |
-| GitHub 认证、推送/CI 条件 | 远程收尾 | 本轮`gh auth status`明确token失效；未推送/开PR/触发CI，用户在本机`gh auth login -h github.com`恢复后同步 |
+| GitHub 认证、推送/CI 条件 | 远程收尾 | 2026-10-06认证/38提交普通push/[草稿PR #27](https://github.com/axgiroud312-byte/prism-local-browser/pull/27)/17评论完成；首轮CI两Node检查通过、desktop安全回归失败待核实修复；其他验收不自动满足 |
 
 缺外部条件只阻塞对应验收，继续不依赖它的实现。不重复已失败的系统服务实验，不在当前工作机注入底层服务故障。
 
