@@ -1,0 +1,17 @@
+.env34-batch-overlay { padding: 8px; }
+.env34-batch-window .env34-window-body { padding: 20px 26px 0; }
+.env34-batch-policy { color: #8c8c8c; }
+.env34-batch-query { display: flex; gap: 16px; align-items: end; margin-bottom: 16px; }
+.env34-batch-query label { flex: 1; min-width: 0; }
+.env34-batch-query input, .env34-batch-query select, .env34-batch-table select { width: 100%; height: 32px; border: 0; border-bottom: 1px solid #bfbfbf; border-radius: 0; padding: 0; font-size: 12px; }
+.env34-batch-table { max-height: 260px; }
+.env34-batch-table table { min-width: 680px; }
+.env34-batch-table small { color: #8c8c8c; }
+.env34-batch-pagination { display: flex; justify-content: flex-end; align-items: center; gap: 10px; padding: 10px 0; flex-wrap: wrap; }
+.env34-batch-body .native-proxy-inline { display: flex; gap: 8px; align-items: center; margin: 10px 0; }
+.env34-batch-details > summary { cursor: pointer; color: #2f54eb; padding: 8px 0; }
+.env34-batch-result { min-height: 199px; }
+.env34-batch-result .env34-window-body { padding: 10px; }
+.env34-batch-result .env34-task-result { margin: 0; }
+.env34-batch-result .env34-window-footer { padding: 10px; min-height: 51px; }
+@media (max-width: 720px) { .env34-batch-query { flex-wrap: wrap; } .env34-batch-query label { flex-basis: 100%; } }

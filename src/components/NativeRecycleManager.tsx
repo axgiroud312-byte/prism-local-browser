@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { X } from "lucide-react";
+import { RotateCcw, Trash2, X } from "lucide-react";
 import { mergeOperation, operationIsTerminal, type ApplicationResult, type ApplicationService, type NativeRecycleAction, type NativeRecyclePage, type NativeRecyclePageRequest, type Operation, type WorkspaceView } from "../application/contract";
 import { confirmsRecycleRequest } from "../application/recycle-model";
-import "./native-proxy.css";
-import "./native-cookie.css";
+import { EnvironmentConfirmation, EnvironmentTaskResult, EnvironmentWindowFrame } from "./EnvironmentDialogParts";
+import "./environment-recycle.css";
 
 const actions = { remove: "移入回收区", restore: "找回原环境", purge: "永久删除" };
 const states: Record<string, string> = { pending: "未执行", recycled: "已回收", restored: "已找回", purged: "已永久删除", failed: "未完成，原状态已核对", protected: "结果待核对，保护保持" };
@@ -11,6 +11,7 @@ const errorText = (r: ApplicationResult<unknown> | undefined) => !r ? "本机回
 
 export function NativeRecycleManager({ application, workspace, selectedIds, onClose }: { application: ApplicationService; workspace: WorkspaceView; selectedIds?: string[]; onClose(): void }) {
   const [page, setPage] = useState<NativeRecyclePage>();
+  const [listPage, setListPage] = useState<NativeRecyclePage>();
   const [operation, setOperation] = useState<Operation>();
   const [pending, setPending] = useState(() => application.getPendingRecycle?.());
   const [selected, setSelected] = useState<string[]>([]), [confirm, setConfirm] = useState(false);
@@ -23,6 +24,8 @@ export function NativeRecycleManager({ application, workspace, selectedIds, onCl
   const active = !!operation && !operationIsTerminal(operation);
   const locked = busy || !!pending || !!workspace.recycleMaintenance || active;
   const isList = !!page && !page.preview && !page.operation;
+  const viewKey = page?.preview ? `preview:${page.preview.previewId}` : operation ? `operation:${operation.id}` : "list";
+  const previousView = useRef(viewKey);
 
   useEffect(() => {
     mounted.current = true;
@@ -32,7 +35,7 @@ export function NativeRecycleManager({ application, workspace, selectedIds, onCl
       if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); closeRef.current(); }
       if ((event.ctrlKey || event.metaKey) && event.key === "k") { event.preventDefault(); event.stopPropagation(); }
       if (event.key !== "Tab") return;
-      const nodes = [...(modal.current?.querySelectorAll<HTMLElement>('button:not(:disabled),input:not(:disabled),[tabindex="0"]') ?? [])].filter(n => n.offsetParent !== null);
+      const nodes = [...(modal.current?.querySelectorAll<HTMLElement>('button:not(:disabled),input:not(:disabled),select:not(:disabled),summary,[tabindex="0"]') ?? [])].filter(n => n.offsetParent !== null);
       const first = nodes[0], last = nodes.at(-1);
       if (!modal.current?.contains(document.activeElement)) { event.preventDefault(); (event.shiftKey ? last : first)?.focus(); }
       else if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
@@ -47,8 +50,13 @@ export function NativeRecycleManager({ application, workspace, selectedIds, onCl
       else if (!original && selectedIds?.length) void preview("remove", selectedIds);
       else void load({ offset: 0, pageSize: 25 });
     }
-    return () => { mounted.current = false; document.body.style.overflow = overflow; document.removeEventListener("keydown", key); previous?.focus(); };
+    return () => { mounted.current = false; document.body.style.overflow = overflow; document.removeEventListener("keydown", key); if (previous?.isConnected) previous.focus(); };
   }, [application]);
+
+  useEffect(() => {
+    if (previousView.current !== viewKey) modal.current?.querySelector<HTMLElement>('button:not(:disabled), input:not(:disabled), summary')?.focus();
+    previousView.current = viewKey;
+  }, [viewKey]);
 
   function observe(op: Operation) {
     if (target.current.operationId === op.id) { observed.current = mergeOperation(observed.current?.id === op.id ? observed.current : undefined, op); setOperation(observed.current); }
@@ -69,6 +77,7 @@ export function NativeRecycleManager({ application, workspace, selectedIds, onCl
     if (!mounted.current || current !== generation.current) return;
     setBusy(false);
     if (!result?.ok) { setMessage(errorText(result)); return; }
+    if (!result.data.preview && !result.data.operation) setListPage(result.data);
     if (!result.data.operation || result.data.operation.recycleReport!.sequence >= (observed.current?.recycleReport?.sequence ?? 0)) setPage(result.data);
     if (result.data.operation) observe(result.data.operation);
   }
@@ -123,25 +132,28 @@ export function NativeRecycleManager({ application, workspace, selectedIds, onCl
     return () => { disposed = true; clearInterval(timer); };
   }, [application, operationId, active]);
 
-  return <div className="overlay modal-overlay"><div className="modal wide-modal native-cookie-modal" role="dialog" aria-modal="true" aria-labelledby="recycle-title" ref={modal}>
-    <div className="modal-header"><h2 id="recycle-title">本机回收区</h2><button className="icon-button" aria-label="关闭回收区" onClick={onClose}><X size={18} /></button></div>
-    <div className="modal-body">
-      <p>移除后保留原 ID、seed、设备档案、内核绑定和浏览数据。名称仍由回收项占用，找回使用原身份。</p>
-      <button className="button" disabled={busy} onClick={() => void load({ offset: 0, pageSize: 25 })}>查看回收列表</button>
-      {pending && <p role="status">原请求 {pending.request.requestId} 受理尚待核实。<button className="button" disabled={busy} onClick={() => void commit()}>核实原请求</button></p>}
-      {message && <p role="alert">{message}</p>}
-      {busy && <p role="status">正在读取或提交…</p>}
-      {page?.preview && <section aria-label="回收影响确认"><h3>{actions[page.preview.action]} · {page.total} 项</h3><p>{page.preview.dataCount} 项包含实际浏览目录；{page.preview.backupCount} 项有成功备份记录（未重新核验备份文件）。</p>
-        {page.preview.action === "purge" ? <p>永久删除本次选中的回收配置和数据，无法从回收区找回。既有备份及恢复历史副本不在本次删除范围内。删除开始后会完成当前项的核对，取消只阻止后续项。</p> : <p>运行中或退出未确认的环境不能移除；任何未知目录都不会被覆盖。</p>}
-        <label><input type="checkbox" disabled={locked} checked={confirm} onChange={e => setConfirm(e.target.checked)} />已核对下方具体 ID，确认{actions[page.preview.action]}全部 {page.total} 项。</label>
-        <button className={`button ${page.preview.action === "purge" ? "danger" : "primary"}`} disabled={locked || !confirm} onClick={() => void commit()}>{actions[page.preview.action]}</button>
-      </section>}
-      {operation?.recycleReport && <section aria-label="回收任务结果"><h3>{actions[operation.recycleReport.action]} · {operation.state}</h3><p>任务 {operation.id}</p><p>完成 {operation.recycleReport.completed} · 失败 {operation.recycleReport.failed} · 未执行 {operation.recycleReport.notExecuted}</p>{operation.error && <p role="alert">{operation.error.code}：{operation.error.message}</p>}{operation.recycleReport.protected && <p>维护保护保持。请释放目录占用、修复空间或权限后，核对原任务；保留原日志与目录。</p>}{active && <button className="button" disabled={busy || operation.cancelRequested || operation.stage === "workspace-recovery"} onClick={() => void taskAction(false)}>取消后续项</button>}{operation.persistencePending && <button className="button" disabled={busy || operation.state === "running"} onClick={() => void taskAction(true)}>重试核对原任务</button>}</section>}
-      {page && <><p>共 {page.total} 项 · 本页 {page.items.length} 项</p><div className="table-scroll"><table><thead><tr>{isList && <th>选择</th>}<th>环境 / ID</th><th>身份与内核</th><th>数据</th><th>结果</th></tr></thead><tbody>{page.items.map(item => <tr key={item.id}>{isList && <td><input type="checkbox" aria-label={`选择回收项 ${item.name}`} disabled={locked} checked={selected.includes(item.id)} onChange={e => setSelected(old => e.target.checked ? [...old, item.id] : old.filter(id => id !== item.id))} /></td>}<td>{item.name}<br /><small>{item.environmentId}</small></td><td>seed {item.seed}<br /><small>{item.kernelId}</small></td><td>{item.dataPresent ? "包含浏览数据" : "未初始化数据"}<br />{item.backupRecorded ? "有备份记录" : "无备份记录"}</td><td>{states[item.state] ?? item.state}{item.error && <p>{item.error.message}</p>}</td></tr>)}</tbody></table></div>
-        <button className="button" disabled={busy || page.offset === 0} onClick={() => void load({ ...target.current, offset: Math.max(0, page.offset - page.pageSize) })}>上一页</button><button className="button" disabled={busy || page.offset + page.items.length >= page.total} onClick={() => void load({ ...target.current, offset: page.offset + page.pageSize })}>下一页</button>
-        {isList && <><button className="button" disabled={locked || !selected.length} onClick={() => void preview("restore", selected)}>找回选中项（{selected.length}）</button><button className="button danger" disabled={locked || !selected.length} onClick={() => void preview("purge", selected)}>查看永久删除影响</button></>}
-      </>}
-      {!!workspace.recycleOperations?.length && <h3>最近任务</h3>}{workspace.recycleOperations?.map(op => <p key={op.id}>{op.id} · {op.state}<button className="button" disabled={busy} onClick={() => void load({ operationId: op.id, offset: 0, pageSize: 25 })}>读取逐项结果</button></p>)}
-    </div>
-  </div></div>;
+  const notices = <>{pending && <p role="status">原请求 {pending.request.requestId} 受理尚待核实。<button className="button" disabled={busy} onClick={() => void commit()}>核实原请求</button></p>}{message && <p className="env34-error" role="alert">{message}</p>}{busy && <p role="status">正在读取或提交…</p>}</>;
+  const pagination = page && <div className="env34-recycle-pagination"><span>共 {page.total} 项 · 本页 {page.items.length} 项</span><button className="button compact" disabled={busy || page.offset === 0} onClick={() => void load({ ...target.current, offset: Math.max(0, page.offset - page.pageSize) })}>上一页</button><button className="button compact" disabled={busy || page.offset + page.items.length >= page.total} onClick={() => void load({ ...target.current, offset: page.offset + page.pageSize })}>下一页</button></div>;
+  function rows(records: NativeRecyclePage, selectable: boolean) {
+    return <div className="env34-recycle-table" tabIndex={0}><table><thead><tr><th>选择</th><th>序号</th><th>环境名称 / 原身份</th><th>精确内核</th><th>数据 / 备份</th><th>删除时间 / 结果</th><th>操作</th></tr></thead><tbody>{records.items.map((item, index) => <tr key={item.id}><td>{selectable && <input type="checkbox" aria-label={`选择回收项 ${item.name}`} disabled={locked} checked={selected.includes(item.id)} onChange={e => setSelected(old => e.target.checked ? [...old, item.id] : old.filter(id => id !== item.id))} />}</td><td>{records.offset + index + 1}</td><td>{item.name}<details><summary>原身份详情</summary><p>{item.environmentId}<br />seed {item.seed} · 修订 {item.revision}</p></details></td><td>{item.kernelId}</td><td>{item.dataPresent ? "包含浏览数据" : "未初始化数据"}<br /><small>{item.backupRecorded ? "有备份记录" : "无备份记录"}</small></td><td>{item.removedAt ?? "—"}<br /><small>{states[item.state] ?? item.state}</small>{item.error && <p className="env34-error">{item.error.code}：{item.error.message}</p>}</td><td>{selectable && <button className="icon-button" aria-label={`永久删除影响 ${item.name}`} disabled={locked} onClick={() => void preview("purge", [item.id])}><Trash2 size={16} /></button>}</td></tr>)}</tbody></table></div>;
+  }
+  function list(records?: NativeRecyclePage, background = false) {
+    return <div className={`env34-recycle-panel ${background ? "env34-recycle-background" : ""}`} ref={background ? undefined : modal} tabIndex={background ? undefined : -1} role={background ? undefined : "dialog"} aria-modal={background ? undefined : true} aria-labelledby={background ? undefined : "recycle-title"} aria-hidden={background || undefined} inert={background || undefined}>
+      <header className="env34-recycle-header"><button className="button" onClick={onClose}>返回</button><h2 id={background ? undefined : "recycle-title"}>本机回收区</h2><span>找回沿用原 ID、seed、内核和浏览数据；名称仍由回收项占用。</span><button className="icon-button" aria-label="关闭回收区" onClick={onClose}><X size={16} /></button></header>
+      <div className="env34-recycle-toolbar"><button className="button" disabled={busy} onClick={() => void load({ offset: 0, pageSize: 25 })}>查看回收列表</button><label>最近任务<select aria-label="最近回收任务" value={operation?.id ?? ""} disabled={busy} onChange={event => { if (event.target.value) void load({ operationId: event.target.value, offset: 0, pageSize: 25 }); }}><option value="">选择读取逐项结果</option>{workspace.recycleOperations?.map(op => <option key={op.id} value={op.id}>{op.state} · {op.id}</option>)}</select></label><span className="env34-recycle-toolbar-gap" /><button className="button primary" disabled={locked || !selected.length} onClick={() => void preview("restore", [...selected])}><RotateCcw size={15} />找回选中项（{selected.length}）</button><button className="button danger" disabled={locked || !selected.length} onClick={() => void preview("purge", [...selected])}><Trash2 size={15} />查看永久删除影响</button></div>
+      {!background && notices}{records && rows(records, background || isList)}{!records && !busy && <p className="env34-recycle-empty">尚未读取回收列表，未更改任何记录。</p>}{records && !records.total && <p className="env34-recycle-empty">回收区为空</p>}{background ? <div className="env34-recycle-pagination">共 {records?.total ?? 0} 项 · 本页 {records?.items.length ?? 0} 项</div> : pagination}
+    </div>;
+  }
+  const showConfirmation = !!page?.preview;
+  const backedByList = !!listPage && (showConfirmation || !!operation);
+  return <div className={`overlay env34-recycle-overlay ${showConfirmation || operation ? "modal-overlay" : ""} ${backedByList ? "env34-recycle-over-list" : ""}`}>
+    {backedByList && <>{list(listPage, true)}<div className="env34-recycle-confirm-scrim" aria-hidden="true" /></>}
+    {page?.preview?.action === "restore" ? <EnvironmentWindowFrame title="找回原环境" titleId="recycle-title" dialogRef={modal} onClose={onClose} closeLabel="关闭回收区" width={440} className="env34-recycle-restore" footer={<><button className="button" disabled={busy} onClick={() => void load({ offset: 0, pageSize: 25 })}>取消</button><button className="button primary" disabled={locked || !confirm} onClick={() => void commit()}>找回原环境</button></>}>
+      <section aria-label="回收影响确认"><div className="env34-field"><span>恢复分组</span><div className="env34-recycle-original-group">沿用原配置分组（只读）</div></div><p>找回保留原 ID、seed、精确内核和数据引用，不走新建复制。接口未提供改分组，找回后可普通编辑。</p><details><summary>核对 {page.total} 个原环境</summary>{page.items.map(item => <p key={item.id}>{item.name} · {item.environmentId}<br />seed {item.seed}</p>)}{pagination}</details><label className="env34-inline"><input type="checkbox" disabled={locked} checked={confirm} onChange={event => setConfirm(event.target.checked)} />已核对下方具体 ID，确认找回原环境全部 {page.total} 项。</label></section>{notices}
+    </EnvironmentWindowFrame> : page?.preview ? <EnvironmentConfirmation title={page.preview.action === "purge" ? "永久删除回收项" : "移入本机回收区"} titleId="recycle-title" dialogRef={modal} danger={page.preview.action === "purge"} onCancel={() => selectedIds?.length ? onClose() : void load({ offset: 0, pageSize: 25 })} onConfirm={() => void commit()} disabled={locked || !confirm} busy={busy} confirmLabel={actions[page.preview.action]}>
+      <section aria-label="回收影响确认"><p>{page.preview.action === "purge" ? "永久删除不可恢复；既有备份和恢复副本不在删除范围。" : "移除后仍保留原身份和浏览数据，可在回收区找回。运行中或退出未确认时拒绝移除。"}</p><p>{page.total} 项 · 数据目录 {page.preview.dataCount} · 有备份记录 {page.preview.backupCount}（未重验文件）</p><details open={page.total === 1}><summary>核对具体 ID</summary>{page.items.map(item => <p key={item.id}>{item.name}<br />{item.environmentId} · seed {item.seed}</p>)}{pagination}</details><label className="env34-inline"><input type="checkbox" disabled={locked} checked={confirm} onChange={event => setConfirm(event.target.checked)} />已核对下方具体 ID，确认{actions[page.preview.action]}全部 {page.total} 项。</label></section>{notices}
+    </EnvironmentConfirmation> : operation?.recycleReport ? <EnvironmentWindowFrame title="回收任务结果" titleId="recycle-title" dialogRef={modal} onClose={onClose} closeLabel="关闭回收区" width={400} className="env34-recycle-result" footer={<><button className="button" disabled={busy} onClick={() => void load({ offset: 0, pageSize: 25 })}>查看回收列表</button>{active && <button className="button" disabled={busy || operation.cancelRequested || operation.stage === "workspace-recovery"} onClick={() => void taskAction(false)}>取消后续项</button>}{operation.persistencePending && <button className="button primary" disabled={busy || operation.state === "running"} onClick={() => void taskAction(true)}>重试核对原任务</button>}</>}>
+      <EnvironmentTaskResult title={`${actions[operation.recycleReport.action]} · ${operation.state}`} total={operation.total} completed={operation.recycleReport.completed} failed={operation.recycleReport.failed}><p>任务 {operation.id} · 未执行 {operation.recycleReport.notExecuted}</p>{operation.error && <p className="env34-error" role="alert">{operation.error.code}：{operation.error.message}</p>}{operation.recycleReport.protected && <p>维护保护保持。请释放目录占用、修复空间或权限后，核对原任务；保留原日志与目录。</p>}<p>取消只阻止后续项，已完成项不撤回。合成 bridge / 页面不等于真实目录验证。</p></EnvironmentTaskResult>{notices}{page && <details><summary>逐项结果</summary>{page.items.map(item => <p key={item.id}>{item.name} · {item.environmentId}<br />{states[item.state]}{item.error && `：${item.error.message}`}</p>)}{pagination}</details>}
+    </EnvironmentWindowFrame> : list(page)}
+  </div>;
 }
