@@ -1,0 +1,200 @@
+{
+  "schemaVersion": 1,
+  "kind": "public-projection-of-source-bound-integrated-directed-checks",
+  "sharedFullCheck": {
+    "sourceHeadShort": "681f823",
+    "passed": 196,
+    "rerunByThisPublisher": false,
+    "currentFullSuitePassClaimed": false
+  },
+  "stages": [
+    {
+      "sourceHead": "9de0e2a170dcde6a0fc9450571049dc5de7b0e78",
+      "renderHash79": "4f8954dcd9447726cec279266f164c8ece0a6277b360d73e73d06f224fc1db20",
+      "baseRenderHash78": "5df1a970ccac184d5793694bb70fff3208fa29be4f7d548a34679be142e7a11e",
+      "immutablePrivateResultSha256": "e375c790579c4b3a445baf7cec0e74535e007c4e0cab09220d32db120d9dbc0b",
+      "frozenRendererManifestSha256": "27974b7bc7668617df34f64d328000a7ac921de2d60c672a9edb1440d64ca2f7",
+      "total": 38,
+      "passed": 38,
+      "failed": 0,
+      "skipped": 0,
+      "flaky": 0,
+      "retries": 0,
+      "actualCaseExecutions": 38,
+      "durationMs": 34214.333999999995,
+      "launcherWallDurationMs": 34676.713,
+      "perSpec": {
+        "batch-focus-recovery.spec.ts": 6,
+        "continuation-visual-repairs.spec.ts": 32
+      },
+      "selectionGrep": null,
+      "viewports": [
+        "1440x900",
+        "1280x800"
+      ],
+      "dpr": 1,
+      "actualEntry": "src/main.tsx -> src/App.tsx",
+      "nativeIO": false,
+      "trueBackendCalls": 0,
+      "methodCounts": {
+        "Workspace.Read": 46,
+        "Batch.Preview": 8,
+        "Operation.Read": 10
+      },
+      "availableCounters": {
+        "batchCommitTotal": 0
+      },
+      "allRecordedAuditErrorsZero": true,
+      "nativeStorageAttemptCounterClaimed": false,
+      "typechecks": [
+        {
+          "command": "npx --no-install tsc -p tsconfig.json --noEmit",
+          "exitCode": 0,
+          "executions": 1,
+          "durationMs": 1106.4076
+        },
+        {
+          "command": "npx --no-install tsc -p tsconfig.tests.json --noEmit",
+          "exitCode": 0,
+          "executions": 1,
+          "durationMs": 944.5444
+        }
+      ],
+      "preservedLauncherFailure": {
+        "beforeCaseDiscovery": true,
+        "caseExecutions": 0,
+        "receiptIncludedInImmutableResultSha256": true,
+        "failureRemovedOrReclassified": false
+      },
+      "actualTestRunsByThisPublisher": 0,
+      "fullSuitePassAtThisHeadClaimed": false,
+      "newVisualOrDesktopAcceptance": false
+    },
+    {
+      "sourceHead": "75bc58d3c209f90680b8915f94f4a1f49339a76c",
+      "renderHash79": "904b07019ee5891cca07502c16239b83166f4474fcf8c7ac49ea5cb3bd33f191",
+      "baseRenderHash78": "76cc03dda5defd8f812a2391cacdf511d5b3a839a6b7f044e4bf0ec7328c1b67",
+      "immutablePrivateResultSha256": "4ee52f9ddc619cfdf1da4537b9ff80f91bb047ced58adff47278f71824f70569",
+      "frozenRendererManifestSha256": "42f131967097ec6cb03ecb0a8366dbfd6462c85285ea60ae01bd71936d64a55e",
+      "total": 22,
+      "passed": 22,
+      "failed": 0,
+      "skipped": 0,
+      "flaky": 0,
+      "retries": 0,
+      "actualCaseExecutions": 22,
+      "durationMs": 37503.685999999994,
+      "launcherWallDurationMs": 38045.8746,
+      "perSpec": {
+        "kernel-visual-recovery.spec.ts": 22
+      },
+      "selectionGrep": null,
+      "viewports": [
+        "1440x900",
+        "1280x800"
+      ],
+      "dpr": 1,
+      "actualEntry": "src/main.tsx -> src/App.tsx",
+      "nativeIO": false,
+      "trueBackendCalls": 0,
+      "methodCounts": {
+        "Workspace.Read": 69,
+        "Kernel.Install": 18,
+        "Operation.Read": 33,
+        "Kernel.SelectArchive": 2
+      },
+      "availableCounters": {
+        "preciseKernelInstallRequestCount": 18,
+        "operationCancelCount": 0,
+        "proxyCheckCount": 0,
+        "batchCommitCount": 0
+      },
+      "allRecordedAuditErrorsZero": true,
+      "nativeStorageAttemptCounterClaimed": false,
+      "typechecks": [
+        {
+          "command": "npx --no-install tsc -p tsconfig.json --noEmit",
+          "exitCode": 0,
+          "executions": 1,
+          "durationMs": 962.179
+        },
+        {
+          "command": "npx --no-install tsc -p tsconfig.tests.json --noEmit",
+          "exitCode": 0,
+          "executions": 1,
+          "durationMs": 947.4181000000001
+        }
+      ],
+      "preservedLauncherFailure": null,
+      "actualTestRunsByThisPublisher": 0,
+      "fullSuitePassAtThisHeadClaimed": false,
+      "newVisualOrDesktopAcceptance": false
+    },
+    {
+      "sourceHead": "340a22c1e8489fad2db091a25bb14bb7d2e66984",
+      "renderHash79": "0df5a445b4a16f1984f2944ac7367d1202322b892876f2d31b9e853d9a8708ce",
+      "baseRenderHash78": "819ebca00422211c9fe8863f04ae67f2e9149cdee0199e75a1ecb9747bcc4ee3",
+      "immutablePrivateResultSha256": "be3f105d6dff7b43430f5aae4ed17073bc9adddec0be3b5cda2811b8ec8a7ca0",
+      "frozenRendererManifestSha256": "d3e6938da18e184f1b9e2160d151196646f0cb22093e64390ea37afd5a66d83d",
+      "total": 26,
+      "passed": 26,
+      "failed": 0,
+      "skipped": 0,
+      "flaky": 0,
+      "retries": 0,
+      "actualCaseExecutions": 26,
+      "durationMs": 21185.474,
+      "launcherWallDurationMs": 21741.824500000002,
+      "perSpec": {
+        "continuation-visual-repairs.spec.ts": 26
+      },
+      "selectionGrep": "native proxy detail projects (stale|wrong-proxy|missing|empty-steps|unfinished|success|failed|unchecked|running|pending|running-no-report|pending-no-report|future-stage) without a false current success$",
+      "viewports": [
+        "1440x900",
+        "1280x800"
+      ],
+      "dpr": 1,
+      "actualEntry": "src/main.tsx -> src/App.tsx",
+      "nativeIO": false,
+      "trueBackendCalls": 0,
+      "methodCounts": {
+        "Workspace.Read": 38,
+        "Operation.Read": 10
+      },
+      "availableCounters": {
+        "operationCancelCount": 0,
+        "proxyCheckCount": 0,
+        "runtimeStartCount": 0,
+        "batchCommitCount": 0
+      },
+      "allRecordedAuditErrorsZero": true,
+      "nativeStorageAttemptCounterClaimed": false,
+      "typechecks": [
+        {
+          "command": "npx --no-install tsc -p tsconfig.json --noEmit",
+          "exitCode": 0,
+          "executions": 1,
+          "durationMs": 1041.7404999999999
+        },
+        {
+          "command": "npx --no-install tsc -p tsconfig.tests.json --noEmit",
+          "exitCode": 0,
+          "executions": 1,
+          "durationMs": 994.5832000000001
+        }
+      ],
+      "preservedLauncherFailure": null,
+      "actualTestRunsByThisPublisher": 0,
+      "fullSuitePassAtThisHeadClaimed": false,
+      "newVisualOrDesktopAcceptance": false
+    }
+  ],
+  "privateOriginalCommandsAndAuditsRetained": true,
+  "rendererRawHashesAndGitBlobsAreDifferentAuthorities": true,
+  "countsDoNotReplace274CellAcceptance": true,
+  "completeProductAcceptance": false,
+  "strictVisualPass": false,
+  "realDesktopAcceptance": false,
+  "formalDesktopAcceptanceCount": "4/21",
+  "oldExecutableContainsNewUi": false
+}

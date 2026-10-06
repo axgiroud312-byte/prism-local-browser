@@ -2,7 +2,9 @@
 
 面向 Windows 本机多环境管理的桌面底座、独立前端原型及产品开发文档。
 
-**新版界面已整体接入可操作的 Vite 页面。** [#32–#37](docs/GOAL.md) 以「完整代码」冻结归档为唯一 [视觉基线](docs/UI_REFERENCE.md)，增量 [PR #38](https://github.com/axgiroud312-byte/prism-local-browser/pull/38) 保留 PR #31 的 `e170099` 成果与旧分支依赖，不自动合并。环境表/分组、连续环境窗口、唯一代理导入、内核/迁移、备份/恢复、记录/帮助/诊断均采用新界面。一次共享 `npm run check` **196/196，4.7分钟**；最后两项CSS小修另做相关复验，不冒称全套跑在新提交。当前渲染源码 `70943b0` 已重新取得 **173状态×两视口＝346张** 实际App合成图，完整参考缺口与容器映射仍单列，**不是全产品1:1或桌面验收通过**。实际命令、修差和逐项证据见 [整组记录](docs/verification/issue37.md)。
+**新版界面已整体接入可操作的 Vite 页面。** [#32–#37](docs/GOAL.md) 以「完整代码」冻结归档为唯一 [视觉基线](docs/UI_REFERENCE.md)，增量 [PR #38](https://github.com/axgiroud312-byte/prism-local-browser/pull/38) 保留 PR #31 的 `e170099` 成果与旧分支依赖，不自动合并。环境表/分组、连续环境窗口、唯一代理导入、内核/迁移、备份/恢复、记录/帮助/诊断均采用新界面。唯一共享 `npm run check` **196/196，4.7分钟** 属于 `681f823`；后续修复只做相关复验，不冒称全套跑在新提交。`70943b0` 的 **173状态×两视口＝346张** 实际App合成图保留历史来源，完整参考缺口与容器映射仍单列，**不是全产品1:1或桌面验收通过**。原阶段命令和逐项证据见 [整组记录](docs/verification/issue37.md)。
+
+后续修复已集成至 `8ca2e79`。[图库总入口](docs/screenshots/issue37-continuation/index.html)、[补核说明](docs/verification/issue37-continuation-evidence.md)与[环境窗口证据](docs/verification/issue37-environment-evidence.md)分别记录新图、定向检查、独立复核及旧FAIL/MISSING；六张票仍OPEN、PR保持草稿，完整原指南仍缺。开发入口为 `http://127.0.0.1:5173/#/environments`，没有重建桌面安装包。
 
 此前 #28–#30 的 **21/21，45.2秒** 为 [历史页面验收](docs/verification/issue28-30.md)，不是本轮检查结果。日常 CI 仍只运行 Vite 浏览器点击，不构建或打包。
 
@@ -16,9 +18,9 @@
 
 开发进度：[当前执行规则](docs/GOAL.md) · [实现与验收状态](docs/PROGRESS.md)。T01 应用契约与 DemoAdapter 已验收；T02 的 WailsAdapter 使用相同页面连接本地服务，各项能力分票验收，不以模拟成功替代。
 
-![当前源码环境列表（70943b0；合成 demo 数据，非真实桌面）](docs/screenshots/issue37/1440x900/environment-list.png)
+![环境列表历史基线（70943b0；合成 demo 数据，非真实桌面）](docs/screenshots/issue37/1440x900/environment-list.png)
 
-[当前新建窗口](docs/screenshots/issue37/1440x900/environment-create.png) · [全部346张实现图](docs/screenshots/issue37/index.html) · [逐图结论](docs/screenshots/issue37/visual-review.html)。图绑定所注明的渲染源码及四份内嵌文档；原图和私有对照只留本机，不公开。本轮没有重建候选安装包，旧exe不含新UI。
+[新建窗口历史基线](docs/screenshots/issue37/1440x900/environment-create.png) · [原346张实现图](docs/screenshots/issue37/index.html) · [原逐图结论](docs/screenshots/issue37/visual-review.html) · [后续图库](docs/screenshots/issue37-continuation/index.html)。图绑定各自注明的渲染源码及四份内嵌文档；原图和私有对照只留本机，不公开。本轮没有重建候选安装包，旧exe不含新UI。
 
 ## 当前可以做什么
 

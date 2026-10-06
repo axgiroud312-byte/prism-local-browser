@@ -1,0 +1,921 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-07",
+  "verdict": "SCOPED_CONTRACT_CONSISTENT",
+  "findings": [],
+  "findingCount": 0,
+  "scope": "Only the completed new8ca order-safe Drawer34 image records and16 full image-owned callbacks, plus necessary actual tool-byte/source-metadata provenance. Baseline38+66/8 and CSS34/14 are not replayed or rewritten.",
+  "inputHashes": [
+    {
+      "path": "environment-drawer-capacity-images-order-safe-first/manifest.json",
+      "scope": "private",
+      "sha256": "1115a1d8116b476a3daf52cd90c37418a5872b19fc0286891d0ef018b9b87756",
+      "bytes": 723250
+    },
+    {
+      "path": "environment-drawer-capacity-images-order-safe-first/frozen-inputs.json",
+      "scope": "private",
+      "sha256": "059d9985e02daefdfb68fb5c0aba86b299798df5cc0af6275936352a371cc7a9",
+      "bytes": 12001
+    },
+    {
+      "path": "docs/verification/issue37-environment-drawer-checks.json",
+      "scope": "public-repository",
+      "sha256": "665f9df7b2f9870aa9e5318f381c34373980c1352a8d47b6a4af77a0c4c7bea6",
+      "bytes": 241427
+    },
+    {
+      "path": "docs/verification/issue37-environment-drawer-source-review.json",
+      "scope": "public-repository",
+      "sha256": "8fa15380f7a28b0c4cc270d0b72435d14c7d245f52caabb081c8e0bc8a8c9ef1",
+      "bytes": 29557
+    },
+    {
+      "path": "frozen-render-inputs-8ca2e79/render-inputs.json",
+      "scope": "private",
+      "sha256": "5ff40038ad34bbe7b82583ac048eec232c8638a6f0743fbfaff6c4dd1ea4aa4c",
+      "bytes": 34925
+    },
+    {
+      "path": "frozen-render-inputs-03d0f68/render-inputs.json",
+      "scope": "private",
+      "sha256": "f8fd47e5be03405ac065f9841573d1d9d05ab6a11bf27de42570503826015c1e",
+      "bytes": 34437
+    },
+    {
+      "path": "environment-drawer-integration-after.json",
+      "scope": "private",
+      "sha256": "6c3e5ecfdb3772eb0cb227440b2859d3502a35a73cd43058455022186bfd4c4a",
+      "bytes": 83877
+    },
+    {
+      "path": "environment-drawer-capacity-images-first/global-admission-failure.json",
+      "scope": "private-retained-prior-global-refusal",
+      "sha256": "99b3be68000ca9bbee2be95f92b9b90ec0ebbd0ddc0480a1e06c740234dedb07",
+      "bytes": 1135
+    }
+  ],
+  "sourceIdentityQualification": {
+    "actualHead": "8ca2e79a13c90dcc1fc293447376380763747c5e",
+    "actualRenderHash79": "a83d927c931dd81b76656f98d6616aafe5f8e8df9b168d68953bab9d193537f2",
+    "actualBaseRenderHash78": "e988efcf211ffa781655c99c6e7db6aa187c133b8e1ab4e9aed9e9bb725ea0a0",
+    "predecessorHead": "03d0f6836399a9eae83895424c6a13e4d00c0abd",
+    "predecessorRenderHash79": "df5b45f48531cbff945dc13eb0eac1d51fc91b8789aea7608c640b2110c46d3e",
+    "originalAuthorHead": "340a22c1e8489fad2db091a25bb14bb7d2e66984",
+    "originalAuthorRenderHash79": "0df5a445b4a16f1984f2944ac7367d1202322b892876f2d31b9e853d9a8708ce",
+    "publicRawFrozenAndNewFreezeIdentityMapsAgree": true,
+    "declaredSourceFamily": 79,
+    "otherMetadataIdentitiesUnchanged": 76,
+    "changedIdentities": [
+      {
+        "path": "src/components/EnvironmentForm.tsx",
+        "beforeSha256": "534745651d46b7d2815c82fb6c5a09ee75eae3feb593b1cef038e4036b7cfc70",
+        "afterSha256": "bc4d114344d824b310eb1f27da0f2baabd910b43cc7ff9e4a7b0f64dc9d55bf4"
+      },
+      {
+        "path": "src/components/EnvironmentKernelSelect.tsx",
+        "beforeSha256": "350d384b2d0f792a748f7544a3346b5b43e7e7a82c8caacb0344f538b0a9c91c",
+        "afterSha256": "6b5f64ceaa173915096cb20220f1d997c59a1c750cf945665aff92e94897108f"
+      },
+      {
+        "path": "src/components/environment-windows.css",
+        "beforeSha256": "0801d55b58e6e4bafaabdd7037283fd1990a3c90e868541210ceb46f41868fa0",
+        "afterSha256": "409f083d515d8c16eba38698953fc0cd9dafebf64e0a4737a1cf05120a1174c4"
+      }
+    ],
+    "integrationRecordedPredicates": {
+      "protectedInputCount": 358,
+      "untouchedRawAndCanonicalInputsMatch": true,
+      "mergedCandidateCanonicalBytesMatch": true,
+      "exactPR31AncestorPreserved": true,
+      "unrelatedMainDocsDiscarded": false,
+      "reviewedCandidateTip": "b01d17d960560f2504f817f8ce57d8dd493f270e"
+    },
+    "qualification": "Pinned reported MAIN freeze/integration identities and predicates only. No3-UI/all79/raw76 audit, Git integration reexecution, raw/canonical interchange, or current-HEAD certificate. Old changedFilesSince83 is not the03-to8ca delta.",
+    "completedOriginalPreflightVerdict": "SCOPED_SOURCE_CONSISTENT",
+    "completedOrderingCorrectionVerdict": "SCOPED_SOURCE_FIX_CONSISTENT",
+    "originalMissedSequenceSensitiveComparisonRetained": true,
+    "originalPendingExecutionOrAuthoredStringsUpdated": false,
+    "mainReportedHistoricalNoEmitChecks": {
+      "count": 2,
+      "exitCodes": [
+        0,
+        0
+      ],
+      "sourceHead": "8ca2e79a13c90dcc1fc293447376380763747c5e",
+      "sharedSuiteReruns": 0,
+      "pngs": 0,
+      "reviewerExecuted": 0,
+      "qualification": "Public saved MAIN executed-check summary, not independently rerun or visual/native acceptance."
+    }
+  },
+  "toolByteProvenance": {
+    "actualArchivePrefix": "environment-drawer-capacity-images-order-safe-first/",
+    "ownHash": "b91219286ae57487eba4c106f80b84890a711af12c09f8c16f3c7bfc54f4625b",
+    "ownHashRecipe": "SHA256(UTF8(JSON.stringify(Object.entries(frozenInputs.ownFiles)))) preserving the archived map order",
+    "actualBindings": 15,
+    "distinctByteIdentities": 15,
+    "actualCopiesByteHashed": 15,
+    "acceptedBaselineCssSubset": 9,
+    "completedDrawerPreflightCorrectionInputs": 6,
+    "files": [
+      {
+        "file": "native-fixtures/bridge.mjs",
+        "sha256": "eea69c9a7397b4a46c2eb6d8d45f7f1db71e6fd12399de60356b51349de88e33",
+        "bytes": 46263,
+        "provenance": "accepted-baseline-css-subset"
+      },
+      {
+        "file": "native-fixtures/scenarios.mjs",
+        "sha256": "eb2fc0699a5c7bfcb839e64d02d94960bad1df2c3392e14c848191f07e0870bb",
+        "bytes": 19585,
+        "provenance": "accepted-baseline-css-subset"
+      },
+      {
+        "file": "notes/continuation1/capture-authored-environment-gaps-atomic.mjs",
+        "sha256": "ec11cddfa5dfcf3d088c61579ba5446e2aeda77d0be0c1bac21f326bbc5c4ca0",
+        "bytes": 19266,
+        "provenance": "accepted-baseline-css-subset"
+      },
+      {
+        "file": "notes/continuation1/capture-authored-environment-gaps.mjs",
+        "sha256": "658b2e7bdb1b37c63cb2426bb772f3bb11562755a31c840e1fe27f2186cecf8b",
+        "bytes": 18191,
+        "provenance": "accepted-baseline-css-subset"
+      },
+      {
+        "file": "notes/continuation1/capture-environment-css-repairs.mjs",
+        "sha256": "13e8aa2509792ea820751812dedbe20f57d77c32426239905443700994787531",
+        "bytes": 21133,
+        "provenance": "accepted-baseline-css-subset"
+      },
+      {
+        "file": "notes/continuation1/capture-environment-drawer-repairs-order-safe.mjs",
+        "sha256": "4fc67c08f989566c638cfc26bf3b4bdbca98ce4a18b4785c5afaf246869b5986",
+        "bytes": 21906,
+        "provenance": "completed-order-correction"
+      },
+      {
+        "file": "notes/continuation1/capture-environment-drawer-repairs.mjs",
+        "sha256": "14401e46a79d5ca0453d6542036707a11ac8f68548289cdebd9f015b369e82ca",
+        "bytes": 21830,
+        "provenance": "completed-original-drawer-preflight",
+        "archivedPredecessorNotAnotherExecution": true
+      },
+      {
+        "file": "notes/continuation1/environment-drawer-capacity-gap-cases.mjs",
+        "sha256": "f39feb489dcba1edf5fcb302878190df4cd56ee7f26b081df4e208de8db23f0d",
+        "bytes": 3758,
+        "provenance": "completed-original-drawer-preflight"
+      },
+      {
+        "file": "notes/continuation1/environment-drawer-capacity-gap-plan.json",
+        "sha256": "b2e3e310822cfa934c26202be71055effb5e9ab608097e560a5037c0de222fad",
+        "bytes": 1130,
+        "provenance": "completed-original-drawer-preflight"
+      },
+      {
+        "file": "notes/continuation1/environment-drawer-capacity-gap-plan.md",
+        "sha256": "3d1cee00260aa519732f6131013e6ef7739538d02fefc19a28f52d6f5e2f9ade",
+        "bytes": 1703,
+        "provenance": "completed-original-drawer-preflight"
+      },
+      {
+        "file": "notes/continuation1/environment-drawer-capacity-original-cases.mjs",
+        "sha256": "3277a39d7d5e2711122b5d97449d6317b3f4cdf76b72582f1ea1918edaf3300d",
+        "bytes": 87220,
+        "provenance": "completed-original-drawer-preflight"
+      },
+      {
+        "file": "notes/continuation1/environment-main-runner-atomic-plan.md",
+        "sha256": "0488b9373dccca5941a138a8fb655dc7bc7d1b34db792c3c0c2a1d11f62a115d",
+        "bytes": 1324,
+        "provenance": "accepted-baseline-css-subset"
+      },
+      {
+        "file": "notes/continuation1/local-gap-cases.mjs",
+        "sha256": "f9da12e3c2cd95f6b4cc91f6796bb9c6c95f4dbe972372c5e7083ad883478d9a",
+        "bytes": 89586,
+        "provenance": "accepted-baseline-css-subset"
+      },
+      {
+        "file": "notes/continuation1/migration-evidence-page.mjs",
+        "sha256": "4432d09a4239dfef810c1d5bf0c7b722242f01f26d2d190940bfcd04b84ea047",
+        "bytes": 5780,
+        "provenance": "accepted-baseline-css-subset"
+      },
+      {
+        "file": "notes/issue37-evidence-helpers.mjs",
+        "sha256": "bb05cc0ca4769671b93c2e8e08144ddf514016e22058b1657fd1ef97ff9e43c7",
+        "bytes": 25493,
+        "provenance": "accepted-baseline-css-subset"
+      }
+    ],
+    "nativeOptionFixtureFork": {
+      "approvedLine": 526,
+      "originalSha256": "32cfe5db485cb62614281279c26bca17839c0f99953da315741f19fd54fe46af",
+      "originalBytes": 87262,
+      "forkSha256": "3277a39d7d5e2711122b5d97449d6317b3f4cdf76b72582f1ea1918edaf3300d",
+      "forkBytes": 87220,
+      "oldLine": "    await expect(select.locator('option')).toHaveText(['fingerprint-chromium 148.0.7778.215 · 已核验', 'fingerprint-chromium 151.0.9000.11 · 已核验']);",
+      "newLine": "    await expect(select.locator('option')).toHaveText(['148.0.7778.215 · 已核验', '151.0.9000.11 · 已核验']);",
+      "oldLineOccursOnceAtApprovedLine": true,
+      "actualForkEqualsOnlyThatRawReplacement": true,
+      "allOtherBytesIncludingEolIdentical": true,
+      "versionsStatusBuildIdsRequestsBudgetsAndGuardsUnchanged": true,
+      "originalEditedOrModuleExecutedByReviewer": false,
+      "qualification": "Whole-byte replacement comparison only, not a repeated original-tool code review."
+    },
+    "orderingCorrectionReviewNotRepeated": true,
+    "orderingCorrectionScopeAsPreviouslyReviewed": "Sort copies of only exact raw-changed and expected path lists, retaining case/count/full79/hash checks; archive predecessor runner. Old sequence gate refusal remains distinct.",
+    "originalRunnerExecutedInThisNewAttempt": false,
+    "originalRunnerExecutionQualification": "Saved order-safe attempt and completed correction attribution; archival presence of predecessor is not a second execution. No process replay performed."
+  },
+  "verification": {
+    "assertions": 1666,
+    "mismatches": 0,
+    "groups": [
+      {
+        "name": "Actual15 tooling byte copies/ownHash, completed lineage, one-line fork, historical hash-only protection and distinct retained global refusal",
+        "assertions": 46,
+        "mismatches": 0
+      },
+      {
+        "name": "New34 image/index/full-record/PNG/finalSafety and16 complete callback bindings; qualified source metadata and admission",
+        "assertions": 262,
+        "mismatches": 0
+      },
+      {
+        "name": "New34 image plus16 post measurements, exact17 finite guard limits, actual final-context counts, original callback identity and four natural source wheels",
+        "assertions": 1358,
+        "mismatches": 0
+      }
+    ],
+    "notProductTestSuiteOrAcquisitionReexecution": true
+  },
+  "actualCounts": {
+    "literalStates": 17,
+    "imageRecords": 34,
+    "nativeModeStates": 15,
+    "demoStates": 2,
+    "nativeSyntheticContexts": 30,
+    "demoContexts": 4,
+    "imageOwnedCallbacks": 16,
+    "callbackOwningStates": 8,
+    "imageMeasurements": 34,
+    "postImageMeasurements": 16,
+    "distinctContexts": 34,
+    "savedMeasurementProfiles": 50,
+    "acquisitionFailures": 0,
+    "standaloneActionsAdded": 0,
+    "extraCallbackContexts": 0,
+    "extraCallbackPngs": 0,
+    "viewports": [
+      {
+        "width": 1440,
+        "height": 900
+      },
+      {
+        "width": 1280,
+        "height": 800
+      }
+    ],
+    "callbackOriginalRecordIndicesInPublicOrder": [
+      6,
+      7,
+      10,
+      11,
+      12,
+      13,
+      15,
+      16,
+      23,
+      24,
+      27,
+      28,
+      29,
+      30,
+      32,
+      33
+    ]
+  },
+  "bindings": {
+    "sigRecipe": "sig(x)=SHA256(UTF8(JSON.stringify(x))) preserving original parsed property order; whole raw objects, not reduced public summaries",
+    "recordArrayShape": "{index,sha256:sig(fullRawRecord)} in manifest record order",
+    "recordArraySha256": "266abda43bae83b9f55418e477bfe10cfdd164731b99e86613b512dff3c16ec4",
+    "callbackArrayShape": "{index:originalManifestRecordIndex,recordSha256:sig(fullRawRecord),proofSha256:sig(postCaptureActionProof),measurementSha256:sig(postCaptureMeasurement),finalSafetySha256:sig(finalSafety),pngSha256:rawRecord.png.sha256} in public callback order",
+    "callbackArraySha256": "1082f8450d5eb1ada82904f9828ac76451801031e7b7df5412b9816798dca625",
+    "pngArrayShape": "{index,sha256:SHA256(actualSavedPngBytes),bytes} in manifest record order",
+    "pngArraySha256": "0b5db37076b609a78be87ac8213ecc54cdd01d5060a031ced59d248690f56ae8",
+    "safetyArrayShape": "{index,sha256:sig(rawRecord.finalSafety)} in manifest record order",
+    "safetyArraySha256": "c815aa64a4fbb5cc9eb70471c1d784dafff79f6254d25a28836f75ef86b92775",
+    "publicIndexWholeRecordPngFinalSafetyMatches": 34,
+    "actualPngBytesAndHeaderDimensionsCheckedWithoutPixels": 34,
+    "wholePublicCallbackProofPostMeasurementFinalSafetyMatches": 16,
+    "callbackIdCellsViewportSourceRenderOwningRecordAndPngMatches": 16,
+    "originalAuthored340StatusAndNotReviewedMetadataUnchanged": true,
+    "callbacksAddImageContextActionOrWholeCellAcceptance": false
+  },
+  "finiteGuardProfiles": {
+    "nativeMeasurementProfiles": 44,
+    "demoMeasurementProfiles": 6,
+    "nativeStorageGetterAttempts": 0,
+    "nativeUnsupportedMethods": 0,
+    "demoNativeDispatches": 0,
+    "exactViewportDpr1VisualScale1Zoom1NoOverflowNoDocumentScrollProfiles": 50,
+    "highestFocusedDrawerOneMaskLowerApplicationInertProfiles": 44,
+    "closedDrawerZeroMaskApplicationReactivatedProfiles": 6,
+    "admittedPageConsoleDeniedRequestFailedResponseErrors": 0,
+    "separatelyRecordedIgnoredHmrMessagesPerContext": 2,
+    "separatelyRecordedBlockedWebSocketsPerContext": 2,
+    "ignoredOrBlockedEventsRelabeledAsNoExclusions": false,
+    "stockAuditKeys": [
+      "storageBlocked",
+      "storageAttempts",
+      "methodCounts",
+      "unsupportedMethods"
+    ],
+    "stockFieldShapeAndReadCountersRetained": true,
+    "finalRawSyntheticDispatchesAcross34ContextsOnce": 160,
+    "finalStockWorkspaceReadEntriesAcross34ContextsOnce": 96,
+    "finalSeparateInterceptionEntriesAcross34ContextsOnce": 64,
+    "finalCounterRecipe": "Sum finalSafety.methodCounts once per34 raw records; demo nativeCalls0. Final stock is postCaptureMeasurement.nativeAudit when present, otherwise image measurement. Drawer original ledger already includes ordinary Workspace.Read reads: add no Table bootstrap prelude and do not add callback totals again.",
+    "all17LiteralModesMethodLimitsAllowlistsAndEffectCallCapsExact": true,
+    "nativeCommonMethodLimits": {
+      "Workspace.Read": 10,
+      "Environment.Preview": 1
+    },
+    "demoMethodLimits": {},
+    "defaultEffectCallCaps": {
+      "Environment.Create": 0,
+      "Environment.Update": 0,
+      "Fingerprint.CommitRevision": 0,
+      "Runtime.Start": 0,
+      "Runtime.ForceStop": 0,
+      "Runtime.Stop": 0,
+      "Runtime.Reconcile": 0,
+      "Batch.Commit": 0,
+      "Batch.Retry": 0,
+      "Proxy.CommitImport": 0,
+      "Kernel.Install": 0,
+      "Kernel.Verify": 0,
+      "Kernel.Delete": 0
+    },
+    "effectCallExceptionsByCaseIndex": {
+      "11": {
+        "Fingerprint.CommitRevision": 1
+      },
+      "12": {
+        "Environment.Create": 1
+      },
+      "13": {
+        "Fingerprint.CommitRevision": 1
+      },
+      "15": {
+        "Environment.Create": 1
+      },
+      "16": {
+        "Environment.Create": 1
+      }
+    },
+    "savedSyntheticLedgerHasNoForeignMethodsOrEffectsOutsideInheritedScope": true,
+    "requestQueryIdentityGuardQualification": "Same exact reviewed original validators retained by all-other-byte-identical fixture fork and originalGuardsUnmodified finalSafety. Raw records expose exact guard summaries and retry/restore predicates, not a new full request/query/seed/Cookie/native-files payload transcript. No request replay or actual backend/native effect inspection.",
+    "createOrCommitRefusalCallIsSuccessClaimed": false,
+    "demoActualStorageCommitIsNativeClaimed": false,
+    "rawCredentialOrCredentialHashProofClaimed": false
+  },
+  "cases": [
+    {
+      "id": "env-drawer-native-idle-create-proxy",
+      "indices": [
+        0,
+        17
+      ],
+      "mode": "native-proxy-kernel",
+      "extraMethodLimits": {},
+      "rawFinalPerView": 4,
+      "stockPerView": 3,
+      "maximumNativeCalls": 11,
+      "callback": false
+    },
+    {
+      "id": "env-drawer-native-idle-create-preferences",
+      "indices": [
+        1,
+        18
+      ],
+      "mode": "native-proxy-kernel",
+      "extraMethodLimits": {},
+      "rawFinalPerView": 4,
+      "stockPerView": 3,
+      "maximumNativeCalls": 11,
+      "callback": false
+    },
+    {
+      "id": "env-drawer-native-idle-create-fingerprint",
+      "indices": [
+        2,
+        19
+      ],
+      "mode": "native-proxy-kernel",
+      "extraMethodLimits": {},
+      "rawFinalPerView": 4,
+      "stockPerView": 3,
+      "maximumNativeCalls": 11,
+      "callback": false
+    },
+    {
+      "id": "env-drawer-native-idle-create-bottom",
+      "indices": [
+        3,
+        20
+      ],
+      "mode": "native-proxy-kernel",
+      "extraMethodLimits": {},
+      "rawFinalPerView": 4,
+      "stockPerView": 3,
+      "maximumNativeCalls": 11,
+      "callback": false
+    },
+    {
+      "id": "env-drawer-native-kernel-select-real-scope",
+      "indices": [
+        4,
+        21
+      ],
+      "mode": "native-proxy-kernel",
+      "extraMethodLimits": {
+        "Fingerprint.Generate": 1
+      },
+      "rawFinalPerView": 5,
+      "stockPerView": 3,
+      "maximumNativeCalls": 12,
+      "callback": false
+    },
+    {
+      "id": "env-drawer-native-saved-build-lock",
+      "indices": [
+        5,
+        22
+      ],
+      "mode": "native-proxy-kernel",
+      "extraMethodLimits": {
+        "Fingerprint.ListRevisions": 1
+      },
+      "rawFinalPerView": 5,
+      "stockPerView": 3,
+      "maximumNativeCalls": 12,
+      "callback": false
+    },
+    {
+      "id": "env-drawer-native-automatic-preview-busy",
+      "indices": [
+        6,
+        23
+      ],
+      "mode": "native-proxy-kernel",
+      "extraMethodLimits": {
+        "Fingerprint.Generate": 1
+      },
+      "rawFinalPerView": 5,
+      "stockPerView": 3,
+      "maximumNativeCalls": 12,
+      "callback": true,
+      "finalDrawer": "open"
+    },
+    {
+      "id": "env-drawer-native-preview-failure-exact-retry",
+      "indices": [
+        7,
+        24
+      ],
+      "mode": "native-proxy-kernel",
+      "extraMethodLimits": {
+        "Fingerprint.Generate": 2
+      },
+      "rawFinalPerView": 6,
+      "stockPerView": 3,
+      "maximumNativeCalls": 13,
+      "callback": true,
+      "finalDrawer": "open"
+    },
+    {
+      "id": "env-drawer-native-generated-preview-capability-source",
+      "indices": [
+        8,
+        25
+      ],
+      "mode": "native-proxy-kernel",
+      "extraMethodLimits": {
+        "Fingerprint.Generate": 1
+      },
+      "rawFinalPerView": 5,
+      "stockPerView": 3,
+      "maximumNativeCalls": 12,
+      "callback": false
+    },
+    {
+      "id": "env-drawer-demo-technical-source-labels",
+      "indices": [
+        9,
+        26
+      ],
+      "mode": "demo",
+      "extraMethodLimits": {},
+      "rawFinalPerView": 0,
+      "stockPerView": 0,
+      "maximumNativeCalls": 0,
+      "callback": false
+    },
+    {
+      "id": "env-drawer-demo-rollback-preview-new-revision",
+      "indices": [
+        10,
+        27
+      ],
+      "mode": "demo",
+      "extraMethodLimits": {},
+      "rawFinalPerView": 0,
+      "stockPerView": 0,
+      "maximumNativeCalls": 0,
+      "callback": true,
+      "finalDrawer": "closed"
+    },
+    {
+      "id": "env-drawer-native-rollback-and-incompatible-history",
+      "indices": [
+        11,
+        28
+      ],
+      "mode": "native-proxy-kernel",
+      "extraMethodLimits": {
+        "Fingerprint.ListRevisions": 1,
+        "Fingerprint.PreviewRestore": 1,
+        "Fingerprint.CommitRevision": 1
+      },
+      "rawFinalPerView": 8,
+      "stockPerView": 4,
+      "maximumNativeCalls": 14,
+      "callback": true,
+      "finalDrawer": "closed"
+    },
+    {
+      "id": "env-drawer-native-known-create-refusal",
+      "indices": [
+        12,
+        29
+      ],
+      "mode": "native-proxy-kernel",
+      "extraMethodLimits": {
+        "Environment.Create": 1
+      },
+      "rawFinalPerView": 5,
+      "stockPerView": 3,
+      "maximumNativeCalls": 12,
+      "callback": true,
+      "finalDrawer": "open"
+    },
+    {
+      "id": "env-drawer-native-known-profile-revision-refusal",
+      "indices": [
+        13,
+        30
+      ],
+      "mode": "native-proxy-kernel",
+      "extraMethodLimits": {
+        "Fingerprint.ListRevisions": 1,
+        "Fingerprint.CommitRevision": 1
+      },
+      "rawFinalPerView": 6,
+      "stockPerView": 3,
+      "maximumNativeCalls": 13,
+      "callback": true,
+      "finalDrawer": "open"
+    },
+    {
+      "id": "env-drawer-native-history-read-error-on-form",
+      "indices": [
+        14,
+        31
+      ],
+      "mode": "native-proxy-kernel",
+      "extraMethodLimits": {
+        "Fingerprint.ListRevisions": 1
+      },
+      "rawFinalPerView": 5,
+      "stockPerView": 3,
+      "maximumNativeCalls": 12,
+      "callback": false
+    },
+    {
+      "id": "env-drawer-native-create-terminal-zero-editable-draft",
+      "indices": [
+        15,
+        32
+      ],
+      "mode": "native-proxy-kernel",
+      "extraMethodLimits": {
+        "Environment.Create": 1
+      },
+      "rawFinalPerView": 6,
+      "stockPerView": 4,
+      "maximumNativeCalls": 12,
+      "callback": true,
+      "finalDrawer": "open"
+    },
+    {
+      "id": "env-drawer-native-create-persistence-pending-no-success",
+      "indices": [
+        16,
+        33
+      ],
+      "mode": "native-proxy-kernel",
+      "extraMethodLimits": {
+        "Environment.Create": 1,
+        "Operation.Read": 1,
+        "Preview.Discard": 1
+      },
+      "rawFinalPerView": 8,
+      "stockPerView": 4,
+      "maximumNativeCalls": 14,
+      "callback": true,
+      "finalDrawer": "closed"
+    }
+  ],
+  "callbackIdentityAndClosureScope": {
+    "automaticBusy": "Original held reply released once, Generate1/no manual regenerate/create; unchanged complete draft, seed/build/device identity.",
+    "previewExactRetry": "Same complete original preview request, regenerate false twice, fixed seed/build/device; Environment.Preview1/Fingerprint.Generate2, no replacement preview identity asserted.",
+    "demoRollback": {
+      "savedProfileRevision": 2,
+      "sourceRevision": 1,
+      "newProfileRevision": 3,
+      "originalEnvironmentAndIndependentCookieDataRetained": true,
+      "actualLocalStorageCommit": true,
+      "nativeAcceptance": false
+    },
+    "nativeRestore": {
+      "sourceRevision": 1,
+      "expectedEnvironmentRevision": 3,
+      "proposedAndNewEnvironmentProfileRevision": 4,
+      "incompatibleBuildRevision": 2,
+      "incompatibleHistoryDisabled": true,
+      "originalPreviewMatchedCommit": true,
+      "originalSeedBuildProxyDataFixed": true,
+      "savedDataReferenceRetained": true,
+      "independentCookieProtection": "Original byte-bound guard; not fresh native Cookie/file verification."
+    },
+    "knownCreateRefusal": "No created IDs, original preview and mutable draft retained, Create1/no second Create.",
+    "knownProfileRefusal": "Expected revision1, saved identity not overwritten, Commit1/no second commit; only group intentionally edited to 拒绝后合成分组, kernel/proxy/name/seed metadata unchanged.",
+    "terminalZero": "Original preview retained and real editable draft remains, Create1/no new Create; no unknown lock or false success.",
+    "persistencePending": {
+      "originalOperationId": "env-drawer-original-create-operation",
+      "sameCreatedId": "env-drawer-created-1",
+      "terminalLabelNotTreatedAsSuccess": true,
+      "finalizedOnce": true,
+      "successOnlyAfterPersistenceConfirmed": true,
+      "openedBrowser": false
+    },
+    "closedCallbackCaseIndices": [
+      10,
+      11,
+      16
+    ],
+    "openCallbackCaseIndices": [
+      6,
+      7,
+      12,
+      13,
+      15
+    ],
+    "historyReadError": "Exact synthetic-environment history read; form error, no save.",
+    "kernelIdentity": "Original synthetic-build-a/b IDs, full versions148.0.7778.215 and151.0.9000.11/status retained; exact build-b real-select fixture and saved build-a lock, no implicit save/migration.",
+    "capabilitySources": "Synthetic native cpu install-time observed, gpu seed-generated/source-derived, other fields not-probed; demo labels demo-only, never live environment/native read values.",
+    "rawPreviewIdSeedCookieNativeFileTranscriptNewlyObserved": false
+  },
+  "naturalTechnicalSourceWheel": {
+    "literalWheelInputsAsCompletedPreflight": [
+      480,
+      600
+    ],
+    "actualRecordIndices": [
+      8,
+      9,
+      25,
+      26
+    ],
+    "records": [
+      {
+        "index": 8,
+        "viewportWidth": 1440,
+        "before": 709,
+        "stepTops": [
+          1189,
+          1495
+        ],
+        "bodyClientHeight": 741,
+        "bodyScrollHeight": 2236,
+        "sourceBlocks": 3
+      },
+      {
+        "index": 9,
+        "viewportWidth": 1440,
+        "before": 629,
+        "stepTops": [
+          1109,
+          1436
+        ],
+        "bodyClientHeight": 741,
+        "bodyScrollHeight": 2177,
+        "sourceBlocks": 4
+      },
+      {
+        "index": 25,
+        "viewportWidth": 1280,
+        "before": 809,
+        "stepTops": [
+          1289,
+          1595
+        ],
+        "bodyClientHeight": 641,
+        "bodyScrollHeight": 2236,
+        "sourceBlocks": 3
+      },
+      {
+        "index": 26,
+        "viewportWidth": 1280,
+        "before": 729,
+        "stepTops": [
+          1209,
+          1536
+        ],
+        "bodyClientHeight": 641,
+        "bodyScrollHeight": 2177,
+        "sourceBlocks": 4
+      }
+    ],
+    "publicObservationEqualsRawCompleteObservation": true,
+    "realFinalBodyScrollTopAndDimensionsMatch": true,
+    "secondMovementNaturallyClampsAtBottom": true,
+    "actualSourceBlockRectanglesFullyInsideMeasuredBody": 14,
+    "domScrollAssignments": 0,
+    "windowGeometryWrites": 0,
+    "sameOriginalPayloadsAndBudgets": true,
+    "newAppDomStyleFocusScriptedScrollTopOrGeometryWrites": 0,
+    "writeAbsenceQualification": "Saved explicit0 counters and byte-identical completed wrapper/preflight; no browser/source execution or new DOM investigation.",
+    "nativeToastMayNaturallyExpire": true,
+    "absentFinalToastIsV04PixelAcceptance": false,
+    "originalClippingOrFailVerdictsErased": false
+  },
+  "admissionAndRetainedPriorRefusal": {
+    "runnerVersion": "immutable-v2-atomic-admission",
+    "recordedArchiveVerifiedBeforeManifest": true,
+    "recordedRefusalOverridesManifest": true,
+    "recordedPairFailuresRetainedOnGlobalRefusal": true,
+    "all15ActualArchivedCopiesMatch": true,
+    "orderSafeRunnerMatchesCompletedReviewHash": true,
+    "newAttemptComplete": true,
+    "newAttemptAcquisitionFailures": 0,
+    "newAttemptGlobalRefusalPresent": false,
+    "priorAttempt": "environment-drawer-capacity-images-first",
+    "priorArtifactSha256": "99b3be68000ca9bbee2be95f92b9b90ec0ebbd0ddc0480a1e06c740234dedb07",
+    "priorArtifactBytes": 1135,
+    "priorWholeRawObjectSha256": "99a33a54e91ea3f4d0d658265aed96faea5e8824d451ac2d29e8d1aa753bc11f",
+    "priorWholeObjectMatchesPublicProjection": true,
+    "priorStatus": "GLOBAL_ADMISSION_REFUSED",
+    "priorStage": "preflight-or-global-guard",
+    "priorMessage": "Only the three separately owned drawer deltas are admitted; the other 76 raw render inputs must stay exact",
+    "priorRecordsAdmitted": 0,
+    "priorReportedBrowserOrCaseExecutions": 0,
+    "priorReportedAdmittedImages": 0,
+    "priorManifestPresent": false,
+    "priorNeverAdmittedAndSeparate": true,
+    "priorIsNinthBaselineCaseFailure": false,
+    "priorGlobalRefusalIsProductOrNativeDefect": false,
+    "globalCatchPathReexecutedOrArtifactManufactured": false,
+    "originalSourceGateOrderingMistakeConcealed": false,
+    "publisherIndependentReviewFlagsEdited": false
+  },
+  "originalFilesHashOnlyProtection": {
+    "matchedAcceptedPins": true,
+    "files": [
+      {
+        "path": "environment-contract-review.md",
+        "scope": "private",
+        "sha256": "176f8169a04232892cfcb37374594bb7231dc5a1cff8654459ddc7237026a029",
+        "bytes": 17705
+      },
+      {
+        "path": "environment-contract-review.json",
+        "scope": "private",
+        "sha256": "7be4610598b182112b00d0c32a446223bf211538287e929cb5f00f3dc404d4ee",
+        "bytes": 40725
+      },
+      {
+        "path": "environment-css-contract-review.md",
+        "scope": "private",
+        "sha256": "d2120f8c52a67897900084ef2be27c87ed2619439fac72d7b34ff48304405cb4",
+        "bytes": 9008
+      },
+      {
+        "path": "environment-css-contract-review.json",
+        "scope": "private",
+        "sha256": "ffbe24461dca2dc2a53bd791190048948113bccf94331429e64b81a2280198ae",
+        "bytes": 19171
+      },
+      {
+        "path": "docs/verification/issue37-environment-actions.json",
+        "scope": "public-repository",
+        "sha256": "cb973850ba59e56c31cec16b20b77dff9b84b37d9147c14a41b5b61d82239781",
+        "bytes": 1800859
+      },
+      {
+        "path": "docs/verification/issue37-environment-css-checks.json",
+        "scope": "public-repository",
+        "sha256": "8315ecfe06c7de5363970662e6a7b3611679deab45cad3b6b6d29dc391feb3b2",
+        "bytes": 174554
+      },
+      {
+        "path": "environment-drawer-gap-cases.mjs",
+        "scope": "private",
+        "sha256": "32cfe5db485cb62614281279c26bca17839c0f99953da315741f19fd54fe46af",
+        "bytes": 87262
+      },
+      {
+        "path": "environment-drawer-independent-source-review.json",
+        "scope": "private",
+        "sha256": "0f1f3f7a4b12dfbddd232a8d085a340b29005611a14d2ae9c635d6295796a24f",
+        "bytes": 20433
+      },
+      {
+        "path": "environment-drawer-order-safe-source-review.json",
+        "scope": "private",
+        "sha256": "6ab7f36af68cf3e1165223d6ed0d14338ca64b2f1b302c07dcde8fdfbfa9b204",
+        "bytes": 7038
+      }
+    ],
+    "baselineCountsRetained": "38 standalone actions /66 callbacks /8 original case failures",
+    "cssSupplementRetained": "34 image records /14 image-owned callbacks",
+    "eightOriginalFailureObjectsRetainedByWholePublicPacketHash": true,
+    "originalRawFailuresReopened": false,
+    "old104ProofsRecounted": false,
+    "old145ToolArchiveBindingsRescanned": false,
+    "original34062FailImagesRetained": true,
+    "oldCss28FailImagesRetained": true,
+    "oldFailImagesOrAll340SourceFilesReaudited": false,
+    "historicalFailIdentityQualification": "Historical verdicts and preservation predicates remain; the pinned old packets/reports are byte-identical. No new pixel/image/raw-source audit or promotion of original FAILs.",
+    "originalSourceOrReportHashFieldsUpdatedTo8ca": false
+  },
+  "operations": {
+    "readOnlyMetadataAndNecessaryByteComparisons": true,
+    "evidenceModuleImportsOrExecution": 0,
+    "browserPixelsCaptures": 0,
+    "suiteBuildNoEmit": 0,
+    "nativeGoWailsUIA": 0,
+    "network": 0,
+    "gitWrites": 0,
+    "publicSourceToolAuthorEdits": 0,
+    "newAgents": 0,
+    "otherPendingReviewInspection": false,
+    "ownedNewOutputs": [
+      "environment-drawer-contract-review.md",
+      "environment-drawer-contract-review.json"
+    ]
+  },
+  "acceptanceBoundary": {
+    "mainPublishesSeparately": true,
+    "baseline38Plus66Advance": 0,
+    "css34Slash14CountsRewritten": false,
+    "standaloneActionsAdded": 0,
+    "extraCallbackImagesOrContexts": 0,
+    "wholeCellPassesAdded": 0,
+    "strictVisualPass": false,
+    "realNativeDesktopAcceptance": false,
+    "completeProductAcceptance": false,
+    "historicalCoveredPartialMissingUnchanged": [
+      113,
+      60,
+      101
+    ],
+    "formalDesktopAcceptanceUnchanged": "4/21",
+    "securityOrCurrentHeadCertificate": false,
+    "privateRawPathsAndAnyRealCredentialHashesNotForPublicPublication": true
+  },
+  "kind": "public-independent-drawer-continuation-saved-contract-supplement-not-new-acceptance",
+  "publicationProvenance": {
+    "privateIndependentReviewSha256": "85a6dccf3f9d80f20f35772fb2409115d07a619475c6325fd735fa9e2337c55c",
+    "boundReviewInputsMatchedByPublisher": true,
+    "privateNotesRootOmitted": true,
+    "originalReviewAndPendingPacketFieldsEdited": false,
+    "acquisitionExecutions": 0
+  },
+  "retainedPublisherOnlyFailure": {
+    "exitCode": 1,
+    "error": "TypeError: r.inputs is not iterable",
+    "cause": "Completed review uses inputHashes/public-repository; publisher schema mapping corrected before any public output was written.",
+    "productOrAcquisitionExecution": false,
+    "originalReviewEdited": false
+  },
+  "strictVisualPass": false,
+  "realDesktopAcceptance": false,
+  "wholeCellPassesAdded": 0
+}

@@ -1,0 +1,487 @@
+{
+  "schemaVersion": 1,
+  "kind": "public-independent-contextual-evidence-contract-review-not-pixel-or-product-review",
+  "date": "2026-10-07",
+  "privateIndependentReviewSha256": "689e77895eb89b26fd61d45c1f846e3c454534c6597a9428dfe5b9cfb9865cab",
+  "outcome": "SCOPED_CONTRACT_CONSISTENT",
+  "sourceHead": "340a22c1e8489fad2db091a25bb14bb7d2e66984",
+  "renderHash79": "0df5a445b4a16f1984f2944ac7367d1202322b892876f2d31b9e853d9a8708ce",
+  "baseRenderHash78": "819ebca00422211c9fe8863f04ae67f2e9149cdee0199e75a1ecb9747bcc4ee3",
+  "frozenRenderInputsSha256": "d3e6938da18e184f1b9e2160d151196646f0cb22093e64390ea37afd5a66d83d",
+  "publicProjection": {
+    "path": "docs/verification/issue37-contextual-actions.json",
+    "sha256": "cfccb5ae3b0a2e28031ec83845f934c9574255620cd9477d75bc2d23b7ddfbf9",
+    "successfulActionRecords": 16,
+    "uniqueActionOnlyCases": 8,
+    "uniqueCaseViewportPairs": 16,
+    "duplicatePairs": 0,
+    "viewports": [
+      "1440x900",
+      "1280x800"
+    ],
+    "everySuccessfulActionHasBothViewports": true,
+    "allOriginalSuccessfulRecordFieldsDeepEqual": true,
+    "allSuccessfulRecordManifestShaBindingsMatch": true,
+    "afterImageActionRecords": 2,
+    "afterImageProofSafetyMeasurementDeepEqual": true,
+    "afterImageManifestAndOriginalBusyPngHashBindingsMatch": true,
+    "separateResultImagesAdded": 0,
+    "historicalAttemptCount": 3,
+    "historicalFailureCount": 4,
+    "allOriginalFailureObjectsDeepEqual": true,
+    "historicalManifestHashesToolingHashesCountsAndCompletenessMatch": true,
+    "failedAttemptsRetroactivelyPassed": false,
+    "wholeCellCoveragePromotions": 0,
+    "allSuccessfulRecordsVisualAcceptanceAdded": false,
+    "allSuccessfulRecordsWholeCellFullyCovered": false,
+    "strictVisualPass": false,
+    "realDesktopAcceptance": false,
+    "credentialProofContainsByteCountsOnly": true,
+    "sourceRawSyntheticCredentialLiteralsFoundInManifestsOrPublicProjection": false,
+    "rawCredentialsRequestsOrCredentialHashesCopiedIntoReview": false,
+    "references": [
+      "docs/verification/issue37-contextual-actions.json:1-11",
+      "docs/verification/issue37-contextual-actions.json:6717-6842",
+      "/records",
+      "/afterImageActions",
+      "/attempts"
+    ]
+  },
+  "attemptBindings": [
+    {
+      "path": "coverage-contextual-340-first/manifest.json",
+      "sha256": "ec7ddfe4204bbc038ae4cf5f90611f9b92c048b3b5ee51580ac9c55364213164",
+      "toolingSet": "original",
+      "plannedStates": 10,
+      "capturedImages": 20,
+      "successfulActions": 0,
+      "failedImages": 0,
+      "failedActions": 0,
+      "complete": true,
+      "strictVisualPass": false,
+      "realDesktopAcceptance": false,
+      "references": [
+        "manifest.json:98-134",
+        "/records",
+        "/failures"
+      ]
+    },
+    {
+      "path": "actions-contextual-340-first/manifest.json",
+      "sha256": "23fdb47b1c12e7a98678ded4d13f94f9546c4cf1df7e94f77230e01ade1e3ca2",
+      "toolingSet": "original",
+      "plannedStates": 8,
+      "capturedImages": 0,
+      "successfulActions": 14,
+      "failedImages": 0,
+      "failedActions": 2,
+      "complete": false,
+      "strictVisualPass": false,
+      "realDesktopAcceptance": false,
+      "historicalFailureMeaning": "Original covered lower-toast click timed out in both viewports; failures remain failures.",
+      "references": [
+        "manifest.json:98-132",
+        "manifest.json:5506-5543",
+        "/failures/0",
+        "/failures/1"
+      ]
+    },
+    {
+      "path": "actions-contextual-force-340-retry/manifest.json",
+      "sha256": "07749b15f18c83dcf2834ac9b7509ab9d6ab752beb2c6fd9ce22ea759dd151a6",
+      "toolingSet": "force-count-one",
+      "plannedStates": 1,
+      "capturedImages": 0,
+      "successfulActions": 0,
+      "failedImages": 0,
+      "failedActions": 2,
+      "complete": false,
+      "strictVisualPass": false,
+      "realDesktopAcceptance": false,
+      "historicalFailureMeaning": "Frozen wrapper expected one natural toast expiry, original action produced three; both failed count assertions remain failed.",
+      "references": [
+        "manifest.json:98-127",
+        "/failures/0",
+        "/failures/1"
+      ]
+    },
+    {
+      "path": "actions-contextual-force-340-three-toast/manifest.json",
+      "sha256": "032eb4b2c10b5e8ef74c0a016eb95ab792880fd2529622f4902f2eb32f18bb18",
+      "toolingSet": "force-count-three",
+      "plannedStates": 1,
+      "capturedImages": 0,
+      "successfulActions": 2,
+      "failedImages": 0,
+      "failedActions": 0,
+      "complete": true,
+      "strictVisualPass": false,
+      "realDesktopAcceptance": false,
+      "references": [
+        "manifest.json:98-126",
+        "/records/0",
+        "/records/1",
+        "/failures"
+      ]
+    }
+  ],
+  "tooling": {
+    "hashAlgorithm": "SHA256(JSON.stringify(Object.entries(toolingFiles))) in each recorded runner-sorted insertion order; each file SHA is independently recomputed from that attempt's frozen copy.",
+    "sets": [
+      {
+        "id": "original",
+        "toolingHash": "fda073fe296f0634ebd3afcb8dc486f8c0dac7554f49ccae2f39551f2917ad13",
+        "fileCount": 7,
+        "attempts": [
+          "coverage-contextual-340-first",
+          "actions-contextual-340-first"
+        ],
+        "aggregateHashMatches": true,
+        "frozenCopiesChecked": 14
+      },
+      {
+        "id": "force-count-one",
+        "toolingHash": "03a70fdf74d614bbe321c56bcd012a90d68e34a8fa11ee3dd7c23d9cdd508183",
+        "fileCount": 8,
+        "attempts": [
+          "actions-contextual-force-340-retry"
+        ],
+        "aggregateHashMatches": true,
+        "frozenCopiesChecked": 8,
+        "wrapperPath": "notes/continuation1/contextual-force-retry-cases.mjs",
+        "wrapperSha256": "1715093e8ad2aca7831170ee2ea2d5539449343124d695d6e52e229d3536e054"
+      },
+      {
+        "id": "force-count-three",
+        "toolingHash": "a0c39404fd66a4476fdf1ecbd3cdb4008ce364649d0901d17394ae880e7432b2",
+        "fileCount": 8,
+        "attempts": [
+          "actions-contextual-force-340-three-toast"
+        ],
+        "aggregateHashMatches": true,
+        "frozenCopiesChecked": 8,
+        "wrapperPath": "notes/continuation1/contextual-force-three-toast-cases.mjs",
+        "wrapperSha256": "6ac57c35b499c09adfc05b0efe6be533a485b82eead7799eb8f610ec5637f965"
+      }
+    ],
+    "commonFrozenFiles": {
+      "native-fixtures/bridge.mjs": "eea69c9a7397b4a46c2eb6d8d45f7f1db71e6fd12399de60356b51349de88e33",
+      "native-fixtures/scenarios.mjs": "eb2fc0699a5c7bfcb839e64d02d94960bad1df2c3392e14c848191f07e0870bb",
+      "notes/continuation1/capture-authored-contextual-gaps.mjs": "5448dae89e4e9389f7824e47aaadccbcd4a4cf747bf0f0ad8df7dd7b046aa501",
+      "notes/continuation1/contextual-gap-cases.mjs": "f39e9debe53776735b77ea311c8347151e19ec618e11db40c326dc30dd5b9a2b",
+      "notes/continuation1/local-gap-cases.mjs": "f9da12e3c2cd95f6b4cc91f6796bb9c6c95f4dbe972372c5e7083ad883478d9a",
+      "notes/continuation1/migration-evidence-page.mjs": "4432d09a4239dfef810c1d5bf0c7b722242f01f26d2d190940bfcd04b84ea047",
+      "notes/issue37-evidence-helpers.mjs": "bb05cc0ca4769671b93c2e8e08144ddf514016e22058b1657fd1ef97ff9e43c7"
+    },
+    "commonFilesUnchangedAcrossAllFourAttempts": true,
+    "frozenCopyOccurrencesChecked": 30,
+    "frozenCopyMismatches": 0,
+    "currentWrapperUsedToCertifyHistoricalFailedAttempts": false,
+    "baseToolingHashReportedUnchangedAcrossFour": "d733c501af669663052f2eca5557581d850a3a1117fff6abf608a90d47247022",
+    "baseToolingHashIndependentlyRecomputedInThisReview": false,
+    "baseToolingQualification": "Historical unused baseline capture-script guard context; independently recomputed actual transitive capture tooling is the three sets above. No certification of unrelated mutable old baseline scripts."
+  },
+  "guardReview": {
+    "successfulIndependentContextRecords": 36,
+    "captureContextRecords": 20,
+    "actionContextRecords": 16,
+    "nativeSyntheticContexts": 26,
+    "demoContexts": 10,
+    "postImageCallbacksReuseOriginalContexts": 2,
+    "storedMeasurementsChecked": 38,
+    "storedViewportGeometryOwnerGuardMismatches": 0,
+    "unexpectedPageErrors": 0,
+    "deniedExternalRequests": 0,
+    "failedResponses": 0,
+    "unqualifiedConsoleErrors": 0,
+    "nativeStorageBlockedAllNative": true,
+    "nativeOriginalStorageGetterAttemptsAllNative": 0,
+    "unknownMethodsAllNative": 0,
+    "finalSafetyNativeUnexpectedCalls": 0,
+    "nativeIOFlagsAllSuccessfulRecords": false,
+    "nativeIOQualification": "Reviewed synthetic bridge and archived flags; no new native/system I/O observation or real desktop verification.",
+    "demoNativeAuditFields": "null / not applicable, not native-zero proof",
+    "perNativeContextCallBudget": 96,
+    "maximumTotalCallsInSavedNativeMeasurements": 23,
+    "allowedMethodBudgetOrEffectLimitViolations": 0,
+    "runtimeQueryOrRestoreReadDispatches": 0,
+    "ignoredRootHmrConsoleEntriesRetained": 84,
+    "blockedRootHmrWebsocketEntriesRetained": 84,
+    "allSocketAndConsoleEventsClaimedZero": false,
+    "finalSafetyCheckedByFrozenRunnerAfterActionAfterReleaseAndBeforeClose": true,
+    "admissionRevokedOnLateSafetyFailure": true,
+    "evidenceQualification": "Independent review of saved numeric records and frozen admission code, not replay or pixel/keyboard certification. Failure attempts have not been admitted as successful guard records."
+  },
+  "contractChecks": [
+    {
+      "cells": [
+        "G05"
+      ],
+      "status": "CONSISTENT_WITH_BOUNDED_SYNTHETIC_CONTRACT",
+      "targetIds": [
+        "synthetic-reference-1",
+        "synthetic-reference-3",
+        "synthetic-reference-5",
+        "synthetic-reference-7",
+        "synthetic-reference-9"
+      ],
+      "expectedRevisions": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "busyUpdatesBeforePngPerViewport": 1,
+      "busyUpdatesAfterOriginalReplyReleasePerViewport": 5,
+      "firstStockReplyDelegatedAndReleasedOnce": true,
+      "mixedUpdateCallsPerViewport": 5,
+      "mixedSavedPerViewport": 4,
+      "mixedFailedId": "synthetic-reference-5",
+      "offPageIdNotSubmitted": "synthetic-reference-11",
+      "identityAndNonGroupConfigurationFieldsRetained": true,
+      "failedOriginalRevisionRetainedByNoStockDelegation": true,
+      "retrySubmitted": false,
+      "postBusyResultImageAdded": false,
+      "references": [
+        "coverage-contextual-340-first/notes/continuation1/contextual-gap-cases.mjs:115-126,225-227,259-286,351-382,451-470",
+        "frozen-render-inputs-340a22c/tests/ui/fixtures/native-reference-bridge.ts:11-16,42-62",
+        "coverage-contextual-340-first/manifest.json#/records/1",
+        "coverage-contextual-340-first/manifest.json#/records/2",
+        "coverage-contextual-340-first/manifest.json#/records/11",
+        "coverage-contextual-340-first/manifest.json#/records/12",
+        "docs/verification/issue37-contextual-actions.json#/afterImageActions"
+      ]
+    },
+    {
+      "cells": [
+        "P07",
+        "P20"
+      ],
+      "status": "CONSISTENT_WITH_BOUNDED_SYNTHETIC_CONTRACT",
+      "demoSelectedSingleRowSavedNodesPerViewport": 1,
+      "demoAccountByteProof": {
+        "byteCount": 255
+      },
+      "demo256ByteRefusal": "UNSUPPORTED_SOURCE_NO_BYTE_GATE",
+      "nativeProxyUpdateCallsPerViewport": 2,
+      "nativeOriginalProxyId": "synthetic-proxy-a",
+      "nativeOriginalExpectedRevision": 1,
+      "firstNativeCredentialByteCounts": {
+        "username": {
+          "byteCount": 256
+        },
+        "password": {
+          "byteCount": 15
+        }
+      },
+      "secondNativeCredentialByteCounts": {
+        "username": {
+          "byteCount": 255
+        },
+        "password": {
+          "byteCount": 256
+        }
+      },
+      "nativeResponses": "two exact finite PROXY_INVALID refusals",
+      "nativeOriginalRecordUnchanged": true,
+      "beforeDispatchUiRefusalClaimed": false,
+      "realGoEnforcementOrProviderAuthenticationClaimed": false,
+      "references": [
+        "coverage-contextual-340-first/notes/continuation1/contextual-gap-cases.mjs:128-136,228-230,288-301,472-514",
+        "frozen-render-inputs-340a22c/src/domain.ts:322-379",
+        "frozen-render-inputs-340a22c/src/components/ProxyEditWindow.tsx:16-28",
+        "frozen-render-inputs-340a22c/src/components/NativeProxyManager.tsx:63-66",
+        "coverage-contextual-340-first/manifest.json#/records/3",
+        "coverage-contextual-340-first/manifest.json#/records/13",
+        "docs/verification/issue37-contextual-actions.json#/records/1",
+        "docs/verification/issue37-contextual-actions.json#/records/8"
+      ]
+    },
+    {
+      "cells": [
+        "M14"
+      ],
+      "status": "CONSISTENT_WITH_BOUNDED_SYNTHETIC_CONTRACT",
+      "originalTaskId": "synthetic-migration-task-1",
+      "originalPrepareCallsPerViewport": 1,
+      "originalStopCommandsPerViewport": 1,
+      "originalExplicitlyConfirmedCommitCommandsPerViewport": 1,
+      "deliveredOperationState": "running",
+      "deliveredStage": "prepared",
+      "backupVerified": true,
+      "trialExited": true,
+      "committed": false,
+      "notReady": true,
+      "savedBuildDefaultAndOriginalConfigurationRetained": true,
+      "completedAndUncommitted": "UNSUPPORTED_BY_MIGRATION_MODEL",
+      "stockConvenienceReadyOrCommittedReplyUsedAsPreparedProof": false,
+      "realProcessExitOrDirectorySwitchClaimed": false,
+      "references": [
+        "coverage-contextual-340-first/notes/continuation1/contextual-gap-cases.mjs:148-170,186-191,236-244,263-265,516-541",
+        "frozen-render-inputs-340a22c/src/application/migration-model.ts:18-26",
+        "frozen-render-inputs-340a22c/src/components/NativeMigrationManager.tsx:7,39-44",
+        "coverage-contextual-340-first/manifest.json#/records/4",
+        "coverage-contextual-340-first/manifest.json#/records/14"
+      ]
+    },
+    {
+      "cells": [
+        "M20"
+      ],
+      "status": "CONSISTENT_WITH_BOUNDED_SYNTHETIC_CONTRACT",
+      "independentRequiredAcknowledgements": 3,
+      "missingEachAckDisables": true,
+      "applyBeforeAllAcknowledgements": 0,
+      "applyAfterAllAcknowledgementsPerViewport": 1,
+      "originalRequestFieldSet": [
+        "previewId",
+        "archiveSha256",
+        "confirmOverwrite",
+        "acknowledgeCredentials",
+        "stopRunning",
+        "requestId"
+      ],
+      "originalPreviewArchiveAndRequestReportIdentityMatch": true,
+      "previewConsumedAfterMatchedAcceptance": true,
+      "serviceSourceTokenOrArtifactCleanupCertified": false,
+      "newWindowInvented": false,
+      "references": [
+        "coverage-contextual-340-first/notes/continuation1/contextual-gap-cases.mjs:385-392,543-564",
+        "frozen-render-inputs-340a22c/src/components/NativeRestoreExecution.tsx:24-27,58-71,97-101",
+        "frozen-render-inputs-340a22c/src/application/restore-model.ts:3-16",
+        "frozen-render-inputs-340a22c/src/application/wails-adapter.ts:379-417",
+        "docs/verification/issue37-contextual-actions.json#/records/2",
+        "docs/verification/issue37-contextual-actions.json#/records/9"
+      ]
+    },
+    {
+      "cells": [
+        "M21"
+      ],
+      "status": "CONSISTENT_WITH_BOUNDED_SYNTHETIC_CONTRACT",
+      "context": "actual migration upgrade protected restore",
+      "recoverCallsPerViewport": 2,
+      "recoverPayloadFieldSet": [
+        "operationId"
+      ],
+      "sameOriginalTaskBothRecoverCalls": true,
+      "firstRecoverUnknown": true,
+      "originalApplyCallsPerViewport": 1,
+      "newApplyCalls": 0,
+      "originalApplyPayloadUnchanged": true,
+      "returnedReportAndLatestDeliveredWorkspaceReportMatch": true,
+      "originalTaskOperationReadProjectionUsesSameRecoveredReport": true,
+      "originalRequestPreviewArchiveIdentityRetained": true,
+      "beforeProfileSource": "immutable input.migrationPreview.before clone from the same stock initializer",
+      "directProfileAssertionScope": [
+        "seed",
+        "kernelId",
+        "configRevision"
+      ],
+      "completeProfileRetentionAlsoSupportedByFixedCloneProjection": true,
+      "originalDataReferencesDefaultAndUnselectedEnvironmentProjectionRetained": true,
+      "oldStockBackingProtectedStateUsedAsNewAcceptanceProof": false,
+      "persistedMeansFiniteWorkspaceReplyOnly": true,
+      "realDiskPersistenceCertified": false,
+      "literalRestoreRead": "UNSUPPORTED_SOURCE_NO_RESTORE_READ_METHOD",
+      "actualReadMethod": "Operation.Read",
+      "newPlanIdOrRestoreWindowInvented": false,
+      "references": [
+        "coverage-contextual-340-first/notes/continuation1/contextual-gap-cases.mjs:144-170,192-206,248-265,306-326,566-593",
+        "frozen-render-inputs-340a22c/tests/ui/fixtures/migration-workflow-bridge.ts:54-80,123-149,201-219",
+        "frozen-render-inputs-340a22c/src/application/wails-adapter.ts:374-377",
+        "docs/verification/issue37-contextual-actions.json#/records/3",
+        "docs/verification/issue37-contextual-actions.json#/records/10"
+      ]
+    },
+    {
+      "cells": [
+        "A12"
+      ],
+      "status": "CONSISTENT_WITH_BOUNDED_SYNTHETIC_CONTRACT",
+      "actualOwner": "Activity detail and its original exact-session warning",
+      "cancelledForceCallsPerViewport": 0,
+      "negativePhases": [
+        "session-replaced",
+        "force-revoked",
+        "needs-reconcile"
+      ],
+      "orderedAuthorityReplyPhasesIncludingRestoration": 6,
+      "staleRevokedOrReconcileForceCallsPerViewport": 0,
+      "originalEligibleForceCallsPerViewport": 1,
+      "originalEnvironmentId": "synthetic-reference-1",
+      "originalSessionId": "synthetic-current-session-1",
+      "forcePayloadFieldSet": [
+        "environmentId",
+        "sessionId",
+        "requestId"
+      ],
+      "freshAuthorityProjectionMethod": "Workspace.Read",
+      "forceReplyHeldAndReleasedOnce": true,
+      "duplicateForcePrevented": true,
+      "literalRuntimeQuery": "UNSUPPORTED_SOURCE_NO_RUNTIME_QUERY",
+      "pidAuthorizationOrRealProcessExecutionClaimed": false,
+      "automationOverride": "Only exact Page#getByRole(button, 关闭提示, exact:true) locator.click; if local overlay is visible, await original locator hidden, otherwise original click.",
+      "naturalCoveredToastExpiryCountPerSuccessfulViewport": 3,
+      "originalNegativeAssertionsAndPayloadChecksRetained": true,
+      "forcedClickDomFocusInertStyleStateWrites": false,
+      "intentionalClickSequenceCorrectionNotSafetyRelaxation": true,
+      "historicalActionFailuresRetained": 4,
+      "historicalFailedWrapperCertifiedUsingCurrentWrapper": false,
+      "references": [
+        "coverage-contextual-340-first/notes/continuation1/contextual-gap-cases.mjs:69-71,137-140,207-215,231-235,276-286,636-668",
+        "actions-contextual-force-340-retry/notes/continuation1/contextual-force-retry-cases.mjs:8-35",
+        "actions-contextual-force-340-three-toast/notes/continuation1/contextual-force-three-toast-cases.mjs:8-35",
+        "frozen-render-inputs-340a22c/src/App.tsx:1026-1055",
+        "docs/verification/issue37-contextual-actions.json#/records/14",
+        "docs/verification/issue37-contextual-actions.json#/records/15",
+        "docs/verification/issue37-contextual-actions.json#/attempts"
+      ]
+    },
+    {
+      "cells": [
+        "G03",
+        "D03",
+        "N03",
+        "A02",
+        "S07",
+        "S09"
+      ],
+      "status": "CONSISTENT_WITH_BOUNDED_SYNTHETIC_CONTRACT",
+      "G03": "Zero derived group labels with original ungrouped environments; separate original six-member navigation and unchanged storage; no independent empty-group entity.",
+      "D03": "True zero backups/empty search versus one stock backup/nonmatching search; same empty-body predicate, not equivalent toolbar or full page.",
+      "N03": "Stock published backup tab actually empty, not export-task empty; Workspace.Read only in saved records, no export/restore effects.",
+      "A02": "Original one-row native-synthetic activity page at top with no detail/diagnostic overlay; no borrowed dense-bottom state.",
+      "S07": "Three original task callbacks: backups original restore read, kernels original migration read, activity in-place recycle owner. Original migration Prepare=1; additional Prepare, restore execute/recover, recycle preview/commit/recover and cancel effects=0.",
+      "S09": "One actual user refresh success notification; error condition reused from G05 mixed-save; not all notifications or Windows toast acceptance.",
+      "references": [
+        "coverage-contextual-340-first/notes/continuation1/contextual-gap-cases.mjs:430-449,595-634,670-712",
+        "coverage-contextual-340-first/manifest.json#/records",
+        "docs/verification/issue37-contextual-actions.json#/records"
+      ]
+    }
+  ],
+  "findings": [],
+  "preservedUnsupportedAndUnprovenBoundaries": [
+    "P07 demo SOCKS 256-byte refusal",
+    "P20 UI-before-dispatch refusal and real Go enforcement",
+    "M14 completed plus uncommitted report",
+    "M20 source-token or artifact cleanup certification",
+    "M21 literal Restore.Read and real disk persistence",
+    "A12 literal Runtime.Query and native PID/job authorization",
+    "S02 all seven native routes/guide; historical guide83 getter=1 remains blocked, not rebound to340 or excused by a retargeted classifier",
+    "H01-H19 direct-guide references",
+    "M22 unknown-Discard UI recovery",
+    "Historical visual FAIL/MISSING and older gallery/source identities",
+    "Whole274, provider, security, product, visual, keyboard and real desktop PASS",
+    "Formal native acceptance remains outside this review; historical 4/21 is not promoted"
+  ],
+  "actualTestOrBrowserRunsByReviewer": 0,
+  "pixelsViewedByReviewer": 0,
+  "currentCleanHeadCertified": false,
+  "wholeProductAcceptance": false,
+  "strictVisualPass": false,
+  "realDesktopAcceptance": false,
+  "sourceAndActionDoNotOverwriteIndependentImageFailures": true
+}

@@ -1,0 +1,684 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-07",
+  "verdict": "SCOPED_CONTRACT_CONSISTENT",
+  "findingCount": 0,
+  "findings": [],
+  "scope": "Only the new source03 CSS-only34 image records and14 image-owned callbacks; accepted baseline38+66/8 remains unchanged and is not replayed.",
+  "inputs": [
+    {
+      "path": "environment-css-images-first/manifest.json",
+      "sha256": "b7dd43463f0ac2a42ef1214cfbf1683eaabc90a2ae10b57da2c8618b0c2dacac",
+      "bytes": 541655
+    },
+    {
+      "path": "environment-css-images-first/frozen-inputs.json",
+      "sha256": "3c098d41c453723cecf7fa11c19a736208322005d1c8250b8de238e6529eaffc",
+      "bytes": 11819
+    },
+    {
+      "path": "docs/verification/issue37-environment-css-checks.json",
+      "scope": "repository",
+      "sha256": "8315ecfe06c7de5363970662e6a7b3611679deab45cad3b6b6d29dc391feb3b2",
+      "bytes": 174554
+    },
+    {
+      "path": "frozen-render-inputs-03d0f68/render-inputs.json",
+      "sha256": "f8fd47e5be03405ac065f9841573d1d9d05ab6a11bf27de42570503826015c1e",
+      "bytes": 34437
+    },
+    {
+      "path": "frozen-render-inputs-340a22c/render-inputs.json",
+      "sha256": "d3e6938da18e184f1b9e2160d151196646f0cb22093e64390ea37afd5a66d83d",
+      "bytes": 34193
+    },
+    {
+      "path": "environment-css-final-after.json",
+      "sha256": "8ca4c9e922b91e10f4c25a56af182d2057483a0b15c2a670dda546e9c38970ea",
+      "bytes": 84333
+    },
+    {
+      "path": "environment-css-independent-source-review.json",
+      "sha256": "6d4341c0362edfaf9610d8a1cb9d1b340ab3b554e614b634d3e09727765c4849",
+      "bytes": 18803
+    }
+  ],
+  "sourceProvenance": {
+    "actualHead": "03d0f6836399a9eae83895424c6a13e4d00c0abd",
+    "actualRenderHash79": "df5b45f48531cbff945dc13eb0eac1d51fc91b8789aea7608c640b2110c46d3e",
+    "actualBaseRenderHash78": "023e5f5bdeac450a0bb3e5c1dd0983b2f0d2a539332ea3834efd733713f5719a",
+    "originalAuthoredHead": "340a22c1e8489fad2db091a25bb14bb7d2e66984",
+    "originalAuthoredRenderHash79": "0df5a445b4a16f1984f2944ac7367d1202322b892876f2d31b9e853d9a8708ce",
+    "metadataMapsAgreeBetweenPublicRawFrozenAndNewFreeze": true,
+    "declaredSourceFamilySize": 79,
+    "metadataOnlyUnchangedIdentities": 77,
+    "changedIdentities": [
+      {
+        "path": "src/components/environment-windows.css",
+        "originalSha256": "aea0613b9de75afe735836d6fecb2f22f316f150299658dc51c0bbdd70002004",
+        "newSha256": "0801d55b58e6e4bafaabdd7037283fd1990a3c90e868541210ceb46f41868fa0"
+      },
+      {
+        "path": "src/styles.css",
+        "originalSha256": "e32043713fc23b7be880491b4434c7ab000e842e70b12fcb8d9799e620325627",
+        "newSha256": "fc116997b3f04db3e8521b25332d1ea712be523292aaf16df8df2ea90ea2ae88"
+      }
+    ],
+    "qualification": "Declared identities were compared from pinned freeze/integration metadata. No raw79/77-file audit, CSS/code review repetition, Git integration replay, or current-HEAD certificate.",
+    "receiptRecordedPredicates": {
+      "candidateDeltasExactlyOwned": true,
+      "untouchedRawAndCanonicalInputsMatch": true,
+      "mergedCandidateCanonicalBytesMatch": true,
+      "exactPR31AncestorPreserved": true,
+      "protectedInputCount": 359
+    },
+    "receiptReviewedOrderedTips": [
+      "29f7ea56c6f32f7b3f253328e00dce9a33d9916e",
+      "900a20d336646938a01f966b1c40abf5c01809d9"
+    ],
+    "receiptPredicatesIndependentlyReexecuted": false,
+    "olderChangedFilesSince83NotUsedAs340Delta": true,
+    "existingSourcePreflightVerdict": "SCOPED_SOURCE_CONSISTENT",
+    "existingPreflightPendingFutureExecutionWordingNotEdited": true
+  },
+  "toolProvenance": {
+    "actualArchivedOwnHash": "cec5af3596637e4f899fb82981ecd1f7c635e618f9f2571051c2ed129a1b8b09",
+    "ownHashRecipe": "SHA256(UTF8(JSON.stringify(Object.entries(frozenInputs.ownFiles))))",
+    "bindingCount": 14,
+    "distinctByteIdentities": 14,
+    "actualAttemptLocalCopiesByteHashed": 14,
+    "acceptedBaselineSubsetCount": 10,
+    "alreadyReviewedNewRunnerWrapperAndPlansCount": 4,
+    "archivedPathRule": "environment-css-images-first/<file>; not a current mutable author/tool path",
+    "files": [
+      {
+        "file": "native-fixtures/bridge.mjs",
+        "sha256": "eea69c9a7397b4a46c2eb6d8d45f7f1db71e6fd12399de60356b51349de88e33",
+        "bytes": 46263,
+        "baselineSubset": true
+      },
+      {
+        "file": "native-fixtures/scenarios.mjs",
+        "sha256": "eb2fc0699a5c7bfcb839e64d02d94960bad1df2c3392e14c848191f07e0870bb",
+        "bytes": 19585,
+        "baselineSubset": true
+      },
+      {
+        "file": "notes/continuation1/capture-authored-environment-gaps-atomic.mjs",
+        "sha256": "ec11cddfa5dfcf3d088c61579ba5446e2aeda77d0be0c1bac21f326bbc5c4ca0",
+        "bytes": 19266,
+        "baselineSubset": true
+      },
+      {
+        "file": "notes/continuation1/capture-authored-environment-gaps.mjs",
+        "sha256": "658b2e7bdb1b37c63cb2426bb772f3bb11562755a31c840e1fe27f2186cecf8b",
+        "bytes": 18191,
+        "baselineSubset": true
+      },
+      {
+        "file": "notes/continuation1/capture-environment-css-repairs.mjs",
+        "sha256": "13e8aa2509792ea820751812dedbe20f57d77c32426239905443700994787531",
+        "bytes": 21133,
+        "baselineSubset": false,
+        "matchesCompletedPreflight": true
+      },
+      {
+        "file": "notes/continuation1/environment-batch-gap-cases.mjs",
+        "sha256": "a7fab737a01182dd0b0199a91e0beafafb31e3c28c25700444aeb1737d801fdf",
+        "bytes": 52643,
+        "baselineSubset": true
+      },
+      {
+        "file": "notes/continuation1/environment-css-repair-gap-cases.mjs",
+        "sha256": "42ef72862dc4eb7b51261c72daebe1f7f2098400de9ac61d8b923ea65e422c93",
+        "bytes": 3119,
+        "baselineSubset": false,
+        "matchesCompletedPreflight": true
+      },
+      {
+        "file": "notes/continuation1/environment-css-repair-gap-plan.json",
+        "sha256": "cfd72f75d42c920a0903a91e8e88ca1dfe24c81ac8168832e145699e09962c54",
+        "bytes": 812,
+        "baselineSubset": false,
+        "matchesCompletedPreflight": true
+      },
+      {
+        "file": "notes/continuation1/environment-css-repair-gap-plan.md",
+        "sha256": "dec4030019586e2ce4a39b7083c159c764b0afc5bf72a5b531f9accbeeb8efe2",
+        "bytes": 1653,
+        "baselineSubset": false,
+        "matchesCompletedPreflight": true
+      },
+      {
+        "file": "notes/continuation1/environment-main-runner-atomic-plan.md",
+        "sha256": "0488b9373dccca5941a138a8fb655dc7bc7d1b34db792c3c0c2a1d11f62a115d",
+        "bytes": 1324,
+        "baselineSubset": true
+      },
+      {
+        "file": "notes/continuation1/environment-table-gap-cases.mjs",
+        "sha256": "27de0cc4053429df17f0b1ca3db5a1f0530371a2c5c1e6dc5727390661f0c4be",
+        "bytes": 61734,
+        "baselineSubset": true
+      },
+      {
+        "file": "notes/continuation1/local-gap-cases.mjs",
+        "sha256": "f9da12e3c2cd95f6b4cc91f6796bb9c6c95f4dbe972372c5e7083ad883478d9a",
+        "bytes": 89586,
+        "baselineSubset": true
+      },
+      {
+        "file": "notes/continuation1/migration-evidence-page.mjs",
+        "sha256": "4432d09a4239dfef810c1d5bf0c7b722242f01f26d2d190940bfcd04b84ea047",
+        "bytes": 5780,
+        "baselineSubset": true
+      },
+      {
+        "file": "notes/issue37-evidence-helpers.mjs",
+        "sha256": "bb05cc0ca4769671b93c2e8e08144ddf514016e22058b1657fd1ef97ff9e43c7",
+        "bytes": 25493,
+        "baselineSubset": true
+      }
+    ],
+    "originalTableBatchSourceGuardByteIdentityRetained": true,
+    "sourcePreflightAnchorsNotReaudited": [
+      "TOOL-NEW-SOURCE-FREEZE: runner18-54,57-84,128-130,183-214",
+      "TOOL-FINITE-FACTORY: wrapper3-39",
+      "TOOL-NATURAL-OUTER-BODY: wrapper18-30",
+      "TOOL-INTEGRATION-BOUNDARY: integration guard7-45"
+    ]
+  },
+  "validation": {
+    "assertions": 910,
+    "mismatches": 0,
+    "groups": [
+      {
+        "name": "Actual14 tooling byte copies, lineage and accepted-baseline byte protection",
+        "assertions": 32,
+        "mismatches": 0
+      },
+      {
+        "name": "New34 record/index/SHA/PNG/finalSafety and14 full callback bindings; metadata receipt/freeze agreement",
+        "assertions": 240,
+        "mismatches": 0
+      },
+      {
+        "name": "New34 image plus14 callback measurements, original budgets/guards, actual context counters and genuine outer scroll",
+        "assertions": 522,
+        "mismatches": 0
+      },
+      {
+        "name": "Exact17 inherited literal mode/query/method/effect limits and targeted original callback scope",
+        "assertions": 116,
+        "mismatches": 0
+      }
+    ]
+  },
+  "actualSavedCounts": {
+    "imageCases": 17,
+    "tableCases": 14,
+    "batchCases": 3,
+    "imageRecords": 34,
+    "imageOwnedCallbacks": 14,
+    "callbackOwningCases": 7,
+    "acquisitionFailures": 0,
+    "standaloneActionsAdded": 0,
+    "extraCallbackContexts": 0,
+    "extraCallbackPngs": 0,
+    "viewports": [
+      {
+        "width": 1440,
+        "height": 900
+      },
+      {
+        "width": 1280,
+        "height": 800
+      }
+    ],
+    "rawImageRecordIndices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33
+    ],
+    "callbackOriginalRecordIndicesInPublicOrder": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23
+    ],
+    "callbacksBelongToTheseSame34Contexts": true
+  },
+  "bindingChecks": {
+    "sigRecipe": "sig(x)=SHA256(UTF8(JSON.stringify(x))) preserving original parsed property order; full raw objects, not reduced public proofs.",
+    "recordArrayShape": "{index,sha256:sig(fullRawRecord)} in manifest record order",
+    "recordArraySha256": "00de629e0f8045bd29fd7e00fc13396b8ba1eb2b7d69f1d51eddc34bd450a23b",
+    "callbackArrayShape": "{index:originalManifestRecordIndex,recordSha256:sig(fullRawRecord),proofSha256:sig(postCaptureActionProof),measurementSha256:sig(postCaptureMeasurement),finalSafetySha256:sig(finalSafety),pngSha256:rawRecord.png.sha256} in public callback order",
+    "callbackArraySha256": "a084c240a8015682be2ed7d2c0a049103b1d36f012a03de49185387b709b393d",
+    "pngArrayShape": "{index,sha256:SHA256(actualSavedPngBytes),bytes} in manifest record order",
+    "pngArraySha256": "7374a96c3819544cb34ec42af6a9057b569cf2d28975e65bc49a2a162eb7e3c9",
+    "safetyArrayShape": "{index,sha256:sig(rawRecord.finalSafety)} in manifest record order",
+    "safetyArraySha256": "0f75bd3ffb56265361649b5a320eb71fcaecfdbf2db41020ca6a19e9e4bd8af7",
+    "publicImageIndicesAndCompleteRecordHashesMatched": 34,
+    "publicPngAndFinalSafetyHashesMatched": 34,
+    "actualPngBytesAndHeaderDimensionsMatchedWithoutPixels": 34,
+    "fullCallbackProofMeasurementFinalSafetyFieldsMatched": 14,
+    "callbackIdentityCellsViewportSourceRenderAndOriginalPngMatched": 14,
+    "originalNotReviewedAndAuthorStatusStringsUnchanged": true,
+    "newActualSource03NotReboundAsOriginalAuthored340": true
+  },
+  "cases": [
+    {
+      "id": "env-table-demo-start-completion-write-refused",
+      "recordIndices": [
+        0,
+        17
+      ],
+      "rawFinalDispatchesPerView": 0,
+      "stockEntriesPerView": 0,
+      "maximumNativeCalls": 0,
+      "callback": true
+    },
+    {
+      "id": "env-table-demo-stop-completion-write-refused",
+      "recordIndices": [
+        1,
+        18
+      ],
+      "rawFinalDispatchesPerView": 0,
+      "stockEntriesPerView": 0,
+      "maximumNativeCalls": 0,
+      "callback": true
+    },
+    {
+      "id": "env-table-demo-mixed-terminal",
+      "recordIndices": [
+        2,
+        19
+      ],
+      "rawFinalDispatchesPerView": 0,
+      "stockEntriesPerView": 0,
+      "maximumNativeCalls": 0,
+      "callback": true
+    },
+    {
+      "id": "env-table-native-mixed-pending",
+      "recordIndices": [
+        3,
+        20
+      ],
+      "rawFinalDispatchesPerView": 16,
+      "stockEntriesPerView": 12,
+      "maximumNativeCalls": 54,
+      "callback": true
+    },
+    {
+      "id": "env-table-native-mixed-accepted",
+      "recordIndices": [
+        4,
+        21
+      ],
+      "rawFinalDispatchesPerView": 16,
+      "stockEntriesPerView": 12,
+      "maximumNativeCalls": 54,
+      "callback": true
+    },
+    {
+      "id": "env-table-native-fifo-active-queued",
+      "recordIndices": [
+        5,
+        22
+      ],
+      "rawFinalDispatchesPerView": 21,
+      "stockEntriesPerView": 13,
+      "maximumNativeCalls": 50,
+      "callback": true
+    },
+    {
+      "id": "env-table-native-fifo-stopping-disabled",
+      "recordIndices": [
+        6,
+        23
+      ],
+      "rawFinalDispatchesPerView": 21,
+      "stockEntriesPerView": 13,
+      "maximumNativeCalls": 50,
+      "callback": true
+    },
+    {
+      "id": "env-table-native-missing-saved-proxy",
+      "recordIndices": [
+        7,
+        24
+      ],
+      "rawFinalDispatchesPerView": 7,
+      "stockEntriesPerView": 6,
+      "maximumNativeCalls": 29,
+      "callback": false
+    },
+    {
+      "id": "env-table-native-precheck-pass-expanded",
+      "recordIndices": [
+        8,
+        25
+      ],
+      "rawFinalDispatchesPerView": 3,
+      "stockEntriesPerView": 3,
+      "maximumNativeCalls": 26,
+      "callback": false
+    },
+    {
+      "id": "env-table-native-precheck-save-pending-expanded",
+      "recordIndices": [
+        9,
+        26
+      ],
+      "rawFinalDispatchesPerView": 3,
+      "stockEntriesPerView": 3,
+      "maximumNativeCalls": 26,
+      "callback": false
+    },
+    {
+      "id": "env-table-native-historical-network-disclaimer",
+      "recordIndices": [
+        10,
+        27
+      ],
+      "rawFinalDispatchesPerView": 3,
+      "stockEntriesPerView": 3,
+      "maximumNativeCalls": 8,
+      "callback": false
+    },
+    {
+      "id": "env-table-native-reconcile-network-disclaimer",
+      "recordIndices": [
+        11,
+        28
+      ],
+      "rawFinalDispatchesPerView": 3,
+      "stockEntriesPerView": 3,
+      "maximumNativeCalls": 26,
+      "callback": false
+    },
+    {
+      "id": "env-table-native-containment-stopped-warning",
+      "recordIndices": [
+        12,
+        29
+      ],
+      "rawFinalDispatchesPerView": 3,
+      "stockEntriesPerView": 3,
+      "maximumNativeCalls": 8,
+      "callback": false
+    },
+    {
+      "id": "env-table-native-containment-unconfirmed-warning",
+      "recordIndices": [
+        13,
+        30
+      ],
+      "rawFinalDispatchesPerView": 3,
+      "stockEntriesPerView": 3,
+      "maximumNativeCalls": 26,
+      "callback": false
+    },
+    {
+      "id": "env-batch-successful-page-two",
+      "recordIndices": [
+        14,
+        31
+      ],
+      "rawFinalDispatchesPerView": 10,
+      "stockEntriesPerView": 10,
+      "maximumNativeCalls": 26,
+      "syntheticEffectsPerView": 0,
+      "callback": false
+    },
+    {
+      "id": "env-batch-dense-table-bottom",
+      "recordIndices": [
+        15,
+        32
+      ],
+      "rawFinalDispatchesPerView": 7,
+      "stockEntriesPerView": 7,
+      "maximumNativeCalls": 23,
+      "syntheticEffectsPerView": 0,
+      "callback": false
+    },
+    {
+      "id": "env-batch-continue-only-unfinished",
+      "recordIndices": [
+        16,
+        33
+      ],
+      "rawFinalDispatchesPerView": 13,
+      "stockEntriesPerView": 13,
+      "maximumNativeCalls": 59,
+      "syntheticEffectsPerView": 1,
+      "callback": false
+    }
+  ],
+  "savedGuardProfiles": {
+    "imageMeasurements": 34,
+    "postImageMeasurements": 14,
+    "measurementProfiles": 48,
+    "distinctContexts": 34,
+    "distinctSyntheticNativeContexts": 28,
+    "distinctDemoContexts": 6,
+    "nativeMeasurementProfilesIncludingSameContextCallbacks": 36,
+    "demoMeasurementProfilesIncludingSameContextCallbacks": 12,
+    "storageGetterAttempts": 0,
+    "unsupportedMethods": 0,
+    "savedPageConsoleDeniedRequestAndFailedResponseErrors": 0,
+    "exactViewportDpr1VisualScale1Zoom1NoOverflowProfiles": 48,
+    "highestFocusedModalOneMaskLowerInertProfiles": 6,
+    "noModalZeroMaskProfiles": 42,
+    "exactOriginalFiniteQueryMethodEffectAndIdentityGuardsRetained": true,
+    "stockFieldShapesAndCountersNotChanged": true,
+    "nativeTableNaturalStockPreludeReadsPerContext": 2,
+    "finalRawSyntheticDispatchesUniqueContextsOnly": 258,
+    "finalStockLedgerEntriesUniqueContextsOnly": 208,
+    "finalSeparateInterceptionEntriesUniqueContextsOnly": 50,
+    "finalCounterRecipe": "For each of34 raw records count finalSafety.actualMethodCounts or finiteOwnedMethodCounts once; add Table native2 stock bootstrap reads. Use postCaptureMeasurement if present, else measurement, for matching final stock entries. Do not add callback counters a second time.",
+    "nativeBackendOrOSExecutionClaimed": false,
+    "foreignNetworkOrEventGuardSemanticsChanged": false
+  },
+  "callbackAndIdentityLimits": [
+    "Demo completion retries same original first ID with one completion write, same saved profile/Cookie identity, no new environment or real browser.",
+    "Demo mixed retry only second original ID; same proxy refusal, other two not resubmitted.",
+    "Native pending/accepted release original task, retriedIds empty; native skipped assignment remains unsupported.",
+    "FIFO exact queue Cancel1 and active Stop1, original unrelated IDs retained; schedulerActuallyExecuted remains false.",
+    "Missing proxy uses saved proxy policy, one definite service refusal, no accepted runtime task or invented client-side gate/direct fallback.",
+    "Precheck/network/containment values remain synthetic; no live ownership/network/isolation/exit proof.",
+    "Identity/request preservation is the recorded finite guard assertion plus byte-identical reviewed source, not newly observed native traffic."
+  ],
+  "naturalBatchOuterWheel": {
+    "onlyCaseIds": [
+      "env-batch-dense-table-bottom",
+      "env-batch-continue-only-unfinished"
+    ],
+    "pageTwoOriginalActionUnchanged": true,
+    "pageTwo": {
+      "offset": 25,
+      "pageSize": 25,
+      "rows": 1,
+      "exactLastId": "synthetic-reference-26",
+      "syntheticEffects": 0
+    },
+    "fourSavedWheelRecords": [
+      {
+        "index": 15,
+        "viewportWidth": 1440,
+        "top": 157,
+        "clientHeight": 480,
+        "scrollHeight": 637,
+        "remaining": 0
+      },
+      {
+        "index": 16,
+        "viewportWidth": 1440,
+        "top": 71,
+        "clientHeight": 480,
+        "scrollHeight": 551,
+        "remaining": 0
+      },
+      {
+        "index": 32,
+        "viewportWidth": 1280,
+        "top": 157,
+        "clientHeight": 480,
+        "scrollHeight": 637,
+        "remaining": 0
+      },
+      {
+        "index": 33,
+        "viewportWidth": 1280,
+        "top": 71,
+        "clientHeight": 480,
+        "scrollHeight": 551,
+        "remaining": 0
+      }
+    ],
+    "proofScrollValuesMatchActualSavedDialogBodyMeasurements": true,
+    "presentationOrControllerWrites": 0,
+    "exactOriginalRequestsAndRowsUnchanged": true,
+    "preflightReviewedNaturalInputOnlyNoScriptedScrollTopDomFocusHashStyleWrites": true,
+    "continueRetryCallsPerView": 1,
+    "continueModeledRetryEffectsPerView": 1,
+    "continueOnlyOriginalUnfinishedIds": "synthetic-reference-3 through synthetic-reference-26",
+    "excludedCompletedIds": [
+      "synthetic-reference-1",
+      "synthetic-reference-2"
+    ],
+    "newIdentityOrDirectoryCreated": false,
+    "realBackendUnfinishedScopeEnforcement": "UNPROVEN:B10-BACKEND-UNFINISHED-ENFORCEMENT-UNPROVEN",
+    "oldCapturedPositionClippingErasedOrRelabeled": false,
+    "pixelPassProvedByScrollMetadata": false
+  },
+  "admission": {
+    "archivedRunnerVersion": "immutable-v2-atomic-admission",
+    "recordedArchivedInputsVerifiedBeforeManifest": true,
+    "recordedRefusalArtifactOverridesManifest": true,
+    "recordedPairFailuresRetainedOnGlobalRefusal": true,
+    "all14ActualArchivedCopyHashesMatch": true,
+    "reviewedRunnerBytesMatchCompletedPreflight": true,
+    "globalRefusalFilePresent": false,
+    "complete": true,
+    "failures": 0,
+    "globalCatchPathReexecutedOrFailureManufactured": false,
+    "publicIndependentContractAndPixelClaimFlagsNotEdited": true
+  },
+  "acceptedBaselineByteProtectionOnly": {
+    "files": [
+      {
+        "path": "environment-contract-review.md",
+        "sha256": "176f8169a04232892cfcb37374594bb7231dc5a1cff8654459ddc7237026a029",
+        "bytes": 17705
+      },
+      {
+        "path": "environment-contract-review.json",
+        "sha256": "7be4610598b182112b00d0c32a446223bf211538287e929cb5f00f3dc404d4ee",
+        "bytes": 40725
+      },
+      {
+        "path": "docs/verification/issue37-environment-actions.json",
+        "scope": "repository",
+        "sha256": "cb973850ba59e56c31cec16b20b77dff9b84b37d9147c14a41b5b61d82239781",
+        "bytes": 1800859
+      }
+    ],
+    "matchedAcceptedHashes": true,
+    "baselineStandaloneActions": 38,
+    "baselineCallbacks": 66,
+    "baselineRetainedFailures": 8,
+    "originalEightFailureObjectsRetainedByByteIdenticalPublicPacket": true,
+    "originalRawEightFailuresReopened": false,
+    "old104ProofsRescanned": false,
+    "old145ArchiveBindingsRescanned": false,
+    "old340FilesOrStatusesRewritten": false,
+    "oldTable22AndBatch6FailImageStatusesRetainedAsReported": true,
+    "otherOldPacketsAndFailImagesFreshlyReaudited": false,
+    "baselineSourceBindingUpdatedTo03": false
+  },
+  "reviewOperations": {
+    "readOnlyMetadataHashChecks": true,
+    "moduleImportsOrAcquisitionExecutions": 0,
+    "browserCapturesOrPixelViews": 0,
+    "testsBuildsNoEmit": 0,
+    "nativeGoWailsUIA": 0,
+    "network": 0,
+    "gitWrites": 0,
+    "publicSourceToolAuthorEdits": 0,
+    "newAgents": 0,
+    "pendingDrawerReviewInspection": false,
+    "ownedNewOutputs": [
+      "environment-css-contract-review.md",
+      "environment-css-contract-review.json"
+    ]
+  },
+  "acceptanceBoundary": {
+    "mainPublishesSeparately": true,
+    "standaloneActionCountAdvance": 0,
+    "baseline38Plus66CountAdvance": 0,
+    "extraCallbackPngs": 0,
+    "wholeCellPassesAdded": 0,
+    "strictVisualPass": false,
+    "realDesktopAcceptance": false,
+    "fullProductPass": false,
+    "formalDesktopCountUnchanged": "4/21",
+    "historicalFailMissingGuideLimitsUnchanged": true,
+    "privateRawPathsAndAnyRealCredentialHashesNotForPublicPublication": true
+  },
+  "kind": "public-independent-css-continuation-saved-contract-supplement-not-new-acceptance",
+  "publicationProvenance": {
+    "privateIndependentReviewSha256": "ffbe24461dca2dc2a53bd791190048948113bccf94331429e64b81a2280198ae",
+    "boundReviewInputsMatchedByPublisher": true,
+    "privateNotesRootOmitted": true,
+    "originalReviewAndPendingPacketFieldsEdited": false,
+    "acquisitionExecutions": 0
+  },
+  "strictVisualPass": false,
+  "realDesktopAcceptance": false,
+  "wholeCellPassesAdded": 0
+}

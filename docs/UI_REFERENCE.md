@@ -15,7 +15,11 @@
 
 ### 同一版本的设置参考补充研究
 
+后续实际查看并冻结了基础设置顶部/底部及Local API双视口共六张候选；原40状态/80图仍不改。帮助比例修正已合入 `83eafe1`，新本机指南16图已逐图审查为16 MISSING / 0 FAIL；其新工具保留已阻断getter原总数1，不等于原严格0-getter通过。另[340七路由/冷指南动作](verification/issue37-native-route340-actions.json)新绑实际模块字节，只有双视口2份动作、0PNG；原始getter0→1→1仍拒绝Storage、旧严格0合同与6条工具失败保留，不拿导航成功补回原指南。完整原指南仍未恢复；最新公开界面证据和原参考限制见 [增量账本](verification/issue37-continuation-evidence.md)。
+
 完整目标继续复查时，只读搜索允许的发布资源，确认原帮助/FAQ通过外部链接打开；未恢复完整正文。有限合成desktop环境在全请求本地fulfill/abort、原资源不改、真实native方法拒绝的上下文中，使原设置页按其自身条件自然不显示客户端限制，另保存双视口基础设置顶部/底部 **4 张候选原图**。142个所用来源结束哈希未变，其中16匹配已记录历史字节，其余仅冻结当前字节；两处原图标404明确记录。原桌面环境另外有40px标题栏，不能不解释就沿用web shell尺寸，也不能把设置正文说成完整指南。该研究只存本机、与原40状态/80图索引分开；后续映射需单独对照和说明，旧MISSING/图结论不自动变PASS。实际研究/实现缺口见 [继续补核](verification/issue37-continuation.md)。
+
+2026-10-07的[环境窗口184图](screenshots/issue37-environment-gaps/index.html)独立70 ADAPTED / 34 MAPPED / 18 MISSING / 62 FAIL；Cookie20图同业务直接原图仍全部MISSING。新来源03的[34张表格/批次续修图](screenshots/issue37-environment-repairs/index.html)与8ca的[34张创建编辑续修图](screenshots/issue37-drawer-repairs/index.html)分别独立34 ADAPTED / 0 FAIL，同业务原图与未查看/同时可见的内容仍限定，旧62 FAIL不冲销。各自冻结79输入，图像/合同结论见环境说明，不把工具守卫或自然滚动定位成功当作1:1。原40状态/80图、六张设置候选与完整指南MISSING均不改；最终只读647来源/80原图及145设置来源/6候选哈希仍匹配，无新原参考或商业资源公开。
 
 ## 2 公共几何基线
 

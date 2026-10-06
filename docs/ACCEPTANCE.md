@@ -4,6 +4,20 @@
 
 ## 完整目标继续复查（2026-10-06；原结果保留，缺口恢复OPEN）
 
+2026-10-07增量：[环境窗口补证](verification/issue37-environment-evidence.md)的184图全部独立逐图，70 ADAPTED / 34 MAPPED / 18 MISSING / 62 FAIL；38份动作、66份图后回调和8条原采集失败的[保存合同](verification/issue37-environment-contract-review.json)独立限定一致、0问题。批次编号/环境表容量与详情分页边界CSS两候选普通合入 `03d0f68`，新34图独立34 ADAPTED / 0 FAIL、14图后回调保存合同限定一致。drawer截字/浮层遮挡最小修复另合入 `8ca2e79`，MAIN两项noEmit通过，新34图独立34 ADAPTED / 0 FAIL，[34记录/16回调保存合同](verification/issue37-environment-drawer-contract-review.json)限定一致、15份实际工具身份匹配、0问题；首轮工具排序误拒的0图/0动作记录另留。旧62 FAIL不撤销，本段不增加正式4/21、当前HEAD共享全套或真实桌面通过数。
+
+[环境层](verification/issue37-supplementary-environment.json)与[单独来源续层](verification/issue37-supplementary-environment-repairs.json)按原47个有限缺口派生37已补证/10有剩余子句，不是37项正式验收。原113/60/101与whole-cell PASS新增0不改；[最终图/来源/导航审计](verification/issue37-final-evidence.json)和纯文本闭合检查不证明完整原指南、实际Wails/WebView或真实终止/恢复，正式仍4/21。
+
+较早合入 `9de0e2a` 的三处UI修复独立38/38定向与两项noEmit通过，旧源码五包532份图像记录已公开，每图来源/结论及仍待核实项见 [新增证据账本](verification/issue37-continuation-evidence.md)。22项旧包FAIL、未取得图位和完整指南MISSING均保留；不使用点击成功或新渲染哈希覆盖旧结论，不增加正式4/21，也不把新UI写入旧二进制。
+
+后续 `75bc58d` 内核/代理分页、短提示、待保存及晚到portal隔离修复仅新22/22定向一次、两项noEmit通过，另14状态28图独立 **28 MAPPED / 0 FAIL**。`340a22c` 的代理背景行文案防御性修正仅既有13场景双视口26/26一次及两项noEmit通过，不声称正常Go产生陈旧connected回复或安全授权漏洞。9de阶段8图修复与60图迁移也分别独立MAPPED；[274项600记录冻结补证层](verification/issue37-supplementary-crosswalk.json)仍明确66项具体行为缺口、完整指南缺直接参考，原113/60/101与整票状态不变。
+
+继续补证的[340上下文动作](verification/issue37-contextual-actions.json)保留16份双视口动作及2份图后保存记录、四个历史工具失败；三种强制拒绝、独立恢复确认、原ID恢复核实和三类维护返回仅认证合成页面行为，不认证进程身份或真实目录恢复。新20图独立 **18 MAPPED / 2 FAIL**，两FAIL是代理编辑错误末行未滚到底；另两张自然滚底图独立 **2 MAPPED / 0 FAIL**，原图不覆盖，不改产品，不提前增加通过数。
+
+[340七路由/冷指南动作](verification/issue37-native-route340-actions.json)另有2份双视口记录、0PNG和6条保留工具失败；只有合成页面、精确5次只读请求及真实模块来源断言。原始拒绝getter为0→1→1、Storage handle0，旧严格getter=0仍失败，完整指南参考仍缺；不增加正式4/21、当前HEAD全套或真实native通过。
+
+[独立七路由合同复核](verification/issue37-native-route340-contract-review.json)为限定一致、0可证明问题，没有新测试/浏览器或像素审查；自然观察到fallback不等于稳定首次loading图证，19项指南直接原参考仍缺。原“待独立复核”的输出不重写，独立报告另绑准确SHA。
+
 独立目标审查从当前源码入口重新核对，而非用173状态定义成功：已确认普通通道与强制归属资格混淆、备份文件按钮hover，以及补拍发现的活动force下层未inert。#33完整清单、#34已支持恢复、#35独立详情/迁移动作证据存在明确缺口，三票恢复OPEN；#32/#36/#37仍OPEN。三处UI修复与迁移确认资格修复已由merger合入 `0f7a233`，实际62/62定向、两项noEmit及独立增量源码审查通过；新图和比例修复仍单独取证，不自动关闭票。
 
 在原相同渲染字节补拍12状态/24图，最终取证守卫24/24、定向失败重读/force取消4/4；独立6联系表+24原尺寸逐图复核 **22 MAPPED / 2 FAIL**，所有图片哈希匹配。两条FAIL和初次工具失败记录均保留。已有346图、一次共享196/196和正式4/21不改；新补图不证明全部覆盖。只读离线原设置研究另得到两尺寸顶部/底部4张候选原图，完整帮助正文仍未恢复。详见 [继续补核](verification/issue37-continuation.md)、[修复前24图](screenshots/issue37-extra/index.html)。

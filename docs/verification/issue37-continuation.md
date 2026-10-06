@@ -1,5 +1,7 @@
 [整组记录](issue37.md) · [唯一参考](../UI_REFERENCE.md) · [PR #38](https://github.com/axgiroud312-byte/prism-local-browser/pull/38)
 
+最新增量见 [支持窗口逐图包与合入修复](issue37-continuation-evidence.md)、[环境窗口补证](issue37-environment-evidence.md)及[图库总入口](../screenshots/issue37-continuation/index.html)：当前14包906份独立逐图记录，154 ADAPTED / 616 MAPPED / 50 MISSING / 86 FAIL，各包保留自己的来源、旧FAIL和缺图。`9de0e2a`三处修复38/38、`75bc58d`内核/代理布局与晚到portal修复新22/22、`340a22c`代理行文案防御小修26/26分别定向通过，各两项noEmit通过，不重跑唯一共享全套；03与8ca来源的两组有限新图分别34 ADAPTED / 0 FAIL，不冲销原62张环境FAIL。新图、[274项冻结补证层](issue37-supplementary-crosswalk.json)与32/22/2分层记账和仍待核实条件分开。下方保留各历史阶段的当时结论，不将旧图改绑为新源码，完整目标仍未验收。
+
 # #36 / #37 补核与完整目标复查
 
 日期：2026-10-06。继续推进 #32–#37 的整组目标，不把上一轮已交付清单当成全产品验收。第一阶段补核没有修改 App、服务、测试、四份内嵌文档或原 346 张图；下方另记随后修复的真实源码与检查，不倒改历史来源。不重建桌面程序，不再重复共享全套。

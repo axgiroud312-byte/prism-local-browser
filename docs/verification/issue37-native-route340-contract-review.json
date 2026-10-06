@@ -1,0 +1,817 @@
+{
+  "schemaVersion": 1,
+  "kind": "public-independent-native-route340-saved-evidence-contract-review",
+  "date": "2026-10-07",
+  "sourceHead": "340a22c1e8489fad2db091a25bb14bb7d2e66984",
+  "renderHash79": "0df5a445b4a16f1984f2944ac7367d1202322b892876f2d31b9e853d9a8708ce",
+  "rawRenderHash78": "819ebca00422211c9fe8863f04ae67f2e9149cdee0199e75a1ecb9747bcc4ee3",
+  "resultSha256": "2a7db0c0bcf779d1e201107764888ed336d7a86b7be91e9c801491f0c5248f7d",
+  "archiveManifestSha256": "1a3fc2895227b99185d139d06b7e322f1e5ccbcc7499387a531c093b9f88304e",
+  "verdict": "SCOPED_CONTRACT_CONSISTENT",
+  "demonstrableContractFindingCount": 0,
+  "findings": [],
+  "contract": "native-route340-seven-sidebar-cold-guide-action-v1",
+  "reviewMethod": {
+    "scope": "Pinned archived tools, frozen340 sources and original private saved records only; not live observation or rerun.",
+    "ownedNewFiles": [
+      "native-route340-contract-review.md",
+      "native-route340-contract-review.json"
+    ],
+    "readOnlyJsonHashAndTextDiffProcessing": true,
+    "evidenceModuleImportsOrExecutions": 0,
+    "caseExecutions": 0,
+    "browserActions": 0,
+    "pngsOpenedOrDecoded": 0,
+    "newCaptures": 0,
+    "testsOrTypechecks": 0,
+    "networkFetchesOrNativeProbes": 0,
+    "goWailsUiaExecutions": 0,
+    "gitCommands": 0,
+    "sourceOrPublicFileWrites": 0,
+    "agentDispatches": 0,
+    "pendingEnvironmentAuthorOrContext22AccountantInspected": false,
+    "earlierContextual16Plus2ReviewRepeated": false,
+    "mainConcurrentPublicProjectionInspectedOrRequired": false,
+    "rawCredentialsSerializedRequestsOrCredentialHashesCopied": false
+  },
+  "evidenceInputs": {
+    "frozenManifest": {
+      "path": "frozen-render-inputs-340a22c/render-inputs.json",
+      "sha256": "d3e6938da18e184f1b9e2160d151196646f0cb22093e64390ea37afd5a66d83d"
+    },
+    "archiveManifest": {
+      "path": "native-route340-tool-archive-final/manifest.json",
+      "sha256": "1a3fc2895227b99185d139d06b7e322f1e5ccbcc7499387a531c093b9f88304e"
+    },
+    "finalResult": {
+      "path": "native-route340-actions-init-mode-first/action-results.json",
+      "sha256": "2a7db0c0bcf779d1e201107764888ed336d7a86b7be91e9c801491f0c5248f7d"
+    },
+    "finalSourceStart": {
+      "path": "native-route340-actions-init-mode-first/source-start-private.json",
+      "sha256": "c7a175c93db8dec99d507396fa25c3340069b96087cde4b8a71180e403d740ef"
+    },
+    "finalBindingStart": {
+      "path": "native-route340-actions-init-mode-first/binding-start-private.json",
+      "sha256": "8c769eea113f9b6b020f7197502c1f6dde494cf07ee72e5dbe51ed9cda0c296d"
+    },
+    "finalBindingEnd": {
+      "path": "native-route340-actions-init-mode-first/binding-end-private.json",
+      "sha256": "91b025e875f2380348e78ae25bad560ab9ad517ac77cfbeff14f997841658c16"
+    },
+    "originalAuthorToolSha256": "58967c952866ab6301953da39e1fa21566b044729e59747e9b77940da66f6c47",
+    "actualFinalForkSha256": "49f8034890e25fedc69425b45e3e3f0676736b5eb7d40ac726104323ae9d1b10"
+  },
+  "sourceChecks": {
+    "actualFrozenFileHashesAndByteCountsChecked": 79,
+    "originalAttemptSourceMapsCompared": 5,
+    "allFiveSourceMapsMatchFrozen340": true,
+    "render79IndependentlyRecomputed": true,
+    "render79Ordering": "localeCompare path ordering, matching the frozen runner",
+    "raw78IndependentlyRecomputed": true,
+    "raw78Ordering": "remove migration-workflow-bridge.ts; default lexical path ordering, matching the helper",
+    "sixCanonicalGuideServiceLockContextsMatchFrozenAndSaved83": true,
+    "canonicalGitAndRawCheckoutHashesKeptSeparate": true,
+    "old83EvidenceRelabeled": false,
+    "newBroadSourceCertificationOrCurrentCheckoutCleanlinessClaimed": false
+  },
+  "attempts": [
+    {
+      "directory": "native-route340-actions-first",
+      "sourceStartSha256": "fc820ca5c653611d05b6341043a4c0d8686901e9170410eff14e5f92e23c4a68",
+      "resultSha256": "869b643d16eb0e56f35f6a5f280d046027a98eb11ae63e73ecb3de30f34dd3ce",
+      "toolingHash": "67ba7cdb395179d3a63ddc69a052e7e2955df82e9289f7031f73dbd844228dfd",
+      "toolInputCount": 16,
+      "status": "FAIL_CLOSED",
+      "records": 0,
+      "failures": 1,
+      "failureFiles": [
+        "failure-1.json"
+      ],
+      "failureClass": "preflight-real-main-numeric-timestamp-refused",
+      "embeddedFailuresExactlyEqualOriginalCopies": true
+    },
+    {
+      "directory": "native-route340-actions-vite-first",
+      "sourceStartSha256": "0c3ba7893e6426d6bdbc021d58d123ca751c863109ecc3d6b5ef18f6074f8a42",
+      "resultSha256": "8a74afe5354a70e6dcf5995dbfb93b7a1053cc7d77f097c85b956288dc9c8230",
+      "toolingHash": "6c31d3dbda8d8d2d36e3325b426bf36f15e6b1e196bac2af9b9b296011a43db7",
+      "toolInputCount": 18,
+      "status": "FAIL_CLOSED",
+      "records": 0,
+      "failures": 2,
+      "failureFiles": [
+        "failure-1.json",
+        "failure-2.json"
+      ],
+      "failureClass": "sidebar-absent-with-three-static-markdown-imports-denied-per-context",
+      "savedNetworkFaultsPerViewport": 3,
+      "setupPageErrorsFieldNotYetRecorded": true,
+      "absentDiagnosticFieldInterpretedAsZero": false,
+      "embeddedFailuresExactlyEqualOriginalCopies": true
+    },
+    {
+      "directory": "native-route340-actions-vite-docs-first",
+      "sourceStartSha256": "b0f86b65e03d89a678dbca044f8f4c63f92397e52243eb3960be4b9278e48b73",
+      "resultSha256": "37a83593d2840da3c77a7c808732142231a4d02f3cf3e97feec7e22143b89e74",
+      "toolingHash": "3fbac15d29146fd1a1619dc14482dab93bcd86f035e5ebf5e34034f6451066b8",
+      "toolInputCount": 20,
+      "status": "FAIL_CLOSED",
+      "records": 0,
+      "failures": 1,
+      "failureFiles": [
+        "failure-1.json"
+      ],
+      "failureClass": "preflight-valid-markdown-export-without-semicolon-misparsed",
+      "embeddedFailuresExactlyEqualOriginalCopies": true
+    },
+    {
+      "directory": "native-route340-actions-md-export-first",
+      "sourceStartSha256": "a71ad485a140e2341523824ff8be3755cf2e1e02713923b6e08fa50af60c7bed",
+      "resultSha256": "2173cc739f92c56874e0d5825a1fe7e2ef31a584f7363a3f8042a62d1c2424c6",
+      "toolingHash": "d6c24d1fdbe49ce3742aaff304f63b079a526a6c24741eb6d7c18cae51a4a288",
+      "toolInputCount": 22,
+      "status": "FAIL_CLOSED",
+      "records": 0,
+      "failures": 2,
+      "failureFiles": [
+        "failure-1.json",
+        "failure-2.json"
+      ],
+      "failureClass": "unchanged-lower-initializer-refuses-omitted-outer-mode",
+      "innerLegacyModeAlreadyNativeLocal": true,
+      "savedSetupPageErrorCountPerViewport": 2,
+      "savedSetupPageErrorClasses": [
+        "mode-origin-bridge-context-refusal",
+        "subsequent-absent-audit-responses-error"
+      ],
+      "embeddedFailuresExactlyEqualOriginalCopies": true
+    },
+    {
+      "directory": "native-route340-actions-init-mode-first",
+      "sourceStartSha256": "c7a175c93db8dec99d507396fa25c3340069b96087cde4b8a71180e403d740ef",
+      "resultSha256": "2a7db0c0bcf779d1e201107764888ed336d7a86b7be91e9c801491f0c5248f7d",
+      "toolingHash": "1567eb01c7345d62683a573edb615a195e98ce268a64ca6185f141ea22d2416f",
+      "toolInputCount": 24,
+      "status": "ACTION_GUARDS_SATISFIED_PENDING_INDEPENDENT_CONTRACT_REVIEW",
+      "records": 2,
+      "failures": 0,
+      "failureFiles": [],
+      "savedSetupPageErrorsPerViewport": 0,
+      "savedNetworkFaultsPerViewport": 0,
+      "finalBehavioralDeltaFromPreviousFork": "pass the original arg.mode to the outer initializer argument"
+    }
+  ],
+  "archiveChecks": {
+    "distinctInputs": 24,
+    "attemptFileBindingsChecked": 100,
+    "archivedCopiesHashedAndSizeChecked": 24,
+    "currentOwnerCopiesHashedAndSizeChecked": 24,
+    "allFiveOriginalToolMapsAndAggregatesMatch": true,
+    "allOriginalResultAndSourceStartHashesMatch": true,
+    "originalPlanAndFourMainForkPlansMatchActualDiffs": true,
+    "earlierAttemptsCertifiedWithTheirOwnArchivedForks": true,
+    "unchangedAcrossAllFiveForks": [
+      "initializeReadOnlyNavigation",
+      "observeRenderer",
+      "guard",
+      "waypoint",
+      "endStable"
+    ],
+    "scenarioDelta": "adds failure/setup diagnostics; success assertions unchanged",
+    "originalFailureObjectsRetained": 6,
+    "failureCountingKey": [
+      "attempt directory",
+      "failure ordinal",
+      "id"
+    ],
+    "printedPageErrorsUsedAsFailureCount": false,
+    "originalToolsOrFailuresRewritten": false,
+    "archiveRoot": "native-route340-tool-archive-final",
+    "inputs": [
+      {
+        "relative": "frozen-render-inputs-340a22c/render-inputs.json",
+        "sha256": "d3e6938da18e184f1b9e2160d151196646f0cb22093e64390ea37afd5a66d83d",
+        "bytes": 34193,
+        "archived": "files/0-render-inputs.json"
+      },
+      {
+        "relative": "guide-storage-boundary.mjs",
+        "sha256": "73bd091621ca1704fcda9507cac3e6c05abd63e65b62859bf51b014cccf04109",
+        "bytes": 28269,
+        "archived": "files/1-guide-storage-boundary.mjs"
+      },
+      {
+        "relative": "../issue37-evidence-helpers.mjs",
+        "sha256": "bb05cc0ca4769671b93c2e8e08144ddf514016e22058b1657fd1ef97ff9e43c7",
+        "bytes": 25493,
+        "archived": "files/2-issue37-evidence-helpers.mjs"
+      },
+      {
+        "relative": "check-guide-classified-actions.mjs",
+        "sha256": "493648307ec6b6714075b4901e418d136e11a75cca60e661f480f7315b9ee158",
+        "bytes": 15445,
+        "archived": "files/3-check-guide-classified-actions.mjs"
+      },
+      {
+        "relative": "validate-guide-storage-boundary.mjs",
+        "sha256": "8cd9f114d1d65a94c13fe95e81ab8e0f3eca56573aa128feb478044662e61731",
+        "bytes": 18694,
+        "archived": "files/4-validate-guide-storage-boundary.mjs"
+      },
+      {
+        "relative": "native-guide-classifier-capture-first/binding-start.json",
+        "sha256": "b52574793d61314618a28198b5720f818e9c43e8d73cfc0f8df64b86d0012ea9",
+        "bytes": 14705,
+        "archived": "files/5-binding-start.json"
+      },
+      {
+        "relative": "native-guide-classifier-validation-r6/guard-validation-results.json",
+        "sha256": "57f7d264e307933a0886477a2265754d39a027188bc97e095563f4a0e7bed6f3",
+        "bytes": 58816,
+        "archived": "files/6-guard-validation-results.json"
+      },
+      {
+        "relative": "guide-storage-boundary-validation.json",
+        "sha256": "26926282ac8064468472756ec06dede8d49db285af8dfd394ee87ef8ab105eda",
+        "bytes": 14546,
+        "archived": "files/7-guide-storage-boundary-validation.json"
+      },
+      {
+        "relative": "contextual-gap-cases.mjs",
+        "sha256": "f39e9debe53776735b77ea311c8347151e19ec618e11db40c326dc30dd5b9a2b",
+        "bytes": 63753,
+        "archived": "files/8-contextual-gap-cases.mjs"
+      },
+      {
+        "relative": "contextual-gap-plan.md",
+        "sha256": "94adaa85762a952ce6c531b4186a0858d5a33096bfa46bf9192ee87f54c23b7d",
+        "bytes": 7209,
+        "archived": "files/9-contextual-gap-plan.md"
+      },
+      {
+        "relative": "contextual-gap-plan.json",
+        "sha256": "caff3ba68ff4f74fb531aa5e1a21e67078c9f79d9f971ab438136b04a96921ff",
+        "bytes": 36723,
+        "archived": "files/10-contextual-gap-plan.json"
+      },
+      {
+        "relative": "native-route340-actions.mjs",
+        "sha256": "58967c952866ab6301953da39e1fa21566b044729e59747e9b77940da66f6c47",
+        "bytes": 40899,
+        "archived": "files/11-native-route340-actions.mjs"
+      },
+      {
+        "relative": "native-route340-plan.md",
+        "sha256": "c70a3f6f749b3991bc5d742db154c40d3698b718dad4f8b232537bd189dbc04e",
+        "bytes": 7915,
+        "archived": "files/12-native-route340-plan.md"
+      },
+      {
+        "relative": "native-route340-plan.json",
+        "sha256": "89cb649b9fbf1a2fbc51c34a05412e259c36ead7e3c0d481748d212ef550a855",
+        "bytes": 18825,
+        "archived": "files/13-native-route340-plan.json"
+      },
+      {
+        "relative": "../../native-fixtures/bridge.mjs",
+        "sha256": "eea69c9a7397b4a46c2eb6d8d45f7f1db71e6fd12399de60356b51349de88e33",
+        "bytes": 46263,
+        "archived": "files/14-bridge.mjs"
+      },
+      {
+        "relative": "../../native-fixtures/scenarios.mjs",
+        "sha256": "eb2fc0699a5c7bfcb839e64d02d94960bad1df2c3392e14c848191f07e0870bb",
+        "bytes": 19585,
+        "archived": "files/15-scenarios.mjs"
+      },
+      {
+        "relative": "native-route340-actions-vite.mjs",
+        "sha256": "b5ac684bed26553efee80a4f9325074d82bf55a6b83c5cb956dc83afff28649d",
+        "bytes": 41667,
+        "archived": "files/16-native-route340-actions-vite.mjs"
+      },
+      {
+        "relative": "native-route340-vite-plan.md",
+        "sha256": "eda683c9aff0a8a310c933c5afcf092f51fee74cc848c030adaa92581a75b60d",
+        "bytes": 1335,
+        "archived": "files/17-native-route340-vite-plan.md"
+      },
+      {
+        "relative": "native-route340-actions-vite-docs.mjs",
+        "sha256": "a0e024b18370e0fc45c61b9c6882baabd10b7db81127b200c07f3a4e8ccbcd6f",
+        "bytes": 43232,
+        "archived": "files/18-native-route340-actions-vite-docs.mjs"
+      },
+      {
+        "relative": "native-route340-vite-docs-plan.md",
+        "sha256": "4e26716078e9920c0b90b554403097036f13cad608bd360f08ab64af97b9c008",
+        "bytes": 1239,
+        "archived": "files/19-native-route340-vite-docs-plan.md"
+      },
+      {
+        "relative": "native-route340-actions-md-export.mjs",
+        "sha256": "50c56fcfbce240adb56a83b858881170b1db7c3cc7054dff670013538229c1e2",
+        "bytes": 43473,
+        "archived": "files/20-native-route340-actions-md-export.mjs"
+      },
+      {
+        "relative": "native-route340-md-export-plan.md",
+        "sha256": "cb7c4f7e6917188fdcee3736ff05e880cc4c761079cecf84bc91dd2dda30ba72",
+        "bytes": 977,
+        "archived": "files/21-native-route340-md-export-plan.md"
+      },
+      {
+        "relative": "native-route340-actions-init-mode.mjs",
+        "sha256": "49f8034890e25fedc69425b45e3e3f0676736b5eb7d40ac726104323ae9d1b10",
+        "bytes": 43724,
+        "archived": "files/22-native-route340-actions-init-mode.mjs"
+      },
+      {
+        "relative": "native-route340-init-mode-plan.md",
+        "sha256": "6e6e47f4017604c9f3795252dd575afa1018cae4b35fa478707a793a69729b06",
+        "bytes": 799,
+        "archived": "files/23-native-route340-init-mode-plan.md"
+      }
+    ]
+  },
+  "finiteReadContract": {
+    "nativeMode": "native",
+    "exactEnvelopeKeys": [
+      "mode",
+      "method",
+      "payload"
+    ],
+    "allowedMethods": [
+      "Workspace.Read"
+    ],
+    "requiredCallsPerContext": 5,
+    "totalReadCallsInTwoFinalContexts": 10,
+    "order": [
+      "initial",
+      "initialQuery",
+      "migrationLookup",
+      "migrationLookup",
+      "migrationLookup"
+    ],
+    "countsPerContext": {
+      "initial": 1,
+      "initialQuery": 1,
+      "migrationLookup": 3
+    },
+    "initialPayload": {},
+    "queryShape": {
+      "page": 1,
+      "pageSizes": [
+        10,
+        25
+      ],
+      "search": "",
+      "group": "",
+      "status": "all"
+    },
+    "size25OnlyOnActualKernelsMount": true,
+    "allThreeRequestReplyLedgersAgree": true,
+    "fiveOriginalRepliesReturnedUnchangedComparisonsRecordedPerContext": true,
+    "fullWorkspaceResponseAndBackingDeepComparedInExecutedGuard": true,
+    "fullResponseDataNotExportedForIndependentReview": true,
+    "fixtureAuditAndStorageGetterIdentitiesIntact": true,
+    "pendingCalls": 0,
+    "unknownMethods": 0,
+    "cookieCleanupBudget": 0,
+    "cookieCleanupCalls": 0,
+    "nonReadEffects": 0,
+    "runtimePollingAllowance": 0
+  },
+  "waypointReview": {
+    "scenarioCount": 1,
+    "contextCount": 2,
+    "actionRecords": 2,
+    "waypointsPerContext": 36,
+    "naturalClicksPerContext": 35,
+    "privateWaypointCopiesExactlyCompared": 72,
+    "helpClicksPerContext": 7,
+    "kernelMountsPerContext": 3,
+    "targets": [
+      {
+        "route": "environments",
+        "label": "浏览器环境"
+      },
+      {
+        "route": "groups",
+        "label": "分组管理"
+      },
+      {
+        "route": "proxies",
+        "label": "代理管理"
+      },
+      {
+        "route": "kernels",
+        "label": "内核管理"
+      },
+      {
+        "route": "backups",
+        "label": "备份与恢复"
+      },
+      {
+        "route": "activity",
+        "label": "操作记录"
+      },
+      {
+        "route": "guide",
+        "label": "产品与开发"
+      }
+    ],
+    "perTargetSequence": [
+      "sidebar-target",
+      "bell-to-activity",
+      "sidebar-bell-return",
+      "help-to-guide",
+      "sidebar-help-return"
+    ],
+    "allSevenBellAndHelpReturnsPreserved": true,
+    "sevenExactHrefAndOneActiveLabelGuard": true,
+    "oneNativeBadge": "本机桌面",
+    "badgeMeansGenuineGoBridge": false,
+    "viewportDprAndVisualScale": 1,
+    "zoom": "100 percent",
+    "noOverflowModalOrInertAndNaturalVisibleFocusGuard": true,
+    "fullScrollInertGeometryIsSourceGuardedNotPixelEvidence": true,
+    "forceClicksOrFocusHashReactPresentationWrites": false,
+    "contexts": [
+      {
+        "id": "native-route340-1440x900",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "bootstrap": {
+          "path": "native-route340-actions-init-mode-first/native-route340-1440x900-bootstrap-private.json",
+          "sha256": "696c55a4cd3ecc3d94478789a5e1d353a6a47ca89ff5c078355c54c030adef68"
+        },
+        "closure": {
+          "path": "native-route340-actions-init-mode-first/native-route340-1440x900-closure-private.json",
+          "sha256": "2b14c908612f8685cf1c2e88952fe29f110149ceee1380a0422ff2889ce7915d"
+        },
+        "waypoints": 36,
+        "naturalClicks": 35,
+        "readCalls": 5,
+        "rootStaticRequests": 83,
+        "blockedRootHmrAttempts": 2,
+        "pageErrors": 0,
+        "networkFaults": 0,
+        "fallbackObserved": true,
+        "workCompleted": true,
+        "finallyGuardPassed": true
+      },
+      {
+        "id": "native-route340-1280x800",
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "bootstrap": {
+          "path": "native-route340-actions-init-mode-first/native-route340-1280x800-bootstrap-private.json",
+          "sha256": "696c55a4cd3ecc3d94478789a5e1d353a6a47ca89ff5c078355c54c030adef68"
+        },
+        "closure": {
+          "path": "native-route340-actions-init-mode-first/native-route340-1280x800-closure-private.json",
+          "sha256": "27354c90cc7939ea3d77d3a3ea09d50e91bcfcd0c24eedf0af298e3dfaf44460"
+        },
+        "waypoints": 36,
+        "naturalClicks": 35,
+        "readCalls": 5,
+        "rootStaticRequests": 83,
+        "blockedRootHmrAttempts": 2,
+        "pageErrors": 0,
+        "networkFaults": 0,
+        "fallbackObserved": true,
+        "workCompleted": true,
+        "finallyGuardPassed": true
+      }
+    ]
+  },
+  "storageReview": {
+    "beforeGuideWaypointIndicesInclusive": [
+      0,
+      3
+    ],
+    "beforeGuideRawTotalKnown": 0,
+    "firstGuideWaypointIndex": 4,
+    "postGuideWaypointIndicesInclusive": [
+      4,
+      35
+    ],
+    "postGuideAndClosureRawTotalKnown": 1,
+    "appOrUnknownAttempts": 0,
+    "storageHandles": 0,
+    "firstH1": "棱镜浏览器使用指南",
+    "passiveFirstH1ObserverRecordsDenialBeforeReadiness": true,
+    "exactOriginalGetterAndFourDependencyFramesMatch": true,
+    "originalGetterAlwaysThrows": true,
+    "ownNonConfigurableDescriptorIntact": true,
+    "rawCounterNeverResetAndEqualsLowerTotal": true,
+    "guideInitializerFunctionSha256": "480c461ec3d09308e806bdb66564a719e833ce22d25452604428d8cf5bf2fe04",
+    "legacyInitializerFunctionSha256": "b4579ab3ec0fba46e30ffa50b1fd39921b867ec56fcc27d06ff2242964e707ad",
+    "scopeInitializerFunctionSha256": "9535920392b320574ea5b02f3628ae5094c237f9c87afc18a6c2c73b323c8f95",
+    "threeFunctionTextHashesIndependentlyRecomputedWithoutImport": true,
+    "compiledStockScriptInputSha256": "b762b0682b709c0390a3dc2a38988ff34a7e08c1cd31e695f4098ecfa22db9ab",
+    "compiledStockInputGuardAndBothBootstrapHashesMatch": true,
+    "savedExecutedBootstrapBindingsCompared": 6,
+    "savedBootstrapModeFunctionAndInputIdentitiesUnchangedAcrossViteMdExportInitMode": true,
+    "compiledStockInputValuesNotSerialized": true,
+    "compiledStockInputRecompiledByReviewer": false,
+    "oldStrictZeroWouldFail": true,
+    "oldZeroGetterPassClaimed": false,
+    "historicalControls": {
+      "sourceHead": "83eafe1bee11ec68077b22c8fecc4f4f2bba456f",
+      "recordedControls": 50,
+      "rerunAt340": 0,
+      "promotedToNewHeadTests": false
+    },
+    "legacy26Actions16CapturesOrFailuresRerunReboundOrRewritten": false,
+    "fallbackOptionalAndNotForced": true,
+    "fallbackRecoveryOrImageAcceptanceClaimed": false
+  },
+  "rendererAndNetworkReview": {
+    "preflightEntries": 9,
+    "browserUsedRendererEntriesAttestedAtEveryWaypoint": 7,
+    "hostOnlyRawSourceEntries": 2,
+    "actualRootMainWithOptionalNumericTimestampAndDerivedAppUrl": true,
+    "frozen340RawAndSourceMapChecksInPinnedExecutedCode": true,
+    "unsavedCompiledMainAppBodiesRefetchedByReviewer": false,
+    "fourUniqueDocUrlsDerivedFromActualAppAndExactlyAllowed": true,
+    "anchoredJsonExportWithOneOptionalSemicolon": true,
+    "allFourSavedDocModuleHashesAndSizesIndependentlyReconstructed": true,
+    "reconstructedDocExportsHaveSemicolon": false,
+    "docs": [
+      {
+        "file": "docs/PRD.md",
+        "rawSha256": "75439a71b3f0c765025a3cecb1d5947276bc6eda37b1dc40cd7557e2558c03d5",
+        "servedSha256": "728e18d829dd20364c1a7ca371985941eb50d906800057dabbc6acec4f6e0651",
+        "servedBytes": 48463
+      },
+      {
+        "file": "docs/DEVELOPMENT.md",
+        "rawSha256": "8aff5b7a1b09585e1265c0825d9a6e675f6496fcf947224ee11022e2e2c7a1e5",
+        "servedSha256": "ba6f53c34818c44b75cf7671e7642f8aef308e1398c66d552c93b18d18a507f4",
+        "servedBytes": 90993
+      },
+      {
+        "file": "docs/KERNEL.md",
+        "rawSha256": "66147484ef2e4dafc9524764ed0ef9208ee7ecd52a34968a5f2d28bbe3e14a5c",
+        "servedSha256": "0aa7236d501cfdfd014d796f7b5e8968a7c2a777d0f48a9bbe808d17dd2514c2",
+        "servedBytes": 49404
+      },
+      {
+        "file": "docs/USER_GUIDE.md",
+        "rawSha256": "37eb8232d0eecac3225fd873c6879e9737ce025e79ba60b2036753437109e1bb",
+        "servedSha256": "397ab9c90c86833ad5142c8b4eafc56f07a045b7ff7dc4b600d871934738b803",
+        "servedBytes": 15028
+      }
+    ],
+    "sixFrozenCachedServedBodiesHashed": true,
+    "modules": [
+      {
+        "name": "react-markdown",
+        "cachedSha256": "fd6260f778a5cf08b52f836e4ba182ac4b3a3cd3d63d76039d00545e97a08514",
+        "servedSha256": "30aa09a86151da574202206ad6b5fc21547ca58abcffa672b0f53781e6e16fc7",
+        "cachedBytes": 429684,
+        "servedBytes": 1422630,
+        "importRewrites": 3,
+        "regionCommentRewrites": 124,
+        "sourceMapSources": 126
+      },
+      {
+        "name": "rolldown-runtime",
+        "cachedSha256": "f74ce63fe4684f55be3ea69da3a4528da464f9d5f63cda903b76eb13e92d1954",
+        "servedSha256": "846908987ae1643e0660cef0c30b6835a13bfa895e317bee0f32852a239072f7",
+        "cachedBytes": 1445,
+        "servedBytes": 7824,
+        "importRewrites": 0,
+        "regionCommentRewrites": 0,
+        "sourceMapSources": 1
+      },
+      {
+        "name": "shared-lib",
+        "cachedSha256": "f2c969553492d7cdcf5ecbc6bd15827fdf2f791d0fc6601fd9e9044ee1ec0310",
+        "servedSha256": "55ebe049644196d327feaf99d44f578ef1fd7d62dc21e48235d432583faf6870",
+        "cachedBytes": 55739,
+        "servedBytes": 188036,
+        "importRewrites": 0,
+        "regionCommentRewrites": 18,
+        "sourceMapSources": 18
+      }
+    ],
+    "oneInlineSourceMapTrailerPerModule": true,
+    "unapprovedExecutableModuleDeltas": 0,
+    "actualBrowserUrlHashByteAndConstructorOffsetsAgree": true,
+    "browserPermission": "Root-only static GET; original grammar plus single numeric t for src TS/TSX/CSS; docs only four exact derived URLs.",
+    "broadRawDocPermissionAdded": false,
+    "staticRequestBudgetPerContext": 256,
+    "staticRequestsPerContext": 83,
+    "blockedRootHmrAttemptsPerContext": 2,
+    "connectedWebSockets": 0,
+    "unknownOrUnexpectedErrors": 0,
+    "allSocketAttemptsOrAllConsoleEventsClaimedZero": false,
+    "narrowOriginalRootHmrConsoleExceptionRetained": true,
+    "thirdPartyFramesServiceWorkersFilechoosersDownloadsAndPopupsAllowed": false
+  },
+  "admissionReview": {
+    "freshStartBindingInputHash": "f6dd39b0f2a90fd573f0c9be6ace0b7a21c6b8a3df060f19d229a5bf5cd2e85a",
+    "freshStartBindingInputHashIndependentlyRecomputed": true,
+    "finalToolingAggregateHash": "1567eb01c7345d62683a573edb615a195e98ce268a64ca6185f141ea22d2416f",
+    "privateClosureStatusRemains": "NOT_AN_ACTION_PASS",
+    "provisionalWaypointStatusRemains": "PROVISIONAL_NOT_ADMITTED",
+    "bothWorkCompletedAndFinallyGuardsPassed": true,
+    "closedContextSnapshotsAgreeWithFinalProjections": true,
+    "closureSnapshotsTakenReadOnlyImmediatelyBeforeContextClose": true,
+    "closureSnapshotReadsAddNativeEffects": 0,
+    "singleDocumentLoadPerContext": 1,
+    "recordedEndBindingExactlyMatchesFinalResult": true,
+    "sourceToolLocalCachedServedAndRendererEqualityRequiredByEndStable": true,
+    "localAndServedInputsUnchangedRecorded": true,
+    "withoutGlobalStabilityRecordsAreEmpty": true,
+    "candidateCountNotYetGloballyAdmitted": 0,
+    "originalResultStatusNotRewritten": true,
+    "authoringStatusRetained": "AUTHORED_NOT_EXECUTED",
+    "executedByAuthor": false,
+    "mainExecutionAndIndependentReviewKeptSeparate": true,
+    "liveEndProbeByReviewer": false
+  },
+  "preservation": {
+    "uniqueInputFiles": 269,
+    "scope": [
+      "five named original attempt directories",
+      "final24 archive including its manifest",
+      "current owner of each archived tool input",
+      "79 frozen340 source files"
+    ],
+    "aggregateBeforeSha256": "ee7aad990e67c5b2cc19c46855b753ef972393d7c4f13a9252ac945ff76b6e1d",
+    "aggregateAfterSha256": "ee7aad990e67c5b2cc19c46855b753ef972393d7c4f13a9252ac945ff76b6e1d",
+    "algorithm": "Normalize note-relative slash paths, sort lexically, map each path to its file SHA-256, hash compact JSON.stringify of that ordered map.",
+    "onlyOwnedTwoReportsWritten": true,
+    "publicOwnerFilesNotInspectedOrModified": true
+  },
+  "proofReferences": [
+    {
+      "path": "native-route340-tool-archive-final/files/22-native-route340-actions-init-mode.mjs",
+      "lines": [
+        88,
+        136
+      ],
+      "purpose": "tool/source binding and separate historical83 context"
+    },
+    {
+      "path": "native-route340-tool-archive-final/files/22-native-route340-actions-init-mode.mjs",
+      "lines": [
+        138,
+        196
+      ],
+      "purpose": "actual main/App/doc preflight and fresh constructor binding"
+    },
+    {
+      "path": "native-route340-tool-archive-final/files/22-native-route340-actions-init-mode.mjs",
+      "lines": [
+        201,
+        248
+      ],
+      "purpose": "exact read budgets, original response/backing comparisons and passive first-h1 observation"
+    },
+    {
+      "path": "native-route340-tool-archive-final/files/22-native-route340-actions-init-mode.mjs",
+      "lines": [
+        250,
+        355
+      ],
+      "purpose": "actual browser renderer bodies, exact static GET admission, unchanged mode/initializer input and visible waypoint guards"
+    },
+    {
+      "path": "native-route340-tool-archive-final/files/22-native-route340-actions-init-mode.mjs",
+      "lines": [
+        363,
+        440
+      ],
+      "purpose": "natural seven-target sequence, finally/closure and global stable admission"
+    },
+    {
+      "path": "native-route340-tool-archive-final/files/1-guide-storage-boundary.mjs",
+      "lines": [
+        63,
+        80
+      ],
+      "purpose": "cached/served module delta rules"
+    },
+    {
+      "path": "native-route340-tool-archive-final/files/1-guide-storage-boundary.mjs",
+      "lines": [
+        135,
+        223
+      ],
+      "purpose": "exact constructor classification, permanent throwing descriptor and unchanged raw counter"
+    },
+    {
+      "path": "native-route340-tool-archive-final/files/1-guide-storage-boundary.mjs",
+      "lines": [
+        238,
+        274
+      ],
+      "purpose": "actual browser body attestation and denied-probe conservation"
+    },
+    {
+      "path": "native-route340-tool-archive-final/files/2-issue37-evidence-helpers.mjs",
+      "lines": [
+        119,
+        196
+      ],
+      "purpose": "unchanged native-local baseline bootstrap and forbidden-event/blocked-HMR boundaries"
+    },
+    {
+      "path": "frozen-render-inputs-340a22c/src/main.tsx",
+      "lines": [
+        10,
+        19
+      ],
+      "purpose": "initial native refresh"
+    },
+    {
+      "path": "frozen-render-inputs-340a22c/src/App.tsx",
+      "lines": [
+        381,
+        406
+      ],
+      "purpose": "inactive runtime polling and initial query"
+    },
+    {
+      "path": "frozen-render-inputs-340a22c/src/App.tsx",
+      "lines": [
+        1245,
+        1288
+      ],
+      "purpose": "seven native renderer links, badge and real bell/help targets"
+    },
+    {
+      "path": "frozen-render-inputs-340a22c/src/components/HelpPage.tsx",
+      "lines": [
+        6,
+        28
+      ],
+      "purpose": "original lazy Markdown user-document tab/h1"
+    },
+    {
+      "path": "frozen-render-inputs-340a22c/src/components/NativeMigrationManager.tsx",
+      "lines": [
+        45,
+        46
+      ],
+      "purpose": "natural kernels mount lookup"
+    },
+    {
+      "path": "frozen-render-inputs-340a22c/src/application/wails-adapter.ts",
+      "lines": [
+        200,
+        204
+      ],
+      "purpose": "exact size25 query"
+    },
+    {
+      "path": "frozen-render-inputs-340a22c/tests/ui/fixtures/local-pages-native-bridge.ts",
+      "lines": [
+        54,
+        59
+      ],
+      "purpose": "original throwing blocker and stock read paging response; no cleanup allowance"
+    }
+  ],
+  "boundedSupportedEvidence": {
+    "S02": "Two-view finite synthetic-native seven-sidebar navigation and bell/activity plus help/guide returns for every target.",
+    "H19": "Natural cold user-guide tab/h1 after one exactly classified denied dependency constructor probe, with repeated help visits retaining raw count1 and zero Storage handles.",
+    "wholeCellPass": false,
+    "pngCount": 0,
+    "pixelReviewed": false,
+    "keyboardAcceptance": false,
+    "nativeAcceptance": false,
+    "nativeIO": false,
+    "whole274Pass": false,
+    "pidProviderSecurityOrWindowsCertification": false,
+    "originalGuideRecovered": false,
+    "allH01ThroughH19DirectOriginalReferencesRemainMissing": true,
+    "directHelpStatus": "MISSING_DIRECT_HELP",
+    "historicalFailuresRetainOriginalSourceAndVerdict": true,
+    "mainOwnsPublicationCommitPushAndRemainingGates": true
+  },
+  "publicationProvenance": {
+    "privateIndependentReviewSha256": "09088084985eddecf6df7b131c692fd943dfd7b5d0ad6801b681457792d42b5d",
+    "publicActionsSha256": "7e26ee9cc1d745e81b8d237c7282ac7811fc3aa4232ca537542ae74e36762c99",
+    "reviewerReadPrivateOriginalInsteadOfSimultaneousPublicProjection": true,
+    "allOriginalPublicActionFieldsMatchedByPublisher": true,
+    "oldResultsOrToolsEdited": false,
+    "actionsOrBrowserRunsByPublisher": 0
+  },
+  "strictVisualPass": false,
+  "realDesktopAcceptance": false,
+  "wholeCellPassesAdded": 0,
+  "stableFirstLazyFallbackImageAcquired": false,
+  "oldZeroGetterContractStillWouldFail": true,
+  "directOriginalGuideStillMissing": true
+}

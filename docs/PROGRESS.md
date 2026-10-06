@@ -1,15 +1,24 @@
 # Goal 当前执行位置
 
-更新时间：2026-10-06。当前唯一视觉目标是「完整代码」冻结归档 `202609160208`，不是 Ant Browser 或旧六页框架。
+更新时间：2026-10-07。当前唯一视觉目标是「完整代码」冻结归档 `202609160208`，不是 Ant Browser 或旧六页框架。
 
 ## 当前 #32–#37 界面增量
+
+- 最新补核见 [图库总入口](screenshots/issue37-continuation/index.html)与[逐图包与修复](verification/issue37-continuation-evidence.md)：帮助比例修正已合入 `83eafe1`；后续批次焦点、旧代理报告正向标签和恢复primary覆盖三处UI修复又合入 `9de0e2a`，实际38/38新定向及两项noEmit通过。五份 `83eafe1` 冻结图包的532份逐图记录含22项FAIL及完整指南MISSING，不重标成新HEAD通过。后续布局/状态修复及独立复核各按下方新来源记录；六票OPEN，PR草稿。
+- `9de0e2a`另外四状态8图已独立审查为8 MAPPED / 0 FAIL（含仅取证修正的诊断内层滚底）；迁移30状态60图为60 MAPPED / 0 FAIL，另38项有界动作保留6项定位错误。六张迁移参考归属不符同时保留原标记及实际比较，M22未知丢弃恢复仍未证实；不据此修改原274项历史计数或宣布整票完成。
+- 后续内核/代理分页、提示容量、待保存状态及晚到portal隔离修复已普通合入 `75bc58d`，四文件独立源码复核未发现可证明P1/P2；集成新22/22定向一次及两项noEmit通过。新来源28图独立MAPPED；代理行小修另见340阶段，旧视觉FAIL、完整原指南缺口、六票OPEN和正式4/21不变。
+- 代理行成功文案的防御性小修已普通合入 `340a22c`，仅组件行投影及既有13场景行断言；集成26/26一次、两项noEmit通过。正常Go产生陈旧connected回复未获证明，status/筛选/计数与服务请求不变。274项已另有[600记录冻结补证层](verification/issue37-supplementary-crosswalk.json)，含66项具体行为缺口，不修改原113/60/101或算作整项验收。
+- 83→340九文件组合的[独立固定源码复核](verification/issue37-final-source-review.json)未发现可证明P1/P2；75阶段28图与340阶段4图各已独立MAPPED，旧FAIL不撤销。进一步分组/备份/活动/迁移上下文10状态20图独立18 MAPPED / 2 FAIL；两FAIL为正文顶部裁了可自然滚到的错误末行，另只补该窗口双视口底部2图、独立2 MAPPED，不改产品。16份动作与2份图后动作的独立合同复核限定一致。新340[七路由/冷指南动作](verification/issue37-native-route340-actions.json)2份、0PNG，6条工具失败保留；[独立合同复核](verification/issue37-native-route340-contract-review.json)限定一致、0问题。getter0→1→1但始终拒绝Storage、旧严格0合同仍失败；稳定首次loading像素与环境细分仍未提前计入。
+- [环境窗口补证](verification/issue37-environment-evidence.md)新增340来源184图，全部独立逐图：70 ADAPTED / 34 MAPPED / 18 MISSING / 62 FAIL；38份动作、66份图后回调及8条历史采集失败另记，[保存证据合同](verification/issue37-environment-contract-review.json)独立限定一致、0新问题。自然取景修正不覆盖旧失败。F32积极路径只是原drawer下的一次准确合成拒绝dispatch，不是真实强制结束。
+- 批次编号单行与环境表整行容量/详情分页边界两个独立CSS候选已[源码复审](verification/issue37-environment-css-source-review.json)，普通合入 `03d0f68`。MAIN另冻结79输入，有限17状态34图独立 **34 ADAPTED / 0 FAIL**；14份同context图后回调[独立保存合同](verification/issue37-environment-css-contract-review.json)限定一致、0问题。创建编辑的状态截字、任务盖页脚与长提示盖标题最小续修已[独立源码审查并合入](verification/issue37-environment-drawer-source-review.json) `8ca2e79`，MAIN两项noEmit通过，新34图也独立 **34 ADAPTED / 0 FAIL**；[34记录/16回调保存合同](verification/issue37-environment-drawer-contract-review.json)限定一致，15份实际工具身份匹配、0问题。技术详情只查自然wheel，不删安全文案或改变窗口几何；首轮排序工具误拒的0图/0动作记录和旧62 FAIL保留。图库现14包906记录，三个新入口已自然点击、白底深字实际可读；私有对照只追加至1280项。
+- [环境归一化](verification/issue37-supplementary-environment.json)只补原47定义的35个有限缺口；[技术来源续层](verification/issue37-supplementary-environment-repairs.json)另补F13/F15，派生37/47、剩10个原定义含未证明/不支持/来源限制子句。整项新增PASS仍0、原113/60/101不变。[最终审计](verification/issue37-final-evidence.json)核对906新增及370历史PNG、来源和15份报告1887本地链接；不是真实native或全安全认证。
 
 - 基线：PR #31 精确 `e170099`，集成分支 `codex/issue32-37-ui-integration`，增量 [草稿PR #38](https://github.com/axgiroud312-byte/prism-local-browser/pull/38)。保留 #31 → #27 依赖，不自动合并。
 - #33 shell/环境表/分组已合入；#34 模块及正式环境窗口挂载合入 `0d67ea5`，dirty/force确认冻结准确草稿/会话，49/49定向通过；#35 模块合入 `c6371eb`；#36 模块合入 `3c93a2a`。各自结果见 [#33](verification/issue33.md)、[#34](verification/issue34.md)、[正式挂载](verification/issue34-integration.md)、[#35](verification/issue35.md)、[#36](verification/issue36.md)。
 - #37 全部主页面、唯一代理往返与共用弹层接入已完成；独立审查发现的准确代理报告、取消预检失败、关闭/DOM替换焦点、重复遮罩及按钮hover均已修复并复验，最后源码静态复审无已核实新P1/P2。共享全套在 `681f823` **196/196，4.7分钟**；后两项CSS小修相关6/6、5/5及两视口实际测量通过。PRD底部取图等待正文后重拍，补native密集备份第2页；`70943b0`完整 **346/346** 实际App截图取证、0失败/0未知夹具方法。逐状态视觉和参考缺口另见 [#37记录](verification/issue37.md)，不是全产品1:1或真实桌面完成。
 - 本轮清单346图逐项复核完毕，78 ADAPTED / 252 MAPPED / 16 MISSING / 0 FAIL；当时按限定范围关闭#33/#34/#35，完整目标复查发现恢复/独立窗口/证据缺口后已恢复OPEN。新增修复前24图22 MAPPED/2 FAIL不倒改；全部六票继续OPEN，PR保持草稿，不把原清单当成全部支持窗口分母。
 - 三处force/文件hover UI修复和迁移确认资格修复已集成 `0f7a233`，实际62/62定向、两项noEmit及独立只读增量源码复审通过；新比例修复及支持状态证据补齐仍在进行。新增 [274项前端交叉表](verification/issue37-supported-states.md) 是113历史COVERED/60 PARTIAL/101 MISSING，不是274通过。原设置候选6图与旧40/80分开，完整原指南仍缺，实际进展见 [继续补核](verification/issue37-continuation.md)。
-- 已核对并解除本轮5个子worktree注册，源码均已合入且无未保存文件，停用其Vite。保留主5173开发页、5190私有对照及5198原图画廊；3个Windows句柄占用的空目录仅为空壳，未强杀其他进程/广域删除，历史worktree不动。
+- 各阶段已完成自有worktree仅普通注销，源码合入且先核对无未保存文件。最后三个续修worktree停止自有5196/5197/5199、只移除依赖junction链接、注册解除；累计八个Windows句柄占用空目录保留未强删。主5173、5190私有对照、5198原图画廊和无关V1工作区/其他会话进程不动。
 - 只使用 Vite、相关定向点击和必要类型检查；没有本轮构建、打包、Go/Wails、UIA或真实内核/网络/目录恢复实验。历史正式4/21和旧候选内容不变。
 
 ## #28–#30 历史页面成果

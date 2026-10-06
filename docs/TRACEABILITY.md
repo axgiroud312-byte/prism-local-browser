@@ -2,11 +2,25 @@
 
 # 需求到实现的追踪表
 
-版本：1.0 · 更新日期：2026-10-06
+版本：1.0 · 更新日期：2026-10-07
 
 当前流程：UX-001 / DOC-001 保留 [#28浏览器点击CI](https://github.com/axgiroud312-byte/prism-local-browser/issues/28) 的 `53ac883`；默认 `tests/ui` 由Vite提供页面，不构建或打包，报告在 `output/playwright/`。#29/#30的环境与统一窗口功能基线由PR #31精确 `e170099` 保留；旧 **21/21** 为 [历史逐票证据](verification/issue28-30.md)，不是本轮结果，不增加桌面验收计数。
 
 本表关联12项需求、原型与native入口。源码入口不代表完整验收；[本轮逐票矩阵](verification/V1-final.md)明确区分服务回归、真实桌面、本机/独立网络及候选交付。[ACCEPTANCE](ACCEPTANCE.md)为实际结果索引；正式计数仍4/21。
+
+UX-001 / PRX-001 的后续批次预览焦点、旧修订报告标签与primary恢复按钮修复已合入 `9de0e2a`，实际38/38新定向及两项noEmit通过；BKP-001 / DATA-001 / CORE-001 / DOC-001的新支持窗口逐图来源与失败边界见 [补核证据](verification/issue37-continuation-evidence.md)。旧 `83eafe1` 图包保持原source/render，不自动给后来源码或274项清单增加验收通过数。
+
+CORE-001 / PRX-001 / UX-001的密集列表分页、未知请求提示容量、待保存文案与工作区晚到portal所有权修复已合入 `75bc58d`，仅新22/22定向一次及两项noEmit通过。新图须在准确源绑定下独立复核；原始FAIL与未验真实能力不回写成成功。
+
+PRX-001的背景行成功文案防御修正已合入 `340a22c`，已有13场景双视口26/26定向一次及两项noEmit通过；不声称正常Go陈旧回复回归、Runtime授权或全状态验收。准确来源和274项冻结补证层见[增量账本](verification/issue37-continuation-evidence.md)。
+
+ENV-001 / ENV-003 / CK-001 / FP-002 / UX-001的[环境窗口细分补证](verification/issue37-environment-evidence.md)另绑定340：184图独立70 ADAPTED / 34 MAPPED / 18 MISSING / 62 FAIL，38动作与66图后回调保存合同独立限定一致、0问题。编号与环境表整行/分页边界CSS续修已普通合入 `03d0f68`，[源码与精确集成守卫](verification/issue37-environment-css-source-review.json)一致；34新图独立34 ADAPTED、14图后回调保存合同限定一致。创建编辑容量/浮层最小修复另合入 `8ca2e79`，MAIN两项noEmit通过，新34图独立34 ADAPTED / 0 FAIL，[34记录/16回调保存合同](verification/issue37-environment-drawer-contract-review.json)限定一致、0问题，15份实际工具身份匹配。图像、动作、源码和真实native分别记账，不改原113/60/101或增加正式通过数。
+
+原47剩余定义另经[环境层](verification/issue37-supplementary-environment.json)35个有限缺口及[F13/F15续层](verification/issue37-supplementary-environment-repairs.json)2个有限来源说明补证，派生37/47、剩10，whole-cell PASS新增0；原274、600/32/22/2、旧35层与全部失败保留。[最终审计](verification/issue37-final-evidence.json)只证明准确来源与公开材料一致，不代替后台/native、像素或完整原指南。
+
+ENV-001 / PRX-001 / CORE-001 / UX-001所涉83→340九文件组合已有[独立固定源码复核](verification/issue37-final-source-review.json)，无可证明P1/P2；不将源码推导代替逐图、键盘或真实桌面结果。75/340的28/4图独立MAPPED保持各自来源，历史FAIL不倒改。
+
+UX-001 / DOC-001另绑定340来源[七路由与指南冷加载动作](verification/issue37-native-route340-actions.json)：双视口2份有限合成记录、0PNG、每份精确5次Workspace.Read。拒绝getter0→1→1但不给Storage，原严格0合同及6条工具失败保留；S02/H19局部行为不提升为整项或原指南内容/真实桌面验收。
 
 当前视觉增量由 [#33](https://github.com/axgiroud312-byte/prism-local-browser/issues/33) 承接：「完整代码」冻结标识 `202609160208` 唯一基准，替换旧 shell/统计卡/工具栏，增加 `/#/groups` 派生标签页。来源/40 状态/能力映射见 [UI_REFERENCE](UI_REFERENCE.md)，公共责任见 [UI_CONTRACT](UI_CONTRACT.md)，定向点击与两视口视觉分别见 [#33 记录](verification/issue33.md)。不覆盖上方 #29/#30 历史 21/21 或增加真实桌面计数。
 
