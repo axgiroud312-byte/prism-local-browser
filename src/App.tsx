@@ -538,10 +538,21 @@ export default function App({ application }: { application: ApplicationService }
   }, [environmentConfirmation?.kind, confirmationLayer]);
   useEffect(() => {
     if (!storageIssue) return;
-    const lowerLayers = [...document.querySelectorAll<HTMLElement>(
-      '.app-shell > .overlay:not(.workspace-blocker), body > .pk35-overlay, body > .local-page-overlay',
-    )].filter(element => modalLayer(element) < 160);
-    return lockModalBackground(lowerLayers, true);
+    const releases = new Map<HTMLElement, () => void>();
+    const isolate = () => {
+      const lowerLayers = new Set([...document.querySelectorAll<HTMLElement>(
+        '.app-shell > .overlay:not(.workspace-blocker), body > .pk35-overlay, body > .local-page-overlay',
+      )].filter(element => modalLayer(element) < 160));
+      for (const [element, release] of releases) if (!lowerLayers.has(element)) { release(); releases.delete(element); }
+      for (const element of lowerLayers) if (!releases.has(element)) releases.set(element, lockModalBackground([element], true));
+    };
+    // Async handoffs can mount a new lower portal after this blocker acquired ownership.
+    isolate();
+    const changes = new MutationObserver(isolate);
+    changes.observe(document.body, { childList: true });
+    const shell = document.querySelector(".app-shell");
+    if (shell) changes.observe(shell, { childList: true });
+    return () => { changes.disconnect(); for (const release of releases.values()) release(); };
   }, [Boolean(storageIssue)]);
   useEffect(() => {
     if (!drawerVisible && !legacyDialog && !environmentConfirmation && !draftProxyImportOpen && !storageIssue) return;
