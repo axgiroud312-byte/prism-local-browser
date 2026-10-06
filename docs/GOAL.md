@@ -8,6 +8,8 @@
 
 当前任务为 [#32总规范](https://github.com/axgiroud312-byte/prism-local-browser/issues/32) 下的 **#33 →（#34/#35/#36）→ #37**：#33 shell/环境表/分组合入 `9e256a7`；#34环境窗口/Cookie/批次/回收模块合入 `590a993`、正式窗口及确认接入合入 `0d67ea5`；#35代理/内核/迁移模块合入 `c6371eb`；#36备份/恢复/活动/诊断/指南模块合入 `3c93a2a`。#37正式App接线、唯一代理往返、弹层所有权与审查修复已落地；一次共享检查196/196通过，最后CSS小修定向复验，PRD取证状态修正后 `70943b0` 完整346张当前源码图取证成功。最终逐项视觉/缺参考结论见 [整组记录](verification/issue37.md)，不宣布未经裁剪全量1:1。增量 [草稿PR #38](https://github.com/axgiroud312-byte/prism-local-browser/pull/38) 保留 #31 → #27 分支依赖，不自动合并。先有可用公共成果再开始依赖票；[公共责任与props](UI_CONTRACT.md) 明确唯一shared文件负责人。阶段定向结果见 [#33](verification/issue33.md)、[#34正式挂载](verification/issue34-integration.md)、[#35](verification/issue35.md)、[#36](verification/issue36.md)，旧组件harness图仍保留原来源，不重标成最终App。
 
+继续完整目标审查：原346图是有界清单，不是所有支持窗口的完整分母。#33完整入口清单、#34准确会话恢复guard、#35独立详情与迁移动作证据仍有缺口，三票恢复OPEN；#32/#36/#37仍OPEN。新增修复前12状态/24图取证与4项恢复检查成功，但独立视觉复核22 MAPPED/2 FAIL，force下层屏蔽继续修复。已取得无客户端限制的原设置页双视口顶部/底部候选图，未恢复外部帮助正文；原80图不倒改。当前结果与修复范围见 [继续补核](verification/issue37-continuation.md)。不重跑共享全套、不扩展真实桌面检查。
+
 以下 #28–#30 为已保留的功能基线与历史结果，不是本轮视觉目标：
 
 - [#28 精简 CI](https://github.com/axgiroud312-byte/prism-local-browser/issues/28)：已实现并有本地/远程 13/13 页面结果；日常只运行浏览器自动化点击测试，直接启动 Vite，不重复构建。
