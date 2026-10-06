@@ -19,9 +19,20 @@ async function denyWrites(page: Page) {
 async function restoreWrites(page: Page) {
   await page.evaluate(() => (window as unknown as { restoreTestStorage: () => void }).restoreTestStorage());
 }
+async function denyWritesAfter(page: Page, allowed: number) {
+  await page.evaluate(allowed => {
+    const original = Storage.prototype.setItem;
+    let writes = 0;
+    (window as unknown as { restoreTestStorage: () => void }).restoreTestStorage = () => { Storage.prototype.setItem = original; };
+    Storage.prototype.setItem = function (key, value) {
+      if (writes++ >= allowed) throw new DOMException("synthetic failure after partial progress", "QuotaExceededError");
+      original.call(this, key, value);
+    };
+  }, allowed);
+}
 async function advanced(page: Page) {
   const details = page.getByRole("dialog").locator("details").first();
-  if (await details.getAttribute("open") === null) await details.locator("summary").click();
+  if (await details.getAttribute("open") === null) await details.locator(":scope > summary").click();
 }
 test.beforeEach(async ({ page }) => {
   const initial = seedState();
@@ -307,4 +318,51 @@ test("group and search keep a precise batch scope and failures remain retryable"
   await failure.getByRole("button", { name: /打开|重试/, exact: true }).click();
   await expect(failure).toContainText("需处理");
   expect((await stored(page)).environments[2].proxyId).toBe("px-de");
+});
+
+test("demo persistence failure finishes item feedback, preserves partial progress and allows retry", async ({ page }) => {
+  await page.getByLabel("选择 北美主店", { exact: true }).check();
+  await page.getByLabel("选择 英国精品店", { exact: true }).check();
+  await page.getByLabel("选择 日本生活馆", { exact: true }).check();
+  await denyWritesAfter(page, 2);
+  await page.getByRole("button", { name: "批量打开", exact: true }).click();
+  const results = page.getByRole("region", { name: "逐项操作结果" });
+  await expect(results.locator(".outcome-success")).toHaveCount(1);
+  await expect(results.locator(".outcome-error")).toHaveCount(1);
+  await expect(results.locator(".outcome-skipped")).toHaveCount(1);
+  await expect(results).toContainText("未保存");
+  await expect(results.getByRole("button", { name: "收起结果" })).toBeEnabled();
+  expect((await stored(page)).environments.filter(e => e.status === "running").map(e => e.id)).toEqual(["env-1"]);
+  await restoreWrites(page);
+  await results.getByRole("button", { name: "英国精品店 重试打开", exact: true }).click();
+  await expect(page.getByRole("row").filter({ hasText: "英国精品店" })).toContainText("运行中");
+  const beforeClose = await stored(page);
+  await denyWrites(page);
+  await page.getByRole("row").filter({ hasText: "英国精品店" }).getByRole("button", { name: "关闭", exact: true }).click();
+  await expect(results.getByRole("button", { name: "英国精品店 重试关闭", exact: true })).toBeVisible();
+  await expect(results.getByRole("button", { name: "收起结果" })).toBeEnabled();
+  expect(await stored(page)).toEqual(beforeClose);
+  await restoreWrites(page);
+  await results.getByRole("button", { name: "英国精品店 重试关闭", exact: true }).click();
+  await expect(page.getByRole("row").filter({ hasText: "英国精品店" })).toContainText("待启动");
+
+  // A second-stage write failure leaves a persisted transitional record;
+  // retry must finish that exact synthetic action, not skip it as active.
+  const japan = page.getByRole("row").filter({ hasText: "日本生活馆" });
+  await denyWritesAfter(page, 1);
+  await japan.getByRole("button", { name: "打开", exact: true }).click();
+  await expect(results.getByRole("button", { name: "日本生活馆 重试打开", exact: true })).toBeVisible();
+  expect((await stored(page)).environments.find(e => e.id === "env-4")?.status).toBe("starting");
+  await restoreWrites(page);
+  await results.getByRole("button", { name: "日本生活馆 重试打开", exact: true }).click();
+  await expect(japan).toContainText("运行中");
+  await denyWritesAfter(page, 1);
+  await japan.getByRole("button", { name: "关闭", exact: true }).click();
+  await expect(results.getByRole("button", { name: "日本生活馆 重试关闭", exact: true })).toBeVisible();
+  expect((await stored(page)).environments.find(e => e.id === "env-4")?.status).toBe("stopping");
+  await restoreWrites(page);
+  await results.getByRole("button", { name: "日本生活馆 重试关闭", exact: true }).click();
+  await expect(japan).toContainText("待启动");
+  await results.getByRole("button", { name: "收起结果" }).click();
+  await expect(results).toHaveCount(0);
 });
