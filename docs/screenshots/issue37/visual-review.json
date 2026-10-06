@@ -1,0 +1,4912 @@
+{
+  "schemaVersion": 1,
+  "sourceHead": "70943b0cf55775ac21ff2d27f4ccfb66638a8ec2",
+  "renderHash": "e8ff834c8cdf6d3ff94143f05d38522ae4aecef36ec472fe6acddd2cac5f889b",
+  "frozenReference": "202609160208",
+  "actualApp": true,
+  "syntheticOnly": true,
+  "originalReferenceStateCount": 40,
+  "originalReferenceImageCount": 80,
+  "implementationStateCount": 173,
+  "implementationImageCount": 346,
+  "counts": {
+    "ADAPTED": 78,
+    "MAPPED": 252,
+    "MISSING": 16,
+    "FAIL": 0
+  },
+  "reviewedImageCount": 346,
+  "strictVisualPass": false,
+  "realDesktopAcceptance": false,
+  "scope": "本轮清单内173状态/346图经同尺寸逐项查看；直接支持项、品牌/安全适配与同类容器映射分别记录。无同名/完整原参考的项保持MAPPED/MISSING，不宣布全量1:1。未列入的额外会话、分页和正文底部变体未逐图核实。",
+  "exclusions": [
+    {
+      "feature": "group-delete-confirm",
+      "referenceId": "group-delete-confirm",
+      "status": "not-applicable",
+      "reason": "Groups are labels on environments; no independent group entity/delete service. No fabricated delete UI. Other confirmations may use the 400px container but do not implement this state."
+    },
+    {
+      "feature": "cloud-account-organization-billing-quota",
+      "referenceId": null,
+      "status": "not-applicable",
+      "reason": "Windows-local product has no cloud account, organization, billing, employee ownership or instance quota. This is a capability exclusion, not an extra frozen reference ID."
+    },
+    {
+      "feature": "settings-page",
+      "referenceId": "settings-page",
+      "status": "mapped-missing-direct-reference-not-pass",
+      "reason": "Help uses the shell/title/scroll container; the archived settings page is not a complete direct help/backup/diagnostic reference."
+    },
+    {
+      "feature": "batch-progress-fixture",
+      "referenceId": "batch-progress-fixture",
+      "status": "original-display-fixture-limitation-not-pass",
+      "reason": "The original mixed-result image was display-only injected values, not an executed archived batch. Actual synthetic current-App task results are container mappings only."
+    },
+    {
+      "feature": "cookie-populated",
+      "referenceId": "cookie-populated",
+      "status": "contract-mapping-not-pass",
+      "reason": "Environment.Create has no create-time Cookie field. Existing separate Cookie parse/preview workflow is captured, not a fake create field."
+    },
+    {
+      "feature": "cookie-import",
+      "referenceId": "cookie-import",
+      "status": "safety-contract-mapping-not-pass",
+      "reason": "Archived ZIP upload container maps to UTF-8 JSON/Netscape text selection. ZIP import is unsupported."
+    },
+    {
+      "feature": "recycle-list",
+      "referenceId": "recycle-list",
+      "status": "service-page-container-mapping-not-pass",
+      "reason": "Existing native recycle manager is a page-shaped dialog with original-ID/seed/build/data safety facts, not the archived commercial page service."
+    }
+  ],
+  "records": [
+    {
+      "id": "activity-details",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/activity-details.png",
+      "imageSha256": "70af2f88bf6892ccd85ec0cf07d66c5b285d7e31bc154367c37c6e575515a1b4",
+      "referenceId": "proxy-edit",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-edit 的620px详情容器，无同名原活动详情。实际620×440，x330/y188，标题40、footer58；安全对象/结果/详情及返回均可见，不能按原代理表单高度判严格通过。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "activity-empty",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/activity-empty.png",
+      "imageSha256": "bfebf5c85fe0ae27a62ba2a94497022b67ca50b37c5f7e98a5922c6fff7612e6",
+      "referenceId": "activity-list",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅以 activity-list 普通列表映射筛选无结果，没有同状态原图。工具条y93/h52、表头y165/h40/宽1040、分页y283/h30；无结果说明、0条和筛选恢复入口可见，裁剪云登录/员工条件。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "activity-list",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/activity-list.png",
+      "imageSha256": "0e573ea7e7db998bff612297a14462ba66016b4bb3dbe4afbca588f4976e185b",
+      "referenceId": "activity-list",
+      "ticket": 36,
+      "verdict": "ADAPTED",
+      "notes": "activity-list 冻结同状态直接布局参考；工具条y93/h52、表头x220/y165/h40/宽1040、首行y215/h48、分页y283/h30，对原约+0.42px。云登录/员工列裁剪，换为准确对象/结果/详情，非完整商业1:1。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "activity-page-two",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/activity-page-two.png",
+      "imageSha256": "238acebc3e7df6bb21aeae36272b1fa21802942acc38576bdd76d7f9141bb039",
+      "referenceId": "activity-list",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 activity-list，原冻结图不是第二页。表头y165/h40、两行48px、分页y341/h30，12条中的11/12及当前页2实际可见；额外分页状态不写成同状态原图通过。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "batch-create",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/batch-create.png",
+      "imageSha256": "424b58558e932175705da433f08e317f221cd92f5cb0fac1dec763ecdc9b4d23",
+      "referenceId": "batch-create",
+      "ticket": 34,
+      "verdict": "ADAPTED",
+      "notes": "660px右贴边连续四区/外挂分区栏，数量、名称、代理、启动偏好与底部创建连接服务；无服务商业字段裁剪，未保留完整复制模式或数量配额。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "batch-progress-fixture",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/batch-progress-fixture.png",
+      "imageSha256": "2efc4f7757e9c9596854b09018838ee36b4b04b45ab433feb6a09e8ad09db4a8",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "400px混合结果容器；真实合成任务显示已完成2/失败1，只重试未完成项。原图只注入显示值，不能证明原任务或本机执行。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "cookie-import",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/cookie-import.png",
+      "imageSha256": "67d53861e260af82333be1d5a5cee3baf5214bc909be780d8cc3443a532a4899",
+      "referenceId": "cookie-import",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "参考ZIP上传dialog只映射文件选择容器；中文蓝色文件区域与固定返回按钮可见，JSON/Netscape UTF-8代替ZIP，不上传或写入。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "cookie-populated",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/cookie-populated.png",
+      "imageSha256": "b0db29952708fdb2b90361f5d6f5fad6df449636315c63836639dcde8ac5fca8",
+      "referenceId": "cookie-populated",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "demo独立Cookie文本/说明/预览dialog保留空值和到期语义，不伪造创建时Cookie字段；示例输入非真实数据，原创建字段不是同名窗口直接参考。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "demo-backup-create",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/demo-backup-create.png",
+      "imageSha256": "de15ec928d967fc6f7d435c1e2f3b737da8482bedfe1dfd4ae133a4d805def1c",
+      "referenceId": "group-add",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 group-add 短表单，非原分组创建业务。500×340，x390/y238，标题40/footer58；12个演示环境范围和创建/取消可见，明确为演示JSON而非本机完整备份。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "demo-backup-dense-bottom",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/demo-backup-dense-bottom.png",
+      "imageSha256": "67ff2e6890adae7a52a84b9ad4a42c85ae368711ff9d080ed087df4c33f93ec4",
+      "referenceId": "proxy-list",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-list 密集列表，无直接原备份页。12条中第一页10条，表体client540/scroll640/scrollTop100已到底；sticky表头、行10导出/恢复与工具条可见，分页y681/h30未随表体滚走；演示格式警示保留。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "demo-backup-dense-page-two",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/demo-backup-dense-page-two.png",
+      "imageSha256": "c33bdfee1c2e75e318161a5cead161f72852c091bb27cd09fd4c276925149ec2",
+      "referenceId": "proxy-list",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-list，非同名原备份第二页。实际11/12两行、总数12、当前页2和各行导出/恢复可见；表体176/176/0，分页y317/h30，保留演示JSON限制；native第二页另有独立实现图，不混为同一状态。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "demo-backup-dense-top",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/demo-backup-dense-top.png",
+      "imageSha256": "c0ecbbda2eb1ad14946ca0f5a5a1d8d77b32f98014e17f2e47b92ac08a54a6d6",
+      "referenceId": "proxy-list",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-list 密集管理列表。表头y141/h40、行48/gap10，12条fixture的第一页表体540/640/0，初始约8行，后两行另有bottom图；分页固定y681/h30，创建/导入和演示格式限制可见。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "demo-backup-import",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/demo-backup-import.png",
+      "imageSha256": "5a39dcf5f42001ff46dae860582d5de4ffc6a55f79461a2cefcce428ac6e7300",
+      "referenceId": "proxy-import-file",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-import-file 的文件容器，不移植Excel/商业代理业务。500×359，x390/y228.5、footer58；蓝色本地选择区和取消/校验可见，未选文件禁用校验合理，演示JSON与完整包/诊断JSON明确分开。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "demo-backup-import-error",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/demo-backup-import-error.png",
+      "imageSha256": "3828f1f9ddc8530e052b9fe1c707c628a446c46963a57f38762ad70bedcfa354",
+      "referenceId": "proxy-import-file",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-import-file，错误态无同状态原图。500×359，文件与红色格式错误保留；正文261/268/0有7px滚动余量，但完整错误及固定footer58的取消/校验在原尺寸图可见，未发现按钮遮挡。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "demo-backup-list",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/demo-backup-list.png",
+      "imageSha256": "4c1f740d983d39df809993642adbd8663c96e6fd1c87e722c356a8b1a01d4fe3",
+      "referenceId": "proxy-list",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-list 管理列表，无原备份页。表头x220/y141/h40/宽1040，单行y191/h48，分页y259/h30；旧46px分页盒已修正，对原少一行归一化约+0.42px；创建/导入/导出/恢复和演示JSON限制可见。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "demo-backup-save-error",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/demo-backup-save-error.png",
+      "imageSha256": "79b6b1bfc7158e209f547ce718747faa3930f60f0c686f2f996ce0db7a984ea3",
+      "referenceId": "group-add",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射group-add短表单，无同状态原保存失败图。500×340、x390/y238、footer y520/h58，正文242/242/0；12环境范围及未保存/原工作区不变警示保留，取消/创建可见。通知x398/y40/484×48，距窗口150px；窗口测量与712一致，演示JSON不是完整本机备份。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "demo-environment-proxy-failure-return",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/demo-environment-proxy-failure-return.png",
+      "imageSha256": "0a828c006271cbb5f88a35a822fa1dcc5b3a4c67430f517e4c9582cff97d5b29",
+      "referenceId": "proxy-import-preview",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射嵌套失败导入器：1050×610位于(115,103)，标题相对顶21已修复；79px固定页脚显示错误、返回和重试，单遮罩。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "demo-environment-proxy-preview",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/demo-environment-proxy-preview.png",
+      "imageSha256": "1a84d80b5872da435458b98ee905d92d0597e3906a02d6331571fe5b76e5bd25",
+      "referenceId": "proxy-import-preview",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射唯一嵌套导入器，1050×610覆盖752高抽屉；标题位置修复，两条安全预览及58px固定页脚完整，父层单遮罩。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "demo-environment-proxy-success-return",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/demo-environment-proxy-success-return.png",
+      "imageSha256": "26cddfbdc004b7cddafb82fc52f131cb1b592a9b3710d01c3e38b656d4ab8c98",
+      "referenceId": "proxy-import-preview",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射返回后的660×752抽屉，导入框已消失；新版成功通知约270×48居中y40，代理选项与固定y721页脚完整，不作行为重测。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "demo-kernel-details",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/demo-kernel-details.png",
+      "imageSha256": "912080bbb7fbc294ae7869277902e89dd2ab48cf426725fe21052c5daccdb86a",
+      "referenceId": "environment-edit",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射660×752详情抽屉，标题仍左对齐、71px页脚固定y721；演示能力说明完整，没有同名原内核详情或安装证明。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "demo-kernel-list",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/demo-kernel-list.png",
+      "imageSha256": "8fc56c915be19050d16a5a322f22006ff0fa561cb9f5ac757619c233d495fade",
+      "referenceId": "proxy-list",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射代理管理列表容器，40px表头、48px行首y190；两条演示版本与可用性说明可见，不认定真实已安装内核。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "demo-restore-confirm",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/demo-restore-confirm.png",
+      "imageSha256": "ec1eda54bea23cad9fe1ebb6bf944caa3de6ceed3e35566e5e55024942d804c7",
+      "referenceId": "group-delete-confirm",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 group-delete-confirm 的400px危险确认，不是删除分组。实际400×198、x440/y309，身份/演示格式说明使高度增加；低层122 inert，高层124唯一0.4遮罩，取消/红色确认可见。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "demo-restore-preview",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/demo-restore-preview.png",
+      "imageSha256": "f5a3c56b5d129bd6f9a3f90d6f892a3069551f7f521d285b8d4958c0c45524fb",
+      "referenceId": "proxy-bound",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-bound 的影响列表。1040×592、x120/y112、footer58；12环境及身份保留说明、取消/下一步可见，表体230/756/0仅捕获顶部约3行，未取证该12行表体底部；不冒称完整本机恢复。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "demo-restore-save-error",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/demo-restore-save-error.png",
+      "imageSha256": "ab8056d4bcaa081d735f5d88a00e948c9cf30f8b7519a98a7514084665bf6fb4",
+      "referenceId": "group-delete-confirm",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射group-delete-confirm危险确认，高度为恢复范围/身份/失败说明适配。最高400×260、x440/y278、footer y480/h58，取消/红色确认恢复可见；122低层inert且透明mask，124最高层唯一0.4遮罩。通知y40/h48，距低层预览24px、最高确认190px，未遮标题/按钮，失败未改报成功。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-advanced-search",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/environment-advanced-search.png",
+      "imageSha256": "77b96d268a031722eee69917d0857c47bbbdfb2fa0f5259f72e0d764a8a9d4fb",
+      "referenceId": "environment-advanced-search",
+      "ticket": 33,
+      "verdict": "ADAPTED",
+      "notes": "432×335 浮层位于(828,89.69)，仅保留关键词、分组、状态三条件；裁剪无服务条件，底部动作未截断。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-clone",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/environment-clone.png",
+      "imageSha256": "587dbc2c1114428e48bb04f52c3a3aad5141ce88b796af29dd006bad841cb214",
+      "referenceId": "environment-clone",
+      "ticket": 34,
+      "verdict": "ADAPTED",
+      "notes": "660px主drawer、标题40px、正文独立滚动与71pxfooter；名称/分组/备注、模板代理和新身份语义明确，不复制登录数据或原无服务字段。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-create",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/environment-create.png",
+      "imageSha256": "ce03d2719e32e3407a3ee6fe25c5d12691c79bb50cfefc7b742bdaf9f860b11f",
+      "referenceId": "environment-create",
+      "ticket": 34,
+      "verdict": "ADAPTED",
+      "notes": "660px右贴边、top40/bottom8、40px外挂栏，四区连续正文，固定71pxfooter。数量/服务内核/网络/固定档案替换无服务商业字段，非未经裁剪全表单像素声明。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-create-bottom",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/environment-create-bottom.png",
+      "imageSha256": "08eae5f1b92b828ed799b3f64741d1b2d33b89920ff31148a774e24284ff8156",
+      "referenceId": "environment-create-bottom",
+      "ticket": 34,
+      "verdict": "ADAPTED",
+      "notes": "已到支持正文底部，技术摘要与只读能力说明可见，标题/外挂栏/71pxfooter不随正文滚动；无服务UA/WebGL/设备字段不伪造。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-create-fingerprint",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/environment-create-fingerprint.png",
+      "imageSha256": "8808cacd442de9337bf86f8b406c3886c095b26a143a3422eaa1731106f6d585",
+      "referenceId": "environment-create-fingerprint",
+      "ticket": 34,
+      "verdict": "ADAPTED",
+      "notes": "指纹分区保留参考蓝色时间线及下划线字段；精确服务构建、固定seed、语言/时区/能力分层，GPU等不假装可编辑或已实测。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-create-menu",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/environment-create-menu.png",
+      "imageSha256": "587353afc87ae8202213ac37cde0cb029803a23ca9ce5facaeecc17c93136836",
+      "referenceId": "environment-create-menu",
+      "ticket": 33,
+      "verdict": "ADAPTED",
+      "notes": "创建按钮下方两项短菜单完整可见；只呈现本机新建与导入入口，裁剪原云端批量菜单，未被表体遮挡。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-create-preferences",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/environment-create-preferences.png",
+      "imageSha256": "74e296b5976a85d7ffe2c1e14b2ef20dcb019a9fc6325bf3c0e1aa2d6751fc66",
+      "referenceId": "environment-create-bottom",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "同660px连续drawer的常用分区滚动定位；启动URL、窗口偏好、标签恢复连原契约，不制造原端口/白名单/字体控制。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-create-proxy",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/environment-create-proxy.png",
+      "imageSha256": "385389a0b2c94a75642091da82cc366c7926d2571f08573a8bd6f3733c0e045e",
+      "referenceId": "environment-create-proxy",
+      "ticket": 34,
+      "verdict": "ADAPTED",
+      "notes": "同连续drawer代理分区；保存direct/proxy含义及已有代理/唯一导入入口，无商业供应商/动态代理字段；失败不自动直连。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-create-proxy-manager",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/environment-create-proxy-manager.png",
+      "imageSha256": "67824d1aedfd2f3a25c27f196235c1f1818cb368150e83748e0764cb50a88513",
+      "referenceId": "environment-create-proxy-manager",
+      "ticket": 34,
+      "verdict": "ADAPTED",
+      "notes": "已选择服务代理，分区/下划线/固定操作沿参考；唯一导入返回保留草稿，删除原商业管理模式并明确故障阻断。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-create-save-error",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/environment-create-save-error.png",
+      "imageSha256": "53a381a225ba824c379053650e643abcf30a4d396e99b3e4a36baf1953dafcc5",
+      "referenceId": "environment-create",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "660px创建drawer保留草稿，写失败在71pxfooter上方红色状态条可见，取消/创建操作不被遮挡；缺原真实保存失败画面。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-created-open-failure",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/environment-created-open-failure.png",
+      "imageSha256": "1117149dff1fd24e53dadbd946fa53224f06e3052e279722f343f7fd8a71166a",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "已保存原环境后仅打开失败，原ID重试入口与红色准确结果保留；顶部成功通知只表示创建。原混合任务容器不证明此执行画面。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-delete-confirm",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/environment-delete-confirm.png",
+      "imageSha256": "6a721dbba3f484acb60c6483a47c7ecf40fae15e67a6e2da6b2cedfc84b17dcb",
+      "referenceId": "environment-delete-confirm",
+      "ticket": 34,
+      "verdict": "ADAPTED",
+      "notes": "400px短移除确认采用相同危险框架；明确示例记录范围、运行保护及不操作真实文件。安全说明增加高度，红色确认不等于原商业回收服务。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-dirty-confirm",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/environment-dirty-confirm.png",
+      "imageSha256": "60408a49cd9b7e4f85e794f9522f62da8c86d8a1ccbcfdf25253fd8cee96c77f",
+      "referenceId": "group-delete-confirm",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "400px最高确认覆盖下层草稿，只有一层有效遮罩；取消/放弃固定操作保留。以短危险容器映射，不是独立分组删除。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-edit",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/environment-edit.png",
+      "imageSha256": "d54e77c63f76abe4320317d69d9684d0bae107be0e9fe4ebe885d8cc2b40acab",
+      "referenceId": "environment-edit",
+      "ticket": 34,
+      "verdict": "ADAPTED",
+      "notes": "660px编辑drawer/40px标题/71pxfooter；名称、分组、备注、代理与启动偏好仍是原草稿，保存不悄悄换seed/构建/数据引用，商业字段裁剪。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-edit-save-error",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/environment-edit-save-error.png",
+      "imageSha256": "af1cc44e91880cca12b3783c6489804742441b749be2a726be886f8b76ca6d22",
+      "referenceId": "environment-edit",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "660px编辑失败反馈位于固定footer上方，草稿与旧记录仍在；支持正文滚动不遮保存/取消。原图没有可核实的真实失败状态。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-empty",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/environment-empty.png",
+      "imageSha256": "da9a6adf8f7de492d9fc725a246e7f1db67c81b6a8a3385dc01400799fa14772",
+      "referenceId": "environment-empty",
+      "ticket": 33,
+      "verdict": "ADAPTED",
+      "notes": "空表体高68，分页位于y280.86；保留工具条和40px表头，新增创建恢复入口，不制造环境记录。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-group-popup",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/environment-group-popup.png",
+      "imageSha256": "64ed59522dcfeaf9c7a195067b740c628bb4b346c88d00c7daf96832cc9608f1",
+      "referenceId": "environment-group-popup",
+      "ticket": 33,
+      "verdict": "ADAPTED",
+      "notes": "260×148 浮层位于(359,152.36)，修复后的内部选项间距保留；全部分组语义与额外焦点环为本机适配。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-group-save-error",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/environment-group-save-error.png",
+      "imageSha256": "306db7f4c2d5e41b5e6735fafc8b847e94283920458fab10232fa4e33cb53ab1",
+      "referenceId": "group-edit",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "500px分组容器与固定操作；只改明确2个环境标签，写失败红色提示保留输入，顶部错误通知不挡底部。不是原商业全组实体修改。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-list",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/environment-list.png",
+      "imageSha256": "d86dae72d31139e3ead22aa0b52c71f9cc51c0e1c2bd05e176e2e9a38b15d075",
+      "referenceId": "environment-list",
+      "ticket": 33,
+      "verdict": "ADAPTED",
+      "notes": "1040×40表头位于y162.86，48px行、58px节距，初始8行；独立品牌图标及内核状态替代原标签列。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-list-bottom",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/environment-list-bottom.png",
+      "imageSha256": "9b63c9161487b3e8bec2fe350b7024b3a2ce5304f974bfff601fe501256784c7",
+      "referenceId": "environment-list",
+      "ticket": 33,
+      "verdict": "MAPPED",
+      "notes": "仅映射列表容器的额外底部位置；表体scrollTop108，第9、10行可见，分页仍y694.86，不是原图同滚动状态。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-no-results",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/environment-no-results.png",
+      "imageSha256": "bd3ccf289ead4f4920ec4470f90ebdd1d966065a5b1e9b2cfd6de4d02dbdb8e9",
+      "referenceId": "environment-no-results",
+      "ticket": 33,
+      "verdict": "ADAPTED",
+      "notes": "无结果表体高68、分页y280.86，40px表头不移位；清除筛选按钮为恢复适配，提示没有删掉已保存记录。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-open-failure",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/environment-open-failure.png",
+      "imageSha256": "5a2a25d19bff33b0d07a8335d609fd34fbfc60357330dde4284e5d4021479847",
+      "referenceId": "environment-running",
+      "ticket": 33,
+      "verdict": "MAPPED",
+      "notes": "仅映射运行列表的额外失败状态；结果条令表头下移至y235.86、表体340高，红色错误和原项重试入口可见。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-quantity-invalid",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/environment-quantity-invalid.png",
+      "imageSha256": "9ad4d4d5d272f3bf80f2953eba4f48309f533efbfa2d8dddf9478813241ae2ce",
+      "referenceId": "batch-create",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "同660px创建drawer；非法数量使创建禁用且错误可见，草稿仍可修改。原数量表单不提供这项执行失败参考，不伪造提交成功。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-row-menu",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/environment-row-menu.png",
+      "imageSha256": "3751c77f4c5eb7812c56f21198e10ade9c352a666429b5b24d3773abbe2d0fc5",
+      "referenceId": "environment-row-menu",
+      "ticket": 33,
+      "verdict": "ADAPTED",
+      "notes": "176×160行菜单位于(904,247.86)，五项本机动作清晰；云分享、转移等无服务项裁剪，独立图标不作逐像素复制。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-running",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/environment-running.png",
+      "imageSha256": "2b2aeb156bf41e80aaa85793caaccdfde1dc50591d75bbf5b49cd1a4300373e3",
+      "referenceId": "environment-running",
+      "ticket": 33,
+      "verdict": "ADAPTED",
+      "notes": "40px表头与48px行不变，第2行运行标记、直接关闭入口可见；状态放入内核列，合成显示不证明真实启动。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-selected",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/environment-selected.png",
+      "imageSha256": "88f95c7ad43f1a619faa808686501fa298f37c79caacd56cdb2f25ed9144e1f0",
+      "referenceId": "environment-selected",
+      "ticket": 33,
+      "verdict": "ADAPTED",
+      "notes": "恰好两行勾选，已选2与本机批次文字动作适配原图标组；表头仍y162.86，工具条按钮未挤出视口。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "fingerprint-randomized",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/fingerprint-randomized.png",
+      "imageSha256": "aa2418341b3beabc7a380b9ad68542fd5edc006a00c95a126aa94518700bae43",
+      "referenceId": "fingerprint-randomized",
+      "ticket": 34,
+      "verdict": "ADAPTED",
+      "notes": "660px草稿窗口不变；生成通知按原顶部40px/居中/48px高，底部操作无遮挡。安全文案较长因而增宽，显式换一套只改草稿、保存才生效。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "group-add",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/group-add.png",
+      "imageSha256": "68f3548fcec7a873f354bf74cecf9418c26b13ad937c98e1b196eaacf7415e17",
+      "referenceId": "group-add",
+      "ticket": 33,
+      "verdict": "MAPPED",
+      "notes": "仅映射500×339.86分组容器，位于(390,238.06)；为选中2个环境赋标签，标题、说明和固定按钮可见，不建空实体。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "group-edit",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/group-edit.png",
+      "imageSha256": "f32989467a4cd5bbd2b94d81e66cae8127d1ac32f992342548fd18da5b4cd8f4",
+      "referenceId": "group-edit",
+      "ticket": 33,
+      "verdict": "ADAPTED",
+      "notes": "500×339.86框位于(390,238.06)，标题墨迹中心631.5、相对顶20.94保持；6成员说明替代排序归属，底部动作完整。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "group-list",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/group-list.png",
+      "imageSha256": "c3b3e181f3ce075ad73aa1453fc2a34b6448b876ec959059507f3a9087d90689",
+      "referenceId": "group-list",
+      "ticket": 33,
+      "verdict": "ADAPTED",
+      "notes": "两组各6成员，48px行和58px节距保持；派生标签说明可见，独立新建、删除、排序及归属控件按能力裁剪。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "guide-development",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/guide-development.png",
+      "imageSha256": "9de6d10287410091d71e66e77755bf673955e00a28afd5f7529843a0d2a8ab2e",
+      "referenceId": "settings-page",
+      "ticket": 36,
+      "verdict": "MISSING",
+      "notes": "完整原帮助参考缺失，settings-page 被客户端限制覆盖，不能判严格1:1。已检查本机文档映射：frame1060×650、正文810×630，scroll18174/top0；开发方案顶部、四页签、左索引与下载可见。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "guide-development-bottom",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/guide-development-bottom.png",
+      "imageSha256": "d574da8daf2ba1cd6deebe2c969de14e2771d061c23297954bbd34fe2101437f",
+      "referenceId": "settings-page",
+      "ticket": 36,
+      "verdict": "MISSING",
+      "notes": "完整原帮助参考仍缺，仅检查本机文档滚动容器。正文client630/scroll18174/top17544确已到底，公开仓库/资料末段可见；frame1060×650、四页签/下载/索引保持位置，不把新增底部图写成原帮助严格通过。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "guide-kernel",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/guide-kernel.png",
+      "imageSha256": "16bc8d87ee315ebed0a27d92942617520a3e814819a4cc1e62dc92d62613a804",
+      "referenceId": "settings-page",
+      "ticket": 36,
+      "verdict": "MISSING",
+      "notes": "完整原帮助参考缺失，受限制settings图不是内核合同原页。已检查本机映射frame1060×650、正文810×630，scroll10019/top0；合同标题/对应表、四页签、索引和下载可见，缺原参考不等于已实现页面损坏。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "guide-kernel-bottom",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/guide-kernel-bottom.png",
+      "imageSha256": "682d81ff79d8e80fe7c5b569fa1f83b47e6f7f64b860e01b5132ac78ed7506a2",
+      "referenceId": "settings-page",
+      "ticket": 36,
+      "verdict": "MISSING",
+      "notes": "完整原帮助参考仍缺，仅检查文档容器映射。正文630/10019/top9389确已到底，验收条件及许可末段可见；frame1060×650、索引/页签/下载未滚走，不能由此宣称完整原指南1:1。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "guide-prd",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/guide-prd.png",
+      "imageSha256": "e32982d1b106a462d5e189bb793b11729def1758c46e5e3223952705001a9b4b",
+      "referenceId": "settings-page",
+      "ticket": 36,
+      "verdict": "MISSING",
+      "notes": "完整原帮助参考缺失，settings客户端覆盖层不能作PRD直接原图。已检查frame1060×650、正文810×630，scroll9695/top0；PRD标题/正文、页签、索引/下载可见。本图为有效顶部，底部另有已独立查看的新正文图，仍不判完整原帮助通过。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "guide-prd-bottom",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/guide-prd-bottom.png",
+      "imageSha256": "1f58cdec75afb9d343ff593ccf657c38126a6c9c26464c667b3163a8bc0ced65",
+      "referenceId": "settings-page",
+      "ticket": 36,
+      "verdict": "MISSING",
+      "notes": "完整原帮助参考仍缺，settings客户端覆盖层不能作直接PRD原图。新正文630/9695/top9065，滚底差0；“8参考与来源边界”和最后段落实际可见，无loading，页签/索引/下载未滚走。旧V36-PRD-BOTTOM取证FAIL据新图消除，不改成严格1:1通过。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "guide-user",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/guide-user.png",
+      "imageSha256": "1f8f669064ce6d50f63cfb3d871a124e1a3214071876669189020517211a7634",
+      "referenceId": "settings-page",
+      "ticket": 36,
+      "verdict": "MISSING",
+      "notes": "完整原指南参考缺失，settings仅部分参考。已检查本机映射frame1060×650、正文810×630，scroll3032/top0；使用指南标题/操作说明、四页签、索引/下载实际可见，保留演示与真实验收区别，非严格原页通过。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "guide-user-bottom",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/guide-user-bottom.png",
+      "imageSha256": "0d00c72dbda6b67a2801b41cd1672b55d0f393ea17f0d727eaec2d3640fac361",
+      "referenceId": "settings-page",
+      "ticket": 36,
+      "verdict": "MISSING",
+      "notes": "完整原指南参考仍缺，仅检查本机容器。正文630/3032/top2402确已到底，排错表与验收/需求末段可见；frame1060×650，四页签、左索引和下载留在原位置；不以下载按钮可见代替下载行为验收。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "kernel-selector",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/kernel-selector.png",
+      "imageSha256": "a05a30e24f3a55def5d93020b2e40e152967df97a6047f6126fa0c7388581309",
+      "referenceId": "kernel-selector",
+      "ticket": 34,
+      "verdict": "ADAPTED",
+      "notes": "蓝色下划线菜单出现在现有660px指纹分区，fixed footer仍可见；选项只用服务可用精确构建，不硬编码原3个商业版本。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-activity-session-details",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-activity-session-details.png",
+      "imageSha256": "a703c9140df6d536f974d97a8dc8e8b0a49a60985713d407fb69d409e647f0d3",
+      "referenceId": "proxy-edit",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-edit 详情容器。620×440、x330/y188、footer58；失败/错误码/下一步和准确会话动作可见，历史记录不等于会话控制授权说明保留；未取证其他旧/待核对/blocked会话及force确认变体。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-backup-cancelled",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-backup-cancelled.png",
+      "imageSha256": "802ef11d038244a07945fdfd798b883bf48974c70918b63b88faac3dead5f895",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 batch-progress-fixture 的400px结果容器，无原导出取消状态。400×222，x440/y297、footer58；明确已取消/未发布、0复制/0字节，返回/读取原任务可见，合成终态不证明真实磁盘取消。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-backup-create",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-backup-create.png",
+      "imageSha256": "1463ce224a3b26a4d484c2168049cc5d82578255c0e86166e84eba97685fa204",
+      "referenceId": "group-add",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 group-add 短表单。500×340，x390/y238、footer58；全部已保存环境范围不是当前页，文件选择/正常停止授权/用户保护限制及正常关闭并导出可见；完整本机包与演示JSON分开，无同名原图。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-backup-dense",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-backup-dense.png",
+      "imageSha256": "884237de4ec0b3823d75fcdf09d2f7a7389b04b339849cb287792925da204193",
+      "referenceId": "proxy-list",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-list，无原本机备份密集页。表头y141/h40、行48/gap10，12条第一页表体540/640/0初始约8行；分页y681/h30固定，创建/导入/读取任务可见，后两行有独立bottom图而非被永久裁剪。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-backup-dense-bottom",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-backup-dense-bottom.png",
+      "imageSha256": "069154d46f07b31a6aa49b5740204a3e7eadbb513a46fb6cf61d1227230c322c",
+      "referenceId": "proxy-list",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-list 密集容器。表体540/640/top100已到底，sticky表头/工具条、行10读取任务和分页y681/h30都可见；完整包与Windows用户限制保留。本图仍在第一页1，第二页另有已核对的独立实现图。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-backup-dense-page-two",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-backup-dense-page-two.png",
+      "imageSha256": "86f5cf817ab556c6d71bfae7869d34ce470fba25fa724e8905b3dab0f1610901",
+      "referenceId": "proxy-list",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射proxy-list列表容器，这是新增实现第二页，不是新原图。表头x220/y141/h40/宽1040，实际第11/12两行48px、总数12、当前页2及读取该任务可见；表体176/176/0，分页y317/h30。完整本机包/非演示JSON及Windows用户限制保留，未执行真实读取。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-backup-failed",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-backup-failed.png",
+      "imageSha256": "04c503959d5c89385c0fb2071e7c2ee1a0f458df8e42dee4cdc4fb00bb284def",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 batch-progress-fixture 的400px任务结果。400×266、x440/y275、footer58；失败/未发布和磁盘满错误明确，返回/读取此任务可见，不冒称完成；结果高度增加用于错误说明。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-backup-import",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-backup-import.png",
+      "imageSha256": "2e96fed3768678f3b8bc903aba81ea44823560f58f1b0af5ca915bbfb39e3f27",
+      "referenceId": "proxy-import-file",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-import-file 的500px文件选择容器。500×359、x390/y228.5、footer58；完整本机包、不上传、摘要校验后预检与取消/完整校验动作可见，说明网页不能开始恢复；不移植原Excel/商业接口。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-backup-list",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-backup-list.png",
+      "imageSha256": "05595fe252b20d9d6b9cce013687dac50d5c770c6a9db9ff419e85418f8180f9",
+      "referenceId": "proxy-list",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-list 管理页，无同名原本机备份页。表头y141/h40/宽1040、行y191/h48、分页y259/h30，对原少一行归一化约+0.42px，旧分页问题已消除；完整包/读取任务和用户恢复限制可见。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-backup-original-request-return",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-backup-original-request-return.png",
+      "imageSha256": "3479f80720362cea4cb8e9b9fc51ae89ce560a75eab29df91ae5f6b082699d62",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 batch-progress-fixture 结果容器。400×309、x440/y253.5、footer58；保存/核实而非完成，保留原requestId/范围/授权且不新建任务说明可读，返回与核实原导出可见；背景额外原请求提示使分页y293属安全适配。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-backup-progress",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-backup-progress.png",
+      "imageSha256": "7d2888d11117aa5914d6b86344531e7ddb3ad144c79447737dd8650e05fdf7a6",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 batch-progress-fixture 任务结果，不是原导出运行态。400×253、x440/y281.5、footer58；等待调度/0复制/未发布、取消与返回/读取任务可见，不把受理或合成进度写成真实备份完成。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-backup-published",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-backup-published.png",
+      "imageSha256": "24b93029d168835767ae40a13d79a787472b462168146bb7629d7ce6af606fb6",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 batch-progress-fixture 的400px结果。400×346、x440/y235、footer58；12/12与已发布、文件及包/清单摘要实际可见，返回/读取此任务不遮挡；这是合成发布回执，不证明真实完整文件落盘。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-backup-selected-create",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-backup-selected-create.png",
+      "imageSha256": "a8b78b2e7ffb9ada967bb7fee1b89a16e95f8ad65b923283eb37908c1a8279ef",
+      "referenceId": "group-add",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 group-add 的500×340短表单。环境选择后实际route为backups，冻结明确2个环境ID范围、不扩到当前页或全量的说明可见；footer58取消/正常关闭并导出可见，完整包和用户保护限制保留，非老harness。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-backup-task-list",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-backup-task-list.png",
+      "imageSha256": "8649967df61fb5f9e847b10723dea23c7d0eed3229bd9f0c9a7cbd09a8e4cc8e",
+      "referenceId": "proxy-list",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-list，无原导出任务页。导出任务页签实际选中，表头y141/h40、等待调度/未完成单行48px、查看保存结果可见，分页y259/h30；进行中创建禁用为原任务保护，不是死入口或已发布证明。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-backup-unknown",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-backup-unknown.png",
+      "imageSha256": "4fd6d0d46fedce6d099b4be58dca67bf16aaf960852213b1350524b711b458df",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 batch-progress-fixture 的400px结果。400×309、footer58；未确认且保持原请求/不重复复制，核实原导出按钮完整可见；背景原请求提示造成表格/分页下移有安全原因，未知不等于完成，无同状态原图。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-backup-unknown-no-id",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-backup-unknown-no-id.png",
+      "imageSha256": "efd975eab9b68b13df9ef6c9467cb2f78c197e6658a86f7cb11ce2883d395503",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 batch-progress-fixture，无原无任务ID状态。400×236、x440/y290、footer58；正在获取任务/结果未确认警示与原请求核实可见，不猜测输出或新建任务，较短高度对应没有进度统计的安全内容。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-batch-clone",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-batch-clone.png",
+      "imageSha256": "3c67e8bc12ea988f6a60f5b5676ebbb56446a5a49534402f374e19b0b45ecea3",
+      "referenceId": "proxy-bound",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "1040px准确2项计划列表/固定footer；新ID/seed/空数据及模板代理明确。需授权后才可提交，不把原6个绑定窗口成员伪装成计划。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-batch-create-plan",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-batch-create-plan.png",
+      "imageSha256": "4614688171d25e8d2c63e87a1db298f782975d2b8c4843c3b0bc28cf675a5528",
+      "referenceId": "proxy-bound",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "1040px冻结3项新身份计划、当前完成0/未执行3；正文/确认和固定footer清楚，预检不执行，缺同名直接原计划图。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-batch-current",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-batch-current.png",
+      "imageSha256": "f2bb4983aa047d3eda5a73cf403b6956717f217e906a4089e5c16cf9f10f04f0",
+      "referenceId": "proxy-bound",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "1040px持久批次列表显示当前计划/尝试及逐项已提交/失败，重试只针对未完成项；不是商业绑定列表直接状态。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-batch-history",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-batch-history.png",
+      "imageSha256": "0a5ed45fcf31a7d6eb9f23a688eefa27212b7d4803ad4e7d1e9720317bafcae5",
+      "referenceId": "proxy-bound",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "1040px历史尝试明确不是最新结果，无历史重放主操作；真实状态/范围与固定footer可见，原绑定容器仅作映射。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-batch-page-error",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-batch-page-error.png",
+      "imageSha256": "b82b810f6975a874235a60138f68d7c2eee2db1db8b3ae098297349785a64b73",
+      "referenceId": "proxy-bound",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "1040px分页失败保留上次安全结果并红色标注非最新；读取/精确重试操作仍可达，不把读失败画成空成功列表。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-batch-proxy-assignment",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-batch-proxy-assignment.png",
+      "imageSha256": "471adcf2a97eae5985bb4cfe4bae62f0e128587975963a93f983fc5dbd6c19f4",
+      "referenceId": "proxy-bound",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "1040px只含明确2个环境目标；逐行代理选择、缺失校验与预览固定footer保留，不默认全量/不以代理ID替代范围。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-busy-persistence",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-busy-persistence.png",
+      "imageSha256": "7d30501f9bc20a915b00cd5046c973f621331d2f398e102415bb977cca1ea23c",
+      "referenceId": "environment-edit",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "660px忙编辑保留安全元数据和黄色保护条，关键网络/档案字段禁用，保存元数据仍可见；原普通编辑不证明待保存状态。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-busy-reconcile",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-busy-reconcile.png",
+      "imageSha256": "186edc92c4c47469712be8ecfdcea34c947c9708d7f1519eda4d8a945d706299",
+      "referenceId": "environment-edit",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "660px待核对编辑保留黄色关键字段保护、独立正文滚动/固定footer；不因样式裁剪核实会话或更换身份。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-busy-resources",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-busy-resources.png",
+      "imageSha256": "7d30501f9bc20a915b00cd5046c973f621331d2f398e102415bb977cca1ea23c",
+      "referenceId": "environment-edit",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "660px资源未释放编辑，黄条/禁用关键字段明确，准确原环境的元数据操作可见；无同名原资源保护参考。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-busy-running",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-busy-running.png",
+      "imageSha256": "37914a35beb6652b116bafc614182225729bc4a31697c2fb80452dcb0068ee7d",
+      "referenceId": "environment-edit",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "660px运行编辑只允许名称/分组/备注，关键身份及网络继续锁定；71pxfooter和说明可达，不用普通编辑图冒称原运行行为。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-cookie-file-error",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-cookie-file-error.png",
+      "imageSha256": "f38950faa8868ec681111eec48b0916880301c166cfaed73e29fa880e9029a02",
+      "referenceId": "cookie-import",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "文件dialog中文蓝色选择区与白字按钮，非法UTF-8红色错误、返回草稿都可见；只读取合成文件，不上传/写入。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-cookie-file-selected",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-cookie-file-selected.png",
+      "imageSha256": "f98e910d42bb58faf3cfb528fd3b8e2f85348ae38eb8155ef21e28feddca3878",
+      "referenceId": "cookie-import",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "文件选入后回同1050px文本/说明容器，Cookie原文遮罩，解析与关闭固定footer可达；不是ZIP业务或真实Cookie导入证明。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-cookie-partial",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-cookie-partial.png",
+      "imageSha256": "1aa9ed2fb6747b5d88fbe3807e1270989fab89b6c402b81bc80774f0f753492f",
+      "referenceId": "proxy-import-preview",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "1050pxCookie结果显示完成2/失败1及失败原因，只允许原目标的未核实子集合并重试；内容有界滚动，固定footer不遮挡。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-cookie-pending",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-cookie-pending.png",
+      "imageSha256": "94ee21aad40c0e0cebe6b141b41eed1c3e05a19f92671d3c7c99ff845b8a6b54",
+      "referenceId": "proxy-import-preview",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "1050pxCookie在途结果准确为完成0/待核实3，选择/关闭受保护，取消只影响余下；固定操作与单遮罩清楚，缺原执行图。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-cookie-preview",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-cookie-preview.png",
+      "imageSha256": "3c610fc0cfac1f735d658c638a3ce0457510cd9a56b0feb7ee9cceaf4d85b8d1",
+      "referenceId": "proxy-import-preview",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "1050px文本/说明/安全预览列表与固定footer；成功解析后清原文、不回显值，精确所选3条及导入确认，不冒充原代理业务。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-cookie-text",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-cookie-text.png",
+      "imageSha256": "faa1b09c9931f55e1c00198175274da821f94145a0399c6dc0ff82dea3a33bfd",
+      "referenceId": "proxy-import-text",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "1050px左右文本/说明容器，原文默认遮罩，解析不写入，固定操作可见；复用原文本导入布局而非同名Cookie原屏。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-cookie-unconfirmed",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-cookie-unconfirmed.png",
+      "imageSha256": "73ecfc24092dd760eef6264e20b67f74fbca3293e31480ddf9558290ae3a0d31",
+      "referenceId": "proxy-import-preview",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "1050px未知受理保留原目标/行/清空策略与原请求核实按钮，其他字段锁定；红色反馈与固定footer可见，不重建新导入。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-cookie-unknown",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-cookie-unknown.png",
+      "imageSha256": "62f3903656da92d104412590c1ddb6079a011ee508a9a41f95659a3e9604111b",
+      "referenceId": "proxy-import-preview",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "1050px结果显示完成1/未知2、可能已写入含义；仅合并核实原失败子集，不允许再次清空，单遮罩/固定footer。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-diagnostics-bottom",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-diagnostics-bottom.png",
+      "imageSha256": "3116dc0b873ea1d2b38e947dc96b89ad56d71dcc78fbe2a9586a933a0de78c04",
+      "referenceId": "proxy-edit",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-edit 的620px滚动详情，无原诊断图。620×580、x330/y118，正文482/588/top106确到底、footer58固定；任务/构建/范围末段、返回/保存实际可见，仅白名单摘要不展示原始JSON或私人数据。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-diagnostics-cancel",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-diagnostics-cancel.png",
+      "imageSha256": "67f0bfaa02f6df179efb5226d35e6a9a93ea7b9629988fcbe9315f86675cd182",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 batch-progress-fixture 的400px结果。400×146、x440/y335、footer58；明确已取消/未发布新文件，返回与查看预览可见，短高度为取消回执适配，非同状态原图或真实文件取消验收。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-diagnostics-end-confirm",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-diagnostics-end-confirm.png",
+      "imageSha256": "cdf41ede8ce32035c856d98d4a40a26061dbd2b956c3946da598462ae42a04a5",
+      "referenceId": "group-delete-confirm",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 group-delete-confirm 的400px确认。400×152、x440/y332、footer58；旧文件可能已发布警示和取消/结束此次核实可见；低层122 inert/透明mask，高层124唯一有效遮罩，不把结束核实冒充撤销已发布文件。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-diagnostics-minimal",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-diagnostics-minimal.png",
+      "imageSha256": "e99977f5232d7db952ded97933b95ce82649552f2ab3f31f7dd7457c13127411",
+      "referenceId": "proxy-edit",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-edit 的620px正文滚动容器。620×580、正文482/516/top0、footer58；不可读取/最小报告、错误码及返回/保存可见，末尾正文尚有34px内部滚动且未独立取底部图；不是原诊断或真实数据读回验收。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-diagnostics-preview",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-diagnostics-preview.png",
+      "imageSha256": "95b53d847acff3cb6d622eec82087182cee77adcd1109016aac2b2d4c43922f6",
+      "referenceId": "proxy-edit",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-edit 620px详情，无同名原诊断。620×580、正文482/588/top0、footer58；白名单/合成摘要、返回/保存可见，顶部只截正文下部不是footer被切；另有top106的有效完整底部图，未展示秘密或原始JSON。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-diagnostics-saved",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-diagnostics-saved.png",
+      "imageSha256": "702e00a4e2aa9fcbd639585bd82a653ec3e7fd78750de0ba6f884df37bf8606a",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 batch-progress-fixture 400px结果，无原诊断保存回执。400×194、x440/y311、footer58；已保存且SHA与预览一致文案及摘要实际可见，返回/查看预览不遮挡；合成匹配回执不证明真实文件写入。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-diagnostics-unknown",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-diagnostics-unknown.png",
+      "imageSha256": "9888723dd6b5adc0124946633648a102905f6ff1d2b3b780d479907b747aadeb",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 batch-progress-fixture 结果容器。400×257、x440/y279.5、footer58；未确认保存、保持原requestId/不重写、核实与结束核实动作可见，红色未知警示不冒称完成；没有同状态原导出画面。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-environment-create-accepted",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-environment-create-accepted.png",
+      "imageSha256": "b016ac571ce43a67870da1f0dc67d1dd6dce04f27be60323b2e7baa2412b4b4d",
+      "referenceId": "environment-create",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "660px已受理创建保留原草稿/任务，取消及关键字段锁定，既有准确任务取消条保留；不把受理当创建完成，缺原同名执行图。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-environment-create-pending",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-environment-create-pending.png",
+      "imageSha256": "768b4f5ff344a526d71e346515d20aa6b5a47d2f076159bb070bf961827495d1",
+      "referenceId": "environment-create",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "660px待回执创建保持原seed/数量/草稿，重复创建/取消受保护；底部操作清楚但禁用，不假报完成。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-environment-create-unknown",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-environment-create-unknown.png",
+      "imageSha256": "17977848167780c972752fa57417e194f38b511aee010296f80aa1b3ca516e12",
+      "referenceId": "environment-create",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "660px未知创建红色反馈与原请求核实主操作可见；草稿/身份/数量冻结，不允许另建第二环境，缺原真实未知画面。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-environment-proxy-failure-return",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-environment-proxy-failure-return.png",
+      "imageSha256": "ca99a1e09e825d41621a0a6e7602e09217043f1b7645d569c7458a75084bc07b",
+      "referenceId": "proxy-import-preview",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射合成桥失败嵌套状态；1050×610框标题修复，491高滚动正文配79px页脚，错误、保留草稿和返回动作可见。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-environment-proxy-preview",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-environment-proxy-preview.png",
+      "imageSha256": "b3cb379cfa872ad5ce273c13a304e164a8ea574d57b1a62cf59fc87c5d45ff78",
+      "referenceId": "proxy-import-preview",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射1050×610唯一导入器覆盖660×752抽屉；标题相对顶21修复，遮蔽输入、两条选中预览与58px页脚无叠盖。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-environment-proxy-success-return",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-environment-proxy-success-return.png",
+      "imageSha256": "2cf44e6ebecd8f48d5e8d00cf9f93fc47ad3c5633a87f354f1dc635ce3f516c9",
+      "referenceId": "proxy-import-preview",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射660×752返回抽屉、页脚y721；导入框消失，新版约270×48成功通知居中y40，代理选项完整，合成桥不证明真实持久化。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-environment-proxy-unknown-return",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-environment-proxy-unknown-return.png",
+      "imageSha256": "dbb0a42664ca6b26a9d7f19ec4d4aff7c850af8de3dc6b8222ba7e63ca7fd575",
+      "referenceId": "proxy-import-error",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射未知回执嵌套框，1050×610标题修复；79px页脚明确未知与核实原请求，输入及选择冻结，返回入口保留。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-environment-remove",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-environment-remove.png",
+      "imageSha256": "097c9fc8bbfdd60fd4c9ea7cef6ee96f83bdf58d74b0c3785bab67247631ea09",
+      "referenceId": "environment-delete-confirm",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "400px准确2项回收确认、明确ID与授权复核，运行保护/原身份/不直接删目录含义保留；安全授权增加高度。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-force-confirm",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-force-confirm.png",
+      "imageSha256": "2454df9274065e8ebe99c9315724ac6676e85052c5cb402fad2d51a9f761a0d7",
+      "referenceId": "group-delete-confirm",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "400px指定会话危险确认、原环境/会话ID及红色授权操作；仅打开警告，未发送强制结束。以短确认映射，不冒充删除分组或新会话控制。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-kernel-delete-confirm",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-kernel-delete-confirm.png",
+      "imageSha256": "8f1408be77097c8b8f2dc23bcbcb3ece77e09169227b020aff82d4183fd3cd4a",
+      "referenceId": "group-delete-confirm",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅借400px危险确认容器，实际400×174位于(440,321)；精确内核移除范围、保留与危险按钮完整，非原删除分组功能。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-kernel-details",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-kernel-details.png",
+      "imageSha256": "f16e48f004d94628219d464e7f7d98134beda00a3486e400e36a3956f20b4aa5",
+      "referenceId": "environment-edit",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射660×752抽屉，正文641/866、顶部scrollTop0；来源和能力表可读，下部位于正文滚动边界，非同名原详情或真实探测。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-kernel-details-bottom",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-kernel-details-bottom.png",
+      "imageSha256": "e19a270fe43dc0c3957fdf49606e9f1f1c1f646c7753cb75a5193725f2ba9d7b",
+      "referenceId": "environment-edit",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射详情抽屉的底部证据；正文641/866、scrollTop225，能力底行与免责声明可见，页脚仍y721，无同名原内核底部图。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-kernel-failed",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-kernel-failed.png",
+      "imageSha256": "3d35cbf35f255413bfe21ff70e93b0587cf4ebdc4d81c1251f8447f55a870c2b",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射400px任务结果容器，400×358位于(440,229)；红色失败、错误原因与重试清楚，原混合批次只是显示参考。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-kernel-history",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-kernel-history.png",
+      "imageSha256": "194e2cbb7fe8c22c5f61790ba578e341190bd37c298319327b4936c1d3ceecbe",
+      "referenceId": "proxy-edit",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射620×540窗口位于(330,138)，一条合成持久记录与查看入口清楚，58px页脚y620；空白不是原代理编辑字段丢失。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-kernel-list",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-kernel-list.png",
+      "imageSha256": "3b1ad1f1dbc5c3fad3d5fd799c19df0400b977c99dcf7556d74d2b04c66ff131",
+      "referenceId": "proxy-list",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射40px表头、48px行的管理表，两条合成构建首行y190；长标识截断配详情入口，默认、引用与验证列未出界。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-kernel-persistence-pending",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-kernel-persistence-pending.png",
+      "imageSha256": "ceedb781ccdeccf73d6e38eadbdd3666f7b6ee26d61e47b2a3f23f88d65dc26c",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射400×358任务框位于(440,229)；红色结果待保存说明与禁用取消可见，已完成标签不被当作可用安装证明。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-kernel-prepare",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-kernel-prepare.png",
+      "imageSha256": "2d3521b9118d7bffd305a38b027aabeb0930b84d02d8a3995a8c7f84779ad3f4",
+      "referenceId": "proxy-add",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射620×420表单位于(330,198)，官方ZIP、版本、摘要和信任说明完整，58px页脚未遮挡；未执行真实下载。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-kernel-prepare-local",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-kernel-prepare-local.png",
+      "imageSha256": "8207c571a0ee9e3eea7dc1c5eb8ad2de13e5a5dac395c635417943e34c3962df",
+      "referenceId": "proxy-add",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射620×530表单位于(330,143)，合成ZIP文件名和信任勾选可见，固定页脚y615；未读真实归档或运行内核。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-kernel-progress",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-kernel-progress.png",
+      "imageSha256": "82c6607055118b50be2d04fbd2ca5c5802062cc757cd4c18b49abb08b63ac30f",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射400×328任务框位于(440,244)，任务标识、计数、关闭和取消完整；原批次与本图均不能证明真实下载进度。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-migration-cancelled",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-migration-cancelled.png",
+      "imageSha256": "f639ea7fe14069d53c73f15eaf276c04cddc1367a1500ffed1e0b9dd29e12e6a",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射400×264终态框覆盖1040×592选择器，位于(440,276)；仅关闭动作与取消说明可见，单遮罩，非真实迁移结果。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-migration-confirm",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-migration-confirm.png",
+      "imageSha256": "b283f408070fce154aa611449b85da354f35b3bcb43a7c5e4b1eb62ba5dffe4a",
+      "referenceId": "group-delete-confirm",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅借400px确认容器，400×220位于(440,298)；确认框未勾选、试用按钮禁用，精确环境与副本保护说明完整，非删除分组。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-migration-diff",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-migration-diff.png",
+      "imageSha256": "1627f999108e6a6e5925ccd21e55d5e9f891354803cd38d2a73a8f48f6921982",
+      "referenceId": "proxy-bound",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射1040×592选择列表位于(120,112)；单环境版本前后、seed与策略说明清楚，58px页脚固定，不强凑原六条绑定数据。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-migration-progress",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-migration-progress.png",
+      "imageSha256": "ab8950952b80405acc1bd254c077af47e22983bd3a80548c174d47d7e0220563",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射400×325任务框位于(440,245.5)，覆盖1040选择器；取消保留原状态与核实原任务动作可见，单遮罩、合成任务。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-migration-select",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-migration-select.png",
+      "imageSha256": "83309ab17680620622ae2c96bba26d36ca9c5ff070a3c53d0087cf6f33783d74",
+      "referenceId": "proxy-bound",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射1040×592选择器位于(120,112)，来源目标未选、差异按钮禁用；下部空白对应无选择，保留准确范围说明。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-profile-history",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-profile-history.png",
+      "imageSha256": "a75d263fe572583ef8e00b931d3e5b12c65bbd7ae17182cd43898ff257ce4a34",
+      "referenceId": "environment-edit",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "660px技术摘要/档案历史底部滚动，来源、精确构建、seed、相对数据引用与只读能力分层可见，71pxfooter固定；原普通编辑无同名历史。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-proxy-add",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-proxy-add.png",
+      "imageSha256": "b167e3a07c8511a1da571e9c6d5cee83e892849b98557832ee5ef39302c74511",
+      "referenceId": "proxy-add",
+      "ticket": 35,
+      "verdict": "ADAPTED",
+      "notes": "620×552支持表单，标题中心632、相对顶21修复；五项下划线字段及解析页脚完整，裁剪原云API、来源及UDP条件。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-proxy-bound",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-proxy-bound.png",
+      "imageSha256": "9d19adc927aa9c60f1e5e493bb1eda48674ab8c46a599c4f42dd1c3a4fdaf1e5",
+      "referenceId": "proxy-bound",
+      "ticket": 35,
+      "verdict": "ADAPTED",
+      "notes": "1040×592引用框标题相对顶21修复；仅一条服务返回引用且未预选，精确所选分配按钮禁用，不按原六行强造数据。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-proxy-edit",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-proxy-edit.png",
+      "imageSha256": "788923a8dc79a2e39a0230c7f4f7513c89b3d011da02d49f1d09fb63b3c0aca9",
+      "referenceId": "proxy-edit",
+      "ticket": 35,
+      "verdict": "ADAPTED",
+      "notes": "620×614位于(330,101)，标题中心631.5、相对顶21修复；输入x466、56px节距保持，保留认证而不回填秘密，商业字段裁剪。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-proxy-import-error",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-proxy-import-error.png",
+      "imageSha256": "c8ec0c5386f859d83b71ec25ee488477567a181f3d133416c28fb6b22d69190d",
+      "referenceId": "proxy-import-error",
+      "ticket": 35,
+      "verdict": "ADAPTED",
+      "notes": "1050×610框标题相对顶21修复；两条坏行红色保留、保存禁用，遮蔽原始输入，明确替代原静默丢行与空预览通知。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-proxy-import-file",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-proxy-import-file.png",
+      "imageSha256": "e9b7dcd6f75a16d6785ac65399ff7ef2999c330f4cb8bcf952037ca2fa5120fc",
+      "referenceId": "proxy-import-file",
+      "ticket": 35,
+      "verdict": "ADAPTED",
+      "notes": "500×360位于(390,228)，标题墨迹与原图对齐；选择文件已为蓝带白字无白框，UTF-8/2MiB替代Excel模板与商业配额。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-proxy-import-preview",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-proxy-import-preview.png",
+      "imageSha256": "a6a60de0c34f70ed32ab0d691ebf1105af000addaf8a3b342c6705340690fca0",
+      "referenceId": "proxy-import-preview",
+      "ticket": 35,
+      "verdict": "ADAPTED",
+      "notes": "1050×610位于(115,103)，标题墨迹与原图同为[590,124,673,135]；两条选中安全行、输入遮蔽与认证元数据为明确适配。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-proxy-import-return",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-proxy-import-return.png",
+      "imageSha256": "e89d27a8d8500e330185778da73bf3721506108e0483059b3e969644e614496d",
+      "referenceId": "proxy-import-preview",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射额外未知返回框，1050×610标题修复；491/540滚动正文与79px页脚y634，输入冻结、核实原请求完整，非原普通预览。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-proxy-import-text",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-proxy-import-text.png",
+      "imageSha256": "841c9c5b98d7d6e585644ad76f084268734b3468b375bc89de833e2f54d75f94",
+      "referenceId": "proxy-import-text",
+      "ticket": 35,
+      "verdict": "ADAPTED",
+      "notes": "1050×552位于(115,132)，标题相对顶21修复；空输入与禁用保存保持，新增遮蔽开关和本机协议说明，不复刻原SSH或配额。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-proxy-list",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-proxy-list.png",
+      "imageSha256": "34c092aa474b1ed6c1fba2b5613301f257d4045c6b46215db83b29336ca06462",
+      "referenceId": "proxy-list",
+      "ticket": 35,
+      "verdict": "ADAPTED",
+      "notes": "1040×40表头y140、48px行及58px节距保持；凭据只显示遮蔽状态，返回绑定数1不同于原6是合成服务数据适配。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-proxy-save-failure",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-proxy-save-failure.png",
+      "imageSha256": "a363f2453d1b9d041bb13035eacb0e2c77df06d0f734cbd456e8c356c4112349",
+      "referenceId": "proxy-import-error",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射额外保存失败框，1050×610标题修复；正文491/540、79px页脚y634，红色失败与重试可见，原格式错误图不能证明存储行为。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-proxy-save-unknown",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-proxy-save-unknown.png",
+      "imageSha256": "e89d27a8d8500e330185778da73bf3721506108e0483059b3e969644e614496d",
+      "referenceId": "proxy-import-error",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射1050×610未知提交框；标题修复，输入和选择灰显冻结，79px页脚明确核实原请求，不把未知当正常成功或原格式错误。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-recycle-protected",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-recycle-protected.png",
+      "imageSha256": "b0e54dea4a03437bf429c9cbb8143f10abb28794dd2fe5d839b33b2e0e8ca003",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "400px回收结果盖在页面形列表上，仅一层灰罩；失败/维护保护及原任务重试明确，未永久删除，不伪造原任务成功。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-restore-confirm",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-restore-confirm.png",
+      "imageSha256": "c5931c8b7f4dd0b339e9c03768f67dbdc87d2263fd505dc57aecb307a5e8edbb",
+      "referenceId": "group-delete-confirm",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 group-delete-confirm 的400px危险确认。400×262、x440/y277、footer58；覆盖/凭据重输/正常停止授权及取消/确认完整可见，高度为安全适配；低层122 inert，高层124唯一有效遮罩，不等于原分组删除。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-restore-conflict",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-restore-conflict.png",
+      "imageSha256": "aef531106b83aea0284ae820de0285044be103376ae67ff434901de9f5f4bb18",
+      "referenceId": "proxy-bound",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-bound 影响列表，无原恢复冲突态。1040×592、x120/y112，正文494/548/top0、footer58；冲突说明、丢弃与正确禁用的下一步可见，未缩掉安全内容；另有top54底部图补齐下方缺内核警示。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-restore-conflict-bottom",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-restore-conflict-bottom.png",
+      "imageSha256": "31bd458aa27f9b81adb3658a666115325fe3268c2909ca27ba302e2104ade0dc",
+      "referenceId": "proxy-bound",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-bound 的1040×592预检容器。正文494/548/top54确已到底，两条身份冲突/补精确构建警示完整可见；footer固定y646/h58，丢弃可见、下一步为安全禁用而非被遮挡，不声称同状态原图通过。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-restore-history",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-restore-history.png",
+      "imageSha256": "a278122d314e5d3cd2e67b24571749618d9a3aa250b65cec43e4e95f501e48d7",
+      "referenceId": "proxy-bound",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-bound 的1040×592列表，x120/y112、footer58；实际一条2环境/完整恢复完成记录、读取该结果及返回可见，说明读取不消除未知请求或接管后续会话；合成历史不是原图或真实恢复验收。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-restore-preflight-credentials",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-restore-preflight-credentials.png",
+      "imageSha256": "516eb0f788ea4d3e5fca2917efbd773990acca9eb1149332c0308d394bd27bb2",
+      "referenceId": "proxy-bound",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-bound 预检列表。1040×592、x120/y112、footer58；代理凭据页签实际选中，一条需重新输入认证说明且无秘密回显，丢弃/下一步可见；没有同名原凭据预检，静态图不证明预检无副作用。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-restore-preflight-kernels",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-restore-preflight-kernels.png",
+      "imageSha256": "4b82ac429e064db2c9c637f71361ced1bb84f6ea718b42381bc3938eb733a813",
+      "referenceId": "proxy-bound",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-bound 预检容器。1040×592、x120/y112、footer58；精确内核页签、精确版本/本机核对/主程序摘要行实际可见，长合成摘要在单元格换行，丢弃/下一步未遮挡；不是原内核图或实际文件核验。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-restore-preview",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-restore-preview.png",
+      "imageSha256": "bfdb9f62164a8b17698dfb561f5bed6ae3ec266dc96c6cdeb4a9913b7a7c5757",
+      "referenceId": "proxy-bound",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-bound 影响列表。1040×592、x120/y112，标题40/footer58；新增/覆盖/内核/凭据汇总、2个准确环境影响和丢弃/下一步可见，原ID/seed/包外环境保留说明完整；预检未等同提交成功，无直接原恢复图。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-restore-progress",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-restore-progress.png",
+      "imageSha256": "4dd9ce7fc6354c9420f0bcf1f49a1a31341b1e2982238e622c41664d1bfd3e64",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 batch-progress-fixture 的400px结果。400×225、x440/y295.5、footer58；目录/日志已准备但2环境/0切换/未完成、取消并回滚与返回可见，不把进行中报告成成功；无同状态原执行图。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-restore-protected",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-restore-protected.png",
+      "imageSha256": "49f5e333dfb762fc1cfbc9ad834cad0c9bbe62e1aa2063b7d4d780a5177c6a6d",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 batch-progress-fixture 400px结果。400×407、x440/y204.5、footer58；未完成/维护保护、保留日志/不移动目录与核对收尾可见，正文无溢出；背景维护条令分页y326是安全适配，不能为等高删掉保护说明。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-restore-rollback",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-restore-rollback.png",
+      "imageSha256": "49c76541b141952dca95bba810624dac846bf60729e2fc460f83b17eb18e21c5",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 batch-progress-fixture 400px结果。400×266、x440/y275、footer58；恢复未完成/原状态已回滚与错误警示实际可见，返回未遮挡；回滚不是完整恢复成功，高度为准确结果内容适配。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-restore-success",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-restore-success.png",
+      "imageSha256": "46a595a1e99c93115f4c8941ac1f37a86c7c2c2782a889e27b77536cb4931194",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 batch-progress-fixture 的400px结果。400×240、x440/y288、footer58；2/2切换与确认完成、原ID/seed保留/原Windows用户复验说明可见，返回未遮挡；合成成功报告不证明真实目录/数据库恢复。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-restore-unknown",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-restore-unknown.png",
+      "imageSha256": "b66b8a7e34d691ae8990e1f7d1b5b2128d595ea2182462f58b7c9640c587d22d",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 batch-progress-fixture 400px结果。400×343、x440/y236.5、footer58；未完成/维护保护、原requestId/不另建请求和核实原恢复可见；背景保护条下移属安全适配，未知未写成成功，没有同状态原执行参考。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-runtime-details",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/native-runtime-details.png",
+      "imageSha256": "61dc65411e32384fa9b590971dc4ce43f5086460d5bca33c808ce29d7e6a2327",
+      "referenceId": "environment-row-menu",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "360px锚点详情浮层不被下一行遮挡，显示当前环境/原会话资源及直连策略；原行菜单只供公共浮层映射，缺同名详情。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "proxy-add",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/proxy-add.png",
+      "imageSha256": "50920d0de922140379b423202f435a00033c1951736446fc876bae5c78b59e3f",
+      "referenceId": "proxy-add",
+      "ticket": 35,
+      "verdict": "ADAPTED",
+      "notes": "620×552位于(330,132)，标题中心632、相对顶21修复；五项56px节距下划线字段和解析动作完整，无云API、UDP或配额承诺。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "proxy-bound",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/proxy-bound.png",
+      "imageSha256": "bf0bd32855e91b2b0759b0289e62b4f2ee197ad4577d59f475017411e80f45fc",
+      "referenceId": "proxy-bound",
+      "ticket": 35,
+      "verdict": "ADAPTED",
+      "notes": "1040×592位于(120,112)，标题相对顶21修复；六条演示引用、分页和58px页脚完整，安全默认不勾选而非照搬原全选。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "proxy-delete-confirm",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/proxy-delete-confirm.png",
+      "imageSha256": "77ebabe060afa4ebd2ed95a46401655e95b9b3b303945130744d5b02c1c85f36",
+      "referenceId": "group-delete-confirm",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅借原400px危险确认容器，400×174位于(440,321)；明确未绑定演示代理范围和危险动作，不虚构独立分组删除功能。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "proxy-edit",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/proxy-edit.png",
+      "imageSha256": "091cd676e024ea896caceea94947345864571e3388792b1ef149b42d16b5ff1b",
+      "referenceId": "proxy-edit",
+      "ticket": 35,
+      "verdict": "ADAPTED",
+      "notes": "620×614位于(330,101)，标题中心631.5、相对顶21修复；输入x466、56px节距保持，认证策略及演示失败开关替代原商业项。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "proxy-import-duplicates",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/proxy-import-duplicates.png",
+      "imageSha256": "a9c7efa00a673bdf4099e9e15a35652e9bd60b441803e8da8be1662bacc84c17",
+      "referenceId": "proxy-import-preview",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射额外重复行状态，1050×726位于(115,45)，标题修复；4行解析、2行选择，顶部见3行且正文有58px余量，非原两行状态。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "proxy-import-error",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/proxy-import-error.png",
+      "imageSha256": "218d3e4b02ddcb9dd63bbd4851d7a68f24120123297fa5bbdbdb7eb58f288ee5",
+      "referenceId": "proxy-import-error",
+      "ticket": 35,
+      "verdict": "ADAPTED",
+      "notes": "1050×610标题相对顶21修复，两条红色坏行保留、保存禁用；替代原空预览通知，英文URL错误仅为中文易读性建议，不列视觉失败。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "proxy-import-file",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/proxy-import-file.png",
+      "imageSha256": "27729a252f5d6997ea9329b7ec79252ee5e7c5aaff8aa44c01fc844a14f7559d",
+      "referenceId": "proxy-import-file",
+      "ticket": 35,
+      "verdict": "ADAPTED",
+      "notes": "500×360位于(390,228)，标题同原图[590,249,673,260]；y349蓝带白字选择按钮无白框，UTF-8/2MiB及模板裁剪明确。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "proxy-import-file-error",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/proxy-import-file-error.png",
+      "imageSha256": "601f2aaeed2277734f61613e276824b8965f869299cb3191b1edae7f0d3ff3ab",
+      "referenceId": "proxy-import-file",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射额外文件错误，500×360标题与蓝带白字均已修复；79px页脚显示UTF-8错误、继续禁用，正文241/254，非原默认选文件状态。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "proxy-import-file-selected",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/proxy-import-file-selected.png",
+      "imageSha256": "1a698e53fee7d6aaf2b62f12eb8eca70e1d93ea206aaa6d438489cbcb8b7407d",
+      "referenceId": "proxy-import-file",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射额外文件已选状态；500×360标题、蓝带白字修复，合成文件名和继续按钮完整，正文262/298有36px余量，无同名原图。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "proxy-import-preview",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/proxy-import-preview.png",
+      "imageSha256": "98ccdc5c808b7907c6b3e65c87af620bcca3e48817b557c3998c47de7890d462",
+      "referenceId": "proxy-import-preview",
+      "ticket": 35,
+      "verdict": "ADAPTED",
+      "notes": "1050×610位于(115,103)，标题与原同为[590,124,673,135]；两条安全行、遮蔽输入和勾选元数据解释预览下移，58px页脚完整。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "proxy-import-text",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/proxy-import-text.png",
+      "imageSha256": "2e95f644787e87b415d2e13a61938d394007e73cd2b7183bb2c85aee194e4290",
+      "referenceId": "proxy-import-text",
+      "ticket": 35,
+      "verdict": "ADAPTED",
+      "notes": "1050×552位于(115,132)，标题与原同为[590,153,673,164]；252高空输入、可见焦点环、遮蔽开关与禁用保存是支持适配。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "proxy-list",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/proxy-list.png",
+      "imageSha256": "146882daaaabb90f64686d71f4c476e2933e131dbe2b225aa444d45c3f332b42",
+      "referenceId": "proxy-list",
+      "ticket": 35,
+      "verdict": "ADAPTED",
+      "notes": "1040×40表头y140、48px行和58px节距保持；独立品牌、认证状态等本机安全列适配，两条演示代理不证明实际流量检测。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "proxy-no-results",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/proxy-no-results.png",
+      "imageSha256": "c9f594f0a4fc91a9463e9a793742e24f8f81413b267d70107af04356849a1c66",
+      "referenceId": "proxy-list",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射代理列表的额外空筛选状态；40px表头、无匹配提示和分页保留，工具条未移位，没有同名冻结无结果原图。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "recycle-delete-confirm",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/recycle-delete-confirm.png",
+      "imageSha256": "d7fafefa64f0ff0aa688b2263b1bb7fe330ef13a368bc5e9f9ad27512ea6cd22",
+      "referenceId": "recycle-delete-confirm",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "400px永久删除确认覆盖回收列表；准确1项ID/seed与授权checkbox增加必要高度，单遮罩，未勾授权不提交，不等同原短商业确认。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "recycle-list",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/recycle-list.png",
+      "imageSha256": "df06e99a2f607102fe0ff8a3ffc31fa906bc789209c554a3d062661f6f19fffb",
+      "referenceId": "recycle-list",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "保留页面形回收列表、48px行与10px间隔及固定分页；服务2项/实际身份与数据字段替代原12项商业清单，不制造搜索/全量实体或更多记录。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "recycle-restore",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/recycle-restore.png",
+      "imageSha256": "72ddfc075a3daf80959de560b8c62a9a52f39d5a903b8bd16660d44f9ef25bb7",
+      "referenceId": "recycle-restore",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "440px找回确认与固定按钮，恢复原ID/seed/构建/数据，原分组只读并需精确授权；不克隆身份，安全说明使高度增加。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "workspace-cookie-fault-diagnostic",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/workspace-cookie-fault-diagnostic.png",
+      "imageSha256": "9430a962affc14878f2aa76e83e077b233c145dd7222900b05d912dd25c0247f",
+      "referenceId": "proxy-edit",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射proxy-edit的620px详情容器，无同名原嵌套诊断。最高620×580、x330/y118、footer y640/h58，关闭/返回/保存可见；Cookie80与blocker160均inert/透明mask，诊断162唯一0.4遮罩，输入仍遮蔽。通知x520/y40/240×48，距诊断30px；正文482/488/0的6px滚动余量未补称底部取证。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "workspace-native-fault",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/workspace-native-fault.png",
+      "imageSha256": "df4f1a16a6f19ba818d20da571588144f80ac33387c6bc1669e918aa834ec0da",
+      "referenceId": "group-delete-confirm",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射公共危险/故障容器，非原分组删除。新PNG已独立重看，500×198、x390/y301、header40/footer71与此前记录一致；未改写数据说明、带焦点轮廓的生成诊断按钮完整可见，重读因故障状态禁用而非被遮挡；160层单有效遮罩，背景inert，无同状态原图。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "workspace-native-fault-diagnostic",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "1280x800/workspace-native-fault-diagnostic.png",
+      "imageSha256": "c2eeedba67d00a8f07e686280b05f36e0a1fbaa7e826fdb9263a4a7e6051d6eb",
+      "referenceId": "proxy-edit",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-edit 的620px诊断详情。620×580、x330/y118、footer58；故障低层160 inert/透明mask，最高诊断162单有效遮罩，关闭/返回/保存未被低层盖住；白名单安全摘要可读，正文482/488/0，底部滚动未独立取证。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "activity-details",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/activity-details.png",
+      "imageSha256": "19c9d47d0b9b95e86b60a9bc21670eac357e2018dc54ded56fb3a8d6c790dc6c",
+      "referenceId": "proxy-edit",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-edit 的620px详情容器，无同名原活动详情。实际620×440，x410/y238，标题40、footer58；安全对象/结果/详情及返回均可见，不能按原代理表单高度判严格通过。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "activity-empty",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/activity-empty.png",
+      "imageSha256": "6b7b42e627aecf9e0a5a0c669398112071603405e3e43df698a7b1f892dd9512",
+      "referenceId": "activity-list",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅以 activity-list 普通列表映射筛选无结果，没有同状态原图。工具条y93/h52、表头y165/h40/宽1200、分页y283/h30；无结果说明、0条和筛选恢复入口可见，裁剪云登录/员工条件。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "activity-list",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/activity-list.png",
+      "imageSha256": "a3d8c780a71ebab915c51b1943497055f9557bbd9af31d9cf385dc65e47bc0f4",
+      "referenceId": "activity-list",
+      "ticket": 36,
+      "verdict": "ADAPTED",
+      "notes": "activity-list 冻结同状态直接布局参考；工具条y93/h52、表头x220/y165/h40/宽1200、首行y215/h48、分页y283/h30，对原约+0.42px。云登录/员工列裁剪，换为准确对象/结果/详情，非完整商业1:1。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "activity-page-two",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/activity-page-two.png",
+      "imageSha256": "f648886dc9e1343d7e30ca76bec256c5fa0ca3c1dbac5d38ca05876204143fe9",
+      "referenceId": "activity-list",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 activity-list，原冻结图不是第二页。表头y165/h40、两行48px、分页y341/h30，12条中的11/12及当前页2实际可见；额外分页状态不写成同状态原图通过。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "batch-create",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/batch-create.png",
+      "imageSha256": "a53748713fb06374adbb21817e8587ae95886b1b23151d02d0c65462318d9cd8",
+      "referenceId": "batch-create",
+      "ticket": 34,
+      "verdict": "ADAPTED",
+      "notes": "660px右贴边连续四区/外挂分区栏，数量、名称、代理、启动偏好与底部创建连接服务；无服务商业字段裁剪，未保留完整复制模式或数量配额。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "batch-progress-fixture",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/batch-progress-fixture.png",
+      "imageSha256": "47e84d1975d392b0a7902882b033cc43789e2c21a2af32e861e699ddd03c44dd",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "400px混合结果容器；真实合成任务显示已完成2/失败1，只重试未完成项。原图只注入显示值，不能证明原任务或本机执行。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "cookie-import",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/cookie-import.png",
+      "imageSha256": "e240884fa19bfe76d224d2b35e5e82140ccd44096bca10078a1c42bdd8005cd6",
+      "referenceId": "cookie-import",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "参考ZIP上传dialog只映射文件选择容器；中文蓝色文件区域与固定返回按钮可见，JSON/Netscape UTF-8代替ZIP，不上传或写入。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "cookie-populated",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/cookie-populated.png",
+      "imageSha256": "5afdb67ba7917d59b1f03cc0c11ca47e652d801dbee9660ed6a7d86c2d37218a",
+      "referenceId": "cookie-populated",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "demo独立Cookie文本/说明/预览dialog保留空值和到期语义，不伪造创建时Cookie字段；示例输入非真实数据，原创建字段不是同名窗口直接参考。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "demo-backup-create",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/demo-backup-create.png",
+      "imageSha256": "df80485028f7f36c556557c3e35d7e8c9badf52bb5a45610bf25f6b1459552e7",
+      "referenceId": "group-add",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 group-add 短表单，非原分组创建业务。500×340，x470/y288，标题40/footer58；12个演示环境范围和创建/取消可见，明确为演示JSON而非本机完整备份。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "demo-backup-dense-bottom",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/demo-backup-dense-bottom.png",
+      "imageSha256": "66c7572d34e991a5001d52345c2d5f71a51429627200a700c87f8f7f4d00b014",
+      "referenceId": "proxy-list",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-list 密集列表，无直接原备份页。表体640/640/0能完整容纳第一页10条，故bottom与top同画面合理；行48/gap10、分页y781/h30、导出/恢复及演示格式警示均可见，非漏拍下两行。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "demo-backup-dense-page-two",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/demo-backup-dense-page-two.png",
+      "imageSha256": "5c6dcd2fe2eee25a9605c0608d0f4d945de24dcef32858ab339363f6b64b9492",
+      "referenceId": "proxy-list",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-list，非同名原备份第二页。实际11/12两行、总数12、当前页2和各行导出/恢复可见；表体176/176/0，分页y317/h30，保留演示JSON限制；native第二页另有独立实现图，不混为同一状态。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "demo-backup-dense-top",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/demo-backup-dense-top.png",
+      "imageSha256": "66c7572d34e991a5001d52345c2d5f71a51429627200a700c87f8f7f4d00b014",
+      "referenceId": "proxy-list",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-list 密集管理列表。表头y141/h40、行48/gap10，表体640/640/0完整展示第一页10条；分页固定y781/h30，行导出/恢复、创建/导入和演示格式限制可见，无同名原备份参考。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "demo-backup-import",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/demo-backup-import.png",
+      "imageSha256": "a429948a8c750708b60594ca01bbb99ce3f57095cba776ec9977f5fbc232a17d",
+      "referenceId": "proxy-import-file",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-import-file 的文件容器，不移植Excel/商业代理业务。500×359，x470/y278.5、footer58；蓝色本地选择区和取消/校验可见，未选文件禁用校验合理，演示JSON与完整包/诊断JSON明确分开。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "demo-backup-import-error",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/demo-backup-import-error.png",
+      "imageSha256": "fd922cd2fa8dfc43bcec4a594e4cac05ae79a670fe41aa2b265021ad9a54edf6",
+      "referenceId": "proxy-import-file",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-import-file，错误态无同状态原图。500×359，文件与红色格式错误保留；正文261/268/0有小量内部滚动，取消/校验位于固定footer58且可见，不把演示格式错误误判为容器失败。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "demo-backup-list",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/demo-backup-list.png",
+      "imageSha256": "d2fe77036b3c0d1abbab0c3bb6d239e4d9755148583140978cf6c68db3279d20",
+      "referenceId": "proxy-list",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-list 管理列表，无原备份页。表头x220/y141/h40/宽1200，单行y191/h48，分页y259/h30；旧46px分页盒已修正，对原少一行归一化约+0.42px；创建/导入/导出/恢复和演示JSON限制可见。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "demo-backup-save-error",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/demo-backup-save-error.png",
+      "imageSha256": "ea1b0eebb1686504dbc3e78573dcccb3dbd6b5007ec5f93c90c527cf80f46230",
+      "referenceId": "group-add",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射group-add短表单，无同状态原保存失败图。500×340、x470/y288、footer y570/h58，正文242/242/0；12环境范围及未保存/原工作区不变警示保留，取消/创建可见。通知x478/y40/484×48，距窗口200px；窗口测量与712一致，演示JSON不是完整本机备份。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "demo-environment-proxy-failure-return",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/demo-environment-proxy-failure-return.png",
+      "imageSha256": "d9ec26921423c51bee454e426e0f8a4c33612241df3e5534c4f97da1d14650cb",
+      "referenceId": "proxy-import-preview",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射(195,153)处1050×610导入器；标题修复，79px错误页脚位于y684，父852高抽屉仅暗一次，非原嵌套状态。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "demo-environment-proxy-preview",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/demo-environment-proxy-preview.png",
+      "imageSha256": "62bad71260b681d16c67a85a9b4edab7e6413292cc0d1cf7ef6ace2136549293",
+      "referenceId": "proxy-import-preview",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射1050×610导入框位于(195,153)；标题相对顶21，遮蔽输入与两行选中预览可见，父852高抽屉不产生双重暗层。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "demo-environment-proxy-success-return",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/demo-environment-proxy-success-return.png",
+      "imageSha256": "28678225775eea15dffd590074527e0c52b95e30d28e15d0f91e6c9566393657",
+      "referenceId": "proxy-import-preview",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射660×852返回抽屉，正文scrollTop334、页脚y821；新版成功通知约270×48居中y40，原图没有同名成功返回状态。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "demo-kernel-details",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/demo-kernel-details.png",
+      "imageSha256": "0eab33167345bdfbe48604c5fe9280972f1296c445ae1438a36d2e3aa4f5ab19",
+      "referenceId": "environment-edit",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射(780,40)处660×852抽屉，正文741高不溢出；稀疏演示能力和未安装边界清楚，固定页脚y821，非原编辑表单。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "demo-kernel-list",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/demo-kernel-list.png",
+      "imageSha256": "30196a68980b905e99abf369277e8169e9aac6bc1f86dc7c72989c5470b2db35",
+      "referenceId": "proxy-list",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射1200宽管理表，40/48px表头行密度保持；两条演示记录的来源、默认与引用列可读，无同名原内核页。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "demo-restore-confirm",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/demo-restore-confirm.png",
+      "imageSha256": "1728e201957fe121afbb7f909792d618c89d5df53415c2877e2ab829996db436",
+      "referenceId": "group-delete-confirm",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 group-delete-confirm 的400px危险确认，不是删除分组。实际400×198、x520/y359，身份/演示格式说明使高度增加；低层122 inert，高层124唯一0.4遮罩，取消/红色确认可见。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "demo-restore-preview",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/demo-restore-preview.png",
+      "imageSha256": "f80c888b225d548ce7491ff93f4193a64b3b78ae82daa0aa36572bcc52f8ca98",
+      "referenceId": "proxy-bound",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-bound 的影响列表。1040×592、x200/y162、footer58；12环境及身份保留说明、取消/下一步可见，表体230/756/0仅捕获顶部约3行，未取证该12行表体底部；不冒称完整本机恢复。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "demo-restore-save-error",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/demo-restore-save-error.png",
+      "imageSha256": "8ae1fdbac108a61ffe637f5f99733b3cd329040614c9ebba3d20be900c383f8a",
+      "referenceId": "group-delete-confirm",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射group-delete-confirm危险确认，高度为恢复范围/身份/失败说明适配。最高400×260、x520/y328、footer y530/h58，取消/红色确认恢复可见；122低层inert且透明mask，124最高层唯一0.4遮罩。通知y40/h48，距低层预览74px、最高确认240px，未遮标题/按钮，失败未改报成功。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-advanced-search",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/environment-advanced-search.png",
+      "imageSha256": "5d9bdcbe604bf699c8a6fd8526adf886d55fa794f0e248768c795dd2632b535a",
+      "referenceId": "environment-advanced-search",
+      "ticket": 33,
+      "verdict": "ADAPTED",
+      "notes": "432×335 浮层位于(988,89.69)，右侧锚点保持；三种本机条件替代原多字段，重置与搜索完整可见。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-clone",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/environment-clone.png",
+      "imageSha256": "2ee44403dfe36839b256ba802b8a96d205f1cc98d7c154631f3ef11226891ccd",
+      "referenceId": "environment-clone",
+      "ticket": 34,
+      "verdict": "ADAPTED",
+      "notes": "660px主drawer、标题40px、正文独立滚动与71pxfooter；名称/分组/备注、模板代理和新身份语义明确，不复制登录数据或原无服务字段。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-create",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/environment-create.png",
+      "imageSha256": "587e69439d49c6785b75435bcef7d4475bbd6fc7eab1e95ea9fb0cf9ece83489",
+      "referenceId": "environment-create",
+      "ticket": 34,
+      "verdict": "ADAPTED",
+      "notes": "660px右贴边、top40/bottom8、40px外挂栏，四区连续正文，固定71pxfooter。数量/服务内核/网络/固定档案替换无服务商业字段，非未经裁剪全表单像素声明。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-create-bottom",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/environment-create-bottom.png",
+      "imageSha256": "de789b0b8e83e3c774e4fdf0ab2f1c817d0e0e31cf1faf822b581fc01eb94ce9",
+      "referenceId": "environment-create-bottom",
+      "ticket": 34,
+      "verdict": "ADAPTED",
+      "notes": "已到支持正文底部，技术摘要与只读能力说明可见，标题/外挂栏/71pxfooter不随正文滚动；无服务UA/WebGL/设备字段不伪造。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-create-fingerprint",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/environment-create-fingerprint.png",
+      "imageSha256": "dc7879b1ccc5e147bb76306e18ea85bcd5e996189bb43c8cdc3ed036561d0df5",
+      "referenceId": "environment-create-fingerprint",
+      "ticket": 34,
+      "verdict": "ADAPTED",
+      "notes": "指纹分区保留参考蓝色时间线及下划线字段；精确服务构建、固定seed、语言/时区/能力分层，GPU等不假装可编辑或已实测。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-create-menu",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/environment-create-menu.png",
+      "imageSha256": "4a85e05df8c01af700101c01ae1b2625f3df46a6b5996cf55c92ae94c4e99329",
+      "referenceId": "environment-create-menu",
+      "ticket": 33,
+      "verdict": "ADAPTED",
+      "notes": "创建锚点下两项菜单保持紧凑，文字和独立图标无截断；短于原四项菜单属于无云端服务的明确裁剪。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-create-preferences",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/environment-create-preferences.png",
+      "imageSha256": "10f8a264d396973e2d1d23a43eb680dd6465ac6776596d379f0175587d9c6754",
+      "referenceId": "environment-create-bottom",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "同660px连续drawer的常用分区滚动定位；启动URL、窗口偏好、标签恢复连原契约，不制造原端口/白名单/字体控制。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-create-proxy",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/environment-create-proxy.png",
+      "imageSha256": "ffd2ee7f682e8ed72722616d8cbe5dbefb8892d3bf18693a06cb8bc2eb7e7e19",
+      "referenceId": "environment-create-proxy",
+      "ticket": 34,
+      "verdict": "ADAPTED",
+      "notes": "同连续drawer代理分区；保存direct/proxy含义及已有代理/唯一导入入口，无商业供应商/动态代理字段；失败不自动直连。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-create-proxy-manager",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/environment-create-proxy-manager.png",
+      "imageSha256": "12b2e62ffb67e3386a9457a31f17f3ca98f5f3e979f7e0d2768da54783e4e4f8",
+      "referenceId": "environment-create-proxy-manager",
+      "ticket": 34,
+      "verdict": "ADAPTED",
+      "notes": "已选择服务代理，分区/下划线/固定操作沿参考；唯一导入返回保留草稿，删除原商业管理模式并明确故障阻断。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-create-save-error",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/environment-create-save-error.png",
+      "imageSha256": "945d4faa98b434032112655b9d7b9b3be3a8e80438ae653d8444eb3457dc762f",
+      "referenceId": "environment-create",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "660px创建drawer保留草稿，写失败在71pxfooter上方红色状态条可见，取消/创建操作不被遮挡；缺原真实保存失败画面。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-created-open-failure",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/environment-created-open-failure.png",
+      "imageSha256": "76684d2305a288a5d7a4ce027763a693c460c0833a199c051419539f1358b33e",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "已保存原环境后仅打开失败，原ID重试入口与红色准确结果保留；顶部成功通知只表示创建。原混合任务容器不证明此执行画面。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-delete-confirm",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/environment-delete-confirm.png",
+      "imageSha256": "7c40f4793f905ac5e5991b47831e0e80e89c7e587fa6652f9e3ba31c8c6ca0f6",
+      "referenceId": "environment-delete-confirm",
+      "ticket": 34,
+      "verdict": "ADAPTED",
+      "notes": "400px短移除确认采用相同危险框架；明确示例记录范围、运行保护及不操作真实文件。安全说明增加高度，红色确认不等于原商业回收服务。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-dirty-confirm",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/environment-dirty-confirm.png",
+      "imageSha256": "ed30df4f22d6f0c7895569433c26ab9c8e0e8add5354d640c081970369bd23af",
+      "referenceId": "group-delete-confirm",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "400px最高确认覆盖下层草稿，只有一层有效遮罩；取消/放弃固定操作保留。以短危险容器映射，不是独立分组删除。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-edit",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/environment-edit.png",
+      "imageSha256": "be56c4f76ad788fbb916779773d82db64cf29bba4a94112061acb60a8c8fbee6",
+      "referenceId": "environment-edit",
+      "ticket": 34,
+      "verdict": "ADAPTED",
+      "notes": "660px编辑drawer/40px标题/71pxfooter；名称、分组、备注、代理与启动偏好仍是原草稿，保存不悄悄换seed/构建/数据引用，商业字段裁剪。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-edit-save-error",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/environment-edit-save-error.png",
+      "imageSha256": "de2e48f366e3e3b65a04f716fbdcd125f84084a80cc0ccb19675d6ec0e9787ab",
+      "referenceId": "environment-edit",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "660px编辑失败反馈位于固定footer上方，草稿与旧记录仍在；支持正文滚动不遮保存/取消。原图没有可核实的真实失败状态。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-empty",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/environment-empty.png",
+      "imageSha256": "f749e817ec9ecd41f20fe5c7e1145c8e95c6cfdb3b10c00649ee39ec039a7d81",
+      "referenceId": "environment-empty",
+      "ticket": 33,
+      "verdict": "ADAPTED",
+      "notes": "空表体仍高68、分页y280.86，1200宽表头完整；本机空状态与创建恢复按钮替代原单一无数据文案。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-group-popup",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/environment-group-popup.png",
+      "imageSha256": "f03f282f117086e96b22cbeeff2117fd2eeb8b47ef9fe995b2f9b64bc6736880",
+      "referenceId": "environment-group-popup",
+      "ticket": 33,
+      "verdict": "ADAPTED",
+      "notes": "(359,152.36)处260×148浮层及工作、测试两行位置稳定；返回全部分组和可见焦点环不冒充原未分组语义。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-group-save-error",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/environment-group-save-error.png",
+      "imageSha256": "9083ead3713fabd6e92f7dd51c2269168f720cd8249947a7afb67c5a5ee9c565",
+      "referenceId": "group-edit",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "500px分组容器与固定操作；只改明确2个环境标签，写失败红色提示保留输入，顶部错误通知不挡底部。不是原商业全组实体修改。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-list",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/environment-list.png",
+      "imageSha256": "7669da3e2a05009caa94c593cb11509403f5ec73ec2f1b567558949696aef2b0",
+      "referenceId": "environment-list",
+      "ticket": 33,
+      "verdict": "ADAPTED",
+      "notes": "1200×40表头及582高表体显示10行，分页固定y794.86；表头粗细保留，品牌、导航及服务状态列明确适配。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-list-bottom",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/environment-list-bottom.png",
+      "imageSha256": "f96a34cf56df6c95368a7ebc00800d657bac69887b54c4a8d658f25157d6813e",
+      "referenceId": "environment-list",
+      "ticket": 33,
+      "verdict": "MAPPED",
+      "notes": "仅映射列表容器；表体scrollTop8，末行与固定y794.86分页无叠盖，原配对图为顶部而非同名底部原状态。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-no-results",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/environment-no-results.png",
+      "imageSha256": "107588ff0df8445d6f6a9c62cb96036175ec1fe5d62126c90a26e9afbba86a70",
+      "referenceId": "environment-no-results",
+      "ticket": 33,
+      "verdict": "ADAPTED",
+      "notes": "1200宽空结果框保留表头、68px表体和分页；清除筛选入口与说明可见，区别于真正零记录的创建恢复。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-open-failure",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/environment-open-failure.png",
+      "imageSha256": "6deb6cb0c6ecfcced5b4d6941060400fe468172411942c15decd5caee4b0c8ab",
+      "referenceId": "environment-running",
+      "ticket": 33,
+      "verdict": "MAPPED",
+      "notes": "仅映射运行列表；73px失败反馈解释表头y235.86、440高表体，失败行与重试未遮挡，不把失败画面当原运行状态。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-quantity-invalid",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/environment-quantity-invalid.png",
+      "imageSha256": "0e0cc17977eb1fabe64c8d3409ed98a5472f54d800deccb6642ae6773de7322a",
+      "referenceId": "batch-create",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "同660px创建drawer；非法数量使创建禁用且错误可见，草稿仍可修改。原数量表单不提供这项执行失败参考，不伪造提交成功。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-row-menu",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/environment-row-menu.png",
+      "imageSha256": "a59e6d54a8f66a7aa48cfa1322eb0d5725ef708714c6f3a741cb31153c8a9aca",
+      "referenceId": "environment-row-menu",
+      "ticket": 33,
+      "verdict": "ADAPTED",
+      "notes": "行锚点处176×160短菜单不受后续行遮挡；五项支持动作替代原更长云端菜单，外侧未越界。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-running",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/environment-running.png",
+      "imageSha256": "fcd91f7e2cbefdc7699538f735be5cef90079e936f78c1f7d2be1b94c6c1a3f7",
+      "referenceId": "environment-running",
+      "ticket": 33,
+      "verdict": "ADAPTED",
+      "notes": "10行密度与固定分页保持，第2行绿色状态和关闭动作完整；内核状态列适配，不能以截图认定浏览器已运行。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "environment-selected",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/environment-selected.png",
+      "imageSha256": "855c4d32fb22202c79e77962ee0ad75272c79e5a358a64934cd991ec3bf42bfa",
+      "referenceId": "environment-selected",
+      "ticket": 33,
+      "verdict": "ADAPTED",
+      "notes": "两行选中与计数2相符，批量打开、关闭和调整分组均可见；1200宽表头不下移，不恢复原云端批量操作。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "fingerprint-randomized",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/fingerprint-randomized.png",
+      "imageSha256": "20c25e2117a4c4fa62e56b96255c0ab8bcc831e97718fec85d7ed43c6b01bfd2",
+      "referenceId": "fingerprint-randomized",
+      "ticket": 34,
+      "verdict": "ADAPTED",
+      "notes": "660px草稿窗口不变；生成通知按原顶部40px/居中/48px高，底部操作无遮挡。安全文案较长因而增宽，显式换一套只改草稿、保存才生效。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "group-add",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/group-add.png",
+      "imageSha256": "b58e9334882a3683ba4f3b3e400f861d2f0b2daaa55d062e124186fb5a3a5612",
+      "referenceId": "group-add",
+      "ticket": 33,
+      "verdict": "MAPPED",
+      "notes": "仅映射(470,288.06)处500×339.86容器；背景保留所选两环境，赋标签说明代替排序归属，单遮罩、不冒称原独立新建。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "group-edit",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/group-edit.png",
+      "imageSha256": "a5a874ad23219d40185cb51cb164456c296177d492d7edd0ed44c7a175de87aa",
+      "referenceId": "group-edit",
+      "ticket": 33,
+      "verdict": "ADAPTED",
+      "notes": "(470,288.06)处500×339.86框标题中心711.5、相对顶20.94与原对齐；只改真实成员标签，不承诺原所有者或排序。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "group-list",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/group-list.png",
+      "imageSha256": "b4f8a280116f758d3dd7db0e888f84e852eaab90a86afb8991b86c0108a98fcb",
+      "referenceId": "group-list",
+      "ticket": 33,
+      "verdict": "ADAPTED",
+      "notes": "两组列表保持40px表头、48px行，成员数和查看动作清楚；解释文字替代原独立分组增删和云归属，不制造假实体。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "guide-development",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/guide-development.png",
+      "imageSha256": "7b49c28b22e1f70d4a984b7acf349054f3bdee4fbcff08897f3073b283fcadfe",
+      "referenceId": "settings-page",
+      "ticket": 36,
+      "verdict": "MISSING",
+      "notes": "完整原帮助参考缺失，settings-page 被客户端限制覆盖，不能判严格1:1。已检查本机文档映射：frame1220×750、正文970×730，scroll16859/top0；开发方案顶部、四页签、左索引与下载可见。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "guide-development-bottom",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/guide-development-bottom.png",
+      "imageSha256": "7dc56fcba33e502ba56180d78ec1ae0cb0c66d6fa3451a308c4c7198fd21eee9",
+      "referenceId": "settings-page",
+      "ticket": 36,
+      "verdict": "MISSING",
+      "notes": "完整原帮助参考仍缺，仅检查本机文档滚动容器。正文client730/scroll16859/top16129确已到底，公开仓库/资料末段可见；frame1220×750、四页签/下载/索引保持位置，不把新增底部图写成原帮助严格通过。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "guide-kernel",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/guide-kernel.png",
+      "imageSha256": "2e23356745450fa4b0c3df88673e24fa95eb7ff5a77b2dfb61739540df941c9e",
+      "referenceId": "settings-page",
+      "ticket": 36,
+      "verdict": "MISSING",
+      "notes": "完整原帮助参考缺失，受限制settings图不是内核合同原页。已检查本机映射frame1220×750、正文970×730，scroll9272/top0；合同标题/对应表、四页签、索引和下载可见，缺原参考不等于已实现页面损坏。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "guide-kernel-bottom",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/guide-kernel-bottom.png",
+      "imageSha256": "afc61d9fb5a703a02f99192c67b3bcf3c3a5b530bbe1edc6093aa3b6c059cf5b",
+      "referenceId": "settings-page",
+      "ticket": 36,
+      "verdict": "MISSING",
+      "notes": "完整原帮助参考仍缺，仅检查文档容器映射。正文730/9272/top8542确已到底，验收条件及许可末段可见；frame1220×750、索引/页签/下载未滚走，不能由此宣称完整原指南1:1。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "guide-prd",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/guide-prd.png",
+      "imageSha256": "7c026a89b3908e16bbc803372074c9a7e787fc5a8967bf54d8a5318fb5fff172",
+      "referenceId": "settings-page",
+      "ticket": 36,
+      "verdict": "MISSING",
+      "notes": "完整原帮助参考缺失，settings客户端覆盖层不能作PRD直接原图。已检查frame1220×750、正文970×730，scroll9007/top0；PRD标题/正文、页签、索引/下载可见。本图为有效顶部，底部另有已独立查看的新正文图，仍不判完整原帮助通过。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "guide-prd-bottom",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/guide-prd-bottom.png",
+      "imageSha256": "afec39a00680cc53a26f1e2f7437c56599752c949d112891d6e7b891e4c0e5e9",
+      "referenceId": "settings-page",
+      "ticket": 36,
+      "verdict": "MISSING",
+      "notes": "完整原帮助参考仍缺，settings客户端覆盖层不能作直接PRD原图。新正文730/9007/top8277，滚底差0；“8参考与来源边界”和最后段落实际可见，无loading，页签/索引/下载未滚走。旧V36-PRD-BOTTOM取证FAIL据新图消除，不改成严格1:1通过。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "guide-user",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/guide-user.png",
+      "imageSha256": "f6faea64cad1a81842d694130fc87067db307528975f285ad8bcf5e53cc45e74",
+      "referenceId": "settings-page",
+      "ticket": 36,
+      "verdict": "MISSING",
+      "notes": "完整原指南参考缺失，settings仅部分参考。已检查本机映射frame1220×750、正文970×730，scroll2772/top0；使用指南标题/操作说明、四页签、索引/下载实际可见，保留演示与真实验收区别，非严格原页通过。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "guide-user-bottom",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/guide-user-bottom.png",
+      "imageSha256": "e27aa020413b4a12fe17a7e85e6da75b58a75eb9806141b29509e7f1460cac19",
+      "referenceId": "settings-page",
+      "ticket": 36,
+      "verdict": "MISSING",
+      "notes": "完整原指南参考仍缺，仅检查本机容器。正文730/2772/top2042确已到底，排错表与验收/需求末段可见；frame1220×750，四页签、左索引和下载留在原位置；不以下载按钮可见代替下载行为验收。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "kernel-selector",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/kernel-selector.png",
+      "imageSha256": "fb7a2c48836168b6bb8aaaab5330ae34faae3cbf288ca58c0ffe0c7b6496f494",
+      "referenceId": "kernel-selector",
+      "ticket": 34,
+      "verdict": "ADAPTED",
+      "notes": "蓝色下划线菜单出现在现有660px指纹分区，fixed footer仍可见；选项只用服务可用精确构建，不硬编码原3个商业版本。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-activity-session-details",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-activity-session-details.png",
+      "imageSha256": "fc002280669464e1c14803fce19414a28702c415053fcd66997d6b195d6247a9",
+      "referenceId": "proxy-edit",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-edit 详情容器。620×440、x410/y238、footer58；失败/错误码/下一步和准确会话动作可见，历史记录不等于会话控制授权说明保留；未取证其他旧/待核对/blocked会话及force确认变体。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-backup-cancelled",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-backup-cancelled.png",
+      "imageSha256": "6e6544856b2777b97ced4f9719f49227fa7c8cf6e41185684f909a85f652de4f",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 batch-progress-fixture 的400px结果容器，无原导出取消状态。400×222，x520/y347、footer58；明确已取消/未发布、0复制/0字节，返回/读取原任务可见，合成终态不证明真实磁盘取消。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-backup-create",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-backup-create.png",
+      "imageSha256": "7064398adc6ca06487f24a6ca89408d6c6435ac566d57118238f0c5942ef5467",
+      "referenceId": "group-add",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 group-add 短表单。500×340，x470/y288、footer58；全部已保存环境范围不是当前页，文件选择/正常停止授权/用户保护限制及正常关闭并导出可见；完整本机包与演示JSON分开，无同名原图。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-backup-dense",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-backup-dense.png",
+      "imageSha256": "0e7202e307c0df42bfe81ee0f22e3d2caf039e53306ac4ed50465157b5f9a770",
+      "referenceId": "proxy-list",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-list，无原本机备份密集页。表头y141/h40、行48/gap10，表体640/640/0完整容纳第一页10条；分页y781/h30固定，创建/导入/读取任务和Windows用户/不携内核限制可见；第二页已另有独立实现图，本图仅第一页。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-backup-dense-bottom",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-backup-dense-bottom.png",
+      "imageSha256": "0e7202e307c0df42bfe81ee0f22e3d2caf039e53306ac4ed50465157b5f9a770",
+      "referenceId": "proxy-list",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-list 密集容器。表体640/640/0十行完整容纳，bottom与top相同SHA合理；行48/gap10、分页y781/h30和行读取任务可见。本图仅第一页，第二页另有独立实现图，均无同名原备份参考。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-backup-dense-page-two",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-backup-dense-page-two.png",
+      "imageSha256": "ba3dcd5d01a57da4cae467858a66e796015606cb6d2b439b6da6da6f3b91869f",
+      "referenceId": "proxy-list",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射proxy-list列表容器，这是新增实现第二页，不是新原图。表头x220/y141/h40/宽1200，实际第11/12两行48px、总数12、当前页2及读取该任务可见；表体176/176/0，分页y317/h30。完整本机包/非演示JSON及Windows用户限制保留，未执行真实读取。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-backup-failed",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-backup-failed.png",
+      "imageSha256": "7b0877ac034fc17c2ac2005d6c7de764b73b1299e2b12c3d198aefc9b42cbdc5",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 batch-progress-fixture 的400px任务结果。400×266、x520/y325、footer58；失败/未发布和磁盘满错误明确，返回/读取此任务可见，不冒称完成；结果高度增加用于错误说明。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-backup-import",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-backup-import.png",
+      "imageSha256": "0208d7d604355ff24f0a0d5042718fd0c1d083d55b1033e03cc65ed0762d96cd",
+      "referenceId": "proxy-import-file",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-import-file 的500px文件选择容器。500×359、x470/y278.5、footer58；完整本机包、不上传、摘要校验后预检与取消/完整校验动作可见，说明网页不能开始恢复；不移植原Excel/商业接口。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-backup-list",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-backup-list.png",
+      "imageSha256": "87fa4e8c2b5661045a0e7d8ece7f627bde6c1d4f14e439b0d049591f00f704f0",
+      "referenceId": "proxy-list",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-list 管理页，无同名原本机备份页。表头y141/h40/宽1200、行y191/h48、分页y259/h30，对原少一行归一化约+0.42px，旧分页问题已消除；完整包/读取任务和用户恢复限制可见。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-backup-original-request-return",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-backup-original-request-return.png",
+      "imageSha256": "16868e63f83cafb9ad9b34a6b41eecfe0933870ea6311144a00c5c29ca544786",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 batch-progress-fixture 结果容器。400×309、x520/y303.5、footer58；保存/核实而非完成，保留原requestId/范围/授权且不新建任务说明可读，返回与核实原导出可见；背景额外原请求提示使分页y293属安全适配。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-backup-progress",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-backup-progress.png",
+      "imageSha256": "97808addaac448b009f2c9dc4d33a83cc93f7fb5e859569cce421ecbe9385a06",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 batch-progress-fixture 任务结果，不是原导出运行态。400×253、x520/y331.5、footer58；等待调度/0复制/未发布、取消与返回/读取任务可见，不把受理或合成进度写成真实备份完成。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-backup-published",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-backup-published.png",
+      "imageSha256": "08bbab45ef360ea60a87d1e20bc3ff3aaddde0d68567e253e243c2368982ade1",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 batch-progress-fixture 的400px结果。400×346、x520/y285、footer58；12/12与已发布、文件及包/清单摘要实际可见，返回/读取此任务不遮挡；这是合成发布回执，不证明真实完整文件落盘。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-backup-selected-create",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-backup-selected-create.png",
+      "imageSha256": "ffa2a752fa9b526006091df35781eda0c05d983ba9ab168eff88f7260640ca60",
+      "referenceId": "group-add",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 group-add 的500×340短表单。环境选择后实际route为backups，冻结明确2个环境ID范围、不扩到当前页或全量的说明可见；footer58取消/正常关闭并导出可见，完整包和用户保护限制保留，非老harness。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-backup-task-list",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-backup-task-list.png",
+      "imageSha256": "2c9c09db85846ccd461ba178aae7aed6a915ac02ca8058babd177c5a87c92189",
+      "referenceId": "proxy-list",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-list，无原导出任务页。导出任务页签实际选中，表头y141/h40、等待调度/未完成单行48px、查看保存结果可见，分页y259/h30；进行中创建禁用为原任务保护，不是死入口或已发布证明。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-backup-unknown",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-backup-unknown.png",
+      "imageSha256": "cd95368985de4b974cad17c4779b216f4ef7026d288c36821b92067a80e0a880",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 batch-progress-fixture 的400px结果。400×309、footer58；未确认且保持原请求/不重复复制，核实原导出按钮完整可见；背景原请求提示造成表格/分页下移有安全原因，未知不等于完成，无同状态原图。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-backup-unknown-no-id",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-backup-unknown-no-id.png",
+      "imageSha256": "dadcc3b4b634760c123d94596b5fe56a22776c38140b478aeb420f6a727fb1e3",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 batch-progress-fixture，无原无任务ID状态。400×236、x520/y340、footer58；正在获取任务/结果未确认警示与原请求核实可见，不猜测输出或新建任务，较短高度对应没有进度统计的安全内容。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-batch-clone",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-batch-clone.png",
+      "imageSha256": "1641dd902425f8612aeea7be1f931340ff806de2677f3269bcad6cdeb4d975c1",
+      "referenceId": "proxy-bound",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "1040px准确2项计划列表/固定footer；新ID/seed/空数据及模板代理明确。需授权后才可提交，不把原6个绑定窗口成员伪装成计划。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-batch-create-plan",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-batch-create-plan.png",
+      "imageSha256": "3ebcbb82f82b3b9567af1f7b9bbcac0f82cf1e3b6bffa4550185a7b6242395e9",
+      "referenceId": "proxy-bound",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "1040px冻结3项新身份计划、当前完成0/未执行3；正文/确认和固定footer清楚，预检不执行，缺同名直接原计划图。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-batch-current",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-batch-current.png",
+      "imageSha256": "daf32488df84a5e5d9af7c45fd104b20eb3cebeee123960ca9c85adb0165d5b3",
+      "referenceId": "proxy-bound",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "1040px持久批次列表显示当前计划/尝试及逐项已提交/失败，重试只针对未完成项；不是商业绑定列表直接状态。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-batch-history",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-batch-history.png",
+      "imageSha256": "4820977e6966bd1b6ddc47cb8762e6361ae812101544e9f8e07f3f72b8e98f4a",
+      "referenceId": "proxy-bound",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "1040px历史尝试明确不是最新结果，无历史重放主操作；真实状态/范围与固定footer可见，原绑定容器仅作映射。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-batch-page-error",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-batch-page-error.png",
+      "imageSha256": "3b838c7ddeedc28ab0aeee4fb449dd56cf2c33978bf0ff7ce88ee93aab0d406f",
+      "referenceId": "proxy-bound",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "1040px分页失败保留上次安全结果并红色标注非最新；读取/精确重试操作仍可达，不把读失败画成空成功列表。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-batch-proxy-assignment",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-batch-proxy-assignment.png",
+      "imageSha256": "0577ecb3147032e0680e08c9987e89d0287ed561b3f0587a507c48395d1350bd",
+      "referenceId": "proxy-bound",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "1040px只含明确2个环境目标；逐行代理选择、缺失校验与预览固定footer保留，不默认全量/不以代理ID替代范围。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-busy-persistence",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-busy-persistence.png",
+      "imageSha256": "3e8867af0fde09d10411d1046c3e3ecd664de87ea017a0465589c7183788bd1b",
+      "referenceId": "environment-edit",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "660px忙编辑保留安全元数据和黄色保护条，关键网络/档案字段禁用，保存元数据仍可见；原普通编辑不证明待保存状态。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-busy-reconcile",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-busy-reconcile.png",
+      "imageSha256": "8948c0c8eab33669dad4fbcd328cacc24b2bd4b01d49c9626f387f7f5f3dc07b",
+      "referenceId": "environment-edit",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "660px待核对编辑保留黄色关键字段保护、独立正文滚动/固定footer；不因样式裁剪核实会话或更换身份。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-busy-resources",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-busy-resources.png",
+      "imageSha256": "3e8867af0fde09d10411d1046c3e3ecd664de87ea017a0465589c7183788bd1b",
+      "referenceId": "environment-edit",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "660px资源未释放编辑，黄条/禁用关键字段明确，准确原环境的元数据操作可见；无同名原资源保护参考。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-busy-running",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-busy-running.png",
+      "imageSha256": "3817b682109eb8877b6b4954379594862848a2bc9e46a80ed21b9a30c2bff94a",
+      "referenceId": "environment-edit",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "660px运行编辑只允许名称/分组/备注，关键身份及网络继续锁定；71pxfooter和说明可达，不用普通编辑图冒称原运行行为。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-cookie-file-error",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-cookie-file-error.png",
+      "imageSha256": "2c55f55d51b700d56b2f349d65d9e8dfca144918a2446e3c340da14ec7ba98cb",
+      "referenceId": "cookie-import",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "文件dialog中文蓝色选择区与白字按钮，非法UTF-8红色错误、返回草稿都可见；只读取合成文件，不上传/写入。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-cookie-file-selected",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-cookie-file-selected.png",
+      "imageSha256": "c0109f623eb14d8aca8cc572bf716ccb04559f688aef21e307944e39755d14a5",
+      "referenceId": "cookie-import",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "文件选入后回同1050px文本/说明容器，Cookie原文遮罩，解析与关闭固定footer可达；不是ZIP业务或真实Cookie导入证明。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-cookie-partial",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-cookie-partial.png",
+      "imageSha256": "9dccffcb68cb4cc7da85c31cd5bccb830df89e6da21e05f611a389ad0a0f78a9",
+      "referenceId": "proxy-import-preview",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "1050pxCookie结果显示完成2/失败1及失败原因，只允许原目标的未核实子集合并重试；内容有界滚动，固定footer不遮挡。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-cookie-pending",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-cookie-pending.png",
+      "imageSha256": "ef5976bf04701f330feb80f6b8330dc3419ad6bf77b9a27919a8536eeaf8ca33",
+      "referenceId": "proxy-import-preview",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "1050pxCookie在途结果准确为完成0/待核实3，选择/关闭受保护，取消只影响余下；固定操作与单遮罩清楚，缺原执行图。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-cookie-preview",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-cookie-preview.png",
+      "imageSha256": "9252f0cf0360509e0fda5300d1c61babfec87498349ff2d70a702c1938f8536d",
+      "referenceId": "proxy-import-preview",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "1050px文本/说明/安全预览列表与固定footer；成功解析后清原文、不回显值，精确所选3条及导入确认，不冒充原代理业务。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-cookie-text",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-cookie-text.png",
+      "imageSha256": "7ade8188755c669789f2ff4ef2a9a888edfef296736dd8cd4bb110a52a44f405",
+      "referenceId": "proxy-import-text",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "1050px左右文本/说明容器，原文默认遮罩，解析不写入，固定操作可见；复用原文本导入布局而非同名Cookie原屏。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-cookie-unconfirmed",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-cookie-unconfirmed.png",
+      "imageSha256": "dcb274056ed91766a3fc5fbbbaadeb0f0994db3c09133d8852e9ee059aa21954",
+      "referenceId": "proxy-import-preview",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "1050px未知受理保留原目标/行/清空策略与原请求核实按钮，其他字段锁定；红色反馈与固定footer可见，不重建新导入。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-cookie-unknown",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-cookie-unknown.png",
+      "imageSha256": "c89d584cd56c3ce78981d4d4bd7dbe2082ddc806855f4bac2f177aad01951fb0",
+      "referenceId": "proxy-import-preview",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "1050px结果显示完成1/未知2、可能已写入含义；仅合并核实原失败子集，不允许再次清空，单遮罩/固定footer。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-diagnostics-bottom",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-diagnostics-bottom.png",
+      "imageSha256": "870f642f4d36dc76a77c731127c81be1549a68cdb0035d44b4174a7e204fa924",
+      "referenceId": "proxy-edit",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-edit 的620px滚动详情，无原诊断图。620×580、x410/y168，正文482/588/top106确到底、footer58固定；任务/构建/范围末段、返回/保存实际可见，仅白名单摘要不展示原始JSON或私人数据。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-diagnostics-cancel",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-diagnostics-cancel.png",
+      "imageSha256": "551e8c64ecaa4e3c2aec837fe17b4310d2a1369158b00979d20ac31d0f580e5a",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 batch-progress-fixture 的400px结果。400×146、x520/y385、footer58；明确已取消/未发布新文件，返回与查看预览可见，短高度为取消回执适配，非同状态原图或真实文件取消验收。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-diagnostics-end-confirm",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-diagnostics-end-confirm.png",
+      "imageSha256": "6fcab91b4cf0f3d1f8335630bdda72cc629a4f40e9c270fbff0dbb41080ed099",
+      "referenceId": "group-delete-confirm",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 group-delete-confirm 的400px确认。400×152、x520/y382、footer58；旧文件可能已发布警示和取消/结束此次核实可见；低层122 inert/透明mask，高层124唯一有效遮罩，不把结束核实冒充撤销已发布文件。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-diagnostics-minimal",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-diagnostics-minimal.png",
+      "imageSha256": "ef5499c3ab44f7c784fdf2a4e3fb94aeadf1aad7ee4ed6f7f20e1e014a3f7439",
+      "referenceId": "proxy-edit",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-edit 的620px正文滚动容器。620×580、正文482/516/top0、footer58；不可读取/最小报告、错误码及返回/保存可见，末尾正文尚有34px内部滚动且未独立取底部图；不是原诊断或真实数据读回验收。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-diagnostics-preview",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-diagnostics-preview.png",
+      "imageSha256": "4c9cd39b083c148724c58118d2d8e11dc130a9ac55acb9a80b9e53ae7e8abaf3",
+      "referenceId": "proxy-edit",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-edit 620px详情，无同名原诊断。620×580、正文482/588/top0、footer58；白名单/合成摘要、返回/保存可见，顶部只截正文下部不是footer被切；另有top106的有效完整底部图，未展示秘密或原始JSON。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-diagnostics-saved",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-diagnostics-saved.png",
+      "imageSha256": "418c19cf9e4a9c6068c9ce25403ead4efb856d41cf9536c3db4f9d28d623e41c",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 batch-progress-fixture 400px结果，无原诊断保存回执。400×194、x520/y361、footer58；已保存且SHA与预览一致文案及摘要实际可见，返回/查看预览不遮挡；合成匹配回执不证明真实文件写入。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-diagnostics-unknown",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-diagnostics-unknown.png",
+      "imageSha256": "1de9aa0af000ed7043fe1205bd3c19612900ecfcedbf1b45f8fe44f0c46e3982",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 batch-progress-fixture 结果容器。400×257、x520/y329.5、footer58；未确认保存、保持原requestId/不重写、核实与结束核实动作可见，红色未知警示不冒称完成；没有同状态原导出画面。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-environment-create-accepted",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-environment-create-accepted.png",
+      "imageSha256": "4bb6be38d1a0e937de14bcf7ab475cb34ca238c6aaef581f42ecda8b3cb3c729",
+      "referenceId": "environment-create",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "660px已受理创建保留原草稿/任务，取消及关键字段锁定，既有准确任务取消条保留；不把受理当创建完成，缺原同名执行图。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-environment-create-pending",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-environment-create-pending.png",
+      "imageSha256": "4e137dd9b0c160c1162534fa4c835e118528cb056d6daf957c05b37ea6551c8a",
+      "referenceId": "environment-create",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "660px待回执创建保持原seed/数量/草稿，重复创建/取消受保护；底部操作清楚但禁用，不假报完成。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-environment-create-unknown",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-environment-create-unknown.png",
+      "imageSha256": "46a13c2cfa3367838265935e78ce96b40518e393061d42d2de24c48c014c7c12",
+      "referenceId": "environment-create",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "660px未知创建红色反馈与原请求核实主操作可见；草稿/身份/数量冻结，不允许另建第二环境，缺原真实未知画面。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-environment-proxy-failure-return",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-environment-proxy-failure-return.png",
+      "imageSha256": "cce99a273e654672f15918132beb81caf0151b84962567718d101e1445e2a71a",
+      "referenceId": "proxy-import-preview",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射(195,153)处1050×610嵌套框；修复标题与固定y684错误页脚清晰，父852高抽屉单遮罩，不伪装真实保存成功。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-environment-proxy-preview",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-environment-proxy-preview.png",
+      "imageSha256": "6424ee782d55b8307efb916d9ce1560494cd09efa1c88db9ae5b783dfd0c7c68",
+      "referenceId": "proxy-import-preview",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射1050×610框位于(195,153)，父抽屉852高；标题修复、两条合成安全行可见，只有一个有效暗层，非原嵌套画面。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-environment-proxy-success-return",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-environment-proxy-success-return.png",
+      "imageSha256": "a8d3bac85d0faca82767597dfb1b33c977547d6fff581e050e80a9ad00cf7187",
+      "referenceId": "proxy-import-preview",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射660×852返回抽屉，正文scrollTop334、页脚y821；新版约270×48通知居中y40，代理与草稿显示完整，未执行真实保存恢复。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-environment-proxy-unknown-return",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-environment-proxy-unknown-return.png",
+      "imageSha256": "c61f4f8f08d3c67c3269daff5509b72d5c733636f5feca8681300c725e102ac8",
+      "referenceId": "proxy-import-error",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射(195,153)处1050×610未知框，标题相对顶21；79px页脚y684、核实原请求及返回清楚，单遮罩，不推断核实已执行。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-environment-remove",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-environment-remove.png",
+      "imageSha256": "70eb3c7a581632e9ea741c350e623cef517eff14ea971f1ecb7ab78baaf06ff1",
+      "referenceId": "environment-delete-confirm",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "400px准确2项回收确认、明确ID与授权复核，运行保护/原身份/不直接删目录含义保留；安全授权增加高度。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-force-confirm",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-force-confirm.png",
+      "imageSha256": "6dc4210de329313a1da9094360be34727cdc822cd96b54543ff251912631abcd",
+      "referenceId": "group-delete-confirm",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "400px指定会话危险确认、原环境/会话ID及红色授权操作；仅打开警告，未发送强制结束。以短确认映射，不冒充删除分组或新会话控制。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-kernel-delete-confirm",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-kernel-delete-confirm.png",
+      "imageSha256": "83dc9b0013c83927c6a69ac04d86d4060689c3cd69ed2d74a791242a6f14fc60",
+      "referenceId": "group-delete-confirm",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射(520,371)处400×174确认，58px页脚y487；内核引用与默认保护说明可读，不把原分组删除标题当直接同名参考。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-kernel-details",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-kernel-details.png",
+      "imageSha256": "4f2905d949004a5b4e083b18aebd46599e13a14e6442cad4c6175b85d6d03bb7",
+      "referenceId": "environment-edit",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射660×852详情抽屉，正文741/866显示更多能力行，71px页脚固定y821；长合成摘要未横溢，仍非真实探测证据。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-kernel-details-bottom",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-kernel-details-bottom.png",
+      "imageSha256": "18bc9914c08931262f53961dfde1f57ded788317073554b14ee1cda51845d90e",
+      "referenceId": "environment-edit",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射660宽详情容器；正文741/866、scrollTop125到达免责声明，固定y821页脚不遮末行，不能认定真实内核能力通过。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-kernel-failed",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-kernel-failed.png",
+      "imageSha256": "4f7f1ebfe7a3259bfeff08407ec661d3846aaaadf2a8d86702ab75f5f48d5f51",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射(520,279)处400×358结果框，58px页脚y579；失败摘要与重试未被遮挡，合成失败不证明实际完整性校验。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-kernel-history",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-kernel-history.png",
+      "imageSha256": "529cec3b654044c1a2c6befc21df52ac908609f785ea4fb12d2b27ae68896edb",
+      "referenceId": "proxy-edit",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射(410,188)处620×540窗口，442高正文和固定y670页脚；一条任务与查看动作可读，无同名原任务历史页面。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-kernel-list",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-kernel-list.png",
+      "imageSha256": "34c33dc719fc0f5213fd5051d6338b470dfe7c33a0a301db13c6b7550382ca60",
+      "referenceId": "proxy-list",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射1200宽管理列表，40/48px密度稳定；两条合成构建与默认、移除、校验动作可读，不冒称发现原内核页或真实安装。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-kernel-persistence-pending",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-kernel-persistence-pending.png",
+      "imageSha256": "2fad170b2b5a39f9dc963e753af47b65da186d94b422706c3e0589542cbf0422",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射(520,279)处400×358结果容器；待保存警示与58px固定页脚完整，区别于普通成功，原批次显示不能补持久化验收。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-kernel-prepare",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-kernel-prepare.png",
+      "imageSha256": "5fc197a1a664feaf77e19e112524619870a015b62bb67e0beb6d39568898255a",
+      "referenceId": "proxy-add",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射(410,248)处620×420准备表单；下划线字段与安全说明在322高正文内，页脚y610，无同名原安装准备图。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-kernel-prepare-local",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-kernel-prepare-local.png",
+      "imageSha256": "fab9cc6a923cbc6df75458b56a2698dcc57ec1ca2f82fbf272b95637ad3b0964",
+      "referenceId": "proxy-add",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射(410,193)处620×530可信ZIP表单；432高正文与58px页脚容纳文件选择和信任说明，不补不存在的同名原图。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-kernel-progress",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-kernel-progress.png",
+      "imageSha256": "bd81af556ffcead42f706c4fc7aef89c9682de09c1b656bb33d586d58b35c387",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射(520,294)处400×328结果容器，230高正文和58px页脚y564；合成任务计数可读，不作原生执行验收。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-migration-cancelled",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-migration-cancelled.png",
+      "imageSha256": "0283e64272a81a876f98853c52a5003efce87e1bbacfe2a59bd86c7ad93e0de8",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射(520,326)处400×264已取消框，58px页脚y532；父选择器仍可辨、仅一个有效暗层，无同名原迁移终态图。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-migration-confirm",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-migration-confirm.png",
+      "imageSha256": "4cab6690d60293092d9f5c9e5bad4349ea2130f61f35e2dbaae03eb8c95a40b5",
+      "referenceId": "group-delete-confirm",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射(520,348)处400×220安全确认，父1040×592选择器单遮罩；勾选要求和禁用试用清楚，未提交真实迁移。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-migration-diff",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-migration-diff.png",
+      "imageSha256": "09600f0e0f6e9248851ae2d2749afe163373241b3001ed85e7f667d2d27545ff",
+      "referenceId": "proxy-bound",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射(200,162)处1040×592差异容器；来源目标、单环境差异和安全页脚完整，原绑定列表不是同名迁移图或试用证据。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-migration-progress",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-migration-progress.png",
+      "imageSha256": "a85a7b15cb09ef243cb7ae59f1e73cf50726163daee1e6259e0faae95ac88640",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射(520,295.5)处400×325任务容器，安全说明与58px固定页脚清楚；背景结果条有语义理由，不视为原普通列表偏移。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-migration-select",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-migration-select.png",
+      "imageSha256": "5111ecc6f5efa0d20d82b4fc9ff8d3648c3e357f35aff032075511f6a98a4ea1",
+      "referenceId": "proxy-bound",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射(200,162)处1040×592列表容器，494高正文与58px页脚完整；未选目标的空差异状态清楚，无同名原迁移选择图。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-profile-history",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-profile-history.png",
+      "imageSha256": "ed0870fac4fe587133098de8e6fbab1e6cf8c30d130bd21d046e6e7512cd7fd6",
+      "referenceId": "environment-edit",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "660px技术摘要/档案历史底部滚动，来源、精确构建、seed、相对数据引用与只读能力分层可见，71pxfooter固定；原普通编辑无同名历史。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-proxy-add",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-proxy-add.png",
+      "imageSha256": "4432a59c248f3d975724b8aa1dc848d1d92b8ebf6537cffd9d5f9924324f1330",
+      "referenceId": "proxy-add",
+      "ticket": 35,
+      "verdict": "ADAPTED",
+      "notes": "620×552位于(410,182)，标题中心712、相对顶21；五个支持字段、遮蔽认证输入和固定58px页脚保持，不恢复商业无服务项。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-proxy-bound",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-proxy-bound.png",
+      "imageSha256": "42bbab62e1221496225cf0a0b18d9fb7fa01b852100db950b949e505fd0a85fb",
+      "referenceId": "proxy-bound",
+      "ticket": 35,
+      "verdict": "ADAPTED",
+      "notes": "(200,162)处1040×592框标题中心711.5、相对顶21；一条合成服务引用、分页与精确分配页脚完整，默认不全选是安全适配。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-proxy-edit",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-proxy-edit.png",
+      "imageSha256": "d34b99f9c01bfeec1d09c5b8dc0b702c8677f2f4487d526a7935e63cd90cfda4",
+      "referenceId": "proxy-edit",
+      "ticket": 35,
+      "verdict": "ADAPTED",
+      "notes": "(410,151)处620×614框标题中心711.5、相对顶21；输入x546及56px节距，认证策略和固定保存取消完整，不显示旧凭据。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-proxy-import-error",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-proxy-import-error.png",
+      "imageSha256": "df994300cf80717dc47d553fec805d58dada08d6f2489015a7e38d504763b0e7",
+      "referenceId": "proxy-import-error",
+      "ticket": 35,
+      "verdict": "ADAPTED",
+      "notes": "1050×610位于(195,153)，标题修复、58px页脚完整；两条红色错误行未消失，凭据遮蔽与坏行保留解释相对原图的预览变化。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-proxy-import-file",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-proxy-import-file.png",
+      "imageSha256": "4c9776da2b0f3c84c1bec04cf221b70e8ffbc4f8f99ca54c163b3b602c291fe7",
+      "referenceId": "proxy-import-file",
+      "ticket": 35,
+      "verdict": "ADAPTED",
+      "notes": "(470,278)处500×360框标题墨迹对齐；y399蓝带白字选择按钮无白框，省略模板令蓝带上移27px，不承诺Excel导入。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-proxy-import-preview",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-proxy-import-preview.png",
+      "imageSha256": "b5e92dcdc94e1196449e9f3387ab795a3e8ea881ebdb891a44db31b647489027",
+      "referenceId": "proxy-import-preview",
+      "ticket": 35,
+      "verdict": "ADAPTED",
+      "notes": "1050×610位于(195,153)，标题同原图[670,174,753,185]；输入说明双列保持，勾选与安全元数据使预览下移，非原数据精确复制。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-proxy-import-return",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-proxy-import-return.png",
+      "imageSha256": "1257288c5b6eb3750f00516ff087c14ea9207c0ac3d98ada30441130d37a062a",
+      "referenceId": "proxy-import-preview",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射(195,153)处1050×610未知返回状态；79px页脚y684、原请求核实和冻结输入清晰，末行在正文滚动范围内而非页脚覆盖。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-proxy-import-text",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-proxy-import-text.png",
+      "imageSha256": "50409e680e454aea0deb8bab599a947ca010103e54ad56b76998cdc0c79025d7",
+      "referenceId": "proxy-import-text",
+      "ticket": 35,
+      "verdict": "ADAPTED",
+      "notes": "(195,182)处1050×552空导入框标题修复；正文454/474、输入焦点环和58px固定页脚可见，遮蔽开关解释预览下移。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-proxy-list",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-proxy-list.png",
+      "imageSha256": "6aef3701b94c5643dd52e64908bd89cf3ed09b73d2caa4d80f9ef1600d3ac7db",
+      "referenceId": "proxy-list",
+      "ticket": 35,
+      "verdict": "ADAPTED",
+      "notes": "1200×40表头与48px行保持，较原y140.58仅亚像素差；认证、检查、地区本机安全列可读，不显示凭据或强凑原引用数。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-proxy-save-failure",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-proxy-save-failure.png",
+      "imageSha256": "434da74cbc2cb43c391eb45649c0bae21db72a5e5fad8552260817e7b278ed1e",
+      "referenceId": "proxy-import-error",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射1050×610存储失败状态；标题相对顶21、79px页脚y684，原预览保留且正文有49px滚动余量，不是失败行被页脚覆盖。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-proxy-save-unknown",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-proxy-save-unknown.png",
+      "imageSha256": "9cac748b93e888b8a7227a7c8e3b66aee2c5486d736fb18477bd0b80d9ab78cc",
+      "referenceId": "proxy-import-error",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射(195,153)处未知框，491/540正文配79px页脚y684；标题修复、未知提示与核实动作可见，未推断真实核实已完成。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-recycle-protected",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-recycle-protected.png",
+      "imageSha256": "00b8dae9d731332027a971bb016ec704011d7b9470adec66a267114566863d4f",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "400px回收结果盖在页面形列表上，仅一层灰罩；失败/维护保护及原任务重试明确，未永久删除，不伪造原任务成功。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-restore-confirm",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-restore-confirm.png",
+      "imageSha256": "3cc116e67c452712e2be10756483b7a9ac6eb51fc6a785aca8e6a0b48b1800cd",
+      "referenceId": "group-delete-confirm",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 group-delete-confirm 的400px危险确认。400×262、x520/y327、footer58；覆盖/凭据重输/正常停止授权及取消/确认完整可见，高度为安全适配；低层122 inert，高层124唯一有效遮罩，不等于原分组删除。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-restore-conflict",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-restore-conflict.png",
+      "imageSha256": "43be84abd65f9c31f85592bedcb1984ed7e55c106a1c9f85cd0a540a6b8f0a4d",
+      "referenceId": "proxy-bound",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-bound 影响列表，无原恢复冲突态。1040×592、x200/y162，正文494/548/top0、footer58；冲突说明、丢弃与正确禁用的下一步可见，未缩掉安全内容；另有top54底部图补齐下方缺内核警示。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-restore-conflict-bottom",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-restore-conflict-bottom.png",
+      "imageSha256": "4f3a82cb2296ccd4edd65ea8127d78b4833726cdce2b3fe7e91f046e8a598b2d",
+      "referenceId": "proxy-bound",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-bound 的1040×592预检容器。正文494/548/top54确已到底，两条身份冲突/补精确构建警示完整可见；footer固定y696/h58，丢弃可见、下一步为安全禁用而非被遮挡，不声称同状态原图通过。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-restore-history",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-restore-history.png",
+      "imageSha256": "a6e28c1c1e443532354ab1c11b44bdf02fc63b7b1c6d6ba5bd8a43d0a62be4f3",
+      "referenceId": "proxy-bound",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-bound 的1040×592列表，x200/y162、footer58；实际一条2环境/完整恢复完成记录、读取该结果及返回可见，说明读取不消除未知请求或接管后续会话；合成历史不是原图或真实恢复验收。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-restore-preflight-credentials",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-restore-preflight-credentials.png",
+      "imageSha256": "6e52eeaf4266f1ff8227235e0952a406f66814445703f3b98fcaba098f3612b5",
+      "referenceId": "proxy-bound",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-bound 预检列表。1040×592、x200/y162、footer58；代理凭据页签实际选中，一条需重新输入认证说明且无秘密回显，丢弃/下一步可见；没有同名原凭据预检，静态图不证明预检无副作用。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-restore-preflight-kernels",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-restore-preflight-kernels.png",
+      "imageSha256": "8013db3639915362d42f695d5d3353363474237109d97a403aa08f1541415017",
+      "referenceId": "proxy-bound",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-bound 预检容器。1040×592、x200/y162、footer58；精确内核页签、精确版本/本机核对/主程序摘要行实际可见，长合成摘要在单元格换行，丢弃/下一步未遮挡；不是原内核图或实际文件核验。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-restore-preview",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-restore-preview.png",
+      "imageSha256": "217143e0e8753b8d4ca9904e3ca192287539de1c275fde629b1fc955bbcf05d4",
+      "referenceId": "proxy-bound",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-bound 影响列表。1040×592、x200/y162，标题40/footer58；新增/覆盖/内核/凭据汇总、2个准确环境影响和丢弃/下一步可见，原ID/seed/包外环境保留说明完整；预检未等同提交成功，无直接原恢复图。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-restore-progress",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-restore-progress.png",
+      "imageSha256": "ac4610e61300086e6281ec7b976fc5a1541e4bb0238ed8a041cd16d2c2bfcdb2",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 batch-progress-fixture 的400px结果。400×225、x520/y345.5、footer58；目录/日志已准备但2环境/0切换/未完成、取消并回滚与返回可见，不把进行中报告成成功；无同状态原执行图。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-restore-protected",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-restore-protected.png",
+      "imageSha256": "6bcb346df09d8e55aa36e99d9ee8f29fc06c71b17b380c429d0086c4d624a5dc",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 batch-progress-fixture 400px结果。400×407、x520/y254.5、footer58；未完成/维护保护、保留日志/不移动目录与核对收尾可见，正文无溢出；背景维护条令分页y326是安全适配，不能为等高删掉保护说明。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-restore-rollback",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-restore-rollback.png",
+      "imageSha256": "8cc2988f535b7d16f04bd202299ac0d4ae955420dc68540e8494af6314942ace",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 batch-progress-fixture 400px结果。400×266、x520/y325、footer58；恢复未完成/原状态已回滚与错误警示实际可见，返回未遮挡；回滚不是完整恢复成功，高度为准确结果内容适配。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-restore-success",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-restore-success.png",
+      "imageSha256": "3037d37fb74f7b02aac6a5dc8e9b3d14b41ddf6f3aefb8cb83c7b40b1258e5db",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 batch-progress-fixture 的400px结果。400×240、x520/y338、footer58；2/2切换与确认完成、原ID/seed保留/原Windows用户复验说明可见，返回未遮挡；合成成功报告不证明真实目录/数据库恢复。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-restore-unknown",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-restore-unknown.png",
+      "imageSha256": "d00c34e6a3ded1d2559c6a3e1eeb5fe8c2b9784b15303699af639bf4c99c744c",
+      "referenceId": "batch-progress-fixture",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 batch-progress-fixture 400px结果。400×343、x520/y286.5、footer58；未完成/维护保护、原requestId/不另建请求和核实原恢复可见；背景保护条下移属安全适配，未知未写成成功，没有同状态原执行参考。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "native-runtime-details",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/native-runtime-details.png",
+      "imageSha256": "3fcfa549b033b81ec36b0b58c8e2fe7226b4397d3a6f1df850e6e17a0537ee50",
+      "referenceId": "environment-row-menu",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "360px锚点详情浮层不被下一行遮挡，显示当前环境/原会话资源及直连策略；原行菜单只供公共浮层映射，缺同名详情。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "proxy-add",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/proxy-add.png",
+      "imageSha256": "9f56bb0fd64a2a47b819d6f05a9e78c2f942e14fca06970999424ac13bf4f926",
+      "referenceId": "proxy-add",
+      "ticket": 35,
+      "verdict": "ADAPTED",
+      "notes": "(410,182)处620×552支持表单，标题中心712、相对顶21；五字段与固定58px页脚不截断，原额外商业条件按能力裁剪。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "proxy-bound",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/proxy-bound.png",
+      "imageSha256": "31f069c93b4b78bc79d2e6958b38f1da9f79fed4fcccd7287ffa6d2c85f56f76",
+      "referenceId": "proxy-bound",
+      "ticket": 35,
+      "verdict": "ADAPTED",
+      "notes": "(200,162)处1040×592框标题中心711.5、相对顶21；六条48px行全部可见，未默认全选、不同引用数据与标题文案明确适配。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "proxy-delete-confirm",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/proxy-delete-confirm.png",
+      "imageSha256": "91f9c7eb7153678ffff610f0d706e2822bd977c206c58c4e5c5163a84e3fa9d3",
+      "referenceId": "group-delete-confirm",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射(520,371)处400×174确认，58px页脚y487；删除代理范围与取消危险按钮可读，不宣称同原分组删除标题逐像素一致。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "proxy-edit",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/proxy-edit.png",
+      "imageSha256": "f9b7c3a4268af5a36cc233b14828701efa7a075d77304ba6df8f325197e7d025",
+      "referenceId": "proxy-edit",
+      "ticket": 35,
+      "verdict": "ADAPTED",
+      "notes": "(410,151)处620×614框标题中心711.5、相对顶21；输入x546及56px节距、保存取消完整，认证只输入不回填旧秘密。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "proxy-import-duplicates",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/proxy-import-duplicates.png",
+      "imageSha256": "abd3756016c64718367b781470c420a9d303e2886c738f5dae530b9812c13bb8",
+      "referenceId": "proxy-import-preview",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射(195,95)处1050×726重复预览框；标题修复、正文628/686、58px固定页脚，第四行在滚动范围内，不声称截图同时显示四行。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "proxy-import-error",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/proxy-import-error.png",
+      "imageSha256": "ef47fa8c1309624de9c99d39cbc4e70bb92a3f73348216d3d56d7a0a449c2c7f",
+      "referenceId": "proxy-import-error",
+      "ticket": 35,
+      "verdict": "ADAPTED",
+      "notes": "(195,153)处1050×610框标题修复，坏行红色可读且未静默丢弃；安全遮蔽与58px页脚完整，英文URL错误仍是非阻断建议。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "proxy-import-file",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/proxy-import-file.png",
+      "imageSha256": "7f2233b8cfbb3c4bd29c551033ed4721fe5c7470733f54baf6e0c0e517072974",
+      "referenceId": "proxy-import-file",
+      "ticket": 35,
+      "verdict": "ADAPTED",
+      "notes": "(470,278)处500×360框标题同原图[670,299,753,310]；y399蓝带白字无白框，省略Excel模板导致上移27px是能力裁剪。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "proxy-import-file-error",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/proxy-import-file-error.png",
+      "imageSha256": "8b9ae4ad0fde22343942529b83b9db5467dba9e6a34575c1e6464e51a1dd5234",
+      "referenceId": "proxy-import-file",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射(470,278)处500×360文件错误框；标题修复、白字选择按钮无白框，79px页脚y559及错误可见，未补无同名原错误图。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "proxy-import-file-selected",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/proxy-import-file-selected.png",
+      "imageSha256": "a6021516dacb4ea729144e843c0fd81319b98332417963a8392bef7916268ba4",
+      "referenceId": "proxy-import-file",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射(470,278)处500×360已选文件框；白字选择按钮无白框、标题修复，合成文件名与58px页脚继续动作可见，不证明真实文件读取。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "proxy-import-preview",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/proxy-import-preview.png",
+      "imageSha256": "a1b4f02701f54e7838752d8ba373f51cd56decb96cbb4e0cd550bf840622a5a3",
+      "referenceId": "proxy-import-preview",
+      "ticket": 35,
+      "verdict": "ADAPTED",
+      "notes": "(195,153)处1050×610标题与原同为[670,174,753,185]；左输入右说明保持，安全认证列与两条选中行替代原商业预览字段。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "proxy-import-text",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/proxy-import-text.png",
+      "imageSha256": "96dcb9c5fe31d580b88801a312ee08771cf41446ebf93512c0a685aa68e612ca",
+      "referenceId": "proxy-import-text",
+      "ticket": 35,
+      "verdict": "ADAPTED",
+      "notes": "(195,182)处1050×552标题与原同为[670,203,753,214]；正文454/474及58px固定页脚保持，遮蔽开关和本机格式说明替代不支持协议。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "proxy-list",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/proxy-list.png",
+      "imageSha256": "36dda6cf142f4ab20cf9c8c4774fa48ff8a66abde722ef7ee5d29b6305efa2ef",
+      "referenceId": "proxy-list",
+      "ticket": 35,
+      "verdict": "ADAPTED",
+      "notes": "1200×40表头与48px行首y190，距原仅0.58px；本机状态、名称与认证列清楚，裁剪云导航并标出演示检测边界。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "proxy-no-results",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/proxy-no-results.png",
+      "imageSha256": "1c127186a0fec3cec28851e3aa4455ca5b2d84ae873dad84357920d832181b60",
+      "referenceId": "proxy-list",
+      "ticket": 35,
+      "verdict": "MAPPED",
+      "notes": "仅映射1200宽代理列表容器；空筛选提示、40px表头与零条分页完整，保留恢复语义，不将原有两条数据图当直接无结果参考。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "recycle-delete-confirm",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/recycle-delete-confirm.png",
+      "imageSha256": "e79c7a09404864838a7ac841299f57487c93af93b3828f1630ebad5ee6045fea",
+      "referenceId": "recycle-delete-confirm",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "400px永久删除确认覆盖回收列表；准确1项ID/seed与授权checkbox增加必要高度，单遮罩，未勾授权不提交，不等同原短商业确认。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "recycle-list",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/recycle-list.png",
+      "imageSha256": "57f55f0468ffddfbd73c0c87bedc05eaae25319e6cb611e5ffd7bf3bed619c3d",
+      "referenceId": "recycle-list",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "保留页面形回收列表、48px行与10px间隔及固定分页；服务2项/实际身份与数据字段替代原12项商业清单，不制造搜索/全量实体或更多记录。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "recycle-restore",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/recycle-restore.png",
+      "imageSha256": "562287dd7616b5f050eb17c69c6f4dedb269a0de07d88c57959844c16d542264",
+      "referenceId": "recycle-restore",
+      "ticket": 34,
+      "verdict": "MAPPED",
+      "notes": "440px找回确认与固定按钮，恢复原ID/seed/构建/数据，原分组只读并需精确授权；不克隆身份，安全说明使高度增加。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "workspace-cookie-fault-diagnostic",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/workspace-cookie-fault-diagnostic.png",
+      "imageSha256": "19d52e9e3e673a9431717a9117e43bc4ad0c8a2804f604f42a8bcca3721730fb",
+      "referenceId": "proxy-edit",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射proxy-edit的620px详情容器，无同名原嵌套诊断。最高620×580、x410/y168、footer y690/h58，关闭/返回/保存可见；Cookie80与blocker160均inert/透明mask，诊断162唯一0.4遮罩，输入仍遮蔽。通知x600/y40/240×48，距诊断80px；正文482/488/0的6px滚动余量未补称底部取证。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "workspace-native-fault",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/workspace-native-fault.png",
+      "imageSha256": "183583d63c05eee3a9cbf1641ba8f20576c7a82a4bccf751de8cd04c007fab03",
+      "referenceId": "group-delete-confirm",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射公共危险/故障dialog，非原分组删除。500×198、x470/y351、footer71、层160单有效遮罩；未改写数据说明与生成诊断可见，重新读取为故障状态禁用，背景inert；没有同状态商业原图。",
+      "strictVisualPass": false
+    },
+    {
+      "id": "workspace-native-fault-diagnostic",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "1440x900/workspace-native-fault-diagnostic.png",
+      "imageSha256": "39756c57cfea3beca0d3e3243ab3de75a02aef089d5f935ee736ac14a064505d",
+      "referenceId": "proxy-edit",
+      "ticket": 36,
+      "verdict": "MAPPED",
+      "notes": "仅映射 proxy-edit 的620px诊断详情。620×580、x410/y168、footer58；故障低层160 inert/透明mask，最高诊断162单有效遮罩，关闭/返回/保存未被低层盖住；白名单安全摘要可读，正文482/488/0，底部滚动未独立取证。",
+      "strictVisualPass": false
+    }
+  ]
+}

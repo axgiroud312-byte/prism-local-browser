@@ -14,7 +14,9 @@
 
 PRX-001 / CORE-001 / FP-002 / UX-001：[#35模块](verification/issue35.md) 合入 `c6371eb`，唯一 [`ProxyImportWindow`](../src/components/ProxyImportWindow.tsx) / [`内存session`](../src/components/proxy-import-session.ts) 正式用于代理页和环境窗口；保留输入/所选/错误/原未知请求，成功消费已提交行。在途禁止关闭，未知允许隐藏后原请求核实；认证keep/replace/clear与精确修订不变。内核 [`任务owner`](../src/components/kernel-task-owner.ts) 保留受理/待保存/历史重试/迟到保护，受控迁移入口不重复，读取saved策略/revision、不猜direct。组件原限定12+4+2及两份noEmit通过；正式App双视口跨页26项含这些边界，最终视觉/共享检查与真实桌面仍分别记录，100张旧harness图不代替最终App。
 
-BKP-001 / DATA-001 / DOC-001 / UX-001：[#36模块](verification/issue36.md) 合入 `3c93a2a`，demo备份/恢复、活动/帮助已正式替换旧页。native完整包/只读预检/恢复/診断保留原请求、维护保护和结果发布规则；活动精确会话动作、四文档下载保留。#37跨页定向26/26和既有必要回归8/8通过；公共 [`modal-lifecycle`](../src/components/modal-lifecycle.ts) 统一滚动与portal背景引用计数，低层按键不抢高层，Cookie→故障→诊断保留输入及实际可编辑返回，相关10/10定向通过。独立审查与最终视觉/共享检查收尾中，不增加正式4/21或旧二进制内容。
+BKP-001 / DATA-001 / DOC-001 / UX-001：[#36模块](verification/issue36.md) 合入 `3c93a2a`，demo备份/恢复、活动/帮助已正式替换旧页。native完整包/只读预检/恢复/诊断保留原请求、维护保护和结果发布规则；活动精确会话动作、四文档下载保留。#37跨页定向26/26和既有必要回归8/8通过；公共 [`modal-lifecycle`](../src/components/modal-lifecycle.ts) 统一滚动与portal背景引用计数，低层按键不抢高层，Cookie→故障→诊断保留输入及实际可编辑返回，相关10/10定向通过。
+
+ENV-001/002/003、FP-001/002、PRX-001、CORE-001、CK-001、BKP-001、DATA-001、UX-001、DOC-001：[#37整组](verification/issue37.md) 已完成正式App接线和审查修复；准确native代理模式/ID/修订报告、预检取消失败原上下文恢复、DOM替换/禁用焦点与最高单遮罩均有RED→GREEN记录。一次共享 `npm run check` 在 `681f823` **196/196，4.7分钟**；之后Cookie hover/空预览合成夹具及通知位置小修分别定向6/6、5/5通过，不把共享结果冒称最新head全套。PRD取证等待正文后重拍及native密集备份第二页仅补取证/检查，不改App；当前 `70943b0` 的 **346张实际App图** 绑定全部源码/4份文档及合成夹具，逐项参考适配、映射和缺参考见 [视觉结论](screenshots/issue37/visual-review.json)。后台、ApplicationService/适配层、RPC/SQLite/格式/依赖相对 `e170099` 未改；正式4/21、旧exe不含本轮UI和真实桌面未验边界不变。
 
 路由是运行应用后的 hash 路由。源码链接指向文件，函数名用于定位；前端持续修改时不依赖易失效的固定行号。领域逻辑自动测试入口为 [`tests/domain.test.ts`](../tests/domain.test.ts)，页面流程仍需真实浏览器操作检查。
 
