@@ -202,6 +202,27 @@ test("injected native bridge with no usable kernel guides preparation instead of
   expect((await nativeView(page)).calls.filter(c => c.method === "Environment.Create")).toHaveLength(0);
 });
 
+test("injected native invalid quantities keep the draft editable without submitting an unknown create", async ({ page }) => {
+  await environmentBridge(page);
+  await page.goto("/#/environments");
+  await page.getByRole("button", { name: "新建环境", exact: true }).click();
+  await page.getByLabel("环境名称", { exact: true }).fill("数量恢复合成样本");
+  const editor = page.getByRole("dialog", { name: "新建浏览器环境" });
+  await editor.locator("details").first().locator(":scope > summary").click();
+  for (const invalid of ["0", "-1", "", "0.5", "1.5", "9007199254740992"]) {
+    await page.getByLabel("创建数量").fill(invalid);
+    await page.getByRole("button", { name: /^创建(?: .*个环境)?$/ }).click();
+    await expect(editor.getByRole("alert")).toContainText("正整数");
+    await expect(page.getByLabel("创建数量")).toBeEnabled();
+    await expect(page.getByLabel("环境名称", { exact: true })).toHaveValue("数量恢复合成样本");
+    expect((await nativeView(page)).calls.filter(c => ["Environment.Create", "Batch.Preview"].includes(c.method))).toHaveLength(0);
+  }
+  await page.getByLabel("创建数量").fill("1");
+  await page.getByRole("button", { name: "创建", exact: true }).click();
+  await expect(editor).toHaveCount(0);
+  expect((await nativeView(page)).view.state.environments).toHaveLength(1);
+});
+
 test("a broken desktop bridge is blocked in native mode, never replaced by DemoAdapter", async ({ page }) => {
   const errors: string[] = [];
   page.on("pageerror", e => errors.push(e.message));
