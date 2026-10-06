@@ -30,19 +30,19 @@ test.afterEach(async ({ page }, testInfo) => {
 });
 
 const proxyCases = [
-  { kind: "stale", label: "暂无当前修订有效检查结果", hiddenIp: true },
-  { kind: "wrong-proxy", label: "暂无当前修订有效检查结果", hiddenIp: true },
-  { kind: "missing", label: "暂无当前修订有效检查结果", hiddenIp: true },
-  { kind: "empty-steps", label: "暂无当前修订有效检查结果", hiddenIp: true },
-  { kind: "unfinished", label: "检查尚未完成", hiddenIp: true },
-  { kind: "success", label: "本次检查通过", hiddenIp: false },
-  { kind: "failed", label: "检查未通过", hiddenIp: true },
-  { kind: "unchecked", label: "尚未检查", hiddenIp: true },
-  { kind: "running", label: "隧道与认证", hiddenIp: true },
-  { kind: "pending", label: "结果待保存，尚非持久终态", hiddenIp: false },
-  { kind: "running-no-report", label: "隧道与认证", hiddenIp: true },
-  { kind: "pending-no-report", label: "结果待保存，尚非持久终态", hiddenIp: true },
-  { kind: "future-stage", label: "synthetic-future-check-stage", hiddenIp: true },
+  { kind: "stale", rowLabel: "暂无当前修订有效检查结果", label: "暂无当前修订有效检查结果", hiddenIp: true },
+  { kind: "wrong-proxy", rowLabel: "暂无当前修订有效检查结果", label: "暂无当前修订有效检查结果", hiddenIp: true },
+  { kind: "missing", rowLabel: "暂无当前修订有效检查结果", label: "暂无当前修订有效检查结果", hiddenIp: true },
+  { kind: "empty-steps", rowLabel: "暂无当前修订有效检查结果", label: "暂无当前修订有效检查结果", hiddenIp: true },
+  { kind: "unfinished", rowLabel: "检查尚未完成", label: "检查尚未完成", hiddenIp: true },
+  { kind: "success", rowLabel: "本次检查通过", label: "本次检查通过", hiddenIp: false },
+  { kind: "failed", rowLabel: "检查未通过", label: "检查未通过", hiddenIp: true },
+  { kind: "unchecked", rowLabel: "尚未检查", label: "尚未检查", hiddenIp: true },
+  { kind: "running", rowLabel: "隧道与认证", label: "隧道与认证", hiddenIp: true },
+  { kind: "pending", rowLabel: "结果待保存", label: "结果待保存，尚非持久终态", hiddenIp: false },
+  { kind: "running-no-report", rowLabel: "隧道与认证", label: "隧道与认证", hiddenIp: true },
+  { kind: "pending-no-report", rowLabel: "结果待保存", label: "结果待保存，尚非持久终态", hiddenIp: true },
+  { kind: "future-stage", rowLabel: "synthetic-future-check-stage", label: "synthetic-future-check-stage", hiddenIp: true },
 ] as const;
 type ProxyCase = typeof proxyCases[number]["kind"];
 async function native(page: Page, kind: ProxyCase | "loading") {
@@ -95,7 +95,9 @@ test.use({ viewport });
 for (const scenario of proxyCases) {
 test(`native proxy detail projects ${scenario.kind} without a false current success`, async ({ page }) => {
   await native(page, scenario.kind);
-  await page.getByRole("row").filter({ hasText: "合成 SOCKS" }).locator("td").nth(3).getByRole("button").click();
+  const rowStatus = page.getByRole("row").filter({ hasText: "合成 SOCKS" }).locator("td").nth(3).getByRole("button");
+  await expect(rowStatus).toHaveText(scenario.rowLabel);
+  await rowStatus.click();
   const detail = page.getByRole("dialog", { name: "代理检查详情 · 合成 SOCKS", exact: true });
   const status = detail.locator(".reference-modal-body > p").first();
   await expect(status).toHaveText(`修订 1 · ${scenario.label}`);
