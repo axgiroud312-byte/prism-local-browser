@@ -6,7 +6,7 @@ export function EnvironmentKernelSelect({ kernels, value, disabled, native, onCh
   const [open, setOpen] = useState(false);
   const container = useRef<HTMLDivElement>(null);
   const select = useRef<HTMLSelectElement>(null);
-  const found = kernels.some(kernel => kernel.id === value);
+  const selected = kernels.find(kernel => kernel.id === value);
   useEffect(() => {
     if (!open) return;
     const outside = (event: PointerEvent) => { if (!container.current?.contains(event.target as Node)) setOpen(false); };
@@ -16,9 +16,9 @@ export function EnvironmentKernelSelect({ kernels, value, disabled, native, onCh
   }, [open]);
   useEffect(() => { if (disabled) setOpen(false); }, [disabled]);
   return <div className="env34-kernel-picker" ref={container}>
-    <select ref={select} aria-label="浏览器内核" aria-expanded={open} disabled={disabled} value={value} onChange={event => { onChange(event.target.value); setOpen(false); }} onMouseDown={event => { if (!disabled) { event.preventDefault(); setOpen(previous => !previous); } }} onKeyDown={event => { if (["ArrowDown", "Enter", " "].includes(event.key) && !disabled) { event.preventDefault(); setOpen(true); } }}>
-      {!found && <option value={value}>{value === "kernel-pending" ? "尚未安装可用内核" : "已保存内核当前不可用"}</option>}
-      {kernels.map(kernel => <option key={kernel.id} value={kernel.id}>fingerprint-chromium {kernel.version}{native ? " · 已核验" : " · 演示"}</option>)}
+    <select ref={select} aria-label="浏览器内核" aria-expanded={open} title={selected ? `fingerprint-chromium ${selected.version} · ${native ? "已核验" : "演示"}` : undefined} disabled={disabled} value={value} onChange={event => { onChange(event.target.value); setOpen(false); }} onMouseDown={event => { if (!disabled) { event.preventDefault(); setOpen(previous => !previous); } }} onKeyDown={event => { if (["ArrowDown", "Enter", " "].includes(event.key) && !disabled) { event.preventDefault(); setOpen(true); } }}>
+      {!selected && <option value={value}>{value === "kernel-pending" ? "尚未安装可用内核" : "已保存内核当前不可用"}</option>}
+      {kernels.map(kernel => <option key={kernel.id} value={kernel.id}>{!native && "fingerprint-chromium "}{kernel.version}{native ? " · 已核验" : " · 演示"}</option>)}
     </select>
     {open && <div className="env34-kernel-menu" role="listbox" aria-label="可用服务内核" onKeyDown={event => {
       if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); setOpen(false); select.current?.focus(); }
