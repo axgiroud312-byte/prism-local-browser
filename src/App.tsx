@@ -524,7 +524,14 @@ export default function App({ application }: { application: ApplicationService }
     const timer = setTimeout(focusFirst, 30);
     const trap = (e: KeyboardEvent) => {
       const overlay = topOverlay();
-      if (e.defaultPrevented || e.key !== "Tab" || !overlay || topModalElement() !== overlay) return;
+      if (e.defaultPrevented || !overlay || topModalElement() !== overlay) return;
+      if (storageIssue && (e.key === "Escape" || (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k")) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        return;
+      }
+      if (e.key !== "Tab") return;
+      if (storageIssue) e.stopImmediatePropagation();
       const elements = focusable(overlay);
       const first = elements[0],
         last = elements.at(-1);
@@ -543,12 +550,12 @@ export default function App({ application }: { application: ApplicationService }
       const overlay = topOverlay();
       if (overlay && topModalElement() === overlay && !overlay.contains(event.target as Node)) focusFirst();
     };
-    document.addEventListener("keydown", trap);
+    document.addEventListener("keydown", trap, true);
     document.addEventListener("focusin", repairFocus);
     return () => {
       document.body.style.overflow = oldOverflow;
       clearTimeout(timer);
-      document.removeEventListener("keydown", trap);
+      document.removeEventListener("keydown", trap, true);
       document.removeEventListener("focusin", repairFocus);
       if (previous?.isConnected && !previous.closest("[inert]")) previous.focus();
       else if (menuAnchor?.isConnected && !menuAnchor.closest("[inert]")) menuAnchor.focus();
