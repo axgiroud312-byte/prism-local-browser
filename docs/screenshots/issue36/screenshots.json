@@ -1,0 +1,7155 @@
+{
+  "ticket": 36,
+  "syntheticOnly": true,
+  "source": "extracted component harness plus two actual App native blocker boundary states; MAIN page/header wiring still pending",
+  "referenceFreeze": "202609160208",
+  "matchedScrollRule": "top of supported content except explicit guide-kernel-bottom; native-only text changes are container mappings",
+  "screenshotCount": 78,
+  "states": [
+    "activity-list",
+    "activity-empty",
+    "activity-details",
+    "guide-user",
+    "guide-prd",
+    "guide-development",
+    "guide-kernel",
+    "guide-kernel-bottom",
+    "demo-backup-list",
+    "demo-backup-create",
+    "demo-backup-save-error",
+    "demo-backup-import",
+    "demo-backup-import-error",
+    "demo-restore-preview",
+    "demo-restore-confirm",
+    "demo-restore-save-error",
+    "backup-list",
+    "backup-create",
+    "backup-import",
+    "backup-cancel",
+    "backup-progress",
+    "backup-unknown",
+    "backup-failed",
+    "restore-preview",
+    "restore-conflict",
+    "restore-missing-build",
+    "restore-confirm",
+    "restore-progress",
+    "restore-rollback",
+    "restore-protected",
+    "restore-unknown",
+    "diagnostics-preview",
+    "diagnostics-cancel",
+    "diagnostics-unknown",
+    "diagnostics-end-confirm",
+    "diagnostics-ended",
+    "diagnostics-minimal",
+    "workspace-blocker-over-restore",
+    "workspace-blocker-diagnostics"
+  ],
+  "results": [
+    {
+      "id": "activity-list",
+      "file": "1440x900/activity-list.png",
+      "source": "demo",
+      "scenario": "synthetic-demo",
+      "route": "activity",
+      "mapping": {
+        "referenceId": "activity-list",
+        "kind": "direct-reference-with-field-adaptation"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1440,
+        "height": 900,
+        "sha256": "28ee228f8f7c4da728a446e6eb45ed33a9fb18a10dce5e08edfcb67745fce25c"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 900
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1240,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 210,
+          "y": 93,
+          "width": 1220,
+          "height": 52
+        },
+        "heading": {
+          "x": 220,
+          "y": 165,
+          "width": 1200,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 215,
+          "width": 1200,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 283,
+          "width": 1200,
+          "height": 30
+        },
+        "frame": null,
+        "topModal": null,
+        "modalMaskCount": 0,
+        "body": null,
+        "footer": null,
+        "document": null
+      }
+    },
+    {
+      "id": "activity-empty",
+      "file": "1440x900/activity-empty.png",
+      "source": "demo",
+      "scenario": "synthetic-demo",
+      "route": "activity",
+      "mapping": {
+        "referenceId": "activity-list",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1440,
+        "height": 900,
+        "sha256": "fa978abe031add4a9ef37438ade25496d7a1fbd9d2ecdf24a11a4937f969dcdd"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 900
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1240,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 210,
+          "y": 93,
+          "width": 1220,
+          "height": 52
+        },
+        "heading": {
+          "x": 220,
+          "y": 165,
+          "width": 1200,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 215,
+          "width": 1200,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 283,
+          "width": 1200,
+          "height": 30
+        },
+        "frame": null,
+        "topModal": null,
+        "modalMaskCount": 0,
+        "body": null,
+        "footer": null,
+        "document": null
+      }
+    },
+    {
+      "id": "activity-details",
+      "file": "1440x900/activity-details.png",
+      "source": "demo",
+      "scenario": "synthetic-demo",
+      "route": "activity",
+      "mapping": {
+        "referenceId": "proxy-edit",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1440,
+        "height": 900,
+        "sha256": "3ebdbe476b50be06c0cf663b6999136523863be0eba9da83586afc2a6e977075"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 900
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1240,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 210,
+          "y": 93,
+          "width": 1220,
+          "height": 52
+        },
+        "heading": {
+          "x": 220,
+          "y": 165,
+          "width": 1200,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 215,
+          "width": 1200,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 283,
+          "width": 1200,
+          "height": 30
+        },
+        "frame": {
+          "x": 410,
+          "y": 238,
+          "width": 620,
+          "height": 440
+        },
+        "topModal": {
+          "x": 410,
+          "y": 238,
+          "width": 620,
+          "height": 440,
+          "role": "dialog",
+          "title": "操作记录详情",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 410,
+          "y": 278,
+          "width": 620,
+          "height": 342,
+          "scrollTop": 0,
+          "clientHeight": 342,
+          "scrollHeight": 342
+        },
+        "footer": {
+          "x": 410,
+          "y": 620,
+          "width": 620,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "guide-user",
+      "file": "1440x900/guide-user.png",
+      "source": "demo",
+      "scenario": "synthetic-demo",
+      "route": "guide",
+      "mapping": {
+        "referenceId": "settings-page",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1440,
+        "height": 900,
+        "sha256": "f6d7131246325517870a484267b36c927735d4da40295a78099e33d0ca7908b8"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 900
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1240,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 210,
+          "y": 89,
+          "width": 1220,
+          "height": 52
+        },
+        "heading": null,
+        "firstRow": null,
+        "pagination": null,
+        "frame": null,
+        "topModal": null,
+        "modalMaskCount": 0,
+        "body": null,
+        "footer": null,
+        "document": {
+          "x": 450,
+          "y": 151,
+          "width": 970,
+          "height": 730,
+          "scrollTop": 0,
+          "clientHeight": 730,
+          "scrollHeight": 2745
+        }
+      }
+    },
+    {
+      "id": "guide-prd",
+      "file": "1440x900/guide-prd.png",
+      "source": "demo",
+      "scenario": "synthetic-demo",
+      "route": "guide",
+      "mapping": {
+        "referenceId": "settings-page",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1440,
+        "height": 900,
+        "sha256": "09c92bc0cbfe28b9edf2bd663e7979d0bd726205c37bb91af5c7d081a161362a"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 900
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1240,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 210,
+          "y": 89,
+          "width": 1220,
+          "height": 52
+        },
+        "heading": null,
+        "firstRow": null,
+        "pagination": null,
+        "frame": null,
+        "topModal": null,
+        "modalMaskCount": 0,
+        "body": null,
+        "footer": null,
+        "document": {
+          "x": 450,
+          "y": 151,
+          "width": 970,
+          "height": 730,
+          "scrollTop": 0,
+          "clientHeight": 730,
+          "scrollHeight": 8987
+        }
+      }
+    },
+    {
+      "id": "guide-development",
+      "file": "1440x900/guide-development.png",
+      "source": "demo",
+      "scenario": "synthetic-demo",
+      "route": "guide",
+      "mapping": {
+        "referenceId": "settings-page",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1440,
+        "height": 900,
+        "sha256": "74e06acbedfe2c70a07a456575f85cf6c57b37db9066ba2c6d1373de44808f4e"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 900
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1240,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 210,
+          "y": 89,
+          "width": 1220,
+          "height": 52
+        },
+        "heading": null,
+        "firstRow": null,
+        "pagination": null,
+        "frame": null,
+        "topModal": null,
+        "modalMaskCount": 0,
+        "body": null,
+        "footer": null,
+        "document": {
+          "x": 450,
+          "y": 151,
+          "width": 970,
+          "height": 730,
+          "scrollTop": 0,
+          "clientHeight": 730,
+          "scrollHeight": 16839
+        }
+      }
+    },
+    {
+      "id": "guide-kernel",
+      "file": "1440x900/guide-kernel.png",
+      "source": "demo",
+      "scenario": "synthetic-demo",
+      "route": "guide",
+      "mapping": {
+        "referenceId": "settings-page",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1440,
+        "height": 900,
+        "sha256": "084232e3525462c710e54b1fb3043ba85b9682c9828cebd1ebca5a055000ffa2"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 900
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1240,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 210,
+          "y": 89,
+          "width": 1220,
+          "height": 52
+        },
+        "heading": null,
+        "firstRow": null,
+        "pagination": null,
+        "frame": null,
+        "topModal": null,
+        "modalMaskCount": 0,
+        "body": null,
+        "footer": null,
+        "document": {
+          "x": 450,
+          "y": 151,
+          "width": 970,
+          "height": 730,
+          "scrollTop": 0,
+          "clientHeight": 730,
+          "scrollHeight": 9272
+        }
+      }
+    },
+    {
+      "id": "guide-kernel-bottom",
+      "file": "1440x900/guide-kernel-bottom.png",
+      "source": "demo",
+      "scenario": "synthetic-demo",
+      "route": "guide",
+      "mapping": {
+        "referenceId": "settings-page",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1440,
+        "height": 900,
+        "sha256": "fd4dd5077ef05fc553098fd9b12c12e316b208044ad377c88d5d1ef0427003b9"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 900
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1240,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 210,
+          "y": 89,
+          "width": 1220,
+          "height": 52
+        },
+        "heading": null,
+        "firstRow": null,
+        "pagination": null,
+        "frame": null,
+        "topModal": null,
+        "modalMaskCount": 0,
+        "body": null,
+        "footer": null,
+        "document": {
+          "x": 450,
+          "y": 151,
+          "width": 970,
+          "height": 730,
+          "scrollTop": 8542,
+          "clientHeight": 730,
+          "scrollHeight": 9272
+        }
+      }
+    },
+    {
+      "id": "demo-backup-list",
+      "file": "1440x900/demo-backup-list.png",
+      "source": "demo",
+      "scenario": "synthetic-demo",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "proxy-list",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1440,
+        "height": 900,
+        "sha256": "ba5f16bb5d019d1eeff4533271801174d5a93ba3e42d559546eaae8a9a2d29d3"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 900
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1240,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1200,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 141,
+          "width": 1200,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 191,
+          "width": 1200,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 249,
+          "width": 1200,
+          "height": 46
+        },
+        "frame": null,
+        "topModal": null,
+        "modalMaskCount": 0,
+        "body": null,
+        "footer": null,
+        "document": null
+      }
+    },
+    {
+      "id": "demo-backup-create",
+      "file": "1440x900/demo-backup-create.png",
+      "source": "demo",
+      "scenario": "synthetic-demo",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "group-add",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1440,
+        "height": 900,
+        "sha256": "a7a16eeae36db988eb3f0829ec0907db22fa1c0062e6ab5077b3e4257966b579"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 900
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1240,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1200,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 141,
+          "width": 1200,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 191,
+          "width": 1200,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 249,
+          "width": 1200,
+          "height": 46
+        },
+        "frame": {
+          "x": 470,
+          "y": 288,
+          "width": 500,
+          "height": 340
+        },
+        "topModal": {
+          "x": 470,
+          "y": 288,
+          "width": 500,
+          "height": 340,
+          "role": "dialog",
+          "title": "创建演示快照",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 470,
+          "y": 328,
+          "width": 500,
+          "height": 242,
+          "scrollTop": 0,
+          "clientHeight": 242,
+          "scrollHeight": 242
+        },
+        "footer": {
+          "x": 470,
+          "y": 570,
+          "width": 500,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "demo-backup-save-error",
+      "file": "1440x900/demo-backup-save-error.png",
+      "source": "demo",
+      "scenario": "synthetic-demo",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "group-add",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1440,
+        "height": 900,
+        "sha256": "5ee7ca1e260aa8dad7545bad66f6ef4eaa45f51507c5797749887dfd35a1fe78"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 900
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1240,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1200,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 141,
+          "width": 1200,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 191,
+          "width": 1200,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 249,
+          "width": 1200,
+          "height": 46
+        },
+        "frame": {
+          "x": 470,
+          "y": 288,
+          "width": 500,
+          "height": 340
+        },
+        "topModal": {
+          "x": 470,
+          "y": 288,
+          "width": 500,
+          "height": 340,
+          "role": "dialog",
+          "title": "创建演示快照",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 470,
+          "y": 328,
+          "width": 500,
+          "height": 242,
+          "scrollTop": 0,
+          "clientHeight": 242,
+          "scrollHeight": 242
+        },
+        "footer": {
+          "x": 470,
+          "y": 570,
+          "width": 500,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "demo-backup-import",
+      "file": "1440x900/demo-backup-import.png",
+      "source": "demo",
+      "scenario": "synthetic-demo",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "proxy-import-file",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1440,
+        "height": 900,
+        "sha256": "5883d594edf65c8fda4a8c51145771f2164b392333471111acf6bf72ad5c322a"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 900
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1240,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1200,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 141,
+          "width": 1200,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 191,
+          "width": 1200,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 249,
+          "width": 1200,
+          "height": 46
+        },
+        "frame": {
+          "x": 470,
+          "y": 278.5,
+          "width": 500,
+          "height": 359
+        },
+        "topModal": {
+          "x": 470,
+          "y": 278.5,
+          "width": 500,
+          "height": 359,
+          "role": "dialog",
+          "title": "导入演示快照",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 470,
+          "y": 318.5,
+          "width": 500,
+          "height": 261,
+          "scrollTop": 0,
+          "clientHeight": 261,
+          "scrollHeight": 261
+        },
+        "footer": {
+          "x": 470,
+          "y": 579.5,
+          "width": 500,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "demo-backup-import-error",
+      "file": "1440x900/demo-backup-import-error.png",
+      "source": "demo",
+      "scenario": "synthetic-demo",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "proxy-import-file",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1440,
+        "height": 900,
+        "sha256": "a91bfa47085f37e0db6f8bc9368d6df83439402c13a4bebd675d4f3f1eb7b622"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 900
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1240,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1200,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 141,
+          "width": 1200,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 191,
+          "width": 1200,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 249,
+          "width": 1200,
+          "height": 46
+        },
+        "frame": {
+          "x": 470,
+          "y": 278.5,
+          "width": 500,
+          "height": 359
+        },
+        "topModal": {
+          "x": 470,
+          "y": 278.5,
+          "width": 500,
+          "height": 359,
+          "role": "dialog",
+          "title": "导入演示快照",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 470,
+          "y": 318.5,
+          "width": 500,
+          "height": 261,
+          "scrollTop": 0,
+          "clientHeight": 261,
+          "scrollHeight": 268
+        },
+        "footer": {
+          "x": 470,
+          "y": 579.5,
+          "width": 500,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "demo-restore-preview",
+      "file": "1440x900/demo-restore-preview.png",
+      "source": "demo",
+      "scenario": "synthetic-demo",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "proxy-bound",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1440,
+        "height": 900,
+        "sha256": "97b06b7d9c88fb2cf1b2431aefdf96c4a09718e142e7290b8e297fdadddd0c16"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 900
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1240,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1200,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 141,
+          "width": 1200,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 191,
+          "width": 1200,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 249,
+          "width": 1200,
+          "height": 46
+        },
+        "frame": {
+          "x": 200,
+          "y": 162,
+          "width": 1040,
+          "height": 592
+        },
+        "topModal": {
+          "x": 200,
+          "y": 162,
+          "width": 1040,
+          "height": 592,
+          "role": "dialog",
+          "title": "演示快照恢复预览",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 200,
+          "y": 202,
+          "width": 1040,
+          "height": 494,
+          "scrollTop": 0,
+          "clientHeight": 494,
+          "scrollHeight": 494
+        },
+        "footer": {
+          "x": 200,
+          "y": 696,
+          "width": 1040,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "demo-restore-confirm",
+      "file": "1440x900/demo-restore-confirm.png",
+      "source": "demo",
+      "scenario": "synthetic-demo",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "group-delete-confirm",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1440,
+        "height": 900,
+        "sha256": "ca2f8196e101c1d41f8c4af8bb39a85132cec1bf4d4d2d8636c25ffa18018fc9"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 900
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1240,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1200,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 141,
+          "width": 1200,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 191,
+          "width": 1200,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 249,
+          "width": 1200,
+          "height": 46
+        },
+        "frame": {
+          "x": 520,
+          "y": 359,
+          "width": 400,
+          "height": 198
+        },
+        "topModal": {
+          "x": 520,
+          "y": 359,
+          "width": 400,
+          "height": 198,
+          "role": "dialog",
+          "title": "确认恢复演示快照",
+          "layer": 124
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 520,
+          "y": 399,
+          "width": 400,
+          "height": 100,
+          "scrollTop": 0,
+          "clientHeight": 100,
+          "scrollHeight": 100
+        },
+        "footer": {
+          "x": 520,
+          "y": 499,
+          "width": 400,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "demo-restore-save-error",
+      "file": "1440x900/demo-restore-save-error.png",
+      "source": "demo",
+      "scenario": "synthetic-demo",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "group-delete-confirm",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1440,
+        "height": 900,
+        "sha256": "f0ba83fc6273e698ad809bfcb0f7215fa73e9b0f1f772a1bb2f3fe9088217a2a"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 900
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1240,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1200,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 141,
+          "width": 1200,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 191,
+          "width": 1200,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 249,
+          "width": 1200,
+          "height": 46
+        },
+        "frame": {
+          "x": 520,
+          "y": 328,
+          "width": 400,
+          "height": 260
+        },
+        "topModal": {
+          "x": 520,
+          "y": 328,
+          "width": 400,
+          "height": 260,
+          "role": "dialog",
+          "title": "确认恢复演示快照",
+          "layer": 124
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 520,
+          "y": 368,
+          "width": 400,
+          "height": 162,
+          "scrollTop": 0,
+          "clientHeight": 162,
+          "scrollHeight": 162
+        },
+        "footer": {
+          "x": 520,
+          "y": 530,
+          "width": 400,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "backup-list",
+      "file": "1440x900/backup-list.png",
+      "source": "external-native",
+      "scenario": "backup-preview",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "proxy-list",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1440,
+        "height": 900,
+        "sha256": "5375c7e6129434b9e3212291b1563023452f107c5bd7cf629b9d8f8206578b0c"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 900
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1240,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1200,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 141,
+          "width": 1200,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 191,
+          "width": 1200,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 249,
+          "width": 1200,
+          "height": 46
+        },
+        "frame": null,
+        "topModal": null,
+        "modalMaskCount": 0,
+        "body": null,
+        "footer": null,
+        "document": null
+      }
+    },
+    {
+      "id": "backup-create",
+      "file": "1440x900/backup-create.png",
+      "source": "external-native",
+      "scenario": "backup-preview",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "group-add",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1440,
+        "height": 900,
+        "sha256": "76854a0bd6b31a0c31093ec8196589afc9b4708f0e973bccd86f5208f5026f00"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 900
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1240,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1200,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 141,
+          "width": 1200,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 191,
+          "width": 1200,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 249,
+          "width": 1200,
+          "height": 46
+        },
+        "frame": {
+          "x": 470,
+          "y": 288,
+          "width": 500,
+          "height": 340
+        },
+        "topModal": {
+          "x": 470,
+          "y": 288,
+          "width": 500,
+          "height": 340,
+          "role": "dialog",
+          "title": "创建完整本机备份",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 470,
+          "y": 328,
+          "width": 500,
+          "height": 242,
+          "scrollTop": 0,
+          "clientHeight": 242,
+          "scrollHeight": 242
+        },
+        "footer": {
+          "x": 470,
+          "y": 570,
+          "width": 500,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "backup-import",
+      "file": "1440x900/backup-import.png",
+      "source": "external-native",
+      "scenario": "backup-preview",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "proxy-import-file",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1440,
+        "height": 900,
+        "sha256": "c4f41ef6a7f53421652fc782a7e26cb258d96b55a477246f7a1dc3c9708a6d49"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 900
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1240,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1200,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 141,
+          "width": 1200,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 191,
+          "width": 1200,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 249,
+          "width": 1200,
+          "height": 46
+        },
+        "frame": {
+          "x": 470,
+          "y": 278.5,
+          "width": 500,
+          "height": 359
+        },
+        "topModal": {
+          "x": 470,
+          "y": 278.5,
+          "width": 500,
+          "height": 359,
+          "role": "dialog",
+          "title": "导入本机备份",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 470,
+          "y": 318.5,
+          "width": 500,
+          "height": 261,
+          "scrollTop": 0,
+          "clientHeight": 261,
+          "scrollHeight": 261
+        },
+        "footer": {
+          "x": 470,
+          "y": 579.5,
+          "width": 500,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "backup-cancel",
+      "file": "1440x900/backup-cancel.png",
+      "source": "external-native",
+      "scenario": "backup-cancel",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "group-add",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1440,
+        "height": 900,
+        "sha256": "d2e1dd40562980ac904e7ed03ac107567665612ff7438e05987c82f5d3a248e7"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 900
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1240,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1200,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 141,
+          "width": 1200,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 191,
+          "width": 1200,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 249,
+          "width": 1200,
+          "height": 46
+        },
+        "frame": {
+          "x": 470,
+          "y": 288,
+          "width": 500,
+          "height": 340
+        },
+        "topModal": {
+          "x": 470,
+          "y": 288,
+          "width": 500,
+          "height": 340,
+          "role": "dialog",
+          "title": "创建完整本机备份",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 470,
+          "y": 328,
+          "width": 500,
+          "height": 242,
+          "scrollTop": 0,
+          "clientHeight": 242,
+          "scrollHeight": 259
+        },
+        "footer": {
+          "x": 470,
+          "y": 570,
+          "width": 500,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "backup-progress",
+      "file": "1440x900/backup-progress.png",
+      "source": "external-native",
+      "scenario": "backup-preview",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "batch-progress-fixture",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1440,
+        "height": 900,
+        "sha256": "fd215690572c7950e7e0b7b9c12914c8511aad757fb92be7cac7e509ef9d002c"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 900
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1240,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1200,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 141,
+          "width": 1200,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 191,
+          "width": 1200,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 249,
+          "width": 1200,
+          "height": 46
+        },
+        "frame": {
+          "x": 520,
+          "y": 331.5,
+          "width": 400,
+          "height": 253
+        },
+        "topModal": {
+          "x": 520,
+          "y": 331.5,
+          "width": 400,
+          "height": 253,
+          "role": "dialog",
+          "title": "本机备份结果",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 520,
+          "y": 371.5,
+          "width": 400,
+          "height": 155,
+          "scrollTop": 0,
+          "clientHeight": 155,
+          "scrollHeight": 155
+        },
+        "footer": {
+          "x": 520,
+          "y": 526.5,
+          "width": 400,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "backup-unknown",
+      "file": "1440x900/backup-unknown.png",
+      "source": "external-native",
+      "scenario": "backup-unknown",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "batch-progress-fixture",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1440,
+        "height": 900,
+        "sha256": "cbc975e6194e8abb100224b3408b8f059b4b47178bf95362f01108b500dc71f2"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 900
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1240,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1200,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 175,
+          "width": 1200,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 225,
+          "width": 1200,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 283,
+          "width": 1200,
+          "height": 46
+        },
+        "frame": {
+          "x": 520,
+          "y": 303.5,
+          "width": 400,
+          "height": 309
+        },
+        "topModal": {
+          "x": 520,
+          "y": 303.5,
+          "width": 400,
+          "height": 309,
+          "role": "dialog",
+          "title": "本机备份结果",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 520,
+          "y": 343.5,
+          "width": 400,
+          "height": 211,
+          "scrollTop": 0,
+          "clientHeight": 211,
+          "scrollHeight": 211
+        },
+        "footer": {
+          "x": 520,
+          "y": 554.5,
+          "width": 400,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "backup-failed",
+      "file": "1440x900/backup-failed.png",
+      "source": "compact-native",
+      "scenario": "backup-failed",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "batch-progress-fixture",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1440,
+        "height": 900,
+        "sha256": "38b50bb7c4fbfe8588ad03c159d07fe9f1f7cf99f8aebdc813b252101aed7984"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 900
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1240,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1200,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 141,
+          "width": 1200,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 191,
+          "width": 1200,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 249,
+          "width": 1200,
+          "height": 46
+        },
+        "frame": {
+          "x": 520,
+          "y": 325,
+          "width": 400,
+          "height": 266
+        },
+        "topModal": {
+          "x": 520,
+          "y": 325,
+          "width": 400,
+          "height": 266,
+          "role": "dialog",
+          "title": "本机备份结果",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 520,
+          "y": 365,
+          "width": 400,
+          "height": 168,
+          "scrollTop": 0,
+          "clientHeight": 168,
+          "scrollHeight": 168
+        },
+        "footer": {
+          "x": 520,
+          "y": 533,
+          "width": 400,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "restore-preview",
+      "file": "1440x900/restore-preview.png",
+      "source": "external-native",
+      "scenario": "backup-preview",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "proxy-bound",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1440,
+        "height": 900,
+        "sha256": "6251f39939417d373c6d2900fe6d1118ead31ca6e363ae1a341169edb029b955"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 900
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1240,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1200,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 141,
+          "width": 1200,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 191,
+          "width": 1200,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 249,
+          "width": 1200,
+          "height": 46
+        },
+        "frame": {
+          "x": 200,
+          "y": 162,
+          "width": 1040,
+          "height": 592
+        },
+        "topModal": {
+          "x": 200,
+          "y": 162,
+          "width": 1040,
+          "height": 592,
+          "role": "dialog",
+          "title": "恢复前只读预检",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 200,
+          "y": 202,
+          "width": 1040,
+          "height": 494,
+          "scrollTop": 0,
+          "clientHeight": 494,
+          "scrollHeight": 494
+        },
+        "footer": {
+          "x": 200,
+          "y": 696,
+          "width": 1040,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "restore-conflict",
+      "file": "1440x900/restore-conflict.png",
+      "source": "external-native",
+      "scenario": "restore-conflict",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "proxy-bound",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1440,
+        "height": 900,
+        "sha256": "eeb07c423081c8caa4f00a01fb2b5a3b7651fa03c3c0144543fb08352a3b9c9b"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 900
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1240,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1200,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 141,
+          "width": 1200,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 191,
+          "width": 1200,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 249,
+          "width": 1200,
+          "height": 46
+        },
+        "frame": {
+          "x": 200,
+          "y": 162,
+          "width": 1040,
+          "height": 592
+        },
+        "topModal": {
+          "x": 200,
+          "y": 162,
+          "width": 1040,
+          "height": 592,
+          "role": "dialog",
+          "title": "恢复前只读预检",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 200,
+          "y": 202,
+          "width": 1040,
+          "height": 494,
+          "scrollTop": 0,
+          "clientHeight": 494,
+          "scrollHeight": 548
+        },
+        "footer": {
+          "x": 200,
+          "y": 696,
+          "width": 1040,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "restore-missing-build",
+      "file": "1440x900/restore-missing-build.png",
+      "source": "external-native",
+      "scenario": "restore-conflict",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "proxy-bound",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1440,
+        "height": 900,
+        "sha256": "a189cae8ab0ed8da64a39a00cf54ddd817e0eb1dfc6c873ad2db00f7bbf4ea76"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 900
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1240,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1200,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 141,
+          "width": 1200,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 191,
+          "width": 1200,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 249,
+          "width": 1200,
+          "height": 46
+        },
+        "frame": {
+          "x": 200,
+          "y": 162,
+          "width": 1040,
+          "height": 592
+        },
+        "topModal": {
+          "x": 200,
+          "y": 162,
+          "width": 1040,
+          "height": 592,
+          "role": "dialog",
+          "title": "恢复前只读预检",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 200,
+          "y": 202,
+          "width": 1040,
+          "height": 494,
+          "scrollTop": 0,
+          "clientHeight": 494,
+          "scrollHeight": 494
+        },
+        "footer": {
+          "x": 200,
+          "y": 696,
+          "width": 1040,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "restore-confirm",
+      "file": "1440x900/restore-confirm.png",
+      "source": "external-native",
+      "scenario": "backup-preview",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "group-delete-confirm",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1440,
+        "height": 900,
+        "sha256": "a470427bf1807fff924d879551977f56cb4a3ec3269ebe29a20263af932e6e37"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 900
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1240,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1200,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 141,
+          "width": 1200,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 191,
+          "width": 1200,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 249,
+          "width": 1200,
+          "height": 46
+        },
+        "frame": {
+          "x": 520,
+          "y": 327,
+          "width": 400,
+          "height": 262
+        },
+        "topModal": {
+          "x": 520,
+          "y": 327,
+          "width": 400,
+          "height": 262,
+          "role": "dialog",
+          "title": "确认完整恢复",
+          "layer": 124
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 520,
+          "y": 367,
+          "width": 400,
+          "height": 164,
+          "scrollTop": 0,
+          "clientHeight": 164,
+          "scrollHeight": 164
+        },
+        "footer": {
+          "x": 520,
+          "y": 531,
+          "width": 400,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "restore-progress",
+      "file": "1440x900/restore-progress.png",
+      "source": "external-native",
+      "scenario": "backup-preview",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "batch-progress-fixture",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1440,
+        "height": 900,
+        "sha256": "66ae423b0f753824cae0e5d2cf494bbd7e025223cd93273d75015dc7966e7fa8"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 900
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1240,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1200,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 141,
+          "width": 1200,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 191,
+          "width": 1200,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 249,
+          "width": 1200,
+          "height": 46
+        },
+        "frame": {
+          "x": 520,
+          "y": 331.5,
+          "width": 400,
+          "height": 253
+        },
+        "topModal": {
+          "x": 520,
+          "y": 331.5,
+          "width": 400,
+          "height": 253,
+          "role": "dialog",
+          "title": "完整恢复结果",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 520,
+          "y": 371.5,
+          "width": 400,
+          "height": 155,
+          "scrollTop": 0,
+          "clientHeight": 155,
+          "scrollHeight": 155
+        },
+        "footer": {
+          "x": 520,
+          "y": 526.5,
+          "width": 400,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "restore-rollback",
+      "file": "1440x900/restore-rollback.png",
+      "source": "external-native",
+      "scenario": "restore-rollback",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "batch-progress-fixture",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1440,
+        "height": 900,
+        "sha256": "4ac7af0fa9fe54a57adbbe78c1eab8055b79b6c7f68eb7ec84a757b962dad791"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 900
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1240,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1200,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 141,
+          "width": 1200,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 191,
+          "width": 1200,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 249,
+          "width": 1200,
+          "height": 46
+        },
+        "frame": {
+          "x": 520,
+          "y": 316,
+          "width": 400,
+          "height": 284
+        },
+        "topModal": {
+          "x": 520,
+          "y": 316,
+          "width": 400,
+          "height": 284,
+          "role": "dialog",
+          "title": "完整恢复结果",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 520,
+          "y": 356,
+          "width": 400,
+          "height": 186,
+          "scrollTop": 0,
+          "clientHeight": 186,
+          "scrollHeight": 186
+        },
+        "footer": {
+          "x": 520,
+          "y": 542,
+          "width": 400,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "restore-protected",
+      "file": "1440x900/restore-protected.png",
+      "source": "external-native",
+      "scenario": "restore-protected",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "batch-progress-fixture",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1440,
+        "height": 900,
+        "sha256": "380f8a53f3333c20a779ff64dc2a431b086b65e175cd992d9298b483d1c952df"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 900
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1240,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1200,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 141,
+          "width": 1200,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 191,
+          "width": 1200,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 249,
+          "width": 1200,
+          "height": 46
+        },
+        "frame": {
+          "x": 520,
+          "y": 277.5,
+          "width": 400,
+          "height": 361
+        },
+        "topModal": {
+          "x": 520,
+          "y": 277.5,
+          "width": 400,
+          "height": 361,
+          "role": "dialog",
+          "title": "完整恢复结果",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 520,
+          "y": 317.5,
+          "width": 400,
+          "height": 263,
+          "scrollTop": 0,
+          "clientHeight": 263,
+          "scrollHeight": 263
+        },
+        "footer": {
+          "x": 520,
+          "y": 580.5,
+          "width": 400,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "restore-unknown",
+      "file": "1440x900/restore-unknown.png",
+      "source": "external-native",
+      "scenario": "restore-unknown",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "batch-progress-fixture",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1440,
+        "height": 900,
+        "sha256": "9607df2be0a6d6b99c38b4f3cca6e8c61766b84257f013e02cd955a9b8d9abff"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 900
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1240,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1200,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 141,
+          "width": 1200,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 191,
+          "width": 1200,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 249,
+          "width": 1200,
+          "height": 46
+        },
+        "frame": {
+          "x": 520,
+          "y": 277.5,
+          "width": 400,
+          "height": 361
+        },
+        "topModal": {
+          "x": 520,
+          "y": 277.5,
+          "width": 400,
+          "height": 361,
+          "role": "dialog",
+          "title": "完整恢复结果",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 520,
+          "y": 317.5,
+          "width": 400,
+          "height": 263,
+          "scrollTop": 0,
+          "clientHeight": 263,
+          "scrollHeight": 263
+        },
+        "footer": {
+          "x": 520,
+          "y": 580.5,
+          "width": 400,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "diagnostics-preview",
+      "file": "1440x900/diagnostics-preview.png",
+      "source": "external-native",
+      "scenario": "diagnostics-preview",
+      "route": "activity",
+      "mapping": {
+        "referenceId": "proxy-edit",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1440,
+        "height": 900,
+        "sha256": "d4e792ee27ce8e5210fe0b5ff7eaa72930c679976128f31fd870832f899dd417"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 900
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1240,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 210,
+          "y": 93,
+          "width": 1220,
+          "height": 52
+        },
+        "heading": {
+          "x": 220,
+          "y": 165,
+          "width": 1200,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 215,
+          "width": 1200,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 283,
+          "width": 1200,
+          "height": 30
+        },
+        "frame": {
+          "x": 410,
+          "y": 168,
+          "width": 620,
+          "height": 580
+        },
+        "topModal": {
+          "x": 410,
+          "y": 168,
+          "width": 620,
+          "height": 580,
+          "role": "dialog",
+          "title": "脱敏诊断预览",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 410,
+          "y": 208,
+          "width": 620,
+          "height": 482,
+          "scrollTop": 0,
+          "clientHeight": 482,
+          "scrollHeight": 588
+        },
+        "footer": {
+          "x": 410,
+          "y": 690,
+          "width": 620,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "diagnostics-cancel",
+      "file": "1440x900/diagnostics-cancel.png",
+      "source": "external-native",
+      "scenario": "diagnostics-cancel",
+      "route": "activity",
+      "mapping": {
+        "referenceId": "batch-progress-fixture",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1440,
+        "height": 900,
+        "sha256": "e7d16d5e9160f46885d242473df1fd0d0f0b046edb3c86805ed1b73d0eba3d6a"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 900
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1240,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 210,
+          "y": 93,
+          "width": 1220,
+          "height": 52
+        },
+        "heading": {
+          "x": 220,
+          "y": 165,
+          "width": 1200,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 215,
+          "width": 1200,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 283,
+          "width": 1200,
+          "height": 30
+        },
+        "frame": {
+          "x": 520,
+          "y": 385,
+          "width": 400,
+          "height": 146
+        },
+        "topModal": {
+          "x": 520,
+          "y": 385,
+          "width": 400,
+          "height": 146,
+          "role": "dialog",
+          "title": "诊断导出结果",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 520,
+          "y": 425,
+          "width": 400,
+          "height": 48,
+          "scrollTop": 0,
+          "clientHeight": 48,
+          "scrollHeight": 48
+        },
+        "footer": {
+          "x": 520,
+          "y": 473,
+          "width": 400,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "diagnostics-unknown",
+      "file": "1440x900/diagnostics-unknown.png",
+      "source": "external-native",
+      "scenario": "diagnostics-unknown",
+      "route": "activity",
+      "mapping": {
+        "referenceId": "batch-progress-fixture",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1440,
+        "height": 900,
+        "sha256": "4ec4f4ae0d88170247aadb1fea9df5d11209192f4fe9524d892283a133492c07"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 900
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1240,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 210,
+          "y": 93,
+          "width": 1220,
+          "height": 52
+        },
+        "heading": {
+          "x": 220,
+          "y": 165,
+          "width": 1200,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 215,
+          "width": 1200,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 283,
+          "width": 1200,
+          "height": 30
+        },
+        "frame": {
+          "x": 520,
+          "y": 329.5,
+          "width": 400,
+          "height": 257
+        },
+        "topModal": {
+          "x": 520,
+          "y": 329.5,
+          "width": 400,
+          "height": 257,
+          "role": "dialog",
+          "title": "诊断导出结果",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 520,
+          "y": 369.5,
+          "width": 400,
+          "height": 159,
+          "scrollTop": 0,
+          "clientHeight": 159,
+          "scrollHeight": 159
+        },
+        "footer": {
+          "x": 520,
+          "y": 528.5,
+          "width": 400,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "diagnostics-end-confirm",
+      "file": "1440x900/diagnostics-end-confirm.png",
+      "source": "external-native",
+      "scenario": "diagnostics-unknown",
+      "route": "activity",
+      "mapping": {
+        "referenceId": "group-delete-confirm",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1440,
+        "height": 900,
+        "sha256": "2b448ac176c4c51d3f369b428176e567fba64abeb6f6da6be0cc067dfe870508"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 900
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1240,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 210,
+          "y": 93,
+          "width": 1220,
+          "height": 52
+        },
+        "heading": {
+          "x": 220,
+          "y": 165,
+          "width": 1200,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 215,
+          "width": 1200,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 283,
+          "width": 1200,
+          "height": 30
+        },
+        "frame": {
+          "x": 520,
+          "y": 382,
+          "width": 400,
+          "height": 152
+        },
+        "topModal": {
+          "x": 520,
+          "y": 382,
+          "width": 400,
+          "height": 152,
+          "role": "dialog",
+          "title": "结束诊断导出核实",
+          "layer": 124
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 520,
+          "y": 422,
+          "width": 400,
+          "height": 54,
+          "scrollTop": 0,
+          "clientHeight": 54,
+          "scrollHeight": 54
+        },
+        "footer": {
+          "x": 520,
+          "y": 476,
+          "width": 400,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "diagnostics-ended",
+      "file": "1440x900/diagnostics-ended.png",
+      "source": "external-native",
+      "scenario": "diagnostics-unknown",
+      "route": "activity",
+      "mapping": {
+        "referenceId": "batch-progress-fixture",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1440,
+        "height": 900,
+        "sha256": "5981704092aea9160d9cf2743d702ea270a434bb89b8e31ad9611c67785ad95f"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 900
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1240,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 210,
+          "y": 93,
+          "width": 1220,
+          "height": 52
+        },
+        "heading": {
+          "x": 220,
+          "y": 165,
+          "width": 1200,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 215,
+          "width": 1200,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 283,
+          "width": 1200,
+          "height": 30
+        },
+        "frame": {
+          "x": 520,
+          "y": 376,
+          "width": 400,
+          "height": 164
+        },
+        "topModal": {
+          "x": 520,
+          "y": 376,
+          "width": 400,
+          "height": 164,
+          "role": "dialog",
+          "title": "诊断导出结果",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 520,
+          "y": 416,
+          "width": 400,
+          "height": 66,
+          "scrollTop": 0,
+          "clientHeight": 66,
+          "scrollHeight": 66
+        },
+        "footer": {
+          "x": 520,
+          "y": 482,
+          "width": 400,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "diagnostics-minimal",
+      "file": "1440x900/diagnostics-minimal.png",
+      "source": "compact-native",
+      "scenario": "diagnostics-unavailable",
+      "route": "activity",
+      "mapping": {
+        "referenceId": "proxy-edit",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1440,
+        "height": 900,
+        "sha256": "f224cc2aea729833c018d8d748219615aae546b3514e11178200696bcb5713f1"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 900
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1240,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 210,
+          "y": 93,
+          "width": 1220,
+          "height": 52
+        },
+        "heading": {
+          "x": 220,
+          "y": 165,
+          "width": 1200,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 215,
+          "width": 1200,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 283,
+          "width": 1200,
+          "height": 30
+        },
+        "frame": {
+          "x": 410,
+          "y": 168,
+          "width": 620,
+          "height": 580
+        },
+        "topModal": {
+          "x": 410,
+          "y": 168,
+          "width": 620,
+          "height": 580,
+          "role": "dialog",
+          "title": "脱敏诊断预览",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 410,
+          "y": 208,
+          "width": 620,
+          "height": 482,
+          "scrollTop": 0,
+          "clientHeight": 482,
+          "scrollHeight": 516
+        },
+        "footer": {
+          "x": 410,
+          "y": 690,
+          "width": 620,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "workspace-blocker-over-restore",
+      "file": "1440x900/workspace-blocker-over-restore.png",
+      "source": "compact-native",
+      "scenario": "restore-progress",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "group-add",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": true,
+      "actualAppScope": "native workspace blocker boundary only; not final page/header integration",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1440,
+        "height": 900,
+        "sha256": "85dae6038d83312ebd19f5ddb81a69c332171ec5df8e63ade0f4ea1c73efc557"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 900
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1240,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 161.859375,
+          "width": 1200,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 203.859375,
+          "width": 1200,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 253.859375,
+          "width": 1200,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 311.859375,
+          "width": 1200,
+          "height": 46
+        },
+        "frame": {
+          "x": 520,
+          "y": 345.5,
+          "width": 400,
+          "height": 225
+        },
+        "topModal": {
+          "x": 470,
+          "y": 351,
+          "width": 500,
+          "height": 198,
+          "role": "alertdialog",
+          "layer": 160
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 520,
+          "y": 385.5,
+          "width": 400,
+          "height": 127,
+          "scrollTop": 0,
+          "clientHeight": 127,
+          "scrollHeight": 127
+        },
+        "footer": {
+          "x": 520,
+          "y": 512.5,
+          "width": 400,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "workspace-blocker-diagnostics",
+      "file": "1440x900/workspace-blocker-diagnostics.png",
+      "source": "compact-native",
+      "scenario": "restore-progress",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "proxy-edit",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": true,
+      "actualAppScope": "native workspace blocker boundary only; not final page/header integration",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1440,
+        "height": 900,
+        "sha256": "ae0dbb29bf55d0bd151e54ab99ff32e9345b44b94ba6fb2fe5e8498d62325de8"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 900
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1240,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 161.859375,
+          "width": 1200,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 203.859375,
+          "width": 1200,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 253.859375,
+          "width": 1200,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 311.859375,
+          "width": 1200,
+          "height": 46
+        },
+        "frame": {
+          "x": 410,
+          "y": 168,
+          "width": 620,
+          "height": 580
+        },
+        "topModal": {
+          "x": 410,
+          "y": 168,
+          "width": 620,
+          "height": 580,
+          "role": "dialog",
+          "title": "脱敏诊断预览",
+          "layer": 162
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 410,
+          "y": 208,
+          "width": 620,
+          "height": 482,
+          "scrollTop": 0,
+          "clientHeight": 482,
+          "scrollHeight": 488
+        },
+        "footer": {
+          "x": 410,
+          "y": 690,
+          "width": 620,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "activity-list",
+      "file": "1280x800/activity-list.png",
+      "source": "demo",
+      "scenario": "synthetic-demo",
+      "route": "activity",
+      "mapping": {
+        "referenceId": "activity-list",
+        "kind": "direct-reference-with-field-adaptation"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1280,
+        "height": 800,
+        "sha256": "831f5b3f3837b8a96daa955c4235c2db43dcc77b90a1f47b5d1bd771ee882e67"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 800
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1080,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 210,
+          "y": 93,
+          "width": 1060,
+          "height": 52
+        },
+        "heading": {
+          "x": 220,
+          "y": 165,
+          "width": 1040,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 215,
+          "width": 1040,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 283,
+          "width": 1040,
+          "height": 30
+        },
+        "frame": null,
+        "topModal": null,
+        "modalMaskCount": 0,
+        "body": null,
+        "footer": null,
+        "document": null
+      }
+    },
+    {
+      "id": "activity-empty",
+      "file": "1280x800/activity-empty.png",
+      "source": "demo",
+      "scenario": "synthetic-demo",
+      "route": "activity",
+      "mapping": {
+        "referenceId": "activity-list",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1280,
+        "height": 800,
+        "sha256": "9b955bc4dc5190c3b8ed7c8b60cfa3ef6e758ddbc7988e6fd11fb6920099c1b9"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 800
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1080,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 210,
+          "y": 93,
+          "width": 1060,
+          "height": 52
+        },
+        "heading": {
+          "x": 220,
+          "y": 165,
+          "width": 1040,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 215,
+          "width": 1040,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 283,
+          "width": 1040,
+          "height": 30
+        },
+        "frame": null,
+        "topModal": null,
+        "modalMaskCount": 0,
+        "body": null,
+        "footer": null,
+        "document": null
+      }
+    },
+    {
+      "id": "activity-details",
+      "file": "1280x800/activity-details.png",
+      "source": "demo",
+      "scenario": "synthetic-demo",
+      "route": "activity",
+      "mapping": {
+        "referenceId": "proxy-edit",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1280,
+        "height": 800,
+        "sha256": "2c83128b3baa4f3376c1e4df38eca4a324bd382cabc964d415bc6082454f818b"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 800
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1080,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 210,
+          "y": 93,
+          "width": 1060,
+          "height": 52
+        },
+        "heading": {
+          "x": 220,
+          "y": 165,
+          "width": 1040,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 215,
+          "width": 1040,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 283,
+          "width": 1040,
+          "height": 30
+        },
+        "frame": {
+          "x": 330,
+          "y": 188,
+          "width": 620,
+          "height": 440
+        },
+        "topModal": {
+          "x": 330,
+          "y": 188,
+          "width": 620,
+          "height": 440,
+          "role": "dialog",
+          "title": "操作记录详情",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 330,
+          "y": 228,
+          "width": 620,
+          "height": 342,
+          "scrollTop": 0,
+          "clientHeight": 342,
+          "scrollHeight": 342
+        },
+        "footer": {
+          "x": 330,
+          "y": 570,
+          "width": 620,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "guide-user",
+      "file": "1280x800/guide-user.png",
+      "source": "demo",
+      "scenario": "synthetic-demo",
+      "route": "guide",
+      "mapping": {
+        "referenceId": "settings-page",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1280,
+        "height": 800,
+        "sha256": "1904dc678e7202ee963b5c07487ddb35ada892bd5e8cfb40688eedf712c44dcc"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 800
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1080,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 210,
+          "y": 89,
+          "width": 1060,
+          "height": 52
+        },
+        "heading": null,
+        "firstRow": null,
+        "pagination": null,
+        "frame": null,
+        "topModal": null,
+        "modalMaskCount": 0,
+        "body": null,
+        "footer": null,
+        "document": {
+          "x": 450,
+          "y": 151,
+          "width": 810,
+          "height": 630,
+          "scrollTop": 0,
+          "clientHeight": 630,
+          "scrollHeight": 2986
+        }
+      }
+    },
+    {
+      "id": "guide-prd",
+      "file": "1280x800/guide-prd.png",
+      "source": "demo",
+      "scenario": "synthetic-demo",
+      "route": "guide",
+      "mapping": {
+        "referenceId": "settings-page",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1280,
+        "height": 800,
+        "sha256": "98e04fc7cc7dfae44125cc68149f542d053be206bfde968c6be5a61f55b84925"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 800
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1080,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 210,
+          "y": 89,
+          "width": 1060,
+          "height": 52
+        },
+        "heading": null,
+        "firstRow": null,
+        "pagination": null,
+        "frame": null,
+        "topModal": null,
+        "modalMaskCount": 0,
+        "body": null,
+        "footer": null,
+        "document": {
+          "x": 450,
+          "y": 151,
+          "width": 810,
+          "height": 630,
+          "scrollTop": 0,
+          "clientHeight": 630,
+          "scrollHeight": 9695
+        }
+      }
+    },
+    {
+      "id": "guide-development",
+      "file": "1280x800/guide-development.png",
+      "source": "demo",
+      "scenario": "synthetic-demo",
+      "route": "guide",
+      "mapping": {
+        "referenceId": "settings-page",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1280,
+        "height": 800,
+        "sha256": "17c0a8083cb9d5077dccf6db2d26ea9fb9e6158a57ef9fd019d579c6b091e013"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 800
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1080,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 210,
+          "y": 89,
+          "width": 1060,
+          "height": 52
+        },
+        "heading": null,
+        "firstRow": null,
+        "pagination": null,
+        "frame": null,
+        "topModal": null,
+        "modalMaskCount": 0,
+        "body": null,
+        "footer": null,
+        "document": {
+          "x": 450,
+          "y": 151,
+          "width": 810,
+          "height": 630,
+          "scrollTop": 0,
+          "clientHeight": 630,
+          "scrollHeight": 18134
+        }
+      }
+    },
+    {
+      "id": "guide-kernel",
+      "file": "1280x800/guide-kernel.png",
+      "source": "demo",
+      "scenario": "synthetic-demo",
+      "route": "guide",
+      "mapping": {
+        "referenceId": "settings-page",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1280,
+        "height": 800,
+        "sha256": "d2d5ea60dbd6859a779584e6bb0b943dfaf8623271e44441b081b5146183f2ae"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 800
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1080,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 210,
+          "y": 89,
+          "width": 1060,
+          "height": 52
+        },
+        "heading": null,
+        "firstRow": null,
+        "pagination": null,
+        "frame": null,
+        "topModal": null,
+        "modalMaskCount": 0,
+        "body": null,
+        "footer": null,
+        "document": {
+          "x": 450,
+          "y": 151,
+          "width": 810,
+          "height": 630,
+          "scrollTop": 0,
+          "clientHeight": 630,
+          "scrollHeight": 10019
+        }
+      }
+    },
+    {
+      "id": "guide-kernel-bottom",
+      "file": "1280x800/guide-kernel-bottom.png",
+      "source": "demo",
+      "scenario": "synthetic-demo",
+      "route": "guide",
+      "mapping": {
+        "referenceId": "settings-page",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1280,
+        "height": 800,
+        "sha256": "091589318402042c4fb0ee8f2377397cff8b5387740a2d594858f87ca1989e64"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 800
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1080,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 210,
+          "y": 89,
+          "width": 1060,
+          "height": 52
+        },
+        "heading": null,
+        "firstRow": null,
+        "pagination": null,
+        "frame": null,
+        "topModal": null,
+        "modalMaskCount": 0,
+        "body": null,
+        "footer": null,
+        "document": {
+          "x": 450,
+          "y": 151,
+          "width": 810,
+          "height": 630,
+          "scrollTop": 9389,
+          "clientHeight": 630,
+          "scrollHeight": 10019
+        }
+      }
+    },
+    {
+      "id": "demo-backup-list",
+      "file": "1280x800/demo-backup-list.png",
+      "source": "demo",
+      "scenario": "synthetic-demo",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "proxy-list",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1280,
+        "height": 800,
+        "sha256": "7c723692c07a3147618c39c5c5f6c38c808b8ce8d8d63d7b4275b2f4e61184ac"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 800
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1080,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1040,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 141,
+          "width": 1040,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 191,
+          "width": 1040,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 249,
+          "width": 1040,
+          "height": 46
+        },
+        "frame": null,
+        "topModal": null,
+        "modalMaskCount": 0,
+        "body": null,
+        "footer": null,
+        "document": null
+      }
+    },
+    {
+      "id": "demo-backup-create",
+      "file": "1280x800/demo-backup-create.png",
+      "source": "demo",
+      "scenario": "synthetic-demo",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "group-add",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1280,
+        "height": 800,
+        "sha256": "2c2e8c09ac6b2353fe84815130b050c97621f747da1cd9cfff17c7cb569247a1"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 800
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1080,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1040,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 141,
+          "width": 1040,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 191,
+          "width": 1040,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 249,
+          "width": 1040,
+          "height": 46
+        },
+        "frame": {
+          "x": 390,
+          "y": 238,
+          "width": 500,
+          "height": 340
+        },
+        "topModal": {
+          "x": 390,
+          "y": 238,
+          "width": 500,
+          "height": 340,
+          "role": "dialog",
+          "title": "创建演示快照",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 390,
+          "y": 278,
+          "width": 500,
+          "height": 242,
+          "scrollTop": 0,
+          "clientHeight": 242,
+          "scrollHeight": 242
+        },
+        "footer": {
+          "x": 390,
+          "y": 520,
+          "width": 500,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "demo-backup-save-error",
+      "file": "1280x800/demo-backup-save-error.png",
+      "source": "demo",
+      "scenario": "synthetic-demo",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "group-add",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1280,
+        "height": 800,
+        "sha256": "77aadc00adc00418f2485ff18274c090da6b958ec50d986124f4eb14ce5fe50e"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 800
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1080,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1040,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 141,
+          "width": 1040,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 191,
+          "width": 1040,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 249,
+          "width": 1040,
+          "height": 46
+        },
+        "frame": {
+          "x": 390,
+          "y": 238,
+          "width": 500,
+          "height": 340
+        },
+        "topModal": {
+          "x": 390,
+          "y": 238,
+          "width": 500,
+          "height": 340,
+          "role": "dialog",
+          "title": "创建演示快照",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 390,
+          "y": 278,
+          "width": 500,
+          "height": 242,
+          "scrollTop": 0,
+          "clientHeight": 242,
+          "scrollHeight": 242
+        },
+        "footer": {
+          "x": 390,
+          "y": 520,
+          "width": 500,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "demo-backup-import",
+      "file": "1280x800/demo-backup-import.png",
+      "source": "demo",
+      "scenario": "synthetic-demo",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "proxy-import-file",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1280,
+        "height": 800,
+        "sha256": "b23a2902be3a21227b1b6edd5a68aba9e1a933b2ea16ada0b07fe9b7e2f564b9"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 800
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1080,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1040,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 141,
+          "width": 1040,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 191,
+          "width": 1040,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 249,
+          "width": 1040,
+          "height": 46
+        },
+        "frame": {
+          "x": 390,
+          "y": 228.5,
+          "width": 500,
+          "height": 359
+        },
+        "topModal": {
+          "x": 390,
+          "y": 228.5,
+          "width": 500,
+          "height": 359,
+          "role": "dialog",
+          "title": "导入演示快照",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 390,
+          "y": 268.5,
+          "width": 500,
+          "height": 261,
+          "scrollTop": 0,
+          "clientHeight": 261,
+          "scrollHeight": 261
+        },
+        "footer": {
+          "x": 390,
+          "y": 529.5,
+          "width": 500,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "demo-backup-import-error",
+      "file": "1280x800/demo-backup-import-error.png",
+      "source": "demo",
+      "scenario": "synthetic-demo",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "proxy-import-file",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1280,
+        "height": 800,
+        "sha256": "5fba7426432f57519a64d06a1f9c96e22c76f7ecf7e98b438339385e4dbc98a4"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 800
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1080,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1040,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 141,
+          "width": 1040,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 191,
+          "width": 1040,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 249,
+          "width": 1040,
+          "height": 46
+        },
+        "frame": {
+          "x": 390,
+          "y": 228.5,
+          "width": 500,
+          "height": 359
+        },
+        "topModal": {
+          "x": 390,
+          "y": 228.5,
+          "width": 500,
+          "height": 359,
+          "role": "dialog",
+          "title": "导入演示快照",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 390,
+          "y": 268.5,
+          "width": 500,
+          "height": 261,
+          "scrollTop": 0,
+          "clientHeight": 261,
+          "scrollHeight": 268
+        },
+        "footer": {
+          "x": 390,
+          "y": 529.5,
+          "width": 500,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "demo-restore-preview",
+      "file": "1280x800/demo-restore-preview.png",
+      "source": "demo",
+      "scenario": "synthetic-demo",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "proxy-bound",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1280,
+        "height": 800,
+        "sha256": "6c12bcd1efc67d43e0eb2277be3ff06f8db5e6afc728818d3e52418dac953013"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 800
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1080,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1040,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 141,
+          "width": 1040,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 191,
+          "width": 1040,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 249,
+          "width": 1040,
+          "height": 46
+        },
+        "frame": {
+          "x": 120,
+          "y": 112,
+          "width": 1040,
+          "height": 592
+        },
+        "topModal": {
+          "x": 120,
+          "y": 112,
+          "width": 1040,
+          "height": 592,
+          "role": "dialog",
+          "title": "演示快照恢复预览",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 120,
+          "y": 152,
+          "width": 1040,
+          "height": 494,
+          "scrollTop": 0,
+          "clientHeight": 494,
+          "scrollHeight": 494
+        },
+        "footer": {
+          "x": 120,
+          "y": 646,
+          "width": 1040,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "demo-restore-confirm",
+      "file": "1280x800/demo-restore-confirm.png",
+      "source": "demo",
+      "scenario": "synthetic-demo",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "group-delete-confirm",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1280,
+        "height": 800,
+        "sha256": "ca7fa82d7303ca4abf4477cc72f6a60431dabe390fadaf65bda32f6baeec6b69"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 800
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1080,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1040,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 141,
+          "width": 1040,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 191,
+          "width": 1040,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 249,
+          "width": 1040,
+          "height": 46
+        },
+        "frame": {
+          "x": 440,
+          "y": 309,
+          "width": 400,
+          "height": 198
+        },
+        "topModal": {
+          "x": 440,
+          "y": 309,
+          "width": 400,
+          "height": 198,
+          "role": "dialog",
+          "title": "确认恢复演示快照",
+          "layer": 124
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 440,
+          "y": 349,
+          "width": 400,
+          "height": 100,
+          "scrollTop": 0,
+          "clientHeight": 100,
+          "scrollHeight": 100
+        },
+        "footer": {
+          "x": 440,
+          "y": 449,
+          "width": 400,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "demo-restore-save-error",
+      "file": "1280x800/demo-restore-save-error.png",
+      "source": "demo",
+      "scenario": "synthetic-demo",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "group-delete-confirm",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1280,
+        "height": 800,
+        "sha256": "da88723a8d40f9b5798447d4c6a826be4733d8f6e4a482aab437a7c8bc2099b1"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 800
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1080,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1040,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 141,
+          "width": 1040,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 191,
+          "width": 1040,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 249,
+          "width": 1040,
+          "height": 46
+        },
+        "frame": {
+          "x": 440,
+          "y": 278,
+          "width": 400,
+          "height": 260
+        },
+        "topModal": {
+          "x": 440,
+          "y": 278,
+          "width": 400,
+          "height": 260,
+          "role": "dialog",
+          "title": "确认恢复演示快照",
+          "layer": 124
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 440,
+          "y": 318,
+          "width": 400,
+          "height": 162,
+          "scrollTop": 0,
+          "clientHeight": 162,
+          "scrollHeight": 162
+        },
+        "footer": {
+          "x": 440,
+          "y": 480,
+          "width": 400,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "backup-list",
+      "file": "1280x800/backup-list.png",
+      "source": "external-native",
+      "scenario": "backup-preview",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "proxy-list",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1280,
+        "height": 800,
+        "sha256": "284fd6f19f55c2f3c6a67ce9f034ccd35ac3b3685ff5f9be26eb52eeaeec6528"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 800
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1080,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1040,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 141,
+          "width": 1040,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 191,
+          "width": 1040,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 249,
+          "width": 1040,
+          "height": 46
+        },
+        "frame": null,
+        "topModal": null,
+        "modalMaskCount": 0,
+        "body": null,
+        "footer": null,
+        "document": null
+      }
+    },
+    {
+      "id": "backup-create",
+      "file": "1280x800/backup-create.png",
+      "source": "external-native",
+      "scenario": "backup-preview",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "group-add",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1280,
+        "height": 800,
+        "sha256": "ad010c610fefdce1dd421a77e521776dba381335281e99dc1a33707b8cc2b409"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 800
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1080,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1040,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 141,
+          "width": 1040,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 191,
+          "width": 1040,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 249,
+          "width": 1040,
+          "height": 46
+        },
+        "frame": {
+          "x": 390,
+          "y": 238,
+          "width": 500,
+          "height": 340
+        },
+        "topModal": {
+          "x": 390,
+          "y": 238,
+          "width": 500,
+          "height": 340,
+          "role": "dialog",
+          "title": "创建完整本机备份",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 390,
+          "y": 278,
+          "width": 500,
+          "height": 242,
+          "scrollTop": 0,
+          "clientHeight": 242,
+          "scrollHeight": 242
+        },
+        "footer": {
+          "x": 390,
+          "y": 520,
+          "width": 500,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "backup-import",
+      "file": "1280x800/backup-import.png",
+      "source": "external-native",
+      "scenario": "backup-preview",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "proxy-import-file",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1280,
+        "height": 800,
+        "sha256": "252133e5e24b2ada531eb5e3a83414bb6c163c3a81d40280dabcd885ccb5d421"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 800
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1080,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1040,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 141,
+          "width": 1040,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 191,
+          "width": 1040,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 249,
+          "width": 1040,
+          "height": 46
+        },
+        "frame": {
+          "x": 390,
+          "y": 228.5,
+          "width": 500,
+          "height": 359
+        },
+        "topModal": {
+          "x": 390,
+          "y": 228.5,
+          "width": 500,
+          "height": 359,
+          "role": "dialog",
+          "title": "导入本机备份",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 390,
+          "y": 268.5,
+          "width": 500,
+          "height": 261,
+          "scrollTop": 0,
+          "clientHeight": 261,
+          "scrollHeight": 261
+        },
+        "footer": {
+          "x": 390,
+          "y": 529.5,
+          "width": 500,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "backup-cancel",
+      "file": "1280x800/backup-cancel.png",
+      "source": "external-native",
+      "scenario": "backup-cancel",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "group-add",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1280,
+        "height": 800,
+        "sha256": "ca9dd09638d09a761b72a86d2a40814ddee1f0693e82ff075b44a423c794249b"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 800
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1080,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1040,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 141,
+          "width": 1040,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 191,
+          "width": 1040,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 249,
+          "width": 1040,
+          "height": 46
+        },
+        "frame": {
+          "x": 390,
+          "y": 238,
+          "width": 500,
+          "height": 340
+        },
+        "topModal": {
+          "x": 390,
+          "y": 238,
+          "width": 500,
+          "height": 340,
+          "role": "dialog",
+          "title": "创建完整本机备份",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 390,
+          "y": 278,
+          "width": 500,
+          "height": 242,
+          "scrollTop": 0,
+          "clientHeight": 242,
+          "scrollHeight": 259
+        },
+        "footer": {
+          "x": 390,
+          "y": 520,
+          "width": 500,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "backup-progress",
+      "file": "1280x800/backup-progress.png",
+      "source": "external-native",
+      "scenario": "backup-preview",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "batch-progress-fixture",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1280,
+        "height": 800,
+        "sha256": "096f0b763f02b0920989661ebee42c5559a9a7c4aa8e06a96e0c23e7fe6a22b7"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 800
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1080,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1040,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 141,
+          "width": 1040,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 191,
+          "width": 1040,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 249,
+          "width": 1040,
+          "height": 46
+        },
+        "frame": {
+          "x": 440,
+          "y": 281.5,
+          "width": 400,
+          "height": 253
+        },
+        "topModal": {
+          "x": 440,
+          "y": 281.5,
+          "width": 400,
+          "height": 253,
+          "role": "dialog",
+          "title": "本机备份结果",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 440,
+          "y": 321.5,
+          "width": 400,
+          "height": 155,
+          "scrollTop": 0,
+          "clientHeight": 155,
+          "scrollHeight": 155
+        },
+        "footer": {
+          "x": 440,
+          "y": 476.5,
+          "width": 400,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "backup-unknown",
+      "file": "1280x800/backup-unknown.png",
+      "source": "external-native",
+      "scenario": "backup-unknown",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "batch-progress-fixture",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1280,
+        "height": 800,
+        "sha256": "8f94934d1ec37390a711667a118d7c104e887edf770c3a32d47c3f7da153e5f7"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 800
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1080,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1040,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 175,
+          "width": 1040,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 225,
+          "width": 1040,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 283,
+          "width": 1040,
+          "height": 46
+        },
+        "frame": {
+          "x": 440,
+          "y": 253.5,
+          "width": 400,
+          "height": 309
+        },
+        "topModal": {
+          "x": 440,
+          "y": 253.5,
+          "width": 400,
+          "height": 309,
+          "role": "dialog",
+          "title": "本机备份结果",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 440,
+          "y": 293.5,
+          "width": 400,
+          "height": 211,
+          "scrollTop": 0,
+          "clientHeight": 211,
+          "scrollHeight": 211
+        },
+        "footer": {
+          "x": 440,
+          "y": 504.5,
+          "width": 400,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "backup-failed",
+      "file": "1280x800/backup-failed.png",
+      "source": "compact-native",
+      "scenario": "backup-failed",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "batch-progress-fixture",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1280,
+        "height": 800,
+        "sha256": "6894f34d6d374f27167ded2631aace210487d797cc82547eac6aacf40a509c87"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 800
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1080,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1040,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 141,
+          "width": 1040,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 191,
+          "width": 1040,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 249,
+          "width": 1040,
+          "height": 46
+        },
+        "frame": {
+          "x": 440,
+          "y": 275,
+          "width": 400,
+          "height": 266
+        },
+        "topModal": {
+          "x": 440,
+          "y": 275,
+          "width": 400,
+          "height": 266,
+          "role": "dialog",
+          "title": "本机备份结果",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 440,
+          "y": 315,
+          "width": 400,
+          "height": 168,
+          "scrollTop": 0,
+          "clientHeight": 168,
+          "scrollHeight": 168
+        },
+        "footer": {
+          "x": 440,
+          "y": 483,
+          "width": 400,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "restore-preview",
+      "file": "1280x800/restore-preview.png",
+      "source": "external-native",
+      "scenario": "backup-preview",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "proxy-bound",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1280,
+        "height": 800,
+        "sha256": "766597c06d34359f2f921d6bac573db5ef0d1e5ca872e7a61d14b1fb9e6c4265"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 800
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1080,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1040,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 141,
+          "width": 1040,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 191,
+          "width": 1040,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 249,
+          "width": 1040,
+          "height": 46
+        },
+        "frame": {
+          "x": 120,
+          "y": 112,
+          "width": 1040,
+          "height": 592
+        },
+        "topModal": {
+          "x": 120,
+          "y": 112,
+          "width": 1040,
+          "height": 592,
+          "role": "dialog",
+          "title": "恢复前只读预检",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 120,
+          "y": 152,
+          "width": 1040,
+          "height": 494,
+          "scrollTop": 0,
+          "clientHeight": 494,
+          "scrollHeight": 494
+        },
+        "footer": {
+          "x": 120,
+          "y": 646,
+          "width": 1040,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "restore-conflict",
+      "file": "1280x800/restore-conflict.png",
+      "source": "external-native",
+      "scenario": "restore-conflict",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "proxy-bound",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1280,
+        "height": 800,
+        "sha256": "9d7ccbcf64aa5966b9426ee33adaea34a8b91a3c26468584df4e5f078de8b2a5"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 800
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1080,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1040,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 141,
+          "width": 1040,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 191,
+          "width": 1040,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 249,
+          "width": 1040,
+          "height": 46
+        },
+        "frame": {
+          "x": 120,
+          "y": 112,
+          "width": 1040,
+          "height": 592
+        },
+        "topModal": {
+          "x": 120,
+          "y": 112,
+          "width": 1040,
+          "height": 592,
+          "role": "dialog",
+          "title": "恢复前只读预检",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 120,
+          "y": 152,
+          "width": 1040,
+          "height": 494,
+          "scrollTop": 0,
+          "clientHeight": 494,
+          "scrollHeight": 548
+        },
+        "footer": {
+          "x": 120,
+          "y": 646,
+          "width": 1040,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "restore-missing-build",
+      "file": "1280x800/restore-missing-build.png",
+      "source": "external-native",
+      "scenario": "restore-conflict",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "proxy-bound",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1280,
+        "height": 800,
+        "sha256": "f1306833aa7b1215408835b3270b48e485f244614a6acbfc2b257c9477cfc812"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 800
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1080,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1040,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 141,
+          "width": 1040,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 191,
+          "width": 1040,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 249,
+          "width": 1040,
+          "height": 46
+        },
+        "frame": {
+          "x": 120,
+          "y": 112,
+          "width": 1040,
+          "height": 592
+        },
+        "topModal": {
+          "x": 120,
+          "y": 112,
+          "width": 1040,
+          "height": 592,
+          "role": "dialog",
+          "title": "恢复前只读预检",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 120,
+          "y": 152,
+          "width": 1040,
+          "height": 494,
+          "scrollTop": 0,
+          "clientHeight": 494,
+          "scrollHeight": 494
+        },
+        "footer": {
+          "x": 120,
+          "y": 646,
+          "width": 1040,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "restore-confirm",
+      "file": "1280x800/restore-confirm.png",
+      "source": "external-native",
+      "scenario": "backup-preview",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "group-delete-confirm",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1280,
+        "height": 800,
+        "sha256": "9f9e11f1bf3430df6ec5e19a9fd99f97603e04f5deb11b6d1848a963d7cf62a5"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 800
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1080,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1040,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 141,
+          "width": 1040,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 191,
+          "width": 1040,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 249,
+          "width": 1040,
+          "height": 46
+        },
+        "frame": {
+          "x": 440,
+          "y": 277,
+          "width": 400,
+          "height": 262
+        },
+        "topModal": {
+          "x": 440,
+          "y": 277,
+          "width": 400,
+          "height": 262,
+          "role": "dialog",
+          "title": "确认完整恢复",
+          "layer": 124
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 440,
+          "y": 317,
+          "width": 400,
+          "height": 164,
+          "scrollTop": 0,
+          "clientHeight": 164,
+          "scrollHeight": 164
+        },
+        "footer": {
+          "x": 440,
+          "y": 481,
+          "width": 400,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "restore-progress",
+      "file": "1280x800/restore-progress.png",
+      "source": "external-native",
+      "scenario": "backup-preview",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "batch-progress-fixture",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1280,
+        "height": 800,
+        "sha256": "a40f7db1879f89c8ecb71dcf90384dc596bc21663356a2e3287b947eb5541b4f"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 800
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1080,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1040,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 141,
+          "width": 1040,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 191,
+          "width": 1040,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 249,
+          "width": 1040,
+          "height": 46
+        },
+        "frame": {
+          "x": 440,
+          "y": 281.5,
+          "width": 400,
+          "height": 253
+        },
+        "topModal": {
+          "x": 440,
+          "y": 281.5,
+          "width": 400,
+          "height": 253,
+          "role": "dialog",
+          "title": "完整恢复结果",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 440,
+          "y": 321.5,
+          "width": 400,
+          "height": 155,
+          "scrollTop": 0,
+          "clientHeight": 155,
+          "scrollHeight": 155
+        },
+        "footer": {
+          "x": 440,
+          "y": 476.5,
+          "width": 400,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "restore-rollback",
+      "file": "1280x800/restore-rollback.png",
+      "source": "external-native",
+      "scenario": "restore-rollback",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "batch-progress-fixture",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1280,
+        "height": 800,
+        "sha256": "2f1563cb7002bc8a732132da8b5a2e09b95bd4481fd6034608a8e5d00df93f06"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 800
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1080,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1040,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 141,
+          "width": 1040,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 191,
+          "width": 1040,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 249,
+          "width": 1040,
+          "height": 46
+        },
+        "frame": {
+          "x": 440,
+          "y": 266,
+          "width": 400,
+          "height": 284
+        },
+        "topModal": {
+          "x": 440,
+          "y": 266,
+          "width": 400,
+          "height": 284,
+          "role": "dialog",
+          "title": "完整恢复结果",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 440,
+          "y": 306,
+          "width": 400,
+          "height": 186,
+          "scrollTop": 0,
+          "clientHeight": 186,
+          "scrollHeight": 186
+        },
+        "footer": {
+          "x": 440,
+          "y": 492,
+          "width": 400,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "restore-protected",
+      "file": "1280x800/restore-protected.png",
+      "source": "external-native",
+      "scenario": "restore-protected",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "batch-progress-fixture",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1280,
+        "height": 800,
+        "sha256": "274398e425a67117eec0072c358c469083b0b706b0653bce96bc218c1d8bfabd"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 800
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1080,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1040,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 141,
+          "width": 1040,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 191,
+          "width": 1040,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 249,
+          "width": 1040,
+          "height": 46
+        },
+        "frame": {
+          "x": 440,
+          "y": 227.5,
+          "width": 400,
+          "height": 361
+        },
+        "topModal": {
+          "x": 440,
+          "y": 227.5,
+          "width": 400,
+          "height": 361,
+          "role": "dialog",
+          "title": "完整恢复结果",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 440,
+          "y": 267.5,
+          "width": 400,
+          "height": 263,
+          "scrollTop": 0,
+          "clientHeight": 263,
+          "scrollHeight": 263
+        },
+        "footer": {
+          "x": 440,
+          "y": 530.5,
+          "width": 400,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "restore-unknown",
+      "file": "1280x800/restore-unknown.png",
+      "source": "external-native",
+      "scenario": "restore-unknown",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "batch-progress-fixture",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1280,
+        "height": 800,
+        "sha256": "b7e2bd28f892f322031c5fdce9cafb6893864895fd0e4d15617c686a320858f1"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 800
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1080,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 99,
+          "width": 1040,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 141,
+          "width": 1040,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 191,
+          "width": 1040,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 249,
+          "width": 1040,
+          "height": 46
+        },
+        "frame": {
+          "x": 440,
+          "y": 227.5,
+          "width": 400,
+          "height": 361
+        },
+        "topModal": {
+          "x": 440,
+          "y": 227.5,
+          "width": 400,
+          "height": 361,
+          "role": "dialog",
+          "title": "完整恢复结果",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 440,
+          "y": 267.5,
+          "width": 400,
+          "height": 263,
+          "scrollTop": 0,
+          "clientHeight": 263,
+          "scrollHeight": 263
+        },
+        "footer": {
+          "x": 440,
+          "y": 530.5,
+          "width": 400,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "diagnostics-preview",
+      "file": "1280x800/diagnostics-preview.png",
+      "source": "external-native",
+      "scenario": "diagnostics-preview",
+      "route": "activity",
+      "mapping": {
+        "referenceId": "proxy-edit",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1280,
+        "height": 800,
+        "sha256": "139bf62168876ed703419383f98ff23208ba2696f85abd70d9e9a7989f04a31e"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 800
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1080,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 210,
+          "y": 93,
+          "width": 1060,
+          "height": 52
+        },
+        "heading": {
+          "x": 220,
+          "y": 165,
+          "width": 1040,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 215,
+          "width": 1040,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 283,
+          "width": 1040,
+          "height": 30
+        },
+        "frame": {
+          "x": 330,
+          "y": 118,
+          "width": 620,
+          "height": 580
+        },
+        "topModal": {
+          "x": 330,
+          "y": 118,
+          "width": 620,
+          "height": 580,
+          "role": "dialog",
+          "title": "脱敏诊断预览",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 330,
+          "y": 158,
+          "width": 620,
+          "height": 482,
+          "scrollTop": 0,
+          "clientHeight": 482,
+          "scrollHeight": 588
+        },
+        "footer": {
+          "x": 330,
+          "y": 640,
+          "width": 620,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "diagnostics-cancel",
+      "file": "1280x800/diagnostics-cancel.png",
+      "source": "external-native",
+      "scenario": "diagnostics-cancel",
+      "route": "activity",
+      "mapping": {
+        "referenceId": "batch-progress-fixture",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1280,
+        "height": 800,
+        "sha256": "7f43ab2a191f2026cfb95f6b5ff30d3ef8000bee2b4c4f27556cbedda871200c"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 800
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1080,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 210,
+          "y": 93,
+          "width": 1060,
+          "height": 52
+        },
+        "heading": {
+          "x": 220,
+          "y": 165,
+          "width": 1040,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 215,
+          "width": 1040,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 283,
+          "width": 1040,
+          "height": 30
+        },
+        "frame": {
+          "x": 440,
+          "y": 335,
+          "width": 400,
+          "height": 146
+        },
+        "topModal": {
+          "x": 440,
+          "y": 335,
+          "width": 400,
+          "height": 146,
+          "role": "dialog",
+          "title": "诊断导出结果",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 440,
+          "y": 375,
+          "width": 400,
+          "height": 48,
+          "scrollTop": 0,
+          "clientHeight": 48,
+          "scrollHeight": 48
+        },
+        "footer": {
+          "x": 440,
+          "y": 423,
+          "width": 400,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "diagnostics-unknown",
+      "file": "1280x800/diagnostics-unknown.png",
+      "source": "external-native",
+      "scenario": "diagnostics-unknown",
+      "route": "activity",
+      "mapping": {
+        "referenceId": "batch-progress-fixture",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1280,
+        "height": 800,
+        "sha256": "5de187dc206acc6db1f20702227de90bb263e6c8779e0fab0261f51686a06cdb"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 800
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1080,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 210,
+          "y": 93,
+          "width": 1060,
+          "height": 52
+        },
+        "heading": {
+          "x": 220,
+          "y": 165,
+          "width": 1040,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 215,
+          "width": 1040,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 283,
+          "width": 1040,
+          "height": 30
+        },
+        "frame": {
+          "x": 440,
+          "y": 279.5,
+          "width": 400,
+          "height": 257
+        },
+        "topModal": {
+          "x": 440,
+          "y": 279.5,
+          "width": 400,
+          "height": 257,
+          "role": "dialog",
+          "title": "诊断导出结果",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 440,
+          "y": 319.5,
+          "width": 400,
+          "height": 159,
+          "scrollTop": 0,
+          "clientHeight": 159,
+          "scrollHeight": 159
+        },
+        "footer": {
+          "x": 440,
+          "y": 478.5,
+          "width": 400,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "diagnostics-end-confirm",
+      "file": "1280x800/diagnostics-end-confirm.png",
+      "source": "external-native",
+      "scenario": "diagnostics-unknown",
+      "route": "activity",
+      "mapping": {
+        "referenceId": "group-delete-confirm",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1280,
+        "height": 800,
+        "sha256": "694e7260ec39eed25fe8d43030921aba7a53bd57826d77caf2e7afcc2f3487f8"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 800
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1080,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 210,
+          "y": 93,
+          "width": 1060,
+          "height": 52
+        },
+        "heading": {
+          "x": 220,
+          "y": 165,
+          "width": 1040,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 215,
+          "width": 1040,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 283,
+          "width": 1040,
+          "height": 30
+        },
+        "frame": {
+          "x": 440,
+          "y": 332,
+          "width": 400,
+          "height": 152
+        },
+        "topModal": {
+          "x": 440,
+          "y": 332,
+          "width": 400,
+          "height": 152,
+          "role": "dialog",
+          "title": "结束诊断导出核实",
+          "layer": 124
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 440,
+          "y": 372,
+          "width": 400,
+          "height": 54,
+          "scrollTop": 0,
+          "clientHeight": 54,
+          "scrollHeight": 54
+        },
+        "footer": {
+          "x": 440,
+          "y": 426,
+          "width": 400,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "diagnostics-ended",
+      "file": "1280x800/diagnostics-ended.png",
+      "source": "external-native",
+      "scenario": "diagnostics-unknown",
+      "route": "activity",
+      "mapping": {
+        "referenceId": "batch-progress-fixture",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1280,
+        "height": 800,
+        "sha256": "bcb4fec4229022bf943eb8cba35381e9a2d7b6c9f80b1f2e0cd3ea8fec24bc44"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 800
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1080,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 210,
+          "y": 93,
+          "width": 1060,
+          "height": 52
+        },
+        "heading": {
+          "x": 220,
+          "y": 165,
+          "width": 1040,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 215,
+          "width": 1040,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 283,
+          "width": 1040,
+          "height": 30
+        },
+        "frame": {
+          "x": 440,
+          "y": 326,
+          "width": 400,
+          "height": 164
+        },
+        "topModal": {
+          "x": 440,
+          "y": 326,
+          "width": 400,
+          "height": 164,
+          "role": "dialog",
+          "title": "诊断导出结果",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 440,
+          "y": 366,
+          "width": 400,
+          "height": 66,
+          "scrollTop": 0,
+          "clientHeight": 66,
+          "scrollHeight": 66
+        },
+        "footer": {
+          "x": 440,
+          "y": 432,
+          "width": 400,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "diagnostics-minimal",
+      "file": "1280x800/diagnostics-minimal.png",
+      "source": "compact-native",
+      "scenario": "diagnostics-unavailable",
+      "route": "activity",
+      "mapping": {
+        "referenceId": "proxy-edit",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": false,
+      "actualAppScope": "extracted component integration harness",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1280,
+        "height": 800,
+        "sha256": "4e06794449a4daf06914dff0596cc66a809b45aacf3932556f7e6628213e2e82"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 800
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1080,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 210,
+          "y": 93,
+          "width": 1060,
+          "height": 52
+        },
+        "heading": {
+          "x": 220,
+          "y": 165,
+          "width": 1040,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 215,
+          "width": 1040,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 283,
+          "width": 1040,
+          "height": 30
+        },
+        "frame": {
+          "x": 330,
+          "y": 118,
+          "width": 620,
+          "height": 580
+        },
+        "topModal": {
+          "x": 330,
+          "y": 118,
+          "width": 620,
+          "height": 580,
+          "role": "dialog",
+          "title": "脱敏诊断预览",
+          "layer": 122
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 330,
+          "y": 158,
+          "width": 620,
+          "height": 482,
+          "scrollTop": 0,
+          "clientHeight": 482,
+          "scrollHeight": 516
+        },
+        "footer": {
+          "x": 330,
+          "y": 640,
+          "width": 620,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "workspace-blocker-over-restore",
+      "file": "1280x800/workspace-blocker-over-restore.png",
+      "source": "compact-native",
+      "scenario": "restore-progress",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "group-add",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": true,
+      "actualAppScope": "native workspace blocker boundary only; not final page/header integration",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1280,
+        "height": 800,
+        "sha256": "894f59748c05ec10fef59b2bde0cc47fc33c0821fde6b34ea8cf9d7c97ec5d70"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 800
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1080,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 161.859375,
+          "width": 1040,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 203.859375,
+          "width": 1040,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 253.859375,
+          "width": 1040,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 311.859375,
+          "width": 1040,
+          "height": 46
+        },
+        "frame": {
+          "x": 440,
+          "y": 295.5,
+          "width": 400,
+          "height": 225
+        },
+        "topModal": {
+          "x": 390,
+          "y": 301,
+          "width": 500,
+          "height": 198,
+          "role": "alertdialog",
+          "layer": 160
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 440,
+          "y": 335.5,
+          "width": 400,
+          "height": 127,
+          "scrollTop": 0,
+          "clientHeight": 127,
+          "scrollHeight": 127
+        },
+        "footer": {
+          "x": 440,
+          "y": 462.5,
+          "width": 400,
+          "height": 58
+        },
+        "document": null
+      }
+    },
+    {
+      "id": "workspace-blocker-diagnostics",
+      "file": "1280x800/workspace-blocker-diagnostics.png",
+      "source": "compact-native",
+      "scenario": "restore-progress",
+      "route": "backups",
+      "mapping": {
+        "referenceId": "proxy-edit",
+        "kind": "container-mapping"
+      },
+      "reachedBy": "actual component clicks over authored synthetic fixtures; no business DOM injection",
+      "actualAppIntegration": true,
+      "actualAppScope": "native workspace blocker boundary only; not final page/header integration",
+      "finalVisualAcceptance": false,
+      "pageErrors": [],
+      "outboundDenied": 0,
+      "png": {
+        "width": 1280,
+        "height": 800,
+        "sha256": "a58b5a2c54e0791d34acb1f415b9ca5b08132ba77ef0414c5e7774103e3cf2d7"
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scale": 1
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 800
+        },
+        "topbar": {
+          "x": 200,
+          "y": 0,
+          "width": 1080,
+          "height": 42
+        },
+        "toolbar": {
+          "x": 220,
+          "y": 161.859375,
+          "width": 1040,
+          "height": 32
+        },
+        "heading": {
+          "x": 220,
+          "y": 203.859375,
+          "width": 1040,
+          "height": 40
+        },
+        "firstRow": {
+          "x": 220,
+          "y": 253.859375,
+          "width": 1040,
+          "height": 48
+        },
+        "pagination": {
+          "x": 220,
+          "y": 311.859375,
+          "width": 1040,
+          "height": 46
+        },
+        "frame": {
+          "x": 330,
+          "y": 118,
+          "width": 620,
+          "height": 580
+        },
+        "topModal": {
+          "x": 330,
+          "y": 118,
+          "width": 620,
+          "height": 580,
+          "role": "dialog",
+          "title": "脱敏诊断预览",
+          "layer": 162
+        },
+        "modalMaskCount": 1,
+        "body": {
+          "x": 330,
+          "y": 158,
+          "width": 620,
+          "height": 482,
+          "scrollTop": 0,
+          "clientHeight": 482,
+          "scrollHeight": 488
+        },
+        "footer": {
+          "x": 330,
+          "y": 640,
+          "width": 620,
+          "height": 58
+        },
+        "document": null
+      }
+    }
+  ]
+}
