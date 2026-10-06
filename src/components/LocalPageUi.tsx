@@ -25,16 +25,33 @@ export function LocalPageWindow({ title, children, footer, onClose, busy = false
     if (!windows.length) { bodyOverflow = document.body.style.overflow; document.body.style.overflow = "hidden"; }
     windows.push(owner);
     element.style.zIndex = String(120 + windows.length * 2);
-    const background = [...document.body.children].filter((child): child is HTMLElement => child instanceof HTMLElement && child !== element && !["SCRIPT", "STYLE"].includes(child.tagName));
+    const background = [...document.body.children].flatMap(child => {
+      if (!(child instanceof HTMLElement) || child === element || ["SCRIPT", "STYLE"].includes(child.tagName)) return [];
+      // Do not inert the whole React root: a new, higher-priority workspace
+      // blocker must remain reachable if the host faults while this is open.
+      const shell = child.querySelector<HTMLElement>(":scope > .app-shell");
+      return shell ? [...shell.children].filter((region): region is HTMLElement => region instanceof HTMLElement) : [child];
+    });
     for (const child of background) {
       const owner = inertOwners.get(child) ?? { count: 0, previous: child.inert };
       owner.count++; inertOwners.set(child, owner); child.inert = true;
     }
+    // React also owns these regions' inert prop. Resolving a host blocker must
+    // not re-enable the page while a lower #36 window is still open.
+    const backgroundChanges = new MutationObserver(() => { for (const child of background) if (inertOwners.get(child)?.count && !child.inert) child.inert = true; });
+    for (const child of background) backgroundChanges.observe(child, { attributes: true, attributeFilter: ["inert"] });
     const tabbables = () => [...element.querySelectorAll<HTMLElement>('button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), a[href], summary, [tabindex="0"]')].filter(item => item.getClientRects().length && !item.closest("[inert]"));
     const focusFirst = () => (tabbables()[0] ?? element).focus();
+    const isTop = () => {
+      if (windows.at(-1) !== owner) return false;
+      const layer = (modal: HTMLElement) => { let highest = 0; for (let node: HTMLElement | null = modal; node; node = node.parentElement) { const z = Number(getComputedStyle(node).zIndex); if (Number.isFinite(z)) highest = Math.max(highest, z); } return highest; };
+      const modals = [...document.querySelectorAll<HTMLElement>('[aria-modal="true"]')].filter(modal => modal.getClientRects().length && !modal.closest("[inert]"));
+      const top = modals.reduce<HTMLElement | undefined>((current, modal) => !current || layer(modal) >= layer(current) ? modal : current, undefined);
+      return !top || element.contains(top);
+    };
     focusFirst();
     const key = (event: KeyboardEvent) => {
-      if (windows.at(-1) !== owner) return;
+      if (!isTop()) return;
       if (event.key === "Escape") { event.preventDefault(); event.stopImmediatePropagation(); if (!locked.current) close.current(); }
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") { event.preventDefault(); event.stopImmediatePropagation(); }
       if (event.key !== "Tab") return;
@@ -43,17 +60,21 @@ export function LocalPageWindow({ title, children, footer, onClose, busy = false
       if (!first) { event.preventDefault(); element.focus(); }
       else if (!element.contains(document.activeElement) || event.shiftKey && document.activeElement === first || !event.shiftKey && document.activeElement === last) { event.preventDefault(); (event.shiftKey ? last : first)?.focus(); }
     };
-    const focus = (event: FocusEvent) => { if (windows.at(-1) === owner && !element.contains(event.target as Node)) focusFirst(); };
+    const focus = (event: FocusEvent) => { if (isTop() && !element.contains(event.target as Node)) focusFirst(); };
     window.addEventListener("keydown", key, true); document.addEventListener("focusin", focus);
     return () => {
       window.removeEventListener("keydown", key, true); document.removeEventListener("focusin", focus);
+      backgroundChanges.disconnect();
       windows.splice(windows.indexOf(owner), 1);
       // A flow can replace a window, or remove both a parent and its nested
       // confirmation in one commit. Keep the original connected return target.
       for (const remaining of windows) if (remaining.returnFocus && element.contains(remaining.returnFocus)) remaining.returnFocus = owner.returnFocus;
       for (const child of background) {
         const owner = inertOwners.get(child)!; owner.count--;
-        if (!owner.count) { child.inert = owner.previous; inertOwners.delete(child); }
+        if (!owner.count) {
+          const hostStillBlocks = child.matches(".sidebar, .main-shell") && !!document.querySelector('#root [aria-modal="true"]');
+          child.inert = owner.previous || hostStillBlocks; inertOwners.delete(child);
+        }
       }
       const top = windows.at(-1);
       if (!top) { document.body.style.overflow = bodyOverflow; handoffFocus = owner.returnFocus; }
@@ -61,6 +82,7 @@ export function LocalPageWindow({ title, children, footer, onClose, busy = false
       // commit finishes, and never steal focus from a newly opened top window.
       queueMicrotask(() => {
         if (windows.at(-1) !== top) return;
+        if (!top) document.body.style.overflow = document.querySelector('#root [aria-modal="true"]') ? "hidden" : bodyOverflow;
         const previous = owner.returnFocus;
         if (previous?.isConnected && !previous.closest("[inert]") && !previous.matches(":disabled")) previous.focus();
         else top?.element.querySelector<HTMLElement>("button:not(:disabled)")?.focus();

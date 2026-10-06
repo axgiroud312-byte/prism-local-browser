@@ -6,7 +6,7 @@ import { referenceWorkspace } from "./fixtures/reference-workspace";
 import { localPagesNativeBridge, type LocalPageScenario } from "./fixtures/local-pages-native-bridge";
 
 const harness = "/tests/ui/fixtures/local-pages.html";
-type Fixture = { calls: NativeRequest[]; operations: Record<string, Operation>; workspace: { state: State }; publish(id: string): void; rollback(id: string): void };
+type Fixture = { calls: NativeRequest[]; operations: Record<string, Operation>; workspace: { state: State; issue?: { code: string; message: string; retryable: boolean } }; publish(id: string): void; rollback(id: string): void };
 const fixture = (page: Page) => page.evaluate(() => { const f = (window as unknown as { __localPagesFixture: Fixture }).__localPagesFixture; return { calls: f.calls, operations: f.operations, state: f.workspace.state }; });
 const stored = (page: Page) => page.evaluate(key => JSON.parse(localStorage.getItem(key)!) as State, STORAGE_KEY);
 const calls = async (page: Page, method: string) => (await fixture(page)).calls.filter(call => call.method === method);
@@ -106,7 +106,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1280, height: 800
       const frame = dialog(page, "恢复前只读预检"); expect(Math.round((await frame.boundingBox())!.width)).toBe(1040);
       await frame.getByRole("button", { name: "下一步：确认恢复", exact: true }).click();
       await expect(dialog(page, "确认完整恢复").getByRole("button", { name: "关闭确认完整恢复", exact: true })).toBeFocused();
-      await expect(page.locator("#root")).toHaveJSProperty("inert", true); expect(await page.locator(".local-page-overlay[inert]").evaluate(e => getComputedStyle(e).backgroundColor)).toBe("rgba(0, 0, 0, 0)");
+      await expect(page.locator(".sidebar")).toHaveJSProperty("inert", true); await expect(page.locator(".main-shell")).toHaveJSProperty("inert", true); expect(await page.locator(".local-page-overlay[inert]").evaluate(e => getComputedStyle(e).backgroundColor)).toBe("rgba(0, 0, 0, 0)");
       await page.evaluate(() => { Object.assign(window, { lowerModalKeys: 0 }); window.addEventListener("keydown", e => { if (e.key === "Escape" || e.key === "Tab" || e.ctrlKey && e.key.toLowerCase() === "k") (window as unknown as { lowerModalKeys: number }).lowerModalKeys++; }); });
       await page.keyboard.press("Control+k"); await expect(dialog(page, "确认完整恢复")).toBeVisible();
       await page.keyboard.press("Shift+Tab"); await expect(dialog(page, "确认完整恢复").getByRole("button", { name: "取消", exact: true })).toBeFocused();
@@ -114,7 +114,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1280, height: 800
       await page.keyboard.press("Escape"); await expect(page.getByRole("dialog")).toHaveCount(0); expect(await calls(page, "Backup.ApplyRestore")).toHaveLength(0); expect((await fixture(page)).state).toEqual(before.state);
       expect((await calls(page, "Workspace.Read")).length).toBe(before.calls.filter(c => c.method === "Workspace.Read").length); expect(await calls(page, "Backup.DiscardRestore")).toHaveLength(1);
       await expect(page.getByRole("button", { name: "导入完整备份", exact: true })).toBeFocused();
-      await expect(page.locator("#root")).toHaveJSProperty("inert", false); expect(await page.evaluate(() => (window as unknown as { lowerModalKeys: number }).lowerModalKeys)).toBe(0); expect(await page.evaluate(() => document.body.style.overflow)).toBe("");
+      await expect(page.locator(".sidebar")).toHaveJSProperty("inert", false); await expect(page.locator(".main-shell")).toHaveJSProperty("inert", false); expect(await page.evaluate(() => (window as unknown as { lowerModalKeys: number }).lowerModalKeys)).toBe(0); expect(await page.evaluate(() => document.body.style.overflow)).toBe("");
     });
     test("native chooser cancellation and preflight failure preserve inputs without apply", async ({ page }) => {
       await openNative(page, "backup-cancel"); await page.getByRole("button", { name: "创建完整备份", exact: true }).click();
@@ -228,4 +228,14 @@ test("narrow windows keep pinned footer reachable and return to accessible navig
   await page.setViewportSize({ width: 820, height: 600 }); await openNative(page, "baseline"); await preflight(page); const frame = dialog(page, "恢复前只读预检");
   const next = frame.getByRole("button", { name: "下一步：确认恢复", exact: true }); await expect(next).toBeInViewport(); await next.click(); await expect(dialog(page, "确认完整恢复").getByRole("button", { name: "关闭确认完整恢复", exact: true })).toBeFocused(); await page.keyboard.press("Escape"); await expect(frame).toBeVisible(); await page.keyboard.press("Escape"); await expect(page.getByRole("dialog")).toHaveCount(0);
   await page.getByRole("button", { name: "查看操作记录", exact: true }).click(); await page.getByRole("button", { name: /创建合成环境 工作环境 A 详情/ }).click(); await expect(dialog(page, "操作记录详情").getByRole("button", { name: "强制结束此会话", exact: true })).toHaveCount(0);
+});
+
+test("actual App workspace fault outranks an open restore result and nested diagnostics return to the blocker", async ({ page }) => {
+  await localPagesNativeBridge(page, "restore-progress"); await page.goto("/#/backups"); await expect(page.getByRole("button", { name: "导入完整备份", exact: true })).toBeEnabled(); await preflight(page); await confirmNative(page);
+  const result = page.getByRole("dialog", { name: "完整恢复结果", exact: true, includeHidden: true });
+  await page.evaluate(() => { (window as unknown as { __localPagesFixture: Fixture }).__localPagesFixture.workspace.issue = { code: "NATIVE_UNAVAILABLE", message: "合成工作区故障；原恢复窗口必须保留。", retryable: true }; });
+  const blocker = page.getByRole("alertdialog", { name: "工作区需要处理", exact: true, includeHidden: true }); await expect(blocker).toBeVisible(); await expect.poll(() => blocker.evaluate(e => e.contains(document.activeElement))).toBe(true);
+  for (const key of ["Escape", "Control+k", "Tab", "Shift+Tab"]) { await page.keyboard.press(key); await expect(blocker).toBeVisible(); await expect(result).toBeAttached(); await expect.poll(() => blocker.evaluate(e => e.contains(document.activeElement))).toBe(true); }
+  await blocker.getByRole("button", { name: "生成诊断预览", exact: true }).click(); const preview = dialog(page, "脱敏诊断预览"); await expect(preview).toContainText("公开字段摘要"); await expect.poll(() => preview.evaluate(e => e.contains(document.activeElement))).toBe(true); await page.keyboard.press("Escape"); await expect(preview).toHaveCount(0); await expect(blocker).toBeVisible(); await expect.poll(() => blocker.evaluate(e => e.contains(document.activeElement))).toBe(true); await expect(result).toBeAttached(); expect(await calls(page, "Backup.ApplyRestore")).toHaveLength(1);
+  await page.evaluate(() => { (window as unknown as { __localPagesFixture: Fixture }).__localPagesFixture.workspace.issue = undefined; }); await expect(blocker).toHaveCount(0); await expect.poll(() => result.evaluate(e => e.contains(document.activeElement))).toBe(true); await expect(page.locator(".sidebar")).toHaveJSProperty("inert", true); await expect(page.locator(".main-shell")).toHaveJSProperty("inert", true); await page.keyboard.press("Escape"); await expect(result).toHaveCount(0); await expect(page.locator(".sidebar")).toHaveJSProperty("inert", false); await expect(page.locator(".main-shell")).toHaveJSProperty("inert", false); expect(await page.evaluate(() => document.body.style.overflow)).toBe(""); await page.getByRole("button", { name: "查看操作记录", exact: true }).click(); await expect(page).toHaveURL(/#\/activity$/);
 });
