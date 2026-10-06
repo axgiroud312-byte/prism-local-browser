@@ -4,6 +4,8 @@
 
 版本：1.0 · 更新日期：2026-10-06
 
+当前流程调整：UX-001 / DOC-001 对应 [#28 浏览器点击 CI](https://github.com/axgiroud312-byte/prism-local-browser/issues/28)，默认检查仅运行 `tests/ui`，由 Vite 提供页面，不构建或打包；报告在 `output/playwright/`。ENV-001 / ENV-002 / ENV-003 / FP-001 / PRX-001 / CORE-001 / UX-001 的界面收敛另见 [#29 Ant Browser 核心流程](https://github.com/axgiroud312-byte/prism-local-browser/issues/29)，本次仅建票，尚未实现。
+
 本表关联12项需求、原型与native入口。源码入口不代表完整验收；[本轮逐票矩阵](verification/V1-final.md)明确区分服务回归、真实桌面、本机/独立网络及候选交付。[ACCEPTANCE](ACCEPTANCE.md)为实际结果索引；正式计数仍4/21。
 
 路由是运行应用后的 hash 路由。源码链接指向文件，函数名用于定位；前端持续修改时不依赖易失效的固定行号。领域逻辑自动测试入口为 [`tests/domain.test.ts`](../tests/domain.test.ts)，页面流程仍需真实浏览器操作检查。

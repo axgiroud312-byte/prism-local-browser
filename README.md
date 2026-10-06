@@ -2,7 +2,9 @@
 
 面向 Windows 本机多环境管理的桌面底座、独立前端原型及产品开发文档。
 
-**当前已进入首版集中验收与候选打包，正式验收仍为4/21。** 固定档案、独立会话、AppContainer代理保护、FIFO、Cookie、批次、完整备份/预检/恢复、回收、迁移和诊断均有本地实现。本机真实三存储隔离/重开、代理故障、双版本迁移和恢复已有证据；独立远端出口、人工新页面及干净Windows验收尚缺。候选身份、实际检查和逐票关闭条件见[验收报告](docs/verification/V1-final.md)。网页原型仍独立为demo，不进行自动点击。
+**当前工作是精简日常检查并收敛核心操作。** [#28](https://github.com/axgiroud312-byte/prism-local-browser/issues/28) 将 CI 改为直接启动 Vite 的浏览器点击测试；[#29](https://github.com/axgiroud312-byte/prism-local-browser/issues/29) 对照开源参考整理环境、指纹、代理/直连、内核版本与分组流程。具体执行规则见 [GOAL](docs/GOAL.md)。
+
+既有正式验收仍为4/21。固定档案、独立会话、AppContainer代理保护、FIFO、Cookie、批次、完整备份/预检/恢复、回收、迁移和诊断均有本地实现。本机真实三存储隔离/重开、代理故障、双版本迁移和恢复已有证据；独立远端出口、人工新页面及干净Windows验收尚缺。候选身份、实际检查和逐票关闭条件见[验收报告](docs/verification/V1-final.md)。网页原型仍独立为demo，浏览器点击通过不等于原生能力验收通过。
 
 **正式代理启动已经接入，但每次必须实际核对保护。** 零网络能力AppContainer、同身份桥、同通道前检、准确Job进程树及持久资源日志共同保护；缺失、失败或未知即拒绝，绝不自动直连。首版以Windows隔离服务正常为支持条件；底层服务自身损坏留后续加固。本机受控流量不代替独立远端无旁路验收，当前候选只用于合成数据检查。
 
@@ -10,7 +12,7 @@
 
 开发入口：[项目开发指引](AGENTS.md) · [开发规范](docs/ENGINEERING.md) · [V1 总规格](docs/SPEC.md) · [开发 Issues 与依赖](docs/ISSUES.md)
 
-持续实施：[Goal 执行规则](docs/GOAL.md) · [当前执行位置](docs/PROGRESS.md)。T01 应用契约与 DemoAdapter 已验收；T02 的 WailsAdapter 使用相同页面连接本地服务，各项能力分票验收，不以模拟成功替代。
+开发进度：[当前执行规则](docs/GOAL.md) · [实现与验收状态](docs/PROGRESS.md)。T01 应用契约与 DemoAdapter 已验收；T02 的 WailsAdapter 使用相同页面连接本地服务，各项能力分票验收，不以模拟成功替代。
 
 ![环境工作台](docs/screenshots/environments.png)
 
@@ -40,17 +42,18 @@ npm run dev
 
 打开终端显示的本机地址，通常为 `http://127.0.0.1:5173`。开发服务默认仅监听本机；切换页面使用 `/#/environments`、`/#/proxies`、`/#/kernels`、`/#/backups`、`/#/activity` 和 `/#/guide`。
 
-检查与构建：
+日常浏览器检查：
 
 ```sh
+npx playwright install chromium --only-shell
 npm run check
-npm run build
-npm run preview
 ```
 
-首次执行页面测试先运行 `npx playwright install chromium`。`check` 依次运行领域/应用契约/adapter 测试、源码及测试类型检查、TypeScript/Vite 构建、文档检查和可重复 UI 流程；也可单独 `npm run test:ui`。页面测试自动用独立 5183 端口启动/关闭 Vite，测试报告在 `output/goal/T01/report/`。命令存在不代表已通过，实际结果见 [验收记录](docs/ACCEPTANCE.md)。`preview` 仍不会启动真实内核。
+首次执行页面测试需要安装 Playwright Chromium，后续直接运行 `npm run check`，等同 `npm run test:ui`。Playwright 自动用独立 5183 端口启动/关闭 Vite，不需要先构建。测试报告在 `output/playwright/report/`，失败附件在 `output/playwright/results/`。测试覆盖 demo 和模拟 Wails bridge，不证明真实浏览器内核、代理出口或桌面安装已验收；实际结果见 [验收记录](docs/ACCEPTANCE.md)。
 
-当前用户已要求停止自动化点击。不启动上述点击流程；日常与自动 CI 改用 `npm run check:background`（不包含 UI 点击），保留旧测试供明确要求时使用。CI 的点击步骤只有手动触发且显式勾选 `run_ui_clicks` 才执行。实际桌面验证也不再自动抢焦点或截取屏幕。
+默认 CI 使用单个 Node.js 24 Windows 任务，安装依赖与 Playwright Chromium 后只运行浏览器点击测试。`typecheck`、`test`、`check:docs`、`check:background` 和各类构建/桌面命令保留为按需工具；普通 UI 修改不需要重新打包。需要检查生产产物时再运行 `npm run build`、`npm run preview`，后者仍不会启动真实内核。
+
+本次浏览器点击授权不包含 Windows UI Automation、真实安装与系统级操作；这些桌面验证按任务需要单独安排。
 
 2026-10-06 [本机缺口补验](docs/verification/V1-local-acceptance.md)覆盖真实强制停止、Cookie边界、257目录、12真实队列、双环境完整恢复和实际权限失败。目录失败崩溃已修，新`.6`候选/本机无点击安装通过；换行门禁根因仅以Go锁LF修正，远程三job及一次性Server开发预览安装也通过。旧`.4`只保历史，最新来源/哈希和[准确远程范围](docs/verification/V1-local-remote.json)单列；独立远端、人工、精确`.6`的Home新用户/VM/缺WebView2等仍待验。
 
@@ -72,9 +75,9 @@ npm run build:windows
 
 桌面默认数据库为 `%LOCALAPPDATA%/PrismBrowser/app.db`，桌面壳的 WebView 数据在同根 `workbench-webview/`，与网页原型 localStorage 分离。保存 ID、显式 seed、精确内核引用、分组及偏好；旧档案的 `kernel-pending` 不自动重绑定。持久批量、完整导出、预检和正式恢复已接入，真实三存储恢复有局部证据；内核诊断不等于全部能力验收。native `.prismbackup` 不携带内核本体，不承诺跨用户/重装/跨机器恢复登录。不要把原型 JSON 导入生产数据库。
 
-桌面内核页选择精确四段发行版本和预期 ZIP SHA-256；官方来源会核对所选 tag 的 Windows x64 ZIP 与官方摘要，本地来源需通过系统文件选择器并明确确认可信。验证通过后登记新的不可替换 ID，被引用构建不能直接移除。148.0.7778.215 是实测候选，不是生产推荐；资产缺失不会自动换版本。既有点击验证入口 `npm run verify:kernel` 保留，但当前不再执行；无点击真实探测入口见 [T04 记录](docs/verification/T04.md)。
+桌面内核页选择精确四段发行版本和预期 ZIP SHA-256；官方来源会核对所选 tag 的 Windows x64 ZIP 与官方摘要，本地来源需通过系统文件选择器并明确确认可信。验证通过后登记新的不可替换 ID，被引用构建不能直接移除。148.0.7778.215 是实测候选，不是生产推荐；资产缺失不会自动换版本。`npm run verify:kernel` 保留为按需桌面验证工具，不属于默认浏览器 CI；无点击真实探测入口见 [T04 记录](docs/verification/T04.md)。
 
-真实桌面复核使用 **Node.js 24**，运行 `npm run verify:desktop`：脚本创建专用合成测试根，以 Windows UI Automation 操作实际 exe，正常关窗、重开，再读取实际 SQLite；只清理自己启动的测试进程，不开启调试端口。它会将测试窗口置前，请不要在验证时操作该窗口。截图/脱敏记录在 `output/goal/T02/`，测试数据库在 `.appdata/verification/`，均不提交。不能用该测试推导真实 Chromium 已启动。
+按需进行真实桌面复核时，使用 **Node.js 24** 运行 `npm run verify:desktop`：脚本创建专用合成测试根，以 Windows UI Automation 操作实际 exe，正常关窗、重开，再读取实际 SQLite；只清理自己启动的测试进程，不开启调试端口。它会将测试窗口置前，请不要在验证时操作该窗口。截图/脱敏记录在 `output/goal/T02/`，测试数据库在 `.appdata/verification/`，均不提交。该操作不属于本次浏览器测试范围，也不能据此推导真实 Chromium 已启动。
 
 ## 建议的体验顺序
 
@@ -110,7 +113,7 @@ npm run build:windows
 | [TRACEABILITY](docs/TRACEABILITY.md) | 12 项需求与路由、源码入口、建议验收的对应关系。        |
 | [ACCEPTANCE](docs/ACCEPTANCE.md)     | 本次真正执行过的检查、截图证据和待完成事项。           |
 
-核心前端位于 [`src/App.tsx`](src/App.tsx)，演示配置/解析/快照位于 [`src/domain.ts`](src/domain.ts)，本机服务位于 [`internal/workspace/`](internal/workspace/)，原生包与文件边界位于 [`internal/backup/`](internal/backup/)。先按用户授权逐票完成源码，再补暂停的单环境、批次/备份与真实恢复验收；详细阶段门槛见开发方案。
+核心前端位于 [`src/App.tsx`](src/App.tsx)，演示配置/解析/快照位于 [`src/domain.ts`](src/domain.ts)，本机服务位于 [`internal/workspace/`](internal/workspace/)，原生包与文件边界位于 [`internal/backup/`](internal/backup/)。按当前指派的 issue 完成有边界的改动与验证；既有未验收能力继续保留原状态，历史任务列表不作为自动继续开发的队列。
 
 ## 许可与来源
 

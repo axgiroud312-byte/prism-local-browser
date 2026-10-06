@@ -2,9 +2,18 @@
 
 [开发总规格](SPEC.md) · [开发规范](ENGINEERING.md) · [产品需求](PRD.md) · [需求追踪](TRACEABILITY.md)
 
-发布记录：2026-09-30。用户已确认测试边界和票据拆分；已发布 1 张总规格、21 张开发 Issue、3 个里程碑和 29 条 GitHub 原生 blocking 依赖。
+## 当前任务（2026-10-06）
 
-总规格：[Spec #1](https://github.com/axgiroud312-byte/prism-local-browser/issues/1)。它是共同范围依据，具体实现从下面的任务领取。当前完成的是规划配置；桌面功能仍需逐票实现和验收。
+- [#28 日常 CI 仅运行浏览器点击测试](https://github.com/axgiroud312-byte/prism-local-browser/issues/28)：单 Node、Vite 开发服务、页面自动点击；取消默认构建和桌面安装验收。
+- [#29 参照 Ant Browser 简化环境列表和新建、打开流程](https://github.com/axgiroud312-byte/prism-local-browser/issues/29)：明确内核版本、直连/代理、一键指纹和分组，复用现有应用服务。
+
+当前执行按这两张票和 [Goal](GOAL.md)，旧票保留原有实现及未验收状态，不自动顺延。浏览器测试只证明 demo 或模拟桥接的页面行为；不追加安装包/真实内核验收作为本轮前置。
+
+## 历史路线（2026-09-30）
+
+发布记录：已发布 1 张总规格、21 张开发 Issue、3 个里程碑和 29 条 GitHub 原生 blocking 依赖。下方为当时的范围和依赖，不是当前自动执行队列。
+
+历史总规格：[Spec #1](https://github.com/axgiroud312-byte/prism-local-browser/issues/1)。已有实现与验收状态见 [PROGRESS](PROGRESS.md)，本页不将待验收项改记完成。
 
 主要自动测试边界采用应用服务公开契约，沿用已有领域样本。真实浏览器、代理故障、备份恢复与安装包另做 Windows 实测。
 

@@ -13,7 +13,7 @@
     "typecheck": "tsc -b && tsc -p tsconfig.tests.json",
     "test:ui": "playwright test",
     "check:docs": "node scripts/check-docs.mjs",
-    "check": "npm run test && npm run typecheck && npm run build && npm run check:docs && npm run test:ui",
+    "check": "npm run test:ui",
     "check:background": "npm run test && npm run typecheck && npm run build && npm run check:docs",
     "test:desktop": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/desktop.ps1 -Action test",
     "build:windows": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/desktop.ps1 -Action build",

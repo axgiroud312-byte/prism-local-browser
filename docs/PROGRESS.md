@@ -1,6 +1,12 @@
 # Goal 当前执行位置
 
-更新时间：2026-10-06，本机安全补验、新候选和远程无点击安装复验通过。
+更新时间：2026-10-06，用户调整为 Ant Browser 核心流程与浏览器点击检查。
+
+- 当前任务：[#28](https://github.com/axgiroud312-byte/prism-local-browser/issues/28) 精简 CI，默认只运行浏览器点击，不构建或打包；本地/远程结果见 [验收记录](ACCEPTANCE.md)。
+- 下一项：[#29](https://github.com/axgiroud312-byte/prism-local-browser/issues/29) 已建票，参照 Ant Browser 调整环境列表、新建和打开流程，本次尚未开始界面实现。
+- 旧 T01–T21 及其缺口保留为历史，不再自动逐票推进；以下是此前候选交付记录，不能作为当前检查要求。
+
+## 历史候选交付状态
 
 - Goal：正式验收**4/21**；T05–T21共17票均有本地实现/部分验证，保持OPEN，首版候选不等于正式交付。
 - 当前任务：12项本机安全补验与批次typed-nil修复通过；新`.5/.6`干净67c98db构建/本机无点击安装闭环通过。主包`output/delivery/0.3.0-preview.6-v1-candidate/`，SHA=`9f8c60df8bb6e6369c14a13d4b5e0c5a037404b98bf2b3445a9d765a9355b7a9`，未签名/无内核。eec3333远程三job及一次性Server开发预览无点击安装也通过，旧`.4`仅历史。[总报告](verification/V1-final.md)、[补验](verification/V1-local-acceptance.md)及[远程回执](verification/V1-local-remote.json)。仍未正式交付。

@@ -2,6 +2,14 @@
 
 # 当前交付验收记录
 
+## 日常 CI 精简为浏览器点击（2026-10-06）
+
+[#28](https://github.com/axgiroud312-byte/prism-local-browser/issues/28)：默认 CI 从两版本前端检查和桌面安装任务缩为一个 Node.js 24 / Windows 的浏览器任务。仅安装 npm 依赖、Playwright Chromium headless shell 并运行 `test:ui`；Playwright 启动/关闭 Vite，失败附件保留 7 天。`npm run check` 同步为页面测试，不执行生产构建、Go/Wails、安装包或产品内核探测。
+
+本地首次因缺少 Playwright 对应浏览器而无法启动，补齐测试浏览器后，`npm run check` **13/13 通过（41.8 秒）**。现有创建/编辑/重载、取消、校验、失败重试、跨标签页、窄窗口及模拟 bridge 交互断言均保留。报告在 `output/playwright/report/`；远程执行结果回写 #28，不能由本地通过推定远程通过。本轮没有运行完整后台测试或构建。
+
+验证范围为 demo 和模拟 bridge 的页面行为，不增加原生能力验收计数。当前规则已移除旧六页布局约束、禁止浏览器点击及自动续跑旧路线；[#29 Ant Browser 主流程](https://github.com/axgiroud312-byte/prism-local-browser/issues/29) 仅创建任务，界面尚未修改。下方保留原候选交付的历史结果。
+
 ## 本机缺口补验与批次失败修复（2026-10-06）
 
 [统一12项结果](verification/V1-local-acceptance.md)及[源码/脱敏观测回执](verification/V1-local-acceptance.json)：实际普通停止超时→ForceStop、Cookie分区/过期/冲突/清空/取消、257个真实空目录、12项真实队列、两运行环境正常停/完整包/三存储恢复、真实ACL与SQLite容量回滚、永久删除权限恢复均通过。131项前端后台、Go全包342顶层PASS/30 opt-in/helper SKIP及vet exit0；11个新opt-in另行实跑通过，不把SKIP算通过。
