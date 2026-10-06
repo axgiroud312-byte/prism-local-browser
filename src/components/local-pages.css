@@ -59,6 +59,7 @@
 .local-page-upload { border: 1px solid #d9d9d9; border-radius: 3px; min-height: 116px; margin: 14px 0; }
 .local-page-upload-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 10px; background: #2f54eb; color: #fff; min-height: 56px; }
 .local-page-upload-head .button { color: #fff; background: transparent; border: 0; padding-inline: 4px; }
+.local-page-upload-head .button:hover { color: white; border-color: white; background: #ffffff1a; }
 .local-page-upload > p { padding: 12px 10px; margin: 0; }
 .local-page-preflight .reference-modal-body { padding: 10px; }
 .local-page-preflight .local-page-table-scroll { max-height: 230px; overflow-y: auto; }
