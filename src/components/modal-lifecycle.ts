@@ -76,6 +76,27 @@ export function ownsTopModal(element: HTMLElement | null): boolean {
   return !!element && !!top && (element === top || element.contains(top));
 }
 
+/** Keep the owner's effective frame focused when React removes/disables a
+ * focused control. Such blur can reset focus to body without firing focusin. */
+export function maintainModalFocus(owner: () => HTMLElement | null): () => void {
+  const repair = () => {
+    const element = owner(), top = topModalElement();
+    if (!element?.isConnected || !top || !ownsTopModal(element)) return;
+    const active = document.activeElement;
+    if (active instanceof HTMLElement && top.contains(active) && !active.matches(":disabled") &&
+      !active.closest("[inert]") && active.getClientRects().length) return;
+    const target = [...top.querySelectorAll<HTMLElement>('button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), a[href], summary, [tabindex="0"]')]
+      .find(item => !item.closest("[inert], [hidden]") && item.getClientRects().length);
+    (target ?? top).focus();
+  };
+  const changes = new MutationObserver(repair);
+  changes.observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ["disabled", "inert"] });
+  document.addEventListener("focusin", repair);
+  let live = true;
+  queueMicrotask(() => { if (live) repair(); });
+  return () => { live = false; changes.disconnect(); document.removeEventListener("focusin", repair); };
+}
+
 export function restoreModalFocus(target: HTMLElement | null): void {
   const top = topModalElement();
   if (target?.isConnected && !target.closest("[inert]") && !target.matches(":disabled") &&

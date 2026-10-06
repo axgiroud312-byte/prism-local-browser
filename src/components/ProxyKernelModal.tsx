@@ -1,7 +1,7 @@
 import { useId, useLayoutEffect, useRef, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { ReferenceModalFrame } from "./ReferenceUi";
-import { lockBodyScroll, lockModalBackground, ownsTopModal, restoreModalFocus } from "./modal-lifecycle";
+import { lockBodyScroll, lockModalBackground, maintainModalFocus, ownsTopModal, restoreModalFocus, topModalElement } from "./modal-lifecycle";
 import "./proxy-kernel35.css";
 
 const layers: HTMLElement[] = [];
@@ -25,9 +25,10 @@ export function ProxyKernelModal({ title, onClose, children, footer, width = 620
       ...(shell ? shell.querySelectorAll<HTMLElement>(":scope > .sidebar, :scope > .main-shell, :scope > .overlay:not(.workspace-blocker)") : []),
       ...[...document.body.children].filter((item): item is HTMLElement => item instanceof HTMLElement && item !== element && !item.contains(shell) && !["SCRIPT", "STYLE"].includes(item.tagName) && !item.matches(".workspace-blocker") && !item.querySelector("[role='alertdialog']")),
     ];
-    const releaseBackground = lockModalBackground(siblings);
+    const releaseBackground = lockModalBackground(siblings, true);
     const releaseScroll = lockBodyScroll();
     layers.push(element);
+    const releaseFocus = maintainModalFocus(() => element);
     if (ownsTopModal(element)) (tabbables(element).find(item => item.matches("textarea,input,select")) ?? tabbables(element)[0] ?? element).focus();
     const key = (event: KeyboardEvent) => {
       if (event.defaultPrevented || layers.at(-1) !== element || element.inert) return;
@@ -38,13 +39,14 @@ export function ProxyKernelModal({ title, onClose, children, footer, width = 620
       if (event.key === "Tab") {
         event.preventDefault(); event.stopImmediatePropagation();
         const items = tabbables(element), index = items.indexOf(document.activeElement as HTMLElement);
-        if (!items.length) { element.focus(); return; }
+        if (!items.length) { topModalElement()?.focus(); return; }
         items[index < 0 ? (event.shiftKey ? items.length - 1 : 0) : (index + (event.shiftKey ? -1 : 1) + items.length) % items.length].focus();
       }
     };
     document.addEventListener("keydown", key, true);
     return () => {
       document.removeEventListener("keydown", key, true);
+      releaseFocus();
       const index = layers.indexOf(element); if (index >= 0) layers.splice(index, 1);
       releaseBackground();
       releaseScroll();

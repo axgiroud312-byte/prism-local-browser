@@ -3,7 +3,7 @@ import { RotateCcw, Trash2, X } from "lucide-react";
 import { mergeOperation, operationIsTerminal, type ApplicationResult, type ApplicationService, type NativeRecycleAction, type NativeRecyclePage, type NativeRecyclePageRequest, type Operation, type WorkspaceView } from "../application/contract";
 import { confirmsRecycleRequest } from "../application/recycle-model";
 import { EnvironmentConfirmation, EnvironmentTaskResult, EnvironmentWindowFrame } from "./EnvironmentDialogParts";
-import { lockBodyScroll, ownsTopModal, restoreModalFocus } from "./modal-lifecycle";
+import { lockBodyScroll, maintainModalFocus, ownsTopModal, restoreModalFocus } from "./modal-lifecycle";
 import "./environment-recycle.css";
 
 const actions = { remove: "移入回收区", restore: "找回原环境", purge: "永久删除" };
@@ -31,6 +31,7 @@ export function NativeRecycleManager({ application, workspace, selectedIds, onCl
   useEffect(() => {
     mounted.current = true;
     const previous = document.activeElement as HTMLElement | null, releaseScroll = lockBodyScroll();
+    const releaseFocus = maintainModalFocus(() => modal.current);
     if (ownsTopModal(modal.current)) modal.current?.querySelector("button")?.focus();
     const key = (event: KeyboardEvent) => {
       if (event.defaultPrevented || !ownsTopModal(modal.current)) return;
@@ -52,7 +53,7 @@ export function NativeRecycleManager({ application, workspace, selectedIds, onCl
       else if (!original && selectedIds?.length) void preview("remove", selectedIds);
       else void load({ offset: 0, pageSize: 25 });
     }
-    return () => { mounted.current = false; releaseScroll(); document.removeEventListener("keydown", key); restoreModalFocus(previous); };
+    return () => { mounted.current = false; releaseScroll(); releaseFocus(); document.removeEventListener("keydown", key); restoreModalFocus(previous); };
   }, [application]);
 
   useEffect(() => {

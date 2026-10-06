@@ -21,9 +21,10 @@
 .env34-recycle-table .icon-button { color: #f5222d; }
 .env34-recycle-table details p { margin: 5px 0; }
 .env34-recycle-pagination { display: flex; justify-content: center; align-items: center; gap: 12px; padding: 10px; flex-shrink: 0; flex-wrap: wrap; }
-.env34-recycle-over-list { background: transparent; }
+.overlay.env34-recycle-over-list { background: transparent; }
 .env34-recycle-background { pointer-events: none; z-index: 0; }
 .env34-recycle-confirm-scrim { position: absolute; inset: 0; background: #0006; z-index: 1; }
+.env34-recycle-overlay[inert] > .env34-recycle-confirm-scrim { background: transparent; }
 .env34-recycle-over-list > .env34-window { position: relative; z-index: 2; }
 .env34-recycle-empty { padding: 20px; text-align: center; color: #8c8c8c; }
 .env34-recycle-restore .env34-window-body { padding-top: 18px; }

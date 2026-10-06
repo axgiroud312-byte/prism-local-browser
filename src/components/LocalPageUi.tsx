@@ -2,7 +2,7 @@ import { useId, useLayoutEffect, useRef, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { ChevronLeft, ChevronRight, CircleAlert } from "lucide-react";
 import { ReferenceButton, ReferenceModalFrame } from "./ReferenceUi";
-import { lockBodyScroll, lockModalBackground, modalLayer, ownsTopModal, restoreModalFocus } from "./modal-lifecycle";
+import { lockBodyScroll, lockModalBackground, maintainModalFocus, modalLayer, ownsTopModal, restoreModalFocus, topModalElement } from "./modal-lifecycle";
 import "./local-pages.css";
 
 // #36 owns these windows. The frame is visual only; one capture listener per
@@ -37,7 +37,7 @@ export function LocalPageWindow({ title, children, footer, onClose, busy = false
     });
     const releaseBackground = lockModalBackground(background, true);
     const tabbables = () => [...element.querySelectorAll<HTMLElement>('button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), a[href], summary, [tabindex="0"]')].filter(item => item.getClientRects().length && !item.closest("[inert]"));
-    const focusFirst = () => (tabbables()[0] ?? element).focus();
+    const focusFirst = () => (tabbables()[0] ?? topModalElement())?.focus();
     const isTop = () => {
       if (windows.at(-1) !== owner) return false;
       return ownsTopModal(element);
@@ -51,6 +51,7 @@ export function LocalPageWindow({ title, children, footer, onClose, busy = false
     backgroundChanges.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["inert", "style", "class"] });
     refreshBackground();
     focusFirst();
+    const releaseFocus = maintainModalFocus(() => element);
     const key = (event: KeyboardEvent) => {
       if (event.defaultPrevented || !isTop()) return;
       if (event.key === "Escape") { event.preventDefault(); event.stopImmediatePropagation(); if (!locked.current) close.current(); }
@@ -58,13 +59,14 @@ export function LocalPageWindow({ title, children, footer, onClose, busy = false
       if (event.key !== "Tab") return;
       event.stopImmediatePropagation();
       const items = tabbables(), first = items[0], last = items.at(-1);
-      if (!first) { event.preventDefault(); element.focus(); }
+      if (!first) { event.preventDefault(); topModalElement()?.focus(); }
       else if (!element.contains(document.activeElement) || event.shiftKey && document.activeElement === first || !event.shiftKey && document.activeElement === last) { event.preventDefault(); (event.shiftKey ? last : first)?.focus(); }
     };
     const focus = (event: FocusEvent) => { if (isTop() && !element.contains(event.target as Node)) focusFirst(); };
     window.addEventListener("keydown", key, true); document.addEventListener("focusin", focus);
     return () => {
       window.removeEventListener("keydown", key, true); document.removeEventListener("focusin", focus);
+      releaseFocus();
       backgroundChanges.disconnect();
       windows.splice(windows.indexOf(owner), 1);
       // A flow can replace a window, or remove both a parent and its nested

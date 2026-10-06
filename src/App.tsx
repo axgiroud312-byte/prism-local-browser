@@ -84,7 +84,7 @@ import { BackupManagementPage } from "./components/BackupManagementPage";
 import { DemoRestoreWindow } from "./components/DemoBackupPage";
 import { ActivityPage } from "./components/ActivityPage";
 import { HelpPage } from "./components/HelpPage";
-import { lockBodyScroll, lockModalBackground, modalLayer, ownsTopModal, restoreModalFocus, topModalElement } from "./components/modal-lifecycle";
+import { lockBodyScroll, lockModalBackground, maintainModalFocus, modalLayer, ownsTopModal, restoreModalFocus, topModalElement } from "./components/modal-lifecycle";
 
 type Route =
   "environments" | "groups" | "proxies" | "kernels" | "backups" | "activity" | "guide";
@@ -549,6 +549,7 @@ export default function App({ application }: { application: ApplicationService }
       if (overlay && ownsTopModal(overlay)) (focusable(overlay)[0] ?? overlay).focus();
     };
     const timer = setTimeout(focusFirst, 30);
+    const releaseFocus = maintainModalFocus(topOverlay);
     const trap = (e: KeyboardEvent) => {
       const overlay = topOverlay();
       if (e.defaultPrevented || !ownsTopModal(overlay) || !overlay) return;
@@ -570,7 +571,7 @@ export default function App({ application }: { application: ApplicationService }
         last = elements.at(-1);
       if (!first) {
         e.preventDefault();
-        overlay.focus();
+        topModalElement()?.focus();
       } else if (e.shiftKey && (document.activeElement === first || !overlay.contains(document.activeElement))) {
         e.preventDefault();
         last?.focus();
@@ -587,6 +588,7 @@ export default function App({ application }: { application: ApplicationService }
     document.addEventListener("focusin", repairFocus);
     return () => {
       releaseScroll();
+      releaseFocus();
       clearTimeout(timer);
       document.removeEventListener("keydown", trap, true);
       document.removeEventListener("focusin", repairFocus);

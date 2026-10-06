@@ -4,7 +4,7 @@ import type { Environment } from "../domain";
 import { mergeOperation, operationIsTerminal, type ApplicationResult, type ApplicationService, type CookieCommitRequest, type CookieImportPreview, type CookieItemResult, type Operation, type WorkspaceView } from "../application/contract";
 import { cookieStartupAllowed, cookieWriteAllowed, currentCookieOperation } from "../application/cookie-import";
 import { EnvironmentTaskResult, EnvironmentWindowFrame } from "./EnvironmentDialogParts";
-import { lockBodyScroll, ownsTopModal, restoreModalFocus } from "./modal-lifecycle";
+import { lockBodyScroll, maintainModalFocus, ownsTopModal, restoreModalFocus } from "./modal-lifecycle";
 import "./native-cookie.css";
 
 const errorText = (result: ApplicationResult<unknown> | undefined) => !result ? "当前桌面服务不支持此操作，没有模拟成功。" : result.ok ? "" : `${result.error.code}：${result.error.message}`;
@@ -50,6 +50,7 @@ export function NativeCookieImport({ application, workspace, environment, onClos
     void application.refresh?.();
     const before = document.activeElement as HTMLElement | null;
     const releaseScroll = lockBodyScroll();
+    const releaseFocus = maintainModalFocus(() => modal.current);
     if (ownsTopModal(modal.current)) modal.current?.querySelector<HTMLElement>("button")?.focus();
     const key = (event: KeyboardEvent) => {
       if (event.defaultPrevented || !ownsTopModal(modal.current)) return;
@@ -67,7 +68,7 @@ export function NativeCookieImport({ application, workspace, environment, onClos
       mounted.current = false; generation.current++;
       void application.discardCookieImport?.("");
       if (fileInput.current) fileInput.current.value = "";
-      releaseScroll(); document.removeEventListener("keydown", key); restoreModalFocus(before);
+      releaseScroll(); releaseFocus(); document.removeEventListener("keydown", key); restoreModalFocus(before);
     };
   }, [application]);
 
