@@ -60,6 +60,7 @@ test("create, edit and reopen preserve the selected seed, kernel and proxy", asy
 test("cancel regenerated edit leaves persistent state unchanged and restores focus", async ({ page }) => {
   const before = await stored(page);
   await edit(page, "北美主店");
+  await page.getByLabel("环境名称", { exact: true }).fill("取消后不应保存的合成名字");
   const seed = await page.getByLabel("固定指纹种子").inputValue();
   await page.getByRole("button", { name: "换一套", exact: true }).click();
   await expect(page.getByLabel("固定指纹种子")).not.toHaveValue(seed);
@@ -162,6 +163,15 @@ test("compatibility snapshot and Cookie writes preserve inputs and never overrid
   await page.getByRole("button", { name: "导入到原型记录", exact: true }).click();
   await expect(page.getByRole("dialog")).toHaveCount(0);
   expect((await stored(page)).environments[0].cookies[0].value).toBe("");
+  const row = page.getByRole("row").filter({ hasText: "北美主店" });
+  await row.getByRole("button", { name: "打开", exact: true }).click();
+  await expect(row).toContainText("运行中");
+  await row.getByRole("button", { name: "关闭", exact: true }).click();
+  await expect(row).toContainText("待启动");
+  await row.getByRole("button", { name: "打开", exact: true }).click();
+  await expect(row).toContainText("运行中");
+  await page.reload();
+  expect((await stored(page)).environments[0].cookies[0]).toMatchObject({ name: "synthetic-session", value: "", domain: "example.test" });
 });
 
 test("a second tab blocks the stale editor without overwriting the newer workspace", async ({ page, context }) => {
@@ -232,6 +242,7 @@ test("one window selects service kernels and saves an automatically generated fi
   await editor.getByRole("button", { name: "换一套", exact: true }).click();
   await expect(editor.getByLabel("固定指纹种子")).not.toHaveValue(original);
   const seed = await editor.getByLabel("固定指纹种子").inputValue();
+  expect(initial.environments.map(e => e.seed)).not.toContain(seed);
   await editor.getByRole("button", { name: "创建", exact: true }).click();
   await expect(editor).toHaveCount(0);
   const saved = (await stored(page)).environments.find(e => e.name === "自动指纹合成环境")!;
@@ -256,6 +267,10 @@ test("proxy import returns to the unchanged environment draft", async ({ page })
   await page.getByLabel("环境名称", { exact: true }).fill("代理往返草稿");
   await page.getByLabel("分组", { exact: true }).fill("合成往返分组");
   const seed = await page.getByLabel("固定指纹种子").inputValue();
+  await page.getByRole("button", { name: "导入代理", exact: true }).click();
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog", { name: "新建浏览器环境" })).toBeVisible();
+  await expect(page.getByLabel("环境名称", { exact: true })).toHaveValue("代理往返草稿");
   await page.getByRole("button", { name: "导入代理", exact: true }).click();
   await page.getByLabel("代理文本").fill("socks5://192.0.2.99:1080");
   await page.getByRole("button", { name: "解析预览", exact: true }).click();
