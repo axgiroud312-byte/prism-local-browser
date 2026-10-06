@@ -2,6 +2,12 @@
 
 # 当前交付验收记录
 
+## 本机缺口补验与批次失败修复（2026-10-06）
+
+[统一12项结果](verification/V1-local-acceptance.md)及[源码/脱敏观测回执](verification/V1-local-acceptance.json)：实际普通停止超时→ForceStop、Cookie分区/过期/冲突/清空/取消、257个真实空目录、12项真实队列、两运行环境正常停/完整包/三存储恢复、真实ACL与SQLite容量回滚、永久删除权限恢复均通过。131项前端后台、Go全包342顶层PASS/30 opt-in/helper SKIP及vet exit0；11个新opt-in另行实跑通过，不把SKIP算通过。
+
+实际目录拒绝揭示生产typed-nil清理崩溃，wrapper转换前规范化nil，无seamACL回归/保身份续跑通过，原FAIL保留。没有削弱保护、删测试、提权、停服、填满系统盘、修改真实数据或自动点击。生产变化需新候选/无点击安装复验，旧`.4`只保留历史证据；最新见[总报告](verification/V1-final.md)。独立远端、人工、干净Windows、跨登录/重启、真正NTFS/OS资源故障仍待验，**正式4/21、#6–#22 OPEN不变**。下列“不改业务/无需重建”仅对应当时CI观测修订，不适用于本次生产修复。
+
 ## 远程同步接续（2026-10-06；不增加完整验收计数）
 
 用户恢复登录后已核对GitHub身份；38个本地提交普通推送成功，创建[草稿PR #27](https://github.com/axgiroud312-byte/prism-local-browser/pull/27)，17票实测/缺口评论均已发布，全部仍OPEN。[首轮默认无点击CI](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37400229514)两Node检查通过，desktop原SDDL全字符串断言失败；当时未先认定误报，后续实际权限核对见下段。首轮安装构建及真实内核步骤未执行，无artifact上传失败为前序未产包的结果，不把首轮改记成功。[同步回执](verification/V1-remote-sync.json)记录URL/commit/范围。GitHub认证和修订CI阻塞已解除；独立外部、特殊真实场景、人工、干净Windows仍缺，正式4/21不变。

@@ -1,9 +1,9 @@
 # Goal 当前执行位置
 
-更新时间：2026-10-06，GitHub登录恢复与远程同步。
+更新时间：2026-10-06，本机缺口补验及批次目录失败修复。
 
 - Goal：正式验收**4/21**；T05–T21共17票均有本地实现/部分验证，保持OPEN，首版候选不等于正式交付。
-- 当前任务：阶段5本地检查、阶段6候选/无点击安装闭环与资料已完成；尚未正式交付。[包/SHA、逐票矩阵和缺口](verification/V1-final.md)为准确状态。主包`output/delivery/0.3.0-preview.4-v1-candidate/`，最终源码`4b38dc8`，已trimpath、未签名/无内核。
+- 当前任务：新一轮本机安全补验12项全部通过；真实目录拒绝发现批次typed-nil清理崩溃已修，正在冻结干净源码重建候选并无点击复验。旧`.4`/4b38dc8是修复前历史产物，不再是最新程序。[包/SHA与逐票矩阵](verification/V1-final.md)、[补验结果](verification/V1-local-acceptance.md)为准确状态；尚未正式交付。
 - 已有实跑：正式代理启动/关闭/重开、故障和资源恢复、FIFO/Cookie、真实148→150代理迁移/完整回退；direct三存储/回收/恢复五切点只算各自范围。
 - 现场：`goal/v1-remaining-integration`，主代理唯一写，子代理只读。四个交接修复保留并提交；无自动点击/停服/真实数据修改。2026-10-06已核对恢复登录，38个原本本地提交已推送，创建[草稿PR #27](https://github.com/axgiroud312-byte/prism-local-browser/pull/27)；修订默认无点击CI已通过，暂不合并或关闭票。
 
@@ -23,23 +23,25 @@
 | T04 | #5 | 已完成 | 代码`89e94d7`、合入`dc0a148`、[PR #26](https://github.com/axgiroud312-byte/prism-local-browser/pull/26)；[验收](verification/T04.md)/[证据](verification/T04-kernel-acceptance.json)，CI全通过 |
 | T05 | #6 | 已实现待验收 | `f6e7314`及后续修订已推送PR #27；[清单](verification/T05.md)，人工抽屉待验 |
 | T06 | #7 | 已实现待验收 | `ead0bc6`及后续修订已推送PR #27；[清单](verification/T06.md)，原blocking和人工完整流程保留 |
-| T07 | #8 | 已实现待验收 | `e4e427f`及后续修订已推送PR #27；[清单](verification/T07.md)，#7仍OPEN，实际ForceStop等待验 |
+| T07 | #8 | 真实ForceStop保数据重开通过，完整待验 | [补验](verification/V1-local-acceptance.md)；普通停止实际超时→原Job强制停止，B不变，#7/人工等条件保留 |
 | T08 | #9 | 已实现待验收 | `f020076`及后续修订已推送PR #27；[清单](verification/T08.md)，#3 CLOSED，外部与人工待验 |
 | T09 | #10 | 已实现待验收 | `f6ebca1`及后续修订已推送PR #27；[清单](verification/T09.md)，#7/#9仍OPEN，独立远端待验 |
 | T10 | #11 | 已实现待验收 | `88ba61a`已推送PR #27；[清单](verification/T10.md)，#10仍OPEN，真实SOCKS5/DNS待验 |
 | T11 | #12 | 正式保护/故障本机已验证，完整验收待补 | PR #27；[启动](verification/T11-production.md)、[故障](verification/T11-recovery.md)；独立远端/跨登录及人工待验 |
-| T12 | #13 | 已实现待验收 | `c3ff618`及后续修订已推送PR #27；[清单](verification/T12.md)，#7仍OPEN，完整真实矩阵待验 |
-| T13 | #14 | 已实现待验收 | `54d8be9`及后续修订已推送PR #27；[清单](verification/T13.md)，#8/#9仍OPEN，原D007及验收边界保留 |
-| T14 | #15 | FIFO队列已实现，本机集成已验证 | [记录](verification/T14.md)，取消/重试/迟到就绪回归及双代理环境实跑通过；远端/UI完整验收待补 |
-| T15 | #16 | 已实现待验收 | `010b35a`及后续修订已推送PR #27；[清单](verification/T15.md)，#8/#9仍OPEN，多真实环境/资源故障待验 |
+| T12 | #13 | 真实Cookie边界补验通过，人工待验 | [补验](verification/V1-local-acceptance.md)；分区/过期/冲突/清空/首写后取消，#7与人工保留 |
+| T13 | #14 | 257项目录/真实ACL续跑通过 | [补验](verification/V1-local-acceptance.md)；typed-nil生产修复，百万实体/OS资源/人工仍缺 |
+| T14 | #15 | 12项真实FIFO/取消/单失败重试通过 | [补验](verification/V1-local-acceptance.md)；10→11真实运行且正常停止，OS资源/独立远端/UI待补 |
+| T15 | #16 | 两运行环境完整备份/实际ACL通过 | [补验](verification/V1-local-acceptance.md)；真正NTFS空间不足、人工/共同条件保留 |
 | T16 | #17 | 服务回归/凭据/精确build候选通过，人工待验 | [清单](verification/T16.md)、[集中结果](verification/V1-final.md)；拒解为注入，不假报跨SID实测 |
-| T17 | #18 | 服务回归/选定A真实三存储恢复通过 | [清单](verification/T17.md)；多真实环境/人工/实际权限空间待验 |
-| T18 | #19 | 五主切点真实读回、占用及回滚再中断通过 | [清单](verification/T18.md)、[集中结果](verification/V1-final.md)；未闭票 |
-| T19 | #20 | 服务/Windows目录及10个硬中断切点通过 | [清单](verification/T19.md)；真实三存储回收/找回通过，人工永久删除/故障待验 |
+| T17 | #18 | 双真实环境三存储恢复/ACL/SQLite容量通过 | [补验](verification/V1-local-acceptance.md)；真正NTFS不足/人工待验 |
+| T18 | #19 | 原切点及实际ACL重开保护/原任务恢复通过 | [补验](verification/V1-local-acceptance.md)；SQLite容量不是NTFS满，未闭票 |
+| T19 | #20 | 原切点及实际DELETE权限恢复通过 | [补验](verification/V1-local-acceptance.md)；只删已确认项，B/历史备份不变，人工/其他资源待验 |
 | T20 | #21 | 两真实build代理迁移/回退及4硬中断切点通过 | [清单](verification/T20.md)；独立远端、人工与网站兼容待验 |
 | T21 | #22 | 诊断/候选/本机无点击安装闭环通过，正式待验 | [报告](verification/V1-final.md)、[回执](verification/V1-candidate-acceptance.json)；远程CI通过，独立远端、人工及干净Windows产品安装仍缺 |
 
 ## 最近检查与当前工作
+
+- 2026-10-06自主补验：12项统一复验通过，12份脱敏观测及源码/测试binary摘要保存；实际ForceStop、Cookie边界、257目录、12真实队列、双运行环境完整备份恢复、备份/预检/恢复/删除ACL、SQLITE_FULL=13。目录真实拒绝暴露并修typed-nil清理崩溃；只读评审的线程PID复用窗口已以持续准确root句柄修复并复验，末审无可信P1/P2。131 Node后台、342 Go顶层PASS/30 opt-in/helper SKIP与全包vet exit0；11新opt-in单独通过，原FAIL保留。新候选重建/无点击安装和远程同步进行中；没有自动点击/停服/提权/真实数据，正式4/21不变。
 
 - 2026-10-06远程接续：恢复登录已核对；origin/main无新增分叉，38提交普通push成功，无强制覆盖；[草稿PR #27](https://github.com/axgiroud312-byte/prism-local-browser/pull/27)已创建并关联会话。17票结果评论已发布且全部OPEN；首轮默认CI两Node检查通过、desktop原SDDL字符串断言失败，安装构建/真实内核步骤未执行，首轮FAIL保留。用户明确确认方案后，仅修测试观测：显式owner/group/DACL，保持owner/group、每条ACE字节/顺序/继承标记及DACL保护一致；自动继承完成元数据AI不当成授权差异。12子例验证权限扩大、deny改变、SID/顺序/保护等都拒绝；不完整/NULL DACL拒绝。原实际目录恢复和占用回归仍执行，本机4项与vet通过，生产保护代码/候选不改，远程复验结果见下一条。
 

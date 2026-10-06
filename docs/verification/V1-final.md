@@ -1,8 +1,12 @@
 # 首版候选集中验收报告
 
-本机验收日期：2026-10-05；远程接续：2026-10-06。分支`goal/v1-remaining-integration`。覆盖T05–T21 / Issues #6–#22；**正式验收仍4/21，本报告不自动关闭任何票。** 本机代码、实际运行、候选产物和正式交付分别记录。
+本机验收日期：2026-10-05；远程接续及缺口补验：2026-10-06。分支`goal/v1-remaining-integration`。覆盖T05–T21 / Issues #6–#22；**正式验收仍4/21，本报告不自动关闭任何票。** 本机代码、实际运行、候选产物和正式交付分别记录。
 
 ## 结论与当前产物
+
+**10月6日安全补验：**[12项统一实跑与准确边界](V1-local-acceptance.md)、[脱敏源码/观测回执](V1-local-acceptance.json)。实际普通停止超时后的ForceStop、Cookie边界、257项真实目录、12项真实队列、两运行环境完整备份恢复和实际ACL/SQLite容量恢复通过。实际目录拒绝暴露生产typed-nil清理崩溃，wrapper已修且无seam回归/续跑通过，保护未降低。新候选构建/安装复验另记，**下列`.4`是修复前历史产物，不再代表最新程序**。
+
+### 修复前候选的历史来源与证据
 
 最终分享前发现并修复构建隐私缺口：首轮46649c0主程序带编译机路径，Wails改用官方`-trimpath`，不改业务逻辑。**最终4b38dc8包已重新构建且无点击复验通过**；主程序buildinfo确认trimpath=true，主程序/维护helper路径扫描未发现Windows编译用户路径。旧包仅在本机忽略的历史证据目录，不对外分发。
 
@@ -76,19 +80,19 @@ NSIS bootstrap为i386是既有体系行为，安装限定x64，主程序和维�
 | --- | --- | --- | --- | --- |
 | FP-001/002 T05 #6 | `fingerprints.go`、kernel/fingerprint | G/F；本轮RealSavedFingerprintRevisions正常读回 | 新抽屉人工生成/取消/重生成/历史回滚 | 否 |
 | ENV-003 DATA-001 T06 #7 | `runtime.go`、kernel/runtime | G/F；full-runtime真实A/B三存储/停重开 | native单个/批量启动停止及安装版闭环 | 否 |
-| ENV-003 T07 #8 | `runtime_supervisor.go`、`runtime_persistence.go` | G；full-runtime根故障、旧session拒绝；T11管理器硬退出 | 实际普通停止失败→ForceStop及应用完整会话恢复、人工故障提示 | 否 |
+| ENV-003 T07 #8 | `runtime_supervisor.go`、`runtime_persistence.go` | G；full-runtime根故障；10月6日实际普通停止超时→原Job ForceStop/保数据重开，B不变 | 应用完整会话恢复、人工故障提示及共同条件 | 否 |
 | PRX-001 T08 #9 | `proxies.go`、`proxy_storage.go` | G/F；真实Windows DPAPI，读回/幂等/失败保旧凭据 | 实际外部阶段/出口及人工导入replace/clear/引用保护 | 否 |
 | PRX-001 T09 #10 | `runtime_network.go`、proxy/bridge | G；正式protected启动/重开、HTTP/CONNECT/TLS库测试 | 两真实认证代理与换代理保数据的外部闭环 | 否 |
 | PRX-001 T10 #11 | proxy/socks5、`socks5_test.go` | G：RFC认证/域名与IPv4/6字节、错误分类、只拨上游 | 真实SOCKS5浏览器、独立DNS/IPv6/UDP观察 | 否 |
 | PRX-001 ENV-003 T11 #12 | kernel/network_store、`runtime_network_resources.go` | G；正式资源/故障/端口接管/管理器Kill/A-B独立 | 下文独立远端全路径；跨登录/重启及人工资源重试 | 否 |
-| CK-001 DATA-001 T12 #13 | `cookie_worker.go`、NativeCookieImport | G/F；双protected浏览器导入/写后读回/去重；入口修订6项通过 | 分区/到期/冲突/明确清空/取消全部真实矩阵及人工流程 | 否 |
-| ENV-001/002 T13 #14 | `batch_worker.go`、`environment_query.go` | G/F；本轮production目录clone空/源合成登录文件不动，31项真实目录/分页/重复请求通过 | 超大实际规模/真实资源不足及人工映射/跨页选择；百万条只虚拟预览 | 否 |
-| ENV-003 T14 #15 | `runtime_queue.go` | G/F：FIFO取消/失败独立重试/迟到ready；双protected保持运行 | 实际资源不足/更大队列、人工取消/单失败重试 | 否 |
-| BKP-001 T15 #16 | `backup_worker.go`、`backup_snapshot.go` | G/F：真实合成文件/SQLite/all11非页8、发布/取消/原DPAPI密文；full-runtime选定A真实三存储包 | 多运行环境正常停后完整备份/实际空间与权限失败 | 否 |
-| BKP-001 CORE-001 T16 #17 | `restore_preview.go`、`restore_configuration.go` | G/F：DB/WAL/SHM不变/恶意包/预算；本轮同精确build异ID候选、DPAPI可用及拒解后重输提示通过 | 候选实际选择器/同build映射文件校验闭环；跨SID不可解密仅模拟故障 | 否 |
-| BKP-001 DATA-001 T17 #18 | `restore_worker.go`、`restore_commit.go` | G/F：事务/多目标/取消/回滚；full-runtime选定A真实恢复重开 | 多真实环境完整恢复，实际磁盘/权限失败、人工明确覆盖 | 否 |
-| DATA-001 T18 #19 | `restore_recovery.go`、`restore_consistency.go` | G；full-runtime五主切点真实读回＋本轮占用/回滚再中断 | 实际空间/权限条件、安装版中断提示与重试 | 否 |
-| DATA-001 ENV-001 T19 #20 | `recycle_worker.go`、`recycle_recovery.go` | G/F：实际Windows移动/删除/ABA；full-runtime三存储回收找回；本轮10 Kill切点 | 安装页永久删除/失败恢复及真实资源故障；不删除真实数据 | 否 |
+| CK-001 DATA-001 T12 #13 | `cookie_worker.go`、NativeCookieImport | G/F；双protected导入/读回/去重；10月6日三个分区键、过期拒绝、冲突、明确清空及首条真实写后取消通过 | 人工流程；任意断管线未知写窗口未由调度屏障代替 | 否 |
+| ENV-001/002 T13 #14 | `batch_worker.go`、`environment_query.go` | G/F；clone/31项；10月6日257项真实目录、129项ACL失败保身份续跑/分页/去重，typed-nil清理修复 | 百万实体/真正OS空间资源不足及人工映射/跨页选择 | 否 |
+| ENV-003 T14 #15 | `runtime_queue.go` | G/F；10月6日12项真实FIFO、取消1/目录ACL失败1，10运行→仅失败项重试为11运行，正常停止 | OS内存/进程资源耗尽、人工取消/单失败重试及独立远端 | 否 |
+| BKP-001 T15 #16 | `backup_worker.go`、`backup_snapshot.go` | G/F；all11/原DPAPI密文；10月6日两运行环境由备份正常停/完整包、源读与输出写实际ACL恢复通过 | 真正NTFS空间不足、人工选择器及共同条件 | 否 |
+| BKP-001 CORE-001 T16 #17 | `restore_preview.go`、`restore_configuration.go` | G/F；精确build/DPAPI；10月6日实际备份读拒绝及DB/WAL/SHM/浏览字节不变通过 | 实际选择器/同build映射闭环；跨SID仍仅模拟故障 | 否 |
+| BKP-001 DATA-001 T17 #18 | `restore_worker.go`、`restore_commit.go` | G/F；10月6日两真实环境三存储/配置完整恢复重开、C不变；ACL及实际SQLite容量失败回滚通过 | 真正NTFS空间不足、人工明确覆盖及共同条件 | 否 |
+| DATA-001 T18 #19 | `restore_recovery.go`、`restore_consistency.go` | G；五切点/回滚再中断；10月6日实际ACL阻断后重开保保护、删原包修权限同任务恢复精确旧侧；SQLITE_FULL=13 | 真正NTFS空间不足、安装版中断提示与人工重试 | 否 |
+| DATA-001 ENV-001 T19 #20 | `recycle_worker.go`、`recycle_recovery.go` | G/F；三存储/10 Kill切点；10月6日DELETE双路径拒绝/重开/修复原任务，只删确认项，B/备份不变 | 安装页永久删除/失败恢复及其他OS资源故障；不删真实数据 | 否 |
 | CORE-001 FP-001 T20 #21 | `migration_trial.go`、`migration_commit.go` | G/F；真实148→150 protected切换/完整回退；本轮4 Kill切点 | 人工默认/副本/切换/回退、独立外部与目标网站兼容 | 否 |
 | UX-001 DOC-001 T21 #22 | `diagnostics_host.go`、desktopbase、NSIS | G/F：脱敏/只读/实际JSON/核实；干净源码候选构建＋本机无点击安装/升级/保留卸载/重装通过 | 系统保存器人工取消/核实、干净Windows、全产品链、全部blocking条件 | 否 |
 

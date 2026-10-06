@@ -43,6 +43,12 @@ ENV-003、PRX-001、DATA-001阶段2：[`独立持久资源日志`](../internal/k
 
 2026-10-06 DATA-001/PRX-001测试观测增量：首轮CI在DACL-only查询的完整SDDL字符串比较失败。经用户确认，仅修[`原目录恢复回归`](../internal/kernel/network_store_windows_test.go)为显式owner/group/DACL查询和[`实际权限快照`](../internal/kernel/network_acl_snapshot_windows_test.go)，逐字节/原顺序比ACE和继承保护，不把系统AI完成标记当授权变化；owner/group缺失、NULL DACL及任何权限扩大/deny/身份/继承/顺序差异仍拒。4顶层/12子例及vet本机通过、只读评审无可信P1/P2；Windows CI的原实际目录回归和全包测试现已通过。生产授权/恢复未改，第一轮FAIL不改写。
 
+### 2026-10-06 本机缺口补验与批次失败修复
+
+- ENV-001/002/DATA-001：[`生产批次wrapper`](../internal/workspace/batch_worker.go)转换接口前规范化nil lease，避免真实目录失败的清理崩溃；有效lease/归属核验与身份保留不变。[默认回归](../internal/workspace/batch_prepare_failure_test.go)、[无seam实际ACL/257项续跑](../internal/workspace/safe_gap_windows_test.go)通过。
+- ENV-003、CK-001、BKP-001：普通停止超时→ForceStop、Cookie边界、12项真实队列、两运行环境完整包/三存储恢复、备份/预检ACL、恢复ACL/SQLITE_FULL与永久删除权限原任务收尾均通过。[结果/源码SHA](verification/V1-local-acceptance.md)区分真实浏览器和合成目录，不将SQLite容量当NTFS满、本机上游当独立出口。
+- 131 Node、342 Go顶层PASS/30 opt-in/helper SKIP、全包vet通过；11个新opt-in另行通过。无自动点击/真实数据/服务故障实验/新依赖。生产变化须重建候选，旧`.4`是历史版本；正式4/21与blocking不变。
+
 ### T11 隔离可行性增量（历史独立实验，不覆盖当前正式结果）
 
 ENV-001/ENV-003/UX-001/CK-001/CORE-001：阶段4[FIFO及保护链集成](verification/T14.md)已实现并局部通过，真实Cookie双环境隔离和148→150代理迁移/备份回退已验证；完整远端及人工验收待补。

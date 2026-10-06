@@ -14,7 +14,13 @@ func (s *Service) prepareBatchDirectory(input BatchDirectoryInput) (BatchDirecto
 	if s.options.PrepareBatchDirectory != nil {
 		return s.options.PrepareBatchDirectory(input)
 	}
-	return kernel.PrepareEmptyProfile(input.Root, kernel.EmptyProfileOwner{EnvironmentID: input.EnvironmentID, PlanID: input.PlanID, Index: input.Index, DataReference: input.DataReference})
+	lease, err := kernel.PrepareEmptyProfile(input.Root, kernel.EmptyProfileOwner{EnvironmentID: input.EnvironmentID, PlanID: input.PlanID, Index: input.Index, DataReference: input.DataReference})
+	// A failed prepare returns a nil *EmptyProfileLease. Do not convert that
+	// typed nil into a non-nil interface and attempt to close it in runBatch.
+	if lease == nil {
+		return nil, err
+	}
+	return lease, err
 }
 
 func (s *Service) batchSnapshotReady(snapshot batchSnapshot) *Error {
