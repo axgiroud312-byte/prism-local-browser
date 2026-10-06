@@ -8,13 +8,15 @@
 
 本表关联12项需求、原型与native入口。源码入口不代表完整验收；[本轮逐票矩阵](verification/V1-final.md)明确区分服务回归、真实桌面、本机/独立网络及候选交付。[ACCEPTANCE](ACCEPTANCE.md)为实际结果索引；正式计数仍4/21。
 
+当前视觉增量由 [#33](https://github.com/axgiroud312-byte/prism-local-browser/issues/33) 承接：「完整代码」冻结标识 `202609160208` 唯一基准，替换旧 shell/统计卡/工具栏，增加 `/#/groups` 派生标签页。来源/40 状态/能力映射见 [UI_REFERENCE](UI_REFERENCE.md)，公共责任见 [UI_CONTRACT](UI_CONTRACT.md)，定向点击与两视口视觉分别见 [#33 记录](verification/issue33.md)。不覆盖上方 #29/#30 历史 21/21 或增加真实桌面计数。
+
 路由是运行应用后的 hash 路由。源码链接指向文件，函数名用于定位；前端持续修改时不依赖易失效的固定行号。领域逻辑自动测试入口为 [`tests/domain.test.ts`](../tests/domain.test.ts)，页面流程仍需真实浏览器操作检查。
 
 ## 12 项需求映射
 
 | 需求 ID                       | 原型路由与交互入口                                        | 源码定位                                                                                                                                                       | 建议验收；不表示已执行                                                                                                                                     |
 | ----------------------------- | --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ENV-001 环境列表与批量操作    | `/#/environments`；表格、分组/搜索/状态筛选、多选及直接行操作 | [`App.tsx`](../src/App.tsx)：`visible`、`pageItems`、`selected`、`launch`、`stop`、`assignSelectedGroup`、`setOutcome` | 网络/精确版本/状态分列；空结果可恢复；筛选/翻页不扩大所选 ID；单项失败保其他成功，逐项可重试；无产品数量配额。 |
+| ENV-001 环境列表与批量操作    | `/#/environments`；密集表/10条分页、筛选、多选、行操作；`/#/groups` 派生标签 | [`App.tsx`](../src/App.tsx)：`pageItems`、`selected`、`launch`、`stop`、`openGroupAssignment`、`assignSelectedGroup`；[`EnvironmentFilters`](../src/components/EnvironmentFilters.tsx)、[`EnvironmentGroups`](../src/components/EnvironmentGroups.tsx) | 表体单独滚动；空结果可恢复；跨页/筛选不扩大所选 ID；分组失败只重试准确失败项；无独立组实体/产品数量配额。 |
 | ENV-002 创建与编辑环境        | `/#/environments`；统一常用窗口，创建/创建并打开/保存 | [`App.tsx`](../src/App.tsx)：`openCreate`、`openEdit`、`patchDraft`、`saveEnvironment`；#30 的 `src/components/EnvironmentForm.tsx`；[`契约`](../src/application/contract.ts) | 同窗选名称/分组/服务内核/网络；单个不进批次计划；取消不写入；保存失败保旧记录/草稿；创建已提交而打开失败只重试原 ID；native 忙状态安全元数据/关键字段保护不变。 |
 | ENV-003 启动停止与失败保护    | `/#/environments`；打开/关闭、批量及逐项结果；`/#/activity` 查看原因 | [`App.tsx`](../src/App.tsx)：`launch`、`stop`、`applyRuntimeOperation`；[`精确启动计划`](../src/application/runtime-start-plan.ts)；[`domain.ts`](../src/domain.ts)：`launchError` | 单个无需 ID/修订技术确认；按保存 direct/proxy 与修订启动；读不到配置不作直连；失败不重复创建或覆盖其他成功；重复点击及正常关闭/取消保护保留；模式明确。 |
 | FP-001 固定设备档案           | `/#/environments`；自动摘要/换一套，高级设置内 seed/历史 | [`App.tsx`](../src/App.tsx)：`generateProfile`、`applyProfilePreview`、`previewProfileRestore`、`saveEnvironment`；[`档案服务`](../internal/workspace/fingerprints.go)；[`DemoAdapter`](../src/application/demo-adapter.ts) | 自动编译/预览重试 `regenerate:false`；换一套只改草稿，取消不提交；普通编辑/代理变化/关闭重开/刷新 seed 不变；精确内核/数据引用不自动替换或清空。 |
@@ -24,10 +26,16 @@
 | CORE-001 固定内核版本         | `/#/kernels`；统一环境窗口服务内核选择及无内核引导 | [`App.tsx`](../src/App.tsx)：`usableKernels`、`openCreate`、`saveEnvironment`；[`WailsAdapter`](../src/application/wails-adapter.ts)；[`NativeKernelManager`](../src/components/NativeKernelManager.tsx) | 不硬编码参考版本；demo 可用演示/native 同 ID installed+verified 记录；无可用内核阻断新建/打开并保草稿；保存精确 ID、旧环境不随默认变；普通编辑不能绕迁移换内核。 |
 | BKP-001 快照备份与恢复        | `/#/backups`；创建、导出、导入、确认恢复                  | [`App.tsx`](../src/App.tsx)：`newBackup`、`confirmRestore`、`download`；[`domain.ts`](../src/domain.ts)：`createSnapshot`、`parseSnapshot`、`restoreSnapshot`  | 导出排除代理密码；坏格式、重复 ID、断引用、非法字段被拒绝；运行环境未停止时不恢复；有效恢复保留 seed、重置代理检查、保留原型历史记录；无真实目录备份承诺。 |
 | DATA-001 数据隔离与删除       | `/#/environments`；单个与批量移除；Cookie 目标环境        | [`domain.ts`](../src/domain.ts)：`Environment.id`、`mergeCookies`；[`App.tsx`](../src/App.tsx)：`removeEnvironments`、Cookie 提交                              | A 环境修改不改变 B 的记录或 Cookie；运行中的环境不能移除；移除前展示数量与数据含义；原型不操作文件，不声称已验证 Chromium 目录隔离或回收区。               |
-| UX-001 可访问性与本地持久演示 | 六个页面；统一窗口、叠加代理导入、逐项反馈及存储提示 | [`App.tsx`](../src/App.tsx)：键盘/焦点 effects、`notify`、表单校验/空状态；[`styles.css`](../src/styles.css) | 高级默认收起，常用按钮无遮挡；最上层 Escape/焦点返回不丢下层草稿；刷新保保存配置；坏存储/多标签页保护不变；普通与窄窗口均可创建并打开、关闭及重试。 |
+| UX-001 可访问性与本地持久演示 | 原六个目标及派生分组页；统一窗口、浮层、逐项反馈及存储提示 | [`App.tsx`](../src/App.tsx)：键盘/焦点 effects；[`ReferenceUi`](../src/components/ReferenceUi.tsx)、[`EnvironmentRuntimeDetails`](../src/components/EnvironmentRuntimeDetails.tsx)、[`styles.css`](../src/styles.css) | portal 菜单无遮挡、Escape/焦点返回；窗口不丢下层草稿；reconcile/cleanup/force/pending/FIFO 保留；坏存储与 demo/native 边界不变。 |
 | DOC-001 文档与页面可追踪      | `/#/guide`；文档页签及下载入口                            | [`App.tsx`](../src/App.tsx)：`docTab`、指南页 Markdown 展示、`download`；[`PRD.md`](PRD.md)、[`DEVELOPMENT.md`](DEVELOPMENT.md)、[`KERNEL.md`](KERNEL.md)      | 页面可读三份主文档并下载；12 个 ID 在 PRD 和本表一致；相对链接有效；当前原型与后续桌面目标明确分开；实际检查结果可追溯到验收记录。                         |
 
 ## 已发布的桌面开发任务
+
+### #33 参考 shell 与环境表（2026-10-06；本地前端交付，待集成）
+
+- ENV-001/003、UX-001：公共几何、密集环境表/筛选/分页、派生分组、精确跨页选择和逐项分组恢复接既有服务；未知创建/原 ID 打开/代理不直连链未重写。后台/格式/应用契约未改。
+- DOC-001：[40 状态索引](UI_REFERENCE.md) 区分直接参考、裁剪、本机容器映射与待核实；[公共组件责任](UI_CONTRACT.md) 给 #34–#36 插入约定，由集成负责人唯一修改共享文件。
+- 新增 [demo shell 用例](../tests/ui/reference-shell.spec.ts)、[合成 native 用例](../tests/ui/native-reference-shell.spec.ts)，独立 Prism 数据不是原商业接口。**7/7** 新用例与 **7/7** 既有受影响回归通过，类型通过；视觉与实际命令见 [验收](verification/issue33.md)。未运行本轮全套/生产构建/桌面探针；#37 和未核实能力保持待验。
 
 ### #29/#30 核心流程增量（2026-10-06；本地页面验收通过，待合并）
 

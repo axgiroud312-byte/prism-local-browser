@@ -7,7 +7,6 @@ import {
   useSyncExternalStore,
   type ReactNode,
 } from "react";
-import { createPortal } from "react-dom";
 import {
   Activity as ActivityIcon,
   ArrowDownToLine,
@@ -25,7 +24,7 @@ import {
   CircleHelp,
   Copy,
   Download,
-  Ellipsis,
+  EllipsisVertical,
   ExternalLink,
   FileJson,
   Fingerprint,
@@ -94,7 +93,6 @@ import remarkGfm from "remark-gfm";
 import { NativeKernelManager } from "./components/NativeKernelManager";
 import { NativeMigrationManager } from "./components/NativeMigrationManager";
 import { NativeProxyManager } from "./components/NativeProxyManager";
-import { NativeRuntimeNetwork } from "./components/NativeRuntimeNetwork";
 import { NativeCookieImport } from "./components/NativeCookieImport";
 import { NativeBatchDialog, type NativeBatchDialogInput } from "./components/NativeBatchDialog";
 import { readRuntimeStartPlan } from "./application/runtime-start-plan";
@@ -102,9 +100,13 @@ import { NativeBackupManager } from "./components/NativeBackupManager";
 import { NativeRecycleManager } from "./components/NativeRecycleManager";
 import { NativeDiagnostics } from "./components/NativeDiagnostics";
 import { EnvironmentForm } from "./components/EnvironmentForm";
+import { EnvironmentFilters } from "./components/EnvironmentFilters";
+import { EnvironmentGroups } from "./components/EnvironmentGroups";
+import { ReferencePopover } from "./components/ReferenceUi";
+import { EnvironmentRuntimeDetails } from "./components/EnvironmentRuntimeDetails";
 
 type Route =
-  "environments" | "proxies" | "kernels" | "backups" | "activity" | "guide";
+  "environments" | "groups" | "proxies" | "kernels" | "backups" | "activity" | "guide";
 type Drawer = {
   kind: "create" | "edit";
   environment: Environment;
@@ -126,6 +128,7 @@ type EnvironmentOutcome = {
   message: string;
   operationId?: string;
   created?: boolean;
+  group?: string;
 };
 const fingerprintInputKey = (environment: Environment) => JSON.stringify([
   environment.coreId, environment.seed, environment.fingerprintVersion,
@@ -139,7 +142,7 @@ type Dialog =
   | { kind: "proxy-edit"; proxy: ProxyNode }
   | { kind: "restore"; snapshot: Snapshot; name: string }
   | { kind: "kernel"; core: Kernel }
-  | { kind: "group" };
+  | { kind: "group"; ids: string[] };
 const routeInfo = {
   environments: {
     label: "浏览器环境",
@@ -147,6 +150,7 @@ const routeInfo = {
     description: "每一份环境，都有独立的工作空间。",
     req: "ENV-001 · ENV-002 · FP-001",
   },
+  groups: { label: "分组管理", icon: Layers3, description: "修改现有环境的分组标签。", req: "ENV-001" },
   proxies: {
     label: "代理管理",
     icon: Network,
@@ -195,6 +199,11 @@ const time = (date?: string) =>
         minute: "2-digit",
       }).format(new Date(date))
     : "尚未打开";
+const environmentTime = (date: string) => {
+  if (!Number.isFinite(Date.parse(date))) return "—";
+  const value = new Date(date);
+  return `${new Intl.DateTimeFormat("zh-CN", { month: "long", day: "numeric" }).format(value)} ${new Intl.DateTimeFormat("zh-CN", { hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(value)}`;
+};
 function Button({
   children,
   className = "",
@@ -351,8 +360,10 @@ export default function App({ application }: { application: ApplicationService }
   const drawerOverlayRef = useRef<HTMLDivElement>(null);
   const draftProxyOverlayRef = useRef<HTMLDivElement>(null);
   const proxyReturnFocus = useRef<HTMLElement | null>(null);
-  const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 });
+  const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
+  const uiBlocked = Boolean(drawerVisible || dialog || draftProxyImportOpen || nativeBatchInput || nativeCookieEnvironment || nativeRecycleSelection || storageIssue);
+  useEffect(() => { if (uiBlocked) setMenu(null); }, [uiBlocked]);
   const notify = (text: string, error = false) => {
     setToast({ text, error });
     if (toastTimer.current) clearTimeout(toastTimer.current);
@@ -402,7 +413,7 @@ export default function App({ application }: { application: ApplicationService }
     let cancelled = false;
     setEnvironmentQueryBusy(true);
     const timer = setTimeout(() => {
-      void application.queryEnvironments!({ page, pageSize: 8, search, group: group === "全部分组" ? "" : group, status }).then(result => {
+      void application.queryEnvironments!({ page, pageSize: 10, search, group: group === "全部分组" ? "" : group, status }).then(result => {
         if (cancelled) return; setEnvironmentQueryBusy(false);
         if (!result.ok) notify(result.error.message, true);
       });
@@ -502,7 +513,8 @@ export default function App({ application }: { application: ApplicationService }
       document.body.style.overflow = oldOverflow;
       clearTimeout(timer);
       document.removeEventListener("keydown", trap);
-      previous?.focus();
+      if (previous?.isConnected) previous.focus();
+      else if (menuAnchor?.isConnected) menuAnchor.focus();
     };
   }, [drawerVisible, Boolean(dialog), draftProxyImportOpen]);
   const navigate = (r: Route) => {
@@ -521,10 +533,10 @@ export default function App({ application }: { application: ApplicationService }
       (status === "all" || e.status === status),
   );
   const filteredTotal = nativeMode ? workspace.environmentPage?.filteredTotal ?? visible.length : visible.length;
-  const pageCount = Math.max(1, Math.ceil(filteredTotal / 8));
+  const pageCount = Math.max(1, Math.ceil(filteredTotal / 10));
   const pageItems = nativeMode ? visible : visible.slice(
-    (Math.min(page, pageCount) - 1) * 8,
-    Math.min(page, pageCount) * 8,
+    (Math.min(page, pageCount) - 1) * 10,
+    Math.min(page, pageCount) * 10,
   );
   const running = nativeMode ? workspace.environmentPage?.runningCount ?? 0 : state.environments.filter(
     (e) => e.status === "running",
@@ -1024,25 +1036,32 @@ export default function App({ application }: { application: ApplicationService }
     setProxyRows([]);
     setFormError("");
   }
-  async function assignSelectedGroup() {
-    if (groupPending || !groupName.trim() || !selected.length) return;
-    const ids = [...selected], name = groupName.trim();
+  function openGroupAssignment(ids: string[], name = "") {
+    setMenu(null); setGroupName(name); setFormError(""); setDialog({ kind: "group", ids: [...new Set(ids)] });
+  }
+  async function assignSelectedGroup(retryIds?: string[], retryName?: string) {
+    const ids = retryIds ?? (dialog?.kind === "group" ? dialog.ids : []), name = (retryName ?? groupName).trim();
+    if (groupPending || !name || !ids.length) return;
     setGroupPending(true); setFormError("");
     try {
       if (!nativeMode) {
-        if (!update(s => ({ ...s, environments: s.environments.map(environment => ids.includes(environment.id) ? { ...environment, group: name } : environment) }), log("调整分组", `${ids.length} 个环境`, `已归入分组 ${name}。`))) return;
+        const result = updateDemo(s => ({ ...s, environments: s.environments.map(environment => ids.includes(environment.id) ? { ...environment, group: name } : environment) }), log("调整分组", `${ids.length} 个环境`, `已归入分组 ${name}。`));
+        if (!result.ok) { setFormError(result.error.message); return; }
       } else {
+        let failed = 0;
         for (const id of ids) {
           const preview = await application.previewEnvironment({ kind: "edit", sourceId: id });
-          if (!preview.ok) { setOutcome({ id, name: current.current.environments.find(item => item.id === id)?.name ?? "所选环境", action: "分组", state: "error", message: preview.error.message }); continue; }
+          if (!preview.ok) { failed++; setOutcome({ id, name: current.current.environments.find(item => item.id === id)?.name ?? "所选环境", action: "分组", state: "error", message: preview.error.message, group: name }); continue; }
           const draft = preview.data;
           try {
             const result = await application.updateEnvironment({ previewId: draft.previewId, configuration: { ...draft.environment, group: name }, expectedRevision: draft.expectedRevision!, requestId: uid("request"), profileHash: draft.fingerprint?.previewProfile.configHash });
-            setOutcome({ id, name: draft.environment.name, action: "分组", state: result.ok ? "success" : "error", message: result.ok ? `已归入 ${name}，指纹保持不变` : result.error.message });
+            if (!result.ok) failed++;
+            setOutcome({ id, name: draft.environment.name, action: "分组", state: result.ok ? "success" : "error", message: result.ok ? `已归入 ${name}，指纹保持不变` : result.error.message, group: name });
           } finally { void application.discardPreview(draft.previewId); }
         }
+        if (failed) { setDialog(null); notify(`${ids.length - failed} 项分组已保存，${failed} 项失败；查看逐项结果并重试。`, true); return; }
       }
-      setDialog(null); notify("分组操作已完成，逐项失败可查看结果");
+      setDialog(null); notify(`已将 ${ids.length} 个环境归入 ${name}`);
     } finally { setGroupPending(false); }
   }
   function removeEnvironments() {
@@ -1074,6 +1093,10 @@ export default function App({ application }: { application: ApplicationService }
   }
   const summary = routeInfo[route];
   const canConfigureProfileField = (field: string) => !profileBusy && (!nativeMode || !!selectedKernelRecord?.report.capabilities.some(capability => capability.field === field && capability.status === "configurable" && capability.source === "observed"));
+  const outcomePanel = outcomes.length > 0 && <section className="environment-outcomes" aria-label="逐项操作结果">
+    <div className="outcome-heading"><strong>操作结果 · {outcomes.length} 项</strong><span>{nativeMode ? "本机服务反馈" : "模拟操作，不启动真实浏览器"}</span><button className="text-button" disabled={outcomes.some(item => ["pending", "accepted"].includes(item.state))} onClick={() => setOutcomes([])}>收起结果</button></div>
+    <ul>{outcomes.map(item => <li key={item.id} className={`outcome-${item.state}`} role={item.state === "error" ? "alert" : "status"}><span>{["pending", "accepted"].includes(item.state) ? <LoaderCircle size={14} className="spin" /> : item.state === "error" ? <TriangleAlert size={14} /> : <CheckCircle2 size={14} />}<strong>{item.name}</strong></span><span>{item.created && item.action === "打开" ? item.state === "error" ? "已创建，打开失败；" : "已创建；" : ""}{item.message}</span>{item.state === "error" && <button className="text-button" disabled={runtimeActionIds.includes(item.id) || groupPending} aria-label={`${item.name} 重试${item.action}`} onClick={() => item.action === "分组" ? void assignSelectedGroup([item.id], item.group) : item.action === "打开" ? void launch([item.id], !!item.created) : void stop([item.id])}>重试{item.action}</button>}</li>)}</ul>
+  </section>;
   return (
     <div className="app-shell">
       <aside
@@ -1089,19 +1112,8 @@ export default function App({ application }: { application: ApplicationService }
             <span>PRISM BROWSER</span>
           </div>
         </a>
-        <div className="workspace">
-          <span className="workspace-icon">
-            <Monitor size={18} />
-          </span>
-          <div>
-            <strong>本机工作区</strong>
-            <span>Windows · 本地模式</span>
-          </div>
-          <ChevronDown size={14} />
-        </div>
-        <div className="nav-caption">工作空间</div>
         <nav aria-label="主导航">
-          {(["environments", "proxies", "kernels", "backups"] as Route[]).map(
+          {(["environments", "groups", "proxies", "kernels", "backups", "activity", "guide"] as Route[]).map(
             (r) => {
               const Icon = routeInfo[r].icon;
               return (
@@ -1110,64 +1122,22 @@ export default function App({ application }: { application: ApplicationService }
                   href={`#/${r}`}
                   className={`nav-item ${route === r ? "active" : ""}`}
                 >
-                  <Icon size={18} />
+                  <Icon size={15} />
                   <span>{routeInfo[r].label}</span>
-                  {r === "environments" && (
-                    <span className="nav-count">
-                      {environmentTotal}
-                    </span>
-                  )}
                 </a>
               );
             },
           )}
         </nav>
-        <div className="nav-caption second">工作区工具</div>
-        <nav>
-          {(["activity", "guide"] as Route[]).map((r) => {
-            const Icon = routeInfo[r].icon;
-            return (
-              <a
-                key={r}
-                href={`#/${r}`}
-                className={`nav-item ${route === r ? "active" : ""}`}
-              >
-                <Icon size={18} />
-                {routeInfo[r].label}
-              </a>
-            );
-          })}
-        </nav>
-        <div className="sidebar-bottom">
-          <div className="local-note">
-            <ShieldCheck size={20} />
-            <div>
-              <strong>数据留在本地</strong>
-              <span>每个环境，独立保存</span>
-            </div>
-          </div>
-          <div className="sidebar-footer">
-            <span className="avatar">本</span>
-            <div>
-              <strong>本地工作区</strong>
-              <span>无需登录 · 无数量配额</span>
-            </div>
-            <LockKeyhole size={15} />
-          </div>
-        </div>
       </aside>
       <div
         className="main-shell"
         inert={Boolean(drawerVisible || dialog || draftProxyImportOpen || nativeBatchInput || nativeCookieEnvironment || nativeRecycleSelection || storageIssue)}
       >
         <header className="topbar">
-          <div className="breadcrumb">
-            工作空间
-            <ChevronRight size={14} />
-            <strong>{summary.label}</strong>
-          </div>
+          <span className="topbar-local"><Monitor size={15} />本机工作区</span>
           <div className="topbar-right">
-            <span className="prototype-label">
+            <span className="prototype-label" title={nativeMode ? "本机服务接入；真实桌面验收范围不随页面测试扩大" : "仅供交互验收，不启动真实浏览器；请勿输入真实凭据"}>
               <span />
               {nativeMode ? "本机桌面" : "交互原型"}
             </span>
@@ -1186,48 +1156,17 @@ export default function App({ application }: { application: ApplicationService }
             >
               <CircleHelp size={19} />
             </button>
-            <span className="topbar-divider" />
-            <span className="mini-avatar">P</span>
           </div>
         </header>
         <main className={route === "environments" ? "environment-workspace" : undefined}>
           {drawerSuspended && drawer && <div className="prototype-notice" role="status"><span>环境草稿已保留，安装内核不会清空正在填写的内容。</span><Button onClick={() => { const available = usableKernels.find(kernel => kernel.id === workspace.defaultKernel?.kernelId) ?? usableKernels[0]; if (drawer.kind === "create" && !canGenerateProfile && available) patchDraft({ coreId: available.id }); setDrawerSuspended(false); navigate("environments"); }}>继续环境草稿</Button><Button onClick={closeDrawer}>放弃草稿</Button></div>}
           {nativeMode && workspace.maintenance && <div className="prototype-notice" role="status">完整恢复正在维护保护中，配置修改与新启动暂不可用。<Button onClick={() => navigate("backups")}>查看恢复任务</Button></div>}
           {nativeMode && workspace.migrationMaintenance && <div className="prototype-notice" role="status">内核迁移维护中，原环境保持停止。<Button onClick={() => navigate("kernels")}>查看试用与迁移</Button></div>}
-          <div className="page-heading">
-            <div>
-              <div className="eyebrow">
-                {route === "environments"
-                  ? "ENVIRONMENT WORKSPACE"
-                  : route.toUpperCase()}
-              </div>
-              <h1>
-                {summary.label}
-                {route === "environments" && (
-                  <span className="heading-count">
-                    {environmentTotal}
-                  </span>
-                )}
-              </h1>
-              <p>{summary.description}</p>
-            </div>
-            <div className="heading-actions">
-              {route === "environments" ? (
-                <>
-                  <Button
-                    onClick={() => {
-                      navigate("backups");
-                    }}
-                  >
-                    <ArrowDownToLine size={16} />
-                    导入 / 备份
-                  </Button>
-                  <Button className="primary" onClick={() => openCreate()}>
-                    <Plus size={18} />
-                    新建环境
-                  </Button>
-                </>
-              ) : route === "proxies" ? (
+          {nativeMode && workspace.recycleMaintenance && <div className="prototype-notice" role="status">回收维护保护中，请核实原任务。<Button onClick={() => setNativeRecycleSelection([])}>打开回收区</Button></div>}
+          {!["environments", "groups"].includes(route) && <div className="page-toolbar">
+            <h1>{summary.label}</h1>
+            <div className="page-toolbar-actions">
+              {route === "proxies" ? (
                 <Button className="primary" onClick={openProxyImport}>
                   <Plus size={18} />
                   添加代理
@@ -1255,235 +1194,24 @@ export default function App({ application }: { application: ApplicationService }
                 </a>
               ) : null}
             </div>
-          </div>
+          </div>}
           {route === "environments" && (
             <>
-              {nativeMode && <div className="prototype-notice"><span>{workspace.recycleMaintenance ? "回收维护保护中，请查看原任务。" : "已移除环境可在本机回收区找回。"}</span><Button onClick={() => setNativeRecycleSelection([])}>打开回收区</Button></div>}
-              <section className="stats-grid" aria-label="环境概览">
-                <div className="stat-card">
-                  <div className="stat-icon blue">
-                    <Layers3 size={20} />
-                  </div>
-                  <div>
-                    <span>全部环境</span>
-                    <strong>
-                      {environmentTotal}
-                      <small>个</small>
-                    </strong>
-                  </div>
-                  <span className="stat-foot">按需创建，无数量配额</span>
-                </div>
-                <div className="stat-card">
-                  <div className="stat-icon green">
-                    <Monitor size={20} />
-                  </div>
-                  <div>
-                    <span>运行中</span>
-                    <strong>
-                      {running}
-                      <small>个</small>
-                    </strong>
-                  </div>
-                  <span className="stat-foot">
-                    <span className="status-dot green-dot" />
-                    {nativeMode ? "本机真实会话 · 代理逐会话保护 / 明确直连" : "模拟运行状态"}
-                  </span>
-                </div>
-                <div className="stat-card">
-                  <div className="stat-icon violet">
-                    <Network size={20} />
-                  </div>
-                  <div>
-                    <span>已配置代理</span>
-                    <strong>
-                      {state.proxies.length}
-                      <small>个</small>
-                    </strong>
-                  </div>
-                  <button
-                    className="stat-link"
-                    onClick={() => navigate("proxies")}
-                  >
-                    管理代理
-                    <ArrowUpRight size={14} />
-                  </button>
-                </div>
-                <div className="stat-card">
-                  <div className="stat-icon amber">
-                    <TriangleAlert size={20} />
-                  </div>
-                  <div>
-                    <span>需要处理</span>
-                    <strong>
-                      {errors}
-                      <small>个</small>
-                    </strong>
-                  </div>
-                  <button
-                    className="stat-link"
-                    onClick={() => {
-                      setStatus("error");
-                      setPage(1);
-                    }}
-                  >
-                    查看异常环境
-                    <ArrowUpRight size={14} />
-                  </button>
-                </div>
-              </section>
-              <section className="work-card">
-                <div className="list-tabs">
-                  <button
-                    className={status === "all" ? "selected" : ""}
-                    onClick={() => {
-                      setStatus("all");
-                      setPage(1);
-                    }}
-                  >
-                    全部环境<span>{environmentTotal}</span>
-                  </button>
-                  <button
-                    className={status === "running" ? "selected" : ""}
-                    onClick={() => {
-                      setStatus("running");
-                      setPage(1);
-                    }}
-                  >
-                    运行中<span>{running}</span>
-                  </button>
-                  <button
-                    className={status === "error" ? "selected" : ""}
-                    onClick={() => {
-                      setStatus("error");
-                      setPage(1);
-                    }}
-                  >
-                    需处理
-                    {errors > 0 && <span className="amber-text">{errors}</span>}
-                  </button>
-                  <div className="list-tabs-tail">
-                    <span className="subtle-text">独立配置 · 固定指纹</span>
-                    <button
-                      className="icon-button"
-                      title="重新载入列表"
-                      aria-label="刷新环境列表"
-                      onClick={async () => {
-                        setSearch("");
-                        setGroup("全部分组");
-                        setStatus("all");
-                        setPage(1);
-                        const result = await application.refresh?.();
-                        if (result && !result.ok) notify(result.error.message, true);
-                        else notify(nativeMode ? "已重新读取本机 SQLite 档案" : "环境列表已刷新");
-                      }}
-                    >
-                      <RefreshCw size={16} />
-                    </button>
-                  </div>
-                </div>
-                <div className="filters">
-                  <div className="search-box">
-                    <Search size={17} />
-                    <input
-                      ref={searchRef}
-                      aria-label="搜索环境"
-                      placeholder="搜索环境名称、编号或备注"
-                      value={search}
-                      onChange={(e) => {
-                        setSearch(e.target.value);
-                        setPage(1);
-                      }}
-                    />
-                    <kbd>Ctrl K</kbd>
-                  </div>
-                  <div className="select-wrap">
-                    <Folder size={16} />
-                    <select
-                      aria-label="筛选分组"
-                      value={group}
-                      onChange={(e) => {
-                        setGroup(e.target.value);
-                        setPage(1);
-                      }}
-                    >
-                      <option>全部分组</option>
-                      {groups.map((g) => (
-                        <option key={g}>{g}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <Button
-                    className="filter-button"
-                    onClick={() => {
-                      setStatus(status === "ready" ? "all" : "ready");
-                      setPage(1);
-                    }}
-                  >
-                    <ListFilter size={16} />
-                    {status === "ready" ? "显示全部状态" : "待启动环境"}
-                  </Button>
-                  <span className="filter-spacer" />
-                  {nativeMode && <Button onClick={() => setNativeBatchInput({ kind: "history" })}><History size={16} />批次与逐项结果</Button>}
-                  <button
-                    className="icon-button"
-                    aria-label="分组管理"
-                    onClick={() => {
-                      setDialog({ kind: "group" });
-                      setGroupName("");
-                      setFormError("");
-                    }}
-                  >
-                    <FolderPlus size={18} />
-                  </button>
-                </div>
-                {selected.length > 0 && (
-                  <div className="selection-bar">
-                    <span>
-                      已选择 <strong>{selected.length}</strong> 个环境
-                      <small>（当前页 {pageItems.filter(item => selected.includes(item.id)).length} 个；只操作已勾选项）</small>
-                    </span>
-                    <Button onClick={() => launch(selected)}>
-                      <Monitor size={14} />
-                      批量打开
-                    </Button>
-                    <Button onClick={() => { setGroupName(""); setFormError(""); setDialog({ kind: "group" }); }}><Folder size={14} />调整分组</Button>
-                    <Button onClick={() => stop(selected)}>
-                      <Square size={13} />
-                      批量关闭
-                    </Button>
-                    {nativeMode && <Button onClick={() => void launch(selected.filter(id => {
-                      const session = workspace.runtimeSessions?.[id];
-                      return session?.state === "error" && !session.pid && !session.resourcesPending && !session.needsReconcile && !session.persistencePending && !workspace.networkResources?.[id];
-                    }))}>仅重试已释放资源的失败项</Button>}
-                    {nativeMode && <><Button onClick={() => setNativeBatchInput({ kind: "clone", sourceIds: [...selected] })}><Copy size={14} />复制配置（新身份）</Button><Button onClick={() => setNativeBatchInput({ kind: "assign", sourceIds: [...selected] })}><Network size={14} />明确分配代理</Button><Button onClick={() => { setNativeBackupSelection([...selected]); navigate("backups"); }}><HardDrive size={14} />完整备份所选</Button></>}
-                    <Button
-                      onClick={() => {
-                        if (nativeMode) { setNativeRecycleSelection([...selected]); return; }
-                        setDialog({ kind: "delete", ids: selected });
-                        setFormError("");
-                        setDeleteData(false);
-                      }}
-                    >
-                      <Trash2 size={14} />
-                      移除
-                    </Button>
-                    <button
-                      className="text-button"
-                      onClick={() => setSelected([])}
-                    >
-                      取消选择
-                    </button>
-                  </div>
-                )}
+              <div className="environment-list-panel">
+                <EnvironmentFilters search={search} group={group} status={status} groups={groups} total={environmentTotal} running={running} errors={errors} selected={selected.length} pageSelected={pageItems.filter(item => selected.includes(item.id)).length} native={nativeMode} blocked={uiBlocked} searchRef={searchRef}
+                  onSearch={value => { setSearch(value); setPage(1); }} onGroup={value => { setGroup(value); setPage(1); }} onStatus={value => { setStatus(value); setPage(1); }} onClear={() => { setSearch(""); setGroup("全部分组"); setStatus("all"); setPage(1); }}
+                  onCreate={() => void openCreate()} onOpen={() => void launch([...selected])} onStop={() => void stop([...selected])} onAssign={() => openGroupAssignment(selected)} onCancelSelection={() => setSelected([])}
+                  onRemove={() => { if (nativeMode) setNativeRecycleSelection([...selected]); else { setDialog({ kind: "delete", ids: [...selected] }); setFormError(""); setDeleteData(false); } }}
+                  onRefresh={() => { void application.refresh?.().then(result => { if (!result.ok) notify(result.error.message, true); else notify("环境列表已刷新"); }); }}
+                  onBackup={() => { setNativeBackupSelection([...selected]); navigate("backups"); }} onHistory={() => setNativeBatchInput({ kind: "history" })} onRecycle={() => setNativeRecycleSelection([])} onClone={() => setNativeBatchInput({ kind: "clone", sourceIds: [...selected] })} onProxyAssign={() => setNativeBatchInput({ kind: "assign", sourceIds: [...selected] })}
+                  onRetryReleased={() => void launch(selected.filter(id => { const session = workspace.runtimeSessions?.[id]; return session?.state === "error" && !session.pid && !session.resourcesPending && !session.needsReconcile && !session.persistencePending && !workspace.networkResources?.[id]; }))} />
+                <section className="environment-table-panel" aria-label="环境列表">
                 {nativeMode && Object.values(workspace.runtimeSessions ?? {}).some(session => session.state === "starting") && <div className="selection-bar" role="status">
                   <span>启动队列：{Object.values(workspace.runtimeSessions ?? {}).filter(session => session.state === "starting" && session.launchStage === "queued").length} 项等待，按受理顺序启动；已运行环境不占队列名额。</span>
                   <Button onClick={() => void cancelQueuedRuntime()}>取消排队启动</Button>
                 </div>}
-                {outcomes.length > 0 && <section className="environment-outcomes" aria-label="逐项操作结果">
-                  <div className="outcome-heading"><strong>操作结果 · {outcomes.length} 项</strong><span>{nativeMode ? "本机服务反馈" : "模拟操作，不启动真实浏览器"}</span><button className="text-button" disabled={outcomes.some(item => ["pending", "accepted"].includes(item.state))} onClick={() => setOutcomes([])}>收起结果</button></div>
-                  <ul>{outcomes.map(item => <li key={item.id} className={`outcome-${item.state}`} role={item.state === "error" ? "alert" : "status"}><span>{["pending", "accepted"].includes(item.state) ? <LoaderCircle size={14} className="spin" /> : item.state === "error" ? <TriangleAlert size={14} /> : <CheckCircle2 size={14} />}<strong>{item.name}</strong></span><span>{item.created && item.action === "打开" ? item.state === "error" ? "已创建，打开失败；" : "已创建；" : ""}{item.message}</span>{item.state === "error" && item.action !== "分组" && <button className="text-button" disabled={runtimeActionIds.includes(item.id)} aria-label={`${item.name} 重试${item.action}`} onClick={() => item.action === "打开" ? void launch([item.id], !!item.created) : void stop([item.id])}>重试{item.action}</button>}</li>)}</ul>
-                </section>}
-                <div className="table-scroll">
+                {outcomePanel}
+                <div className="environment-table-scroll">
                   <table className="environment-table">
                     <thead>
                       <tr>
@@ -1491,6 +1219,7 @@ export default function App({ application }: { application: ApplicationService }
                           <input
                             type="checkbox"
                             aria-label="选择当前页全部环境"
+                            ref={element => { if (element) element.indeterminate = pageItems.some(item => selected.includes(item.id)) && !pageItems.every(item => selected.includes(item.id)); }}
                             disabled={nativeMode && environmentQueryBusy}
                             checked={
                               pageItems.length > 0 &&
@@ -1513,13 +1242,13 @@ export default function App({ application }: { application: ApplicationService }
                             }
                           />
                         </th>
-                        <th>环境名称 / 编号</th>
-                        <th>分组</th>
-                        <th>直连 / 代理</th>
-                        <th>内核版本</th>
-                        <th>状态</th>
-                        <th>最近打开</th>
-                        <th className="actions-head">操作</th>
+                         <th>序号</th>
+                         <th>分组</th>
+                         <th>环境名称</th>
+                         <th>直连 / 代理</th>
+                         <th>内核 / 状态</th>
+                         <th>创建时间</th>
+                         <th>打开</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1542,6 +1271,7 @@ export default function App({ application }: { application: ApplicationService }
                               <input
                                 type="checkbox"
                                 aria-label={`选择 ${e.name}`}
+                                disabled={nativeMode && environmentQueryBusy}
                                 checked={selected.includes(e.id)}
                                 onChange={(event) =>
                                   setSelected(
@@ -1552,38 +1282,15 @@ export default function App({ application }: { application: ApplicationService }
                                 }
                               />
                             </td>
-                            <td>
-                              <div className="environment-identity">
-                                <div
-                                  className={`environment-avatar avatar-${(+e.code || 1) % 4}`}
-                                >
-                                  <Fingerprint size={22} />
-                                </div>
-                                <div>
-                                  <button
-                                    className="name-button"
-                                    onClick={() => openEdit(e)}
-                                  >
-                                    {e.name}
-                                  </button>
-                                  <div className="cell-secondary">
-                                    <span className="mono">#{e.code}</span>
-                                  </div>
-                                </div>
-                              </div>
-                            </td>
-                            <td><Tag>{e.group || "未分组"}</Tag></td>
+                            <td className="environment-code">{e.code}<Fingerprint size={12} /></td>
+                            <td className="environment-group-cell" title={e.group || "未分组"}>{e.group || "未分组"}</td>
+                            <td><button className="name-button" title={e.name} onClick={() => void openEdit(e)}>{e.name}</button></td>
                             <td>
                               {p ? (
                                 <>
                                   <div className="proxy-title">
-                                    <span className="country-code">
-                                      {p.country}
-                                    </span>
-                                    {p.name.split(" · ")[1] || p.name}
-                                  </div>
-                                  <div className="cell-secondary mono">
-                                    {p.type.toUpperCase()} · {p.host}
+                                    <span className="proxy-type-mark" title={p.type.toUpperCase()}>{p.type === "socks5" ? "S" : p.type === "https" ? "H" : "P"}</span>
+                                    <span title={`${p.type}://${p.host}:${p.port}`}>{p.host}<small>{p.country || "未检测"}</small></span>
                                   </div>
                                 </>
                               ) : e.proxyId ? (
@@ -1594,24 +1301,15 @@ export default function App({ application }: { application: ApplicationService }
                                     <Globe2 size={15} />
                                     本机直连
                                   </span>
-                                  <div className="cell-secondary">
-                                    已明确选择直连
-                                  </div>
                                 </>
                                )}
-                                {nativeMode && runtimeSession && <details className="runtime-list-details"><summary>网络详情</summary><NativeRuntimeNetwork session={runtimeSession} /></details>}
                              </td>
                              <td>
                                <span className="device-line">
                                 <Monitor size={14} />
-                                 Chromium {core?.version || "不可用"}
-                              </span>
-                              <div className="cell-secondary">
-                                 fingerprint-chromium{nativeMode ? core?.available ? " · 已核验" : " · 未就绪" : " · 演示"}
-                              </div>
-                            </td>
-                            <td>
-                              <span
+                                  {core?.version || "不可用"}
+                               </span>
+                                <div className="environment-status-line"><span
                                 className={`status ${e.status}`}
                                 title={e.error}
                               >
@@ -1621,15 +1319,11 @@ export default function App({ application }: { application: ApplicationService }
                                   <span className="status-dot" />
                                 )}
                                  {demoWriteRetry ? "模拟结果待保存" : runtimeSession?.needsReconcile ? "待核对" : nativeMode && !core?.available ? "未就绪" : statusLabels[e.status]}
-                               </span>
-                                {e.error && <div className="cell-secondary runtime-recovery-note" role="status">{e.error}</div>}
-                               {runtimeSession?.nextAction && <div className="cell-secondary runtime-recovery-note">{runtimeSession.nextAction}</div>}
-                               {runtimeSession?.lastExitCode !== undefined && <div className="cell-secondary">上次退出码：{runtimeSession.lastExitCode}</div>}
-                               {runtimeSession?.reconciledAt && <div className="cell-secondary">核对：{time(runtimeSession.reconciledAt)}</div>}
+                                </span><EnvironmentRuntimeDetails environment={e} session={runtimeSession} blocked={uiBlocked} /></div>
                             </td>
                             <td>
                               <span className="last-open">
-                                {time(e.lastOpened)}
+                                {environmentTime(e.createdAt)}
                               </span>
                             </td>
                             <td>
@@ -1649,12 +1343,14 @@ export default function App({ application }: { application: ApplicationService }
                                    </>
                                 ) : e.status === "running" || (nativeMode && (e.status === "starting" || !!runtimeSession?.pid || runtimeSession?.resourcesPending)) ? (
                                   <Button
-                                     className="stop-button compact"
+                                      className="stop-button compact"
+                                      aria-label={e.status === "starting" ? "取消启动" : runtimeSession?.resourcesPending && e.status === "error" ? "重试关闭" : "关闭"}
+                                      title="关闭此环境，保留身份和浏览数据"
                                      disabled={e.status === "stopping" || runtimeActionPending}
                                     onClick={() => stop([e.id])}
                                   >
-                                    <Square size={12} />
-                                     {e.status === "starting" ? "取消启动" : runtimeSession?.resourcesPending && e.status === "error" ? "重试关闭" : "关闭"}
+                                     <Square size={12} />
+                                     {e.status === "starting" ? "取消启动" : runtimeSession?.resourcesPending && e.status === "error" ? "重试关闭" : "已打开"}
                                   </Button>
                                 ) : (
                                   <Button
@@ -1677,23 +1373,21 @@ export default function App({ application }: { application: ApplicationService }
                                     {runtimeActionPending ? "处理中" : e.status === "starting" ? "打开中" : e.status === "stopping" ? "关闭中" : "打开"}
                                   </Button>
                                 )}
-                                <Button className="compact edit-button" aria-label={`${e.name} 编辑`} disabled={!nativeMode && ["running", "starting", "stopping"].includes(e.status)} title={!nativeMode && ["running", "starting", "stopping"].includes(e.status) ? "关闭后可编辑" : "编辑环境"} onClick={() => void openEdit(e)}><Settings2 size={13} />编辑</Button>
                                 <div className="menu-wrap">
                                   <button
                                     className="icon-button"
                                     aria-label={`${e.name} 更多操作`}
                                     aria-expanded={menu === e.id}
-                                    onClick={event => { const rect = event.currentTarget.getBoundingClientRect(); setMenuPosition({ top: Math.max(12, Math.min(rect.bottom + 4, window.innerHeight - 200)), right: Math.max(12, window.innerWidth - rect.right) }); setMenu(menu === e.id ? null : e.id); }}
+                                    onClick={event => { setMenuAnchor(event.currentTarget); setMenu(menu === e.id ? null : e.id); }}
                                   >
-                                    <Ellipsis size={19} />
+                                    <EllipsisVertical size={14} />
                                   </button>
-                                  {menu === e.id && createPortal(
-                                    <div className="dropdown environment-row-menu" style={menuPosition}>
+                                  {menu === e.id && menuAnchor && <ReferencePopover anchor={menuAnchor} label={`${e.name} 操作菜单`} className="environment-row-menu" onClose={() => setMenu(null)}>
                                       <button onClick={() => openEdit(e)}>
                                         <Settings2 size={15} />
                                         编辑环境
                                       </button>
-                                      <button onClick={() => nativeMode ? setNativeBatchInput({ kind: "clone", sourceIds: [e.id] }) : openCreate(e)}>
+                                      <button onClick={() => { setMenu(null); if (nativeMode) setNativeBatchInput({ kind: "clone", sourceIds: [e.id] }); else void openCreate(e); }}>
                                         <Copy size={15} />
                                         按模板新建
                                       </button>
@@ -1701,6 +1395,8 @@ export default function App({ application }: { application: ApplicationService }
                                         <FileJson size={15} />
                                         导入 Cookie
                                       </button>
+                                      <button onClick={() => openGroupAssignment([e.id], e.group)}><Folder size={15} />调整分组</button>
+                                      {nativeMode && <><button onClick={() => { setMenu(null); setNativeBatchInput({ kind: "assign", sourceIds: [e.id] }); }}><Network size={15} />明确分配代理</button><button onClick={() => { setMenu(null); setNativeBackupSelection([e.id]); navigate("backups"); }}><HardDrive size={15} />完整备份此环境</button></>}
                                       <button
                                         className="danger-text"
                                         onClick={() => {
@@ -1717,38 +1413,21 @@ export default function App({ application }: { application: ApplicationService }
                                         <Trash2 size={15} />
                                         移除环境
                                       </button>
-                                    </div>, document.body
-                                  )}
+                                  </ReferencePopover>}
                                 </div>
                               </div>
                             </td>
                           </tr>
                         );
                       })}
+                      {visible.length === 0 && <tr className="environment-empty-row"><td colSpan={8}><Empty title={environmentTotal === 0 ? "还没有浏览器环境" : "没有符合条件的环境"} text={environmentTotal === 0 ? "新建一个环境，选择网络与内核即可开始。" : "试试其他关键词或清除筛选，已保存环境没有被删除。"} action={environmentTotal === 0 ? <Button className="primary" onClick={() => void openCreate()}>创建第一个环境</Button> : <Button onClick={() => { setSearch(""); setGroup("全部分组"); setStatus("all"); setPage(1); }}>清除筛选</Button>} /></td></tr>}
                     </tbody>
                   </table>
                 </div>
-                {visible.length === 0 && (
-                  <Empty
-                    title={environmentTotal === 0 ? "还没有浏览器环境" : "没有符合条件的环境"}
-                    text={environmentTotal === 0 ? "新建一个环境，选择网络与内核即可开始。" : "试试其他关键词或清除筛选，已保存环境没有被删除。"}
-                    action={
-                      environmentTotal === 0 ? <Button className="primary" onClick={() => void openCreate()}>创建第一个环境</Button> : <Button
-                        onClick={() => {
-                          setSearch("");
-                          setGroup("全部分组");
-                          setStatus("all");
-                        }}
-                      >
-                        清除筛选
-                      </Button>
-                    }
-                  />
-                )}
-                <div className="table-footer">
+                <div className="table-footer environment-pagination">
                   <span>
                     共 {filteredTotal} 个环境{nativeMode && environmentQueryBusy ? " · 正在读取分页…" : ""}
-                    <span className="footer-separator">·</span>每页 8 条
+                    <span className="footer-separator">·</span>每页 10 条
                   </span>
                   <div className="pagination">
                     <button
@@ -1771,19 +1450,11 @@ export default function App({ application }: { application: ApplicationService }
                     </button>
                   </div>
                 </div>
-              </section>
-              <div className="bottom-tip">
-                <ShieldCheck size={17} />
-                <span>
-                  设备档案创建后固定保存。更换代理、关闭窗口或重新打开，都不会自动更换指纹。
-                </span>
-                <button onClick={() => navigate("guide")}>
-                  了解环境规则
-                  <ChevronRight size={14} />
-                </button>
+                </section>
               </div>
             </>
           )}
+          {route === "groups" && <>{outcomePanel}<EnvironmentGroups groups={groups} environments={state.environments} native={nativeMode} onFilter={value => { setGroup(value); setStatus("all"); navigate("environments"); }} onAssign={openGroupAssignment} /></>}
           {route === "proxies" && nativeMode && <NativeProxyManager application={application} workspace={workspace} importOpen={nativeProxyImportOpen} onImportOpenChange={setNativeProxyImportOpen} />}
           {route === "proxies" && !nativeMode && (
             <>
@@ -2357,22 +2028,6 @@ export default function App({ application }: { application: ApplicationService }
               </section>
             </>
           )}
-          <footer className="page-footer">
-            <span>
-              <Monitor size={13} />
-              Windows 本地版<span className="footer-separator">·</span>
-              {nativeMode ? "SQLite 本机持久化 · 直连/独立认证代理代码已接 · 实机验收待补" : "仅供交互验收，请勿输入真实凭据"}
-            </span>
-            <button
-              onClick={() => {
-                setDocTab("prd");
-                navigate("guide");
-              }}
-            >
-              <Link2 size={12} />
-              {summary.req}
-            </button>
-          </footer>
         </main>
       </div>
       {drawerVisible && drawer && (
@@ -2461,7 +2116,7 @@ export default function App({ application }: { application: ApplicationService }
       {dialog && (
         <div className={`overlay modal-overlay ${drawerVisible ? "stacked-overlay" : ""}`}>
           <div
-            className={`modal ${["proxy", "cookies"].includes(dialog.kind) ? "wide-modal" : ""}`}
+            className={`modal ${["proxy", "cookies"].includes(dialog.kind) ? "wide-modal" : ""} ${dialog.kind === "group" ? "group-modal" : ""}`}
             ref={overlayRef}
             role="dialog"
             aria-modal="true"
@@ -2915,14 +2570,11 @@ export default function App({ application }: { application: ApplicationService }
               )}
               {dialog.kind === "group" && (
                 <>
-                  <p>
-                    将选中的 <strong>{selected.length}</strong>{" "}
-                    个环境归入指定分组。没有选中环境时，请先在列表勾选。
-                  </p>
                   <Field label="分组名称">
                     <input
                       aria-label="分组名称"
                       value={groupName}
+                      disabled={groupPending}
                       onChange={(e) => setGroupName(e.target.value)}
                       placeholder="例如：新品测试"
                       list="existing-groups"
@@ -2933,6 +2585,8 @@ export default function App({ application }: { application: ApplicationService }
                       ))}
                     </datalist>
                   </Field>
+                  <p className="group-scope-note">将明确选定的 <strong>{dialog.ids.length}</strong> 个环境归入此名称。<br />筛选与翻页不会扩大这次范围。</p>
+                  <p>这是环境记录的分组标签，不创建独立空分组。普通分组修改保留 seed、内核、代理与浏览数据。</p>
                 </>
               )}
               {formError && (
@@ -3071,7 +2725,7 @@ export default function App({ application }: { application: ApplicationService }
               {dialog.kind === "group" && (
                 <Button
                   className="primary"
-                  disabled={groupPending || !selected.length || !groupName.trim()}
+                  disabled={groupPending || !dialog.ids.length || !groupName.trim()}
                   onClick={() => void assignSelectedGroup()}
                 >
                   应用到所选环境
@@ -3101,7 +2755,7 @@ export default function App({ application }: { application: ApplicationService }
         </div>
       )}
       {storageIssue && (
-        <div className="overlay modal-overlay">
+        <div className="overlay modal-overlay workspace-blocker">
           <div
             className="modal"
             role="alertdialog"
