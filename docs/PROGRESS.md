@@ -7,7 +7,8 @@
 - 基线：PR #31 精确 `e170099`，集成分支 `codex/issue32-37-ui-integration`，增量 [草稿PR #38](https://github.com/axgiroud312-byte/prism-local-browser/pull/38)。保留 #31 → #27 依赖，不自动合并。
 - #33 shell/环境表/分组已合入；#34 模块及正式环境窗口挂载合入 `0d67ea5`，dirty/force确认冻结准确草稿/会话，49/49定向通过；#35 模块合入 `c6371eb`；#36 模块合入 `3c93a2a`。各自结果见 [#33](verification/issue33.md)、[#34](verification/issue34.md)、[正式挂载](verification/issue34-integration.md)、[#35](verification/issue35.md)、[#36](verification/issue36.md)。
 - #37 全部主页面、唯一代理往返与共用弹层接入已完成；独立审查发现的准确代理报告、取消预检失败、关闭/DOM替换焦点、重复遮罩及按钮hover均已修复并复验，最后源码静态复审无已核实新P1/P2。共享全套在 `681f823` **196/196，4.7分钟**；后两项CSS小修相关6/6、5/5及两视口实际测量通过。PRD底部取图等待正文后重拍，补native密集备份第2页；`70943b0`完整 **346/346** 实际App截图取证、0失败/0未知夹具方法。逐状态视觉和参考缺口另见 [#37记录](verification/issue37.md)，不是全产品1:1或真实桌面完成。
-- 本轮清单346图逐项复核完毕，78 ADAPTED / 252 MAPPED / 16 MISSING / 0 FAIL；#33/#34/#35在支持范围和明定适配/映射上达标，可闭票。完整原指南参考仍不足，#36/#37/#32继续OPEN；没有完整严格1:1声明，不把清单外的额外状态变体也算已看。
+- 本轮清单346图逐项复核完毕，78 ADAPTED / 252 MAPPED / 16 MISSING / 0 FAIL；当时按限定范围关闭#33/#34/#35，完整目标复查发现恢复/独立窗口/证据缺口后已恢复OPEN。新增修复前24图22 MAPPED/2 FAIL不倒改；全部六票继续OPEN，PR保持草稿，不把原清单当成全部支持窗口分母。
+- 三处force/文件hover UI修复和迁移确认资格修复已集成 `0f7a233`，实际62/62定向、两项noEmit及独立只读增量源码复审通过；新比例修复及支持状态证据补齐仍在进行。新增 [274项前端交叉表](verification/issue37-supported-states.md) 是113历史COVERED/60 PARTIAL/101 MISSING，不是274通过。原设置候选6图与旧40/80分开，完整原指南仍缺，实际进展见 [继续补核](verification/issue37-continuation.md)。
 - 已核对并解除本轮5个子worktree注册，源码均已合入且无未保存文件，停用其Vite。保留主5173开发页、5190私有对照及5198原图画廊；3个Windows句柄占用的空目录仅为空壳，未强杀其他进程/广域删除，历史worktree不动。
 - 只使用 Vite、相关定向点击和必要类型检查；没有本轮构建、打包、Go/Wails、UIA或真实内核/网络/目录恢复实验。历史正式4/21和旧候选内容不变。
 
