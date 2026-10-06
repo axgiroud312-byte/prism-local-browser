@@ -4,7 +4,7 @@
 
 - 已有成果：[#28](https://github.com/axgiroud312-byte/prism-local-browser/issues/28) 精简 CI，`53ac883` 保留；本地 13/13、远程 [37419040709](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37419040709) 单个 Browser clicks / 13/13 已通过，不构建或打包。
 - 当前批次：[#30](https://github.com/axgiroud312-byte/prism-local-browser/issues/30) 承接环境表与统一创建/编辑窗口；[#29](https://github.com/axgiroud312-byte/prism-local-browser/issues/29) 负责整体六项验收，不重复页面实现。目标为服务内核/直连或代理/自动固定指纹/创建并打开/关闭重开，保留失败恢复与身份保护。
-- 验证准备：`245634c` 已提交新增行为测试定义，基线定向用例预期 RED；文档及 [逐票矩阵](verification/issue28-30.md) 已准备。新实现集成、demo/注入 bridge 实际结果、三张新截图、共享 `npm run check` 和最新远程 job 均为 **PENDING**，尚不能宣称 #29/#30 已完成。
+- 本地验收完成：实现 `9e5b819`、审查修复 `d039147` 已集成；`npm run check` **21/21，45.2 秒**（14 demo + 7 合成 bridge），类型检查通过，三张当前源码合成截图已核对。#29 六项与 #30 七项分别见 [逐票矩阵](verification/issue28-30.md)。早期失败和修复保留，未跳过旧用例；最新远程结果及待合并增量 PR 随实际回执更新。
 - 本批次没有重建历史候选或执行真实桌面验收；新 Vite UI 不冒称已包含在旧安装包。源码、测试、文档/截图分文件负责，由协调者最终集成并登记实际结果。
 - 旧 T01–T21 及其缺口保留为历史，不再自动逐票推进；以下是此前候选交付记录，不能作为当前检查要求。
 

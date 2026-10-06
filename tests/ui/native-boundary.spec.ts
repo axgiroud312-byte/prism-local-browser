@@ -211,7 +211,7 @@ test("injected native invalid quantities keep the draft editable without submitt
   await editor.locator("details").first().locator(":scope > summary").click();
   for (const invalid of ["0", "-1", "", "0.5", "1.5", "9007199254740992"]) {
     await page.getByLabel("创建数量").fill(invalid);
-    await page.getByRole("button", { name: /^创建(?: .*个环境)?$/ }).click();
+    await editor.getByRole("button", { name: Number(invalid) > 1 ? `查看 ${Number(invalid)} 项创建计划` : "创建", exact: true }).click();
     await expect(editor.getByRole("alert")).toContainText("正整数");
     await expect(page.getByLabel("创建数量")).toBeEnabled();
     await expect(page.getByLabel("环境名称", { exact: true })).toHaveValue("数量恢复合成样本");

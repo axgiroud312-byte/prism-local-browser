@@ -2,7 +2,7 @@
 
 面向 Windows 本机多环境管理的桌面底座、独立前端原型及产品开发文档。
 
-**当前工作是收敛环境列表与一个窗口里的创建、编辑和打开流程。** [#28](https://github.com/axgiroud312-byte/prism-local-browser/issues/28) 的轻量浏览器 CI 已有本地/远程结果；[#30](https://github.com/axgiroud312-byte/prism-local-browser/issues/30) 承接页面实现，[#29](https://github.com/axgiroud312-byte/prism-local-browser/issues/29) 逐项验收整体流程，不重复实现。新流程的点击检查与截图目前为 **PENDING（待协调者记录实际结果）**，见 [本批次验收矩阵](docs/verification/issue28-30.md) 与 [GOAL](docs/GOAL.md)。
+**环境列表与统一创建/编辑窗口已完成本地页面验收。** [#28](https://github.com/axgiroud312-byte/prism-local-browser/issues/28) 的轻量 CI 直接复用；[#30](https://github.com/axgiroud312-byte/prism-local-browser/issues/30) 实现页面，[#29](https://github.com/axgiroud312-byte/prism-local-browser/issues/29) 的六项整体流程分别核对。`npm run check` **21/21，45.2 秒**，覆盖 demo 与合成注入 bridge；最新远程结果和待合并交付见 [本批次验收矩阵](docs/verification/issue28-30.md) 与关联 PR，不能当作真实桌面验收。
 
 既有正式验收仍为4/21。固定档案、独立会话、AppContainer代理保护、FIFO、Cookie、批次、完整备份/预检/恢复、回收、迁移和诊断均有本地实现。本机真实三存储隔离/重开、代理故障、双版本迁移和恢复已有证据；独立远端出口、人工新页面及干净Windows验收尚缺。候选身份、实际检查和逐票关闭条件见[验收报告](docs/verification/V1-final.md)。网页原型仍独立为demo，浏览器点击通过不等于原生能力验收通过。
 
@@ -14,13 +14,13 @@
 
 开发进度：[当前执行规则](docs/GOAL.md) · [实现与验收状态](docs/PROGRESS.md)。T01 应用契约与 DemoAdapter 已验收；T02 的 WailsAdapter 使用相同页面连接本地服务，各项能力分票验收，不以模拟成功替代。
 
-![历史环境工作台（本批次改造前）](docs/screenshots/environments.png)
+![当前环境列表（合成 demo 数据）](docs/screenshots/issue30-environments.png)
 
-新源码合成截图待生成并核对：`docs/screenshots/issue30-environments.png`、`docs/screenshots/issue30-create.png`、`docs/screenshots/issue30-narrow.png`。上图不是新流程的验收证据；本批次没有重建候选安装包。
+[同一新建窗口](docs/screenshots/issue30-create.png) · [390px 窄窗口](docs/screenshots/issue30-narrow.png)。均来自当前 Vite 源码和合成数据，已核对可见布局；本批次没有重建候选安装包。
 
 ## 当前可以做什么
 
-环境页以下按 #29/#30 的源码交互契约说明；新检查仍待完成，不能当作已发布安装包的功能清单。
+环境页以下描述 #29/#30 已检查的源码交互；不能当作旧候选安装包的功能清单。
 
 | 页面       | 原型交互                                                                                              |
 | ---------- | ----------------------------------------------------------------------------------------------------- |

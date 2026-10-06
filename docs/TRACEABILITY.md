@@ -4,7 +4,7 @@
 
 版本：1.0 · 更新日期：2026-10-06
 
-当前流程调整：UX-001 / DOC-001 对应 [#28 浏览器点击 CI](https://github.com/axgiroud312-byte/prism-local-browser/issues/28)，`53ac883` 保留，本地/远程 13/13 已有结果；默认 `tests/ui` 由 Vite 提供页面，不构建或打包，报告在 `output/playwright/`。ENV-001 / ENV-002 / ENV-003 / FP-001 / PRX-001 / CORE-001 / UX-001 的环境表与统一窗口由 [#30](https://github.com/axgiroud312-byte/prism-local-browser/issues/30) 唯一实现，[#29](https://github.com/axgiroud312-byte/prism-local-browser/issues/29) 逐项验收整体流程；新增集成/点击/截图/最新 CI 均为 [PENDING](verification/issue28-30.md)，不是已完成声明。
+当前流程调整：UX-001 / DOC-001 对应 [#28 浏览器点击 CI](https://github.com/axgiroud312-byte/prism-local-browser/issues/28)，`53ac883` 保留，本地/远程 13/13 已有结果；默认 `tests/ui` 由 Vite 提供页面，不构建或打包，报告在 `output/playwright/`。ENV-001 / ENV-002 / ENV-003 / FP-001 / PRX-001 / CORE-001 / UX-001 的环境表与统一窗口由 [#30](https://github.com/axgiroud312-byte/prism-local-browser/issues/30) 唯一实现，[#29](https://github.com/axgiroud312-byte/prism-local-browser/issues/29) 六项分别核对；本地 **21/21** 和新截图已通过对应范围检查，最新远程与待合并交付见 [逐票证据](verification/issue28-30.md)，不增加桌面验收计数。
 
 本表关联12项需求、原型与native入口。源码入口不代表完整验收；[本轮逐票矩阵](verification/V1-final.md)明确区分服务回归、真实桌面、本机/独立网络及候选交付。[ACCEPTANCE](ACCEPTANCE.md)为实际结果索引；正式计数仍4/21。
 
@@ -29,11 +29,11 @@
 
 ## 已发布的桌面开发任务
 
-### #29/#30 核心流程增量（2026-10-06；验收 PENDING）
+### #29/#30 核心流程增量（2026-10-06；本地页面验收通过，待合并）
 
-- #30 独占页面实现，#29 保留六项整体核对；本次文档只定义与追踪交互，不重复写源代码。相关需求为 ENV-001/002/003、FP-001/002、PRX-001、CORE-001、UX-001、DOC-001；不改变后台、数据库、档案/目录/凭据合同。
-- 自动稳定档案、服务内核、直连/代理、创建/创建并打开/保存、代理导入保草稿、创建提交与打开失败恢复的规则见 [PRD](PRD.md#2-核心工作流程) 和 [应用交互契约](DEVELOPMENT.md#3-路由和界面契约)。#30 新组件路径暂按文件名定位，待源码集成核实。
-- 可重复验收入口为 [demo 点击用例](../tests/ui/environment.spec.ts)、[合成注入 bridge 用例](../tests/ui/native-boundary.spec.ts) 及 [逐票矩阵](verification/issue28-30.md)。新增结果和截图仍 PENDING；只沿用 #28 Vite 检查，集成后共享一次 `npm run check`，最新远程结果另记。
+- #30 独占页面实现，#29 六项逐条整体核对；实现 `9e5b819` 和修复 `d039147` 已集成。相关需求为 ENV-001/002/003、FP-001/002、PRX-001、CORE-001、UX-001、DOC-001；不改变后台、数据库、档案/目录/凭据合同。
+- 自动稳定档案、服务内核、直连/代理、创建/创建并打开/保存、代理导入保草稿、创建提交与打开失败恢复的规则见 [PRD](PRD.md#2-核心工作流程) 和 [应用交互契约](DEVELOPMENT.md#3-路由和界面契约)。已核实 [`EnvironmentForm`](../src/components/EnvironmentForm.tsx)、`App/saveEnvironment`、`App/launch`、`App/stop` 和原适配层路径；行菜单、非法数量及存储失败回归通过。
+- 可重复验收入口为 [demo 点击用例](../tests/ui/environment.spec.ts)、[合成注入 bridge 用例](../tests/ui/native-boundary.spec.ts) 及 [逐票矩阵](verification/issue28-30.md)。本地 **21/21，45.2 秒**、三张截图已检查；只沿用 #28 Vite 检查，#29/#30 共用该整轮结果，最新远程结果另记，不按票重跑。
 - README/使用指南明确新源码不等于旧候选 exe；历史 4/21、T05–T21 OPEN、候选身份和独立远端/人工桌面/干净 Windows 缺口不改写。
 
 ### 首版范围与执行顺序（2026-10-05）
