@@ -38,6 +38,10 @@
 
 新干净67c98db来源候选`.5/.6`已构建/本机无点击安装复验通过，当前主`.6`见[总报告](V1-final.md)和[安装回执](V1-candidate-acceptance.json)。旧`.4`保留原哈希/证据但不再是最新；未复用旧版本/覆盖日常安装。默认CI也增加一次性Windows无点击安装，实际结果另记，不混用runner开发预览与本机候选。
 
+runner首轮尚未安装便被dirty门禁拒绝；全新检出复现Go锁文件CRLF/LF差异。获用户批准仅固定两个锁文件LF后，全新检出两次production构建均保持干净/manifest sourceDirty=false；实际改动自有go.mod内容仍被原脚本exit1拒绝且未运行安装，精确恢复本测试改动后干净。[门禁证据](V1-ci-source-guard.json)明确物理换行SHA与规范化依赖的区别。产品及`.6`二进制未改变，远程实际安装结果单列。
+
+eec3333[远程复验37409611901](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37409611901)三job及真实无点击安装已通过；下载[安装回执](V1-ci-installation.json)/两安装包SHA核对。Server 2025已有WebView2上的开发预览`.1/.2`完成6次native正常exit0、升级/保留卸载/重装/自有删除；四点击分支跳过。该范围不替代精确交付`.6`的Home新用户/VM、缺WebView2或人工操作。原失败仍保留，正式4/21/全部blocking不变。
+
 ## 仍需外部条件或人工
 
 1. 授权测试代理与独立HTTPS/WSS、权威DNS、IPv4/IPv6、UDP/STUN端及日志；凭据用本机受保护配置，不贴聊天/入仓库。

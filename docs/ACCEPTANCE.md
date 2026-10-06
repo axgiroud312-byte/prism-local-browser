@@ -12,6 +12,8 @@
 
 新增无点击runner安装首轮[37407497714](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37407497714)在执行安装之前被脏源码门禁挡住；两Node/Go/build通过，但本轮整体FAIL，内核后续探测未执行。全新检出复现Wails/go mod tidy使go.mod由CRLF变LF，只有该文件状态变脏、规范化diff为空、依赖SHA不变；用户批准继续仅修CI/构建管理，`.gitattributes`只固定go.mod/go.sum为LF。未忽略状态/移除tidy/放宽源码或安全核对，修订后的真实复验另记；本机candidate.6不受影响。[本轮远程回执](verification/V1-local-remote.json)保留首轮失败。
 
+**修订复验已通过：**[37409611901](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37409611901)，eec3333三个job SUCCESS；全新检出两次production构建干净/两manifest sourceDirty=false，实际改动go.mod仍被原脚本在安装前拒绝，[门禁实测](verification/V1-ci-source-guard.json)。一次性Server 2025已有WebView2，development-preview.1/.2实际default known folders安装/重开/升级保身份/拒降级25/保留卸载/重装/仅删自有合成根通过；6只读native页面和正常exit0、5次必须合成记录读取满足，下载[原脱敏安装回执](verification/V1-ci-installation.json)及两个安装包SHA已核对。PR head和merge checkout分别记录，四点击分支SKIP；Node22/24各131/类型/build/51文档、Go全包/vet、真实148诊断23.67秒/档案读回41.12秒通过。新LF go.sum的物理SHA不同但规范化依赖逐字相同，旧哈希保留。不是精确candidate.6在Home新用户/VM/缺WebView2或人工验收，freshWindowsUser=false不改写；正式4/21不变。
+
 用户恢复登录后已核对GitHub身份；38个本地提交普通推送成功，创建[草稿PR #27](https://github.com/axgiroud312-byte/prism-local-browser/pull/27)，17票实测/缺口评论均已发布，全部仍OPEN。[首轮默认无点击CI](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37400229514)两Node检查通过，desktop原SDDL全字符串断言失败；当时未先认定误报，后续实际权限核对见下段。首轮安装构建及真实内核步骤未执行，无artifact上传失败为前序未产包的结果，不把首轮改记成功。[同步回执](verification/V1-remote-sync.json)记录URL/commit/范围。GitHub认证和修订CI阻塞已解除；独立外部、特殊真实场景、人工、干净Windows仍缺，正式4/21不变。
 
 用户已明确确认CI修复范围；仅修改测试查询/断言，不改生产ACL/provider。显式请求owner/group/DACL并比较实际SID、每条ACE字节/顺序和DACL继承保护；新增12个语义子例确保权限扩大/deny/身份/继承/顺序改变被拒，部分/NULL DACL也拒。实际目录回收与占用安全回归未删或跳过，本机4个顶层用例/12子例及kernel vet通过；远程复验另记，不重建未改的候选业务二进制。

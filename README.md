@@ -52,7 +52,7 @@ npm run preview
 
 当前用户已要求停止自动化点击。不启动上述点击流程；日常与自动 CI 改用 `npm run check:background`（不包含 UI 点击），保留旧测试供明确要求时使用。CI 的点击步骤只有手动触发且显式勾选 `run_ui_clicks` 才执行。实际桌面验证也不再自动抢焦点或截取屏幕。
 
-2026-10-06 [本机缺口补验](docs/verification/V1-local-acceptance.md)覆盖真实强制停止、Cookie边界、257目录、12真实队列、双环境完整恢复和实际权限失败。目录失败崩溃已修，新`.6`候选/无点击安装闭环通过；旧`.4`只保留历史，最新来源/哈希见总报告。默认CI新增一次性Windows无点击安装，实际结果另记；独立远端、人工及精确交付包干净Windows等边界仍保留。
+2026-10-06 [本机缺口补验](docs/verification/V1-local-acceptance.md)覆盖真实强制停止、Cookie边界、257目录、12真实队列、双环境完整恢复和实际权限失败。目录失败崩溃已修，新`.6`候选/本机无点击安装通过；换行门禁根因仅以Go锁LF修正，远程三job及一次性Server开发预览安装也通过。旧`.4`只保历史，最新来源/哈希和[准确远程范围](docs/verification/V1-local-remote.json)单列；独立远端、人工、精确`.6`的Home新用户/VM/缺WebView2等仍待验。
 
 ## 从源码运行 Windows 桌面底座
 

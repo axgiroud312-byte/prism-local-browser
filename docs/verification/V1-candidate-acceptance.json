@@ -91,7 +91,14 @@
     "draftPullRequest": "https://github.com/axgiroud312-byte/prism-local-browser/pull/27",
     "sourceCommit": "67c98dbe2a106976eb42e9d37a14cbde2b10f015",
     "sourceCI": "https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37406703053",
-    "status": "recorded separately; do not infer product installation from builds"
+    "status": "Both candidate-source CI and subsequent disposable-host no-click installation succeeded; channels/binary hashes and Home/new-user/VM acceptance remain separate.",
+    "noClickInstallationCI": {
+      "commit": "eec3333ad35c4a27d8cd25f267079a00c629117c",
+      "url": "https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37409611901",
+      "conclusion": "success",
+      "receipt": "docs/verification/V1-local-remote.json",
+      "scope": "Actual product installation and native configuration reopen/upgrade/uninstall on the disposable Windows Server 2025 GitHub host; not exact delivered candidate.6 or a new Windows Home user/VM acceptance."
+    }
   },
   "remaining": [
     "independent remote egress matrix",

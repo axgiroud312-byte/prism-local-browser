@@ -1,18 +1,18 @@
 # Goal 当前执行位置
 
-更新时间：2026-10-06，本机缺口补验及批次目录失败修复。
+更新时间：2026-10-06，本机安全补验、新候选和远程无点击安装复验通过。
 
 - Goal：正式验收**4/21**；T05–T21共17票均有本地实现/部分验证，保持OPEN，首版候选不等于正式交付。
-- 当前任务：12项本机安全补验与批次typed-nil修复通过；新`.5/.6`干净67c98db构建/本机无点击安装闭环通过。主包`output/delivery/0.3.0-preview.6-v1-candidate/`，SHA=`9f8c60df8bb6e6369c14a13d4b5e0c5a037404b98bf2b3445a9d765a9355b7a9`，未签名/无内核。旧`.4`仅历史；默认CI新增一次性Windows无点击安装，实际远程结果另记。[总报告](verification/V1-final.md)、[补验](verification/V1-local-acceptance.md)，尚未正式交付。
+- 当前任务：12项本机安全补验与批次typed-nil修复通过；新`.5/.6`干净67c98db构建/本机无点击安装闭环通过。主包`output/delivery/0.3.0-preview.6-v1-candidate/`，SHA=`9f8c60df8bb6e6369c14a13d4b5e0c5a037404b98bf2b3445a9d765a9355b7a9`，未签名/无内核。eec3333远程三job及一次性Server开发预览无点击安装也通过，旧`.4`仅历史。[总报告](verification/V1-final.md)、[补验](verification/V1-local-acceptance.md)及[远程回执](verification/V1-local-remote.json)。仍未正式交付。
 - 已有实跑：正式代理启动/关闭/重开、故障和资源恢复、FIFO/Cookie、真实148→150代理迁移/完整回退；direct三存储/回收/恢复五切点只算各自范围。
 - 现场：`goal/v1-remaining-integration`，主代理唯一写，子代理只读。四个交接修复保留并提交；无自动点击/停服/真实数据修改。2026-10-06已核对恢复登录，38个原本本地提交已推送，创建[草稿PR #27](https://github.com/axgiroud312-byte/prism-local-browser/pull/27)；修订默认无点击CI已通过，暂不合并或关闭票。
 
 ## 当前阻塞与恢复入口
 
 - 正式provider、proxy迁移副本及本机故障矩阵已验证；跨登录/重启及独立外部全路径仍待验，未知清理继续占用。
-- 148/150均已获核验并运行；专用外部代理/独立观察器未发现，开发HTTP_PROXY不算授权资源。最小配置与人工步骤见报告；干净Windows产品安装/人工验收仍缺，新runner后台检查和本机空产品根都不能替代。
+- 148/150均已获核验并运行；专用外部代理/独立观察器未发现，开发HTTP_PROXY不算授权资源。最小配置与人工步骤见报告；精确candidate.6在Home新用户/VM、缺WebView2及人工验收仍缺，Server开发预览安装和本机空产品根不替代。
 - GitHub认证/推送/开PR/CI阻塞已解除；[修订CI](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37401271261)对应6cf1768，三个job全绿。两Node各131项后台、Go全部包/vet、preview.1/.2构建、真实148探测及保存档案读回通过；点击步骤未启用，未验证runner产品安装。生产ACL/provider未改，首轮FAIL保留。[回执](verification/V1-remote-sync.json)。独立远端、特殊真实场景、人工与干净Windows仍缺。
-- 新runner无点击安装[37407497714](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37407497714)在源码dirty门禁失败，尚未安装；全新检出复现仅go.mod换行CRLF→LF/规范化diff为空。用户批准只修构建管理，固定Go两个锁文件LF，保留全部源码/安全检查；新检出构建与远程复验进行中。本机candidate.6及来源CI成功不改写为失败，也不将本次远程FAIL改记成功。
+- 新runner安装初轮[37407497714](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37407497714)在dirty门禁拒绝、未安装，原FAIL保留。用户批准只修构建管理，固定两个Go锁文件LF后，全新检出两次构建干净、真实内容改动仍被原门禁拒绝。eec3333[复验37409611901](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37409611901)三job及Server实际安装/重开/升级/卸载通过，6应用exit0，下载回执/两个安装包摘要已核对。[门禁](verification/V1-ci-source-guard.json)、[安装](verification/V1-ci-installation.json)。candidate.6来源不变，其他人工/独立远端等缺口不解除。
 
 ## 任务状态
 
@@ -33,16 +33,16 @@
 | T13 | #14 | 257项目录/真实ACL续跑通过 | [补验](verification/V1-local-acceptance.md)；typed-nil生产修复，百万实体/OS资源/人工仍缺 |
 | T14 | #15 | 12项真实FIFO/取消/单失败重试通过 | [补验](verification/V1-local-acceptance.md)；10→11真实运行且正常停止，OS资源/独立远端/UI待补 |
 | T15 | #16 | 两运行环境完整备份/实际ACL通过 | [补验](verification/V1-local-acceptance.md)；真正NTFS空间不足、人工/共同条件保留 |
-| T16 | #17 | 服务回归/凭据/精确build候选通过，人工待验 | [清单](verification/T16.md)、[集中结果](verification/V1-final.md)；拒解为注入，不假报跨SID实测 |
+| T16 | #17 | 服务/实际预检ACL/精确build候选通过，人工待验 | [补验](verification/V1-local-acceptance.md)、[清单](verification/T16.md)；拒解为注入，不假报跨SID实测 |
 | T17 | #18 | 双真实环境三存储恢复/ACL/SQLite容量通过 | [补验](verification/V1-local-acceptance.md)；真正NTFS不足/人工待验 |
 | T18 | #19 | 原切点及实际ACL重开保护/原任务恢复通过 | [补验](verification/V1-local-acceptance.md)；SQLite容量不是NTFS满，未闭票 |
 | T19 | #20 | 原切点及实际DELETE权限恢复通过 | [补验](verification/V1-local-acceptance.md)；只删已确认项，B/历史备份不变，人工/其他资源待验 |
 | T20 | #21 | 两真实build代理迁移/回退及4硬中断切点通过 | [清单](verification/T20.md)；独立远端、人工与网站兼容待验 |
-| T21 | #22 | 诊断/候选/本机无点击安装闭环通过，正式待验 | [报告](verification/V1-final.md)、[回执](verification/V1-candidate-acceptance.json)；远程CI通过，独立远端、人工及干净Windows产品安装仍缺 |
+| T21 | #22 | 新候选/本机与Server无点击安装通过，正式待验 | [报告](verification/V1-final.md)、[本机](verification/V1-candidate-acceptance.json)、[Server](verification/V1-ci-installation.json)；精确包Home新用户/VM、缺WebView2/人工/独立远端仍缺 |
 
 ## 最近检查与当前工作
 
-- 2026-10-06自主补验：12项统一复验通过，12份脱敏观测及源码/测试binary摘要保存；实际ForceStop、Cookie边界、257目录、12真实队列、双运行环境完整备份恢复、备份/预检/恢复/删除ACL、SQLITE_FULL=13。目录真实拒绝暴露并修typed-nil清理崩溃；只读评审的线程PID复用窗口已以持续准确root句柄修复并复验，末审无可信P1/P2。131 Node后台、342 Go顶层PASS/30 opt-in/helper SKIP与全包vet exit0；11新opt-in单独通过，原FAIL保留。新候选重建/无点击安装和远程同步进行中；没有自动点击/停服/提权/真实数据，正式4/21不变。
+- 2026-10-06自主补验：12项统一复验通过，12份脱敏观测及源码/测试binary摘要保存；实际ForceStop、Cookie边界、257目录、12真实队列、双运行环境完整备份恢复、备份/预检/恢复/删除ACL、SQLITE_FULL=13。目录真实拒绝暴露并修typed-nil清理崩溃；只读评审的线程PID复用窗口已以持续准确root句柄修复并复验，末审无可信P1/P2。131 Node后台、342 Go顶层PASS/30 opt-in/helper SKIP与全包vet exit0；11新opt-in单独通过。新candidate.6/本机安装及eec3333 Server开发预览无点击安装均通过，原FAIL及换行门禁首轮FAIL保留。无自动点击/停服/提权/真实数据，正式4/21不变。
 
 - 2026-10-06远程接续：恢复登录已核对；origin/main无新增分叉，38提交普通push成功，无强制覆盖；[草稿PR #27](https://github.com/axgiroud312-byte/prism-local-browser/pull/27)已创建并关联会话。17票结果评论已发布且全部OPEN；首轮默认CI两Node检查通过、desktop原SDDL字符串断言失败，安装构建/真实内核步骤未执行，首轮FAIL保留。用户明确确认方案后，仅修测试观测：显式owner/group/DACL，保持owner/group、每条ACE字节/顺序/继承标记及DACL保护一致；自动继承完成元数据AI不当成授权差异。12子例验证权限扩大、deny改变、SID/顺序/保护等都拒绝；不完整/NULL DACL拒绝。原实际目录恢复和占用回归仍执行，本机4项与vet通过，生产保护代码/候选不改，远程复验结果见下一条。
 

@@ -18,7 +18,11 @@
 
 候选来源67c98db的[远程CI 37406703053](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37406703053)三个job已通过，点击分支跳过；该次尚无产品安装步骤。[本轮远程回执](V1-local-remote.json)含10个补验评论，仍不闭票。默认CI新增一次性Windows runner无点击安装，首轮[37407497714](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37407497714)在安装前被源码dirty门禁拒绝；两Node/Go/build通过，后续内核探测跳过，不把首轮整体改记通过。
 
-全新Windows检出已复现只有go.mod由CRLF变LF、规范化diff为空、锁文件摘要相同；Wails正常go mod tidy改写换行导致状态不干净。用户批准只修CI/构建管理，`.gitattributes`仅固定go.mod/go.sum为LF，没有取消tidy、忽略脏源码、重写manifest或放宽门禁；修订后的全新检出/远程安装实际结果另记。产品代码和本机`.6`来源不变，runner development-preview.1/.2不冒充candidate.6或同一哈希。**下列`.4`仅为修复前历史产物**。
+全新Windows检出已复现只有go.mod由CRLF变LF、规范化diff为空、锁文件内容相同；Wails正常go mod tidy改写换行导致状态不干净。用户批准只修CI/构建管理，`.gitattributes`仅固定go.mod/go.sum为LF，没有取消tidy、忽略脏源码、重写manifest或放宽门禁。修正后又全新检出，两次production预览构建/manifest sourceDirty=false且工作树完全干净；在自有检出实际修改go.mod内容，原安装脚本仍exit1在安装前拒绝，恢复本测试改动后再次干净。[源码门禁实测回执](V1-ci-source-guard.json)。旧go.sum物理CRLF与新LF的SHA不同但规范化依赖逐字相同，分别记录不改写旧哈希。远程安装复验另记。产品代码和本机`.6`来源不变，runner development-preview.1/.2不冒充candidate.6或同一哈希。**下列`.4`仅为修复前历史产物**。
+
+**远程无点击安装复验已通过：**[37409611901](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37409611901)，eec3333三个job SUCCESS。一次性Windows Server 2025已有WebView2，实际default known folders/空产品根、development-preview.1/.2安装→6次只读native加载及正常exit0→升级保身份→拒降级25→保留卸载/重装→仅删自有合成根；5次要求合成记录的读取均满足。[下载核对的安装回执](V1-ci-installation.json)、[版本/哈希/步骤及范围](V1-local-remote.json)。实际checkout是PR merge `fa5ade1`，与PR head eec3333分别记录；两manifest sourceDirty=false、安装包实际摘要匹配。两Node各131后台/类型/build/51文档、Go全包/vet、真实148诊断探测23.67秒和档案保存/重生成/回滚41.12秒通过，四个点击分支均SKIP。初轮FAIL仍保留。
+
+这是一次性Server测试机上的开发预览安装，不是精确交付`.6`在Windows Home新用户/VM、缺WebView2或人工选择器/卸载默认框验收；`freshWindowsUser=false`不改写为true。没有因已有兼容WebView2就声称缺依赖流程通过，未加入产品网络或完整网站验收声明。
 
 ### 修复前候选的历史来源与证据
 
@@ -136,7 +140,7 @@ NSIS bootstrap为i386是既有体系行为，安装限定x64，主程序和维�
 4. A/B正常停后完整备份，改合成三存储，预检→明确恢复→重开；A回收/找回再核对，复制环境必须新seed/空目录，只对自有复制项永久删除。检查中断/占用重试和未知结果不会另建任务。
 5. 选定停止A做148→150工作副本试用、正常停止、切换及原备份退回；不宣称所有目标网站兼容。活动页诊断先取消保存再新文件保存/核实，确认报告不含身份/路径/凭据/Cookie。
 
-当前候选无点击**复验必须使用构建来源67c98db的干净Git checkout**及`.5/.6`参数，不能用后续报告提交或无Git源码ZIP冒充同源码；可在隔离位置新建detached worktree，不回退/重置本工作区。历史`.3/.4`仅绑定4b38dc8。脚本需要项目局部`.tools/go/bin/go.exe`及Node开发工具；不是产品安装依赖。普通用户人工清单只需WebView2和明确选择的内核。CI中局部Go路径只以新建junction指向setup-go的固定工具，不修改共享缓存；默认无点击，旧点击分支仍显式opt-in。
+当前候选无点击**复验必须使用构建来源67c98db的干净Git checkout**及`.5/.6`参数，不能用后续报告提交或无Git源码ZIP冒充同源码。该历史source不含新LF属性；在新隔离clone使用`git clone -c core.autocrlf=false <仓库URL> <新目录>`后选择67c98db，避免Windows换行转换造成非内容dirty；不修改当前仓库配置、不把后续`.gitattributes`写入旧source后冒称干净。只做来源检出，不回退/重置当前工作区。历史`.3/.4`绑定4b38dc8。脚本需要局部`.tools/go/bin/go.exe`与Node开发工具，不是产品安装依赖。普通用户人工清单只需WebView2和精确内核。CI Go junction只指向setup-go固定工具，不改共享缓存；默认无点击，旧点击分支仍显式opt-in。
 
 独立出口用上表资源单独验收；人工界面顺利不替代网络/进程/目录证据。禁止自动点击仍生效；不要求逐步询问“是否继续”。
 
@@ -150,7 +154,7 @@ NSIS bootstrap为i386是既有体系行为，安装限定x64，主程序和维�
 
 [修订远程CI 37401271261](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37401271261)对应6cf1768：Node22.12.0/24各131/131、类型/build/50文档通过；Go所有包/vet、Windows preview.1/.2构建、真实148探测14.82秒与档案保存/重生成/回滚22.31秒通过，三个job均SUCCESS。上传的远程产物是本workflow的development-preview.1/.2，不是本机来源4b38dc8的最终candidate.4；不混淆版本或哈希。同步记录的后续文档提交不改业务代码，新head实际检查以PR当前checks为准。
 
-上述历史CI未执行产品安装。10月6日新加无点击安装步骤的实际结果另记，不能把旧后台/构建推导为安装通过，也不能把runner开发预览当成精确交付`.6`在新用户/VM上的人工验收。
+上述历史CI未执行产品安装。10月6日新增的无点击安装已在eec3333复验真实通过，准确Server/开发预览范围见开头和[回执](V1-local-remote.json)；不能把旧后台/构建推导为安装通过，不能把runner开发预览当精确交付`.6`在Home新用户/VM上的人工验收。
 
 本轮提交（另含最终验收记录提交）：`493da0b`修复原检查/退出与Cookie UI；`86d7b4e`候选/许可/无点击验证与逐票文档；`46649c0`修复PS5/NSIS参数；`5791be1`首轮验收记录；`4b38dc8`Wails trimpath隐私修订（最终包来源）。前轮`bc56c90`/`7b1f8bb`/`07e4049`正式保护、恢复与共用队列成果均保留。最终记录提交只更新非嵌入报告/进度，不改变交付二进制来源，无需重新构建。
 

@@ -48,7 +48,8 @@ ENV-003、PRX-001、DATA-001阶段2：[`独立持久资源日志`](../internal/k
 - ENV-001/002/DATA-001：[`生产批次wrapper`](../internal/workspace/batch_worker.go)转换接口前规范化nil lease，避免真实目录失败的清理崩溃；有效lease/归属核验与身份保留不变。[默认回归](../internal/workspace/batch_prepare_failure_test.go)、[无seam实际ACL/257项续跑](../internal/workspace/safe_gap_windows_test.go)通过。
 - ENV-003、CK-001、BKP-001：普通停止超时→ForceStop、Cookie边界、12项真实队列、两运行环境完整包/三存储恢复、备份/预检ACL、恢复ACL/SQLITE_FULL与永久删除权限原任务收尾均通过。[结果/源码SHA](verification/V1-local-acceptance.md)区分真实浏览器和合成目录，不将SQLite容量当NTFS满、本机上游当独立出口。
 - 131 Node、342 Go顶层PASS/30 opt-in/helper SKIP、全包vet通过；11个新opt-in另行通过。新干净67c98db候选`.5/.6`构建/本机无点击安装通过，来源commit远程三job也通过。默认CI新增一次性Windows无点击安装，旧四个点击分支仍显式opt-in，Go junction只指向固定setup-go工具、收据脱敏；实际新CI结果另记。[回执](verification/V1-local-remote.json)。无真实数据/服务故障实验/新产品依赖，旧`.4`仅历史；正式4/21与blocking不变。
-- DOC-001构建可复现性：新增runner无点击安装首轮在源码dirty门禁被拒（未安装），全新Windows检出复现go.mod仅CRLF→LF/规范化diff为空。用户批准只修构建管理，[`.gitattributes`](../.gitattributes)仅固定go.mod/go.sum为LF，实际依赖不变、真实内容变化仍拒，不删tidy/状态/hash检查。新全量CI与新检出构建实际结果另记，不把原FAIL改记通过。
+- DOC-001构建可复现性：新增runner无点击安装首轮在源码dirty门禁被拒（未安装），全新Windows检出复现go.mod仅CRLF→LF/规范化diff为空。用户批准只修构建管理，[`.gitattributes`](../.gitattributes)仅固定go.mod/go.sum为LF；新全新检出两次production构建/manifest干净，实际改动自有go.mod仍被原脚本在安装前拒绝，精确恢复后干净。[实测](verification/V1-ci-source-guard.json)。依赖规范化内容逐字不变，物理go.sum CRLF/LF的SHA差别明确，不改旧哈希；tidy/状态/hash检查保留。远程实际结果另记，原FAIL不改写。
+- DOC-001/UX-001：eec3333[远程三job及无点击安装通过](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37409611901)，已下载核对[安装回执](verification/V1-ci-installation.json)与两preview安装包摘要。Server 2025已有WebView2、development-preview.1/.2、6页面/正常exit0/升级保身份/拒降级25/保留卸载/重装/自有删除成立；实际PR merge和head分别记录。四点击分支跳过，不替代精确交付`.6`在Home新用户/VM、缺WebView2和人工默认框验收。原失败仍保留，[完整远程范围](verification/V1-local-remote.json)。
 
 ### T11 隔离可行性增量（历史独立实验，不覆盖当前正式结果）
 
