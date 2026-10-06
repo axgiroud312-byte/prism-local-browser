@@ -6,7 +6,7 @@
 
 产品围绕独立浏览器环境、一键生成并保存指纹、代理导入或直连、不同版本的 fingerprint-chromium 内核选择、多实例与分组管理组织日常操作。**本轮以用户提供的「完整代码」归档为唯一基准做 1:1 界面复刻**；冻结标识 `202609160208`。Ant-Browser 和旧六页原型保留历史参考身份，不再决定本轮外观。来源限制、40 状态/两视口清单及本机能力映射见 [视觉基线](UI_REFERENCE.md)。
 
-当前任务为 [#32 总规范](https://github.com/axgiroud312-byte/prism-local-browser/issues/32) 下的 **#33 →（#34/#35/#36）→ #37**：#33 交付整体 shell、真实可操作环境表、分组和公共 UI；#34 环境窗口/Cookie/批次/回收，#35 代理/内核/迁移，#36 备份/恢复/活动/诊断/指南，#37 跨页终验。#33 已由 merger 合入 `9e256a7`；#34 模块及证据合入 `590a993`，正式环境窗口挂载和确认仍在集成；#35/#36 正在各自 worktree。增量 [草稿 PR #38](https://github.com/axgiroud312-byte/prism-local-browser/pull/38) 保留 #31 → #27 的分支依赖，不自动合并。先交付可用公共成果再开始依赖票；[公共责任与 props](UI_CONTRACT.md) 明确唯一 shared 文件负责人。定向结果见 [#33](verification/issue33.md)、[#34](verification/issue34.md)，不是全页面已完成的声明。
+当前任务为 [#32 总规范](https://github.com/axgiroud312-byte/prism-local-browser/issues/32) 下的 **#33 →（#34/#35/#36）→ #37**：#33 交付整体 shell、真实可操作环境表、分组和公共 UI；#34 环境窗口/Cookie/批次/回收，#35 代理/内核/迁移，#36 备份/恢复/活动/诊断/指南，#37 跨页终验。#33 已由 merger 合入 `9e256a7`；#34 模块及证据合入 `590a993`，正式环境窗口挂载和确认仍在集成；#35 模块及证据合入 `c6371eb`，正式App替换/唯一代理往返仍待集成；#36 正在独立 worktree。增量 [草稿 PR #38](https://github.com/axgiroud312-byte/prism-local-browser/pull/38) 保留 #31 → #27 的分支依赖，不自动合并。先交付可用公共成果再开始依赖票；[公共责任与 props](UI_CONTRACT.md) 明确唯一 shared 文件负责人。定向结果见 [#33](verification/issue33.md)、[#34](verification/issue34.md)、[#35](verification/issue35.md)，不是全页面已完成的声明。
 
 以下 #28–#30 为已保留的功能基线与历史结果，不是本轮视觉目标：
 

@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self'; style-src 'unsafe-inline'; script-src 'none'; connect-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'">
+  <title>#34 实际源码挂载 · 合成实现截图</title>
+  <style>body{margin:0;padding:24px;color:#333;background:#f5f5f5;font:14px/1.6 system-ui,sans-serif}main{max-width:1600px;margin:auto}section{margin:24px 0;padding:16px;background:#fff;border:1px solid #ddd}h1{font-size:22px}h2{font-size:16px}figure{margin:0;min-width:0}img{display:block;width:100%;height:auto;border:1px solid #eee}figcaption{padding:8px}.pair{display:grid;grid-template-columns:1fr 1fr;gap:16px}a{color:#2f54eb}@media(max-width:900px){.pair{grid-template-columns:1fr}}</style>
+</head>
+<body><main>
+<h1>#34 实际源码挂载：16 张合成截图</h1>
+<p>正式 App 源码，不是外部变换预览。原图不在公开图库；400px dirty/force 是安全容器映射，不是找到同名原执行画面。<a href="README.md">差异与测量说明</a> · <a href="manifest.json">SHA-256 / 审计</a></p>
+<section><h2>新建 · environment-create</h2><div class="pair"><figure><img src="1440x900/environment-create.png" alt="1440×900 正式源码新建窗口"><figcaption>1440×900</figcaption></figure><figure><img src="1280x800/environment-create.png" alt="1280×800 正式源码新建窗口"><figcaption>1280×800</figcaption></figure></div></section>
+<section><h2>指纹分区与固定操作 · environment-fingerprint</h2><div class="pair"><figure><img src="1440x900/environment-fingerprint.png" alt="1440×900 指纹分区"><figcaption>1440×900</figcaption></figure><figure><img src="1280x800/environment-fingerprint.png" alt="1280×800 指纹分区"><figcaption>1280×800</figcaption></figure></div></section>
+<section><h2>编辑 · environment-edit</h2><div class="pair"><figure><img src="1440x900/environment-edit.png" alt="1440×900 编辑窗口"><figcaption>1440×900</figcaption></figure><figure><img src="1280x800/environment-edit.png" alt="1280×800 编辑窗口"><figcaption>1280×800</figcaption></figure></div></section>
+<section><h2>保存失败保草稿（映射）· environment-save-failed</h2><div class="pair"><figure><img src="1440x900/environment-save-failed.png" alt="1440×900 合成保存失败"><figcaption>1440×900</figcaption></figure><figure><img src="1280x800/environment-save-failed.png" alt="1280×800 合成保存失败"><figcaption>1280×800</figcaption></figure></div></section>
+<section><h2>未保存确认（400px 映射）· dirty-confirm</h2><div class="pair"><figure><img src="1440x900/dirty-confirm.png" alt="1440×900 未保存确认"><figcaption>1440×900</figcaption></figure><figure><img src="1280x800/dirty-confirm.png" alt="1280×800 未保存确认"><figcaption>1280×800</figcaption></figure></div></section>
+<section><h2>原会话强制结束确认（400px 映射）· force-confirm</h2><div class="pair"><figure><img src="1440x900/force-confirm.png" alt="1440×900 合成原会话确认，尚未提交"><figcaption>1440×900</figcaption></figure><figure><img src="1280x800/force-confirm.png" alt="1280×800 合成原会话确认，尚未提交"><figcaption>1280×800</figcaption></figure></div></section>
+<section><h2>demo Cookie 预览（1050px 映射）· demo-cookie-preview</h2><div class="pair"><figure><img src="1440x900/demo-cookie-preview.png" alt="1440×900 合成 Cookie 预览"><figcaption>1440×900</figcaption></figure><figure><img src="1280x800/demo-cookie-preview.png" alt="1280×800 合成 Cookie 预览"><figcaption>1280×800</figcaption></figure></div></section>
+<section><h2>准确两项 demo 移除 · demo-remove-confirm</h2><div class="pair"><figure><img src="1440x900/demo-remove-confirm.png" alt="1440×900 demo 移除，不操作真实文件"><figcaption>1440×900</figcaption></figure><figure><img src="1280x800/demo-remove-confirm.png" alt="1280×800 demo 移除，不操作真实文件"><figcaption>1280×800</figcaption></figure></div></section>
+</main></body></html>
