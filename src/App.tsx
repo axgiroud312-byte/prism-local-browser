@@ -99,7 +99,9 @@ import { readRuntimeStartPlan } from "./application/runtime-start-plan";
 import { NativeBackupManager } from "./components/NativeBackupManager";
 import { NativeRecycleManager } from "./components/NativeRecycleManager";
 import { NativeDiagnostics } from "./components/NativeDiagnostics";
-import { EnvironmentForm } from "./components/EnvironmentForm";
+import { EnvironmentEditorWindow } from "./components/EnvironmentEditorWindow";
+import { DemoCookieImportWindow, DemoEnvironmentRemoveWindow } from "./components/DemoEnvironmentWindows";
+import { EnvironmentConfirmation } from "./components/EnvironmentDialogParts";
 import { EnvironmentFilters } from "./components/EnvironmentFilters";
 import { EnvironmentGroups } from "./components/EnvironmentGroups";
 import { ReferencePopover } from "./components/ReferenceUi";
@@ -130,6 +132,9 @@ type EnvironmentOutcome = {
   created?: boolean;
   group?: string;
 };
+type PendingEnvironmentConfirmation =
+  | { kind: "dirty"; previewId: string; draft: string; profileHash: string; quantity: number }
+  | { kind: "force"; environmentId: string; sessionId: string; name: string };
 const fingerprintInputKey = (environment: Environment) => JSON.stringify([
   environment.coreId, environment.seed, environment.fingerprintVersion,
   environment.language, environment.timezone, environment.cpu,
@@ -319,6 +324,8 @@ export default function App({ application }: { application: ApplicationService }
   const automaticPreviewAttempt = useRef("");
   const [previewError, setPreviewError] = useState("");
   const [dialog, setDialog] = useState<Dialog | null>(null);
+  const [environmentConfirmation, setEnvironmentConfirmation] = useState<PendingEnvironmentConfirmation | null>(null);
+  const environmentConfirmationRef = useRef<PendingEnvironmentConfirmation | null>(null);
   const [nativeProxyImportOpen, setNativeProxyImportOpen] = useState(false);
   const [draftProxyImportOpen, setDraftProxyImportOpen] = useState(false);
   const [draftProxyImportBusy, setDraftProxyImportBusy] = useState(false);
@@ -331,6 +338,8 @@ export default function App({ application }: { application: ApplicationService }
   const [generating, setGenerating] = useState(false);
   const [savePending, setSavePending] = useState(false);
   const [quantity, setQuantity] = useState(1);
+  const quantityRef = useRef(quantity);
+  quantityRef.current = quantity;
   const [toast, setToast] = useState<{ text: string; error?: boolean } | null>(
     null,
   );
@@ -346,7 +355,6 @@ export default function App({ application }: { application: ApplicationService }
     typeof parseCookies
   > | null>(null);
   const [groupName, setGroupName] = useState("");
-  const [deleteData, setDeleteData] = useState(false);
   const [docTab, setDocTab] = useState<"user" | "prd" | "development" | "kernel">(nativeMode ? "user" : "prd");
   const [batch, setBatch] = useState<{
     label: string;
@@ -368,16 +376,18 @@ export default function App({ application }: { application: ApplicationService }
   const initialDraft = useRef("");
   const initialFingerprintHash = useRef("");
   const backupFile = useRef<HTMLInputElement>(null);
-  const cookieFile = useRef<HTMLInputElement>(null);
   const proxyFile = useRef<HTMLInputElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const workspaceOverlayRef = useRef<HTMLDivElement>(null);
   const drawerOverlayRef = useRef<HTMLDivElement>(null);
+  const confirmationOverlayRef = useRef<HTMLDivElement>(null);
+  const confirmationReturnFocus = useRef<HTMLElement | null>(null);
+  const drawerReturnFocus = useRef<HTMLElement | null>(null);
   const draftProxyOverlayRef = useRef<HTMLDivElement>(null);
   const proxyReturnFocus = useRef<HTMLElement | null>(null);
   const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
-  const uiBlocked = Boolean(drawerVisible || dialog || draftProxyImportOpen || nativeBatchInput || nativeCookieEnvironment || nativeRecycleSelection || storageIssue);
+  const uiBlocked = Boolean(drawerVisible || dialog || environmentConfirmation || draftProxyImportOpen || nativeBatchInput || nativeCookieEnvironment || nativeRecycleSelection || storageIssue);
   useEffect(() => { if (uiBlocked) setMenu(null); }, [uiBlocked]);
   const notify = (text: string, error = false) => {
     setToast({ text, error });
@@ -447,20 +457,69 @@ export default function App({ application }: { application: ApplicationService }
     window.addEventListener("hashchange", change);
     return () => window.removeEventListener("hashchange", change);
   }, []);
-  const closeDrawer = () => {
-    if (saving.current || drawer?.creationOperationId || drawer?.creationUnconfirmed) return;
-    if (
-      drawer &&
-      (JSON.stringify(drawer.environment) !== initialDraft.current || (drawer.fingerprint?.previewProfile.configHash ?? "") !== initialFingerprintHash.current) &&
-      !window.confirm("配置尚未保存。确定放弃本次编辑吗？")
-    )
-      return;
+  function showEnvironmentConfirmation(pending: PendingEnvironmentConfirmation) {
+    if (environmentConfirmationRef.current || application.getSnapshot().issue) return;
+    confirmationReturnFocus.current = document.activeElement as HTMLElement;
+    environmentConfirmationRef.current = pending;
+    setEnvironmentConfirmation(pending);
+  }
+  function cancelEnvironmentConfirmation() {
+    environmentConfirmationRef.current = null;
+    setEnvironmentConfirmation(null);
+  }
+  function discardDrawer(previewId: string) {
+    const draft = drawerRef.current;
+    if (!draft || draft.previewId !== previewId || saving.current || draft.creationOperationId || draft.creationUnconfirmed) return;
     previewOpenSequence.current++;
-    if (drawer) void application.discardPreview(drawer.previewId);
+    drawerRef.current = null;
+    void application.discardPreview(previewId);
     setDrawer(null);
     setDrawerSuspended(false);
     setPreviewError("");
+  }
+  const closeDrawer = () => {
+    const draft = drawerRef.current;
+    if (!draft || saving.current || draft.creationOperationId || draft.creationUnconfirmed || environmentConfirmationRef.current) return;
+    const signature = JSON.stringify(draft.environment), profileHash = draft.fingerprint?.previewProfile.configHash ?? "";
+    if (signature !== initialDraft.current || profileHash !== initialFingerprintHash.current || draft.kind === "create" && quantityRef.current !== 1) {
+      showEnvironmentConfirmation({ kind: "dirty", previewId: draft.previewId, draft: signature, profileHash, quantity: quantityRef.current });
+    } else discardDrawer(draft.previewId);
   };
+  function confirmEnvironmentAction() {
+    const pending = environmentConfirmationRef.current;
+    if (!pending || application.getSnapshot().issue || topModalElement() !== confirmationOverlayRef.current) return;
+    cancelEnvironmentConfirmation(); // Consume once before any asynchronous operation.
+    if (pending.kind === "force") {
+      void submitRuntimeSessionAction(pending.environmentId, pending.sessionId, "force");
+      return;
+    }
+    const draft = drawerRef.current;
+    if (!draft || draft.previewId !== pending.previewId || JSON.stringify(draft.environment) !== pending.draft || (draft.fingerprint?.previewProfile.configHash ?? "") !== pending.profileHash || quantityRef.current !== pending.quantity || saving.current || draft.creationOperationId || draft.creationUnconfirmed) {
+      notify("草稿或保存状态已变化，未放弃任何预览；请检查当前内容后重新确认。", true);
+      return;
+    }
+    discardDrawer(pending.previewId);
+  }
+  useEffect(() => {
+    if (environmentConfirmation) return;
+    const target = confirmationReturnFocus.current;
+    confirmationReturnFocus.current = null;
+    if (!target) return;
+    const timer = setTimeout(() => {
+      const fallback = drawerRef.current ? drawerOverlayRef.current : drawerReturnFocus.current;
+      const eligible = target.isConnected && !target.closest("[inert]") && !target.matches(":disabled") && target.getClientRects().length > 0;
+      if (eligible) target.focus();
+      else if (fallback?.isConnected && !fallback.closest("[inert]") && !fallback.matches(":disabled")) fallback.focus();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [Boolean(environmentConfirmation)]);
+  useEffect(() => {
+    if (drawerVisible || drawer || environmentConfirmation) return;
+    const target = drawerReturnFocus.current;
+    if (!target) return;
+    const timer = setTimeout(() => { if (target.isConnected && !target.closest("[inert]") && !target.matches(":disabled")) target.focus(); }, 0);
+    return () => clearTimeout(timer);
+  }, [drawerVisible, Boolean(drawer), Boolean(environmentConfirmation)]);
   useEffect(() => {
     const key = (e: KeyboardEvent) => {
       if (e.defaultPrevented) return;
@@ -469,10 +528,11 @@ export default function App({ application }: { application: ApplicationService }
         return;
       }
       const top = topModalElement();
-      if (top && ![drawerOverlayRef.current, overlayRef.current, draftProxyOverlayRef.current].includes(top as HTMLDivElement)) {
+      if (top && ![drawerOverlayRef.current, overlayRef.current, draftProxyOverlayRef.current, confirmationOverlayRef.current].includes(top as HTMLDivElement)) {
         if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") e.preventDefault();
         return;
       }
+      if (environmentConfirmationRef.current) return; // Capture listener owns warning keys, not the lower form/manager.
       if (nativeBatchInput || nativeCookieEnvironment || nativeRecycleSelection) {
         if ((e.ctrlKey || e.metaKey) && e.key === "k") e.preventDefault();
         return;
@@ -497,7 +557,7 @@ export default function App({ application }: { application: ApplicationService }
     };
     window.addEventListener("keydown", key);
     return () => window.removeEventListener("keydown", key);
-  }, [generating, drawer, drawerVisible, dialog, draftProxyImportOpen, draftProxyImportBusy, groupPending, nativeBatchInput, nativeCookieEnvironment, nativeRecycleSelection, storageIssue]);
+  }, [generating, drawer, drawerVisible, dialog, environmentConfirmation, draftProxyImportOpen, draftProxyImportBusy, groupPending, nativeBatchInput, nativeCookieEnvironment, nativeRecycleSelection, storageIssue]);
   useEffect(() => {
     if (dialog?.kind === "proxy" || draftProxyImportOpen || !drawerVisible || !proxyReturnFocus.current) return;
     const timer = setTimeout(() => proxyReturnFocus.current?.focus(), 40);
@@ -509,11 +569,11 @@ export default function App({ application }: { application: ApplicationService }
     overlay?.querySelector('[role="alert"]')?.scrollIntoView({ block: "nearest" });
   }, [formError, Boolean(dialog), drawerVisible]);
   useEffect(() => {
-    if (!drawerVisible && !dialog && !draftProxyImportOpen && !storageIssue) return;
+    if (!drawerVisible && !dialog && !environmentConfirmation && !draftProxyImportOpen && !storageIssue) return;
     const oldOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     const previous = document.activeElement as HTMLElement;
-    const topOverlay = () => storageIssue ? workspaceOverlayRef.current : draftProxyImportOpen ? draftProxyOverlayRef.current : dialog ? overlayRef.current : drawerOverlayRef.current;
+    const topOverlay = () => storageIssue ? workspaceOverlayRef.current : environmentConfirmationRef.current ? confirmationOverlayRef.current : draftProxyImportOpen ? draftProxyOverlayRef.current : dialog ? overlayRef.current : drawerOverlayRef.current;
     const focusable = (overlay: HTMLElement) => [...overlay.querySelectorAll<HTMLElement>(
       'button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), a[href], summary, [tabindex="0"]',
     )].filter(element => element.getClientRects().length > 0 && !element.closest("[inert]"));
@@ -530,8 +590,14 @@ export default function App({ application }: { application: ApplicationService }
         e.stopImmediatePropagation();
         return;
       }
+      if (environmentConfirmationRef.current && (e.key === "Escape" || (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k")) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        if (e.key === "Escape") cancelEnvironmentConfirmation();
+        return;
+      }
       if (e.key !== "Tab") return;
-      if (storageIssue) e.stopImmediatePropagation();
+      if (storageIssue || environmentConfirmationRef.current) e.stopImmediatePropagation();
       const elements = focusable(overlay);
       const first = elements[0],
         last = elements.at(-1);
@@ -560,7 +626,7 @@ export default function App({ application }: { application: ApplicationService }
       if (previous?.isConnected && !previous.closest("[inert]")) previous.focus();
       else if (menuAnchor?.isConnected && !menuAnchor.closest("[inert]")) menuAnchor.focus();
     };
-  }, [drawerVisible, Boolean(dialog), draftProxyImportOpen, Boolean(storageIssue)]);
+  }, [drawerVisible, Boolean(dialog), Boolean(environmentConfirmation), draftProxyImportOpen, Boolean(storageIssue)]);
   const navigate = (r: Route) => {
     location.hash = `/${r}`;
   };
@@ -588,7 +654,7 @@ export default function App({ application }: { application: ApplicationService }
   const errors = nativeMode ? workspace.environmentPage?.errorCount ?? 0 : state.environments.filter((e) => e.status === "error").length;
   const usableKernels = state.kernels.filter(kernel => kernel.available && (!nativeMode || workspace.kernelRecords?.some(record => record.id === kernel.id && record.status === "verified")));
   const patchDraft = (value: Partial<Environment>) => {
-    if (saving.current || drawerRef.current?.creationOperationId || drawerRef.current?.creationUnconfirmed) return;
+    if (environmentConfirmationRef.current || saving.current || drawerRef.current?.creationOperationId || drawerRef.current?.creationUnconfirmed) return;
     if (profileBusy && Object.keys(value).some(key => !["name", "group", "note"].includes(key))) return;
     setFormError("");
     setDrawer((d) =>
@@ -596,8 +662,10 @@ export default function App({ application }: { application: ApplicationService }
     );
   };
   async function openCreate(template?: Environment) {
+    if (environmentConfirmationRef.current) return;
     if (drawerRef.current) { setDrawerSuspended(false); return; }
     if (saving.current || batchBusy.current) { notify("请等待当前操作完成，或取消余下任务。", true); return; }
+    drawerReturnFocus.current = menuAnchor?.isConnected && menu ? menuAnchor : document.activeElement as HTMLElement;
     const sequence = ++previewOpenSequence.current;
     const result = await application.previewEnvironment({ kind: "create", sourceId: template?.id });
     if (sequence !== previewOpenSequence.current) { if (result.ok) void application.discardPreview(result.data.previewId); return; }
@@ -616,8 +684,10 @@ export default function App({ application }: { application: ApplicationService }
     setMenu(null);
   }
   async function openEdit(e: Environment) {
+    if (environmentConfirmationRef.current) return;
     if (drawerRef.current) { setDrawerSuspended(false); return; }
     if (saving.current || batchBusy.current) { notify("请等待当前操作完成，或取消余下任务。", true); return; }
+    drawerReturnFocus.current = menuAnchor?.isConnected ? menuAnchor : document.activeElement as HTMLElement;
     const sequence = ++previewOpenSequence.current;
     const result = await application.previewEnvironment({ kind: "edit", sourceId: e.id });
     if (sequence !== previewOpenSequence.current) { if (result.ok) void application.discardPreview(result.data.previewId); return; }
@@ -644,7 +714,7 @@ export default function App({ application }: { application: ApplicationService }
   }
   async function generateProfile(regenerate = false, automatic = false) {
     const draft = drawerRef.current;
-    if (!draft || draft.creationOperationId || draft.creationUnconfirmed || fingerprintBusy.current || saving.current || profileBusy) return;
+    if (environmentConfirmationRef.current || !draft || draft.creationOperationId || draft.creationUnconfirmed || fingerprintBusy.current || saving.current || profileBusy) return;
     const target = draft.previewId;
     const inputKey = fingerprintInputKey(draft.environment);
     fingerprintBusy.current = true;
@@ -669,18 +739,18 @@ export default function App({ application }: { application: ApplicationService }
   const pendingConfiguration = nativeMode && drawer?.environment.coreId === "kernel-pending";
   const canSaveProfile = drawer?.kind === "edit" ? pendingConfiguration || profileIsFresh : profileIsFresh && canGenerateProfile;
   useEffect(() => {
-    if (!drawer || drawer.creationOperationId || drawer.creationUnconfirmed || profileBusy || !canGenerateProfile || profileIsFresh || generating || savePending) return;
+    if (environmentConfirmation || !drawer || drawer.creationOperationId || drawer.creationUnconfirmed || profileBusy || !canGenerateProfile || profileIsFresh || generating || savePending) return;
     const key = `${drawer.previewId}:${draftFingerprintKey}`;
     if (automaticPreviewAttempt.current === key) return;
     const timer = setTimeout(() => {
-      if (fingerprintBusy.current || saving.current) return;
+      if (environmentConfirmationRef.current || fingerprintBusy.current || saving.current) return;
       automaticPreviewAttempt.current = key;
       void generateProfile(false, true);
     }, 120);
     return () => clearTimeout(timer);
-  }, [drawer?.previewId, drawer?.creationOperationId, drawer?.creationUnconfirmed, draftFingerprintKey, canGenerateProfile, profileIsFresh, profileBusy, generating, savePending]);
+  }, [Boolean(environmentConfirmation), drawer?.previewId, drawer?.creationOperationId, drawer?.creationUnconfirmed, draftFingerprintKey, canGenerateProfile, profileIsFresh, profileBusy, generating, savePending]);
   async function previewProfileRestore(revision: number) {
-    if (!drawer || fingerprintBusy.current || saving.current || profileBusy) return;
+    if (environmentConfirmationRef.current || !drawer || fingerprintBusy.current || saving.current || profileBusy) return;
     const target = drawer.previewId;
     fingerprintBusy.current = true; setGenerating(true); setFormError("");
     try {
@@ -691,7 +761,7 @@ export default function App({ application }: { application: ApplicationService }
     } finally { fingerprintBusy.current = false; setGenerating(false); }
   }
   async function saveEnvironment(openAfterCreate = false) {
-    if (batchBusy.current || saving.current || fingerprintBusy.current || !drawer) return;
+    if (environmentConfirmationRef.current || batchBusy.current || saving.current || fingerprintBusy.current || !drawer) return;
     const target = drawer.previewId;
     saving.current = true;
     setSavePending(true);
@@ -968,14 +1038,28 @@ export default function App({ application }: { application: ApplicationService }
     }
   }
   async function handleRuntimeSessionAction(id: string, expectedSessionId: string, action: "force" | "reconcile") {
-    if (!nativeMode) return;
-    const session = application.getSnapshot().runtimeSessions?.[id];
-    const networkSession = application.getSnapshot().networkResources?.[id];
-    if (action === "force" ? !session || session.sessionId !== expectedSessionId : networkSession !== expectedSessionId && session?.sessionId !== expectedSessionId) { notify("这条记录属于旧会话，未操作现在的浏览器；请重新读取状态。", true); return; }
+    if (environmentConfirmationRef.current) return;
     if (action === "force") {
-      if (!application.forceStopRuntime || !session?.canForce || session.needsReconcile) { notify("尚未满足指定会话强制结束条件。请先正常关闭；不会按PID结束进程。", true); return; }
-      if (!window.confirm("仅强制结束这份已确认会话，可能丢失尚未保存的网页内容。不会结束其他环境，也不会清空浏览数据。确认强制结束？")) return;
-    } else if (!application.reconcileRuntime) { notify("当前桌面版本未提供会话核对。", true); return; }
+      if (!eligibleRuntimeSession(id, expectedSessionId, action) || runtimeActions.current.has(id)) return;
+      showEnvironmentConfirmation({ kind: "force", environmentId: id, sessionId: expectedSessionId, name: application.getSnapshot().state.environments.find(environment => environment.id === id)?.name ?? "所选环境" });
+      return;
+    }
+    await submitRuntimeSessionAction(id, expectedSessionId, action);
+  }
+  function eligibleRuntimeSession(id: string, expectedSessionId: string, action: "force" | "reconcile") {
+    if (!nativeMode) return false;
+    const snapshot = application.getSnapshot();
+    if (snapshot.issue) return false;
+    const session = snapshot.runtimeSessions?.[id];
+    const networkSession = snapshot.networkResources?.[id];
+    if (action === "force" ? !session || session.sessionId !== expectedSessionId : networkSession !== expectedSessionId && session?.sessionId !== expectedSessionId) { notify("这条记录属于旧会话，未操作现在的浏览器；请重新读取状态。", true); return false; }
+    if (action === "force") {
+      if (!application.forceStopRuntime || !session?.canForce || !session.canControl || session.needsReconcile) { notify("尚未满足指定会话强制结束条件。请先正常关闭；不会按PID结束进程。", true); return false; }
+    } else if (!application.reconcileRuntime) { notify("当前桌面版本未提供会话核对。", true); return false; }
+    return true;
+  }
+  async function submitRuntimeSessionAction(id: string, expectedSessionId: string, action: "force" | "reconcile") {
+    if (!eligibleRuntimeSession(id, expectedSessionId, action)) return;
     if (!beginRuntimeAction(id)) return;
     try {
       const request = { environmentId: id, sessionId: expectedSessionId, requestId: uid("request") };
@@ -1069,7 +1153,19 @@ export default function App({ application }: { application: ApplicationService }
     setFormError("");
     setMenu(null);
   }
+  function saveDemoCookie() {
+    if (dialog?.kind !== "cookies" || !cookieResult || !cookieResult.cookies.length || cookieResult.errors.length) return;
+    if (!update((s) => ({
+      ...s,
+      environments: s.environments.map((e) => e.id === dialog.id
+        ? { ...e, cookies: mergeCookies(e.cookies, cookieResult.cookies) } : e),
+    }), log("导入示例 Cookie", state.environments.find((e) => e.id === dialog.id)?.name || "",
+      `已将 ${cookieResult.cookies.length} 条 Cookie 保真写入原型记录；未写真实浏览器。`))) return;
+    setDialog(null);
+    notify(`已导入 ${cookieResult.cookies.length} 条示例 Cookie`);
+  }
   function openProxyImport() {
+    if (environmentConfirmationRef.current) return;
     if (drawerRef.current && !drawerSuspended) {
       proxyReturnFocus.current = document.activeElement as HTMLElement;
       if (nativeMode) { setDraftProxyImportBusy(false); setDraftProxyImportOpen(true); return; }
@@ -1127,9 +1223,7 @@ export default function App({ application }: { application: ApplicationService }
     }), log(
       "删除环境",
       `${dialog.ids.length} 个环境`,
-      deleteData
-        ? "原型记录及模拟数据已移除；无真实文件操作。"
-        : "移除原型记录；桌面版应保留孤立数据目录并提供找回入口。",
+      "仅删除示例记录及示例 Cookie；不操作真实文件。",
     ))) return;
     setDialog(null);
     setSelected([]);
@@ -1145,7 +1239,7 @@ export default function App({ application }: { application: ApplicationService }
     <div className="app-shell">
       <aside
         className="sidebar"
-        inert={Boolean(drawerVisible || dialog || draftProxyImportOpen || nativeBatchInput || nativeCookieEnvironment || nativeRecycleSelection || storageIssue)}
+        inert={uiBlocked}
       >
         <a className="brand" href="#/environments">
           <div className="brand-mark">
@@ -1176,7 +1270,7 @@ export default function App({ application }: { application: ApplicationService }
       </aside>
       <div
         className="main-shell"
-        inert={Boolean(drawerVisible || dialog || draftProxyImportOpen || nativeBatchInput || nativeCookieEnvironment || nativeRecycleSelection || storageIssue)}
+        inert={uiBlocked}
       >
         <header className="topbar">
           <span className="topbar-local"><Monitor size={15} />本机工作区</span>
@@ -1245,7 +1339,7 @@ export default function App({ application }: { application: ApplicationService }
                 <EnvironmentFilters search={search} group={group} status={status} groups={groups} total={environmentTotal} running={running} errors={errors} selected={selected.length} pageSelected={pageItems.filter(item => selected.includes(item.id)).length} native={nativeMode} blocked={uiBlocked} searchRef={searchRef}
                   onSearch={value => { setSearch(value); setPage(1); }} onGroup={value => { setGroup(value); setPage(1); }} onStatus={value => { setStatus(value); setPage(1); }} onClear={() => { setSearch(""); setGroup("全部分组"); setStatus("all"); setPage(1); }}
                   onCreate={() => void openCreate()} onOpen={() => void launch([...selected])} onStop={() => void stop([...selected])} onAssign={() => openGroupAssignment(selected)} onCancelSelection={() => setSelected([])}
-                  onRemove={() => { if (nativeMode) setNativeRecycleSelection([...selected]); else { setDialog({ kind: "delete", ids: [...selected] }); setFormError(""); setDeleteData(false); } }}
+                  onRemove={() => { if (nativeMode) setNativeRecycleSelection([...selected]); else { setDialog({ kind: "delete", ids: [...selected] }); setFormError(""); } }}
                   onRefresh={() => { void application.refresh?.().then(result => { if (!result.ok) notify(result.error.message, true); else notify("环境列表已刷新"); }); }}
                   onBackup={() => { setNativeBackupSelection([...selected]); navigate("backups"); }} onHistory={() => setNativeBatchInput({ kind: "history" })} onRecycle={() => setNativeRecycleSelection([])} onClone={() => setNativeBatchInput({ kind: "clone", sourceIds: [...selected] })} onProxyAssign={() => setNativeBatchInput({ kind: "assign", sourceIds: [...selected] })}
                   onRetryReleased={() => void launch(selected.filter(id => { const session = workspace.runtimeSessions?.[id]; return session?.state === "error" && !session.pid && !session.resourcesPending && !session.needsReconcile && !session.persistencePending && !workspace.networkResources?.[id]; }))} />
@@ -1450,7 +1544,6 @@ export default function App({ application }: { application: ApplicationService }
                                             ids: [e.id],
                                           });
                                           setFormError("");
-                                          setDeleteData(false);
                                           setMenu(null);
                                         }}
                                       >
@@ -2077,77 +2170,24 @@ export default function App({ application }: { application: ApplicationService }
       {drawerVisible && drawer && (
         <div
           className="overlay environment-overlay"
-          inert={Boolean(dialog || draftProxyImportOpen || storageIssue)}
-          onMouseDown={(e) => {
-            if (e.target === e.currentTarget) closeDrawer();
-          }}
+          inert={Boolean(dialog || draftProxyImportOpen || environmentConfirmation || storageIssue)}
         >
-          <div
-            className="drawer environment-drawer"
-            ref={drawerOverlayRef}
-            tabIndex={-1}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="drawer-title"
-          >
-            <div className="drawer-header">
-              <div className="drawer-heading">
-                <div className="small-icon">
-                  <Fingerprint size={22} />
-                </div>
-                <div>
-                  <h2 id="drawer-title">
-                    {drawer.kind === "create"
-                      ? "新建浏览器环境"
-                      : "编辑浏览器环境"}
-                  </h2>
-                  <p>独立数据 · 固定指纹 · 专属网络配置</p>
-                </div>
-              </div>
-              <button
-                className="icon-button"
-                aria-label="关闭环境配置"
-                disabled={savePending || !!drawer.creationOperationId || drawer.creationUnconfirmed}
-                onClick={closeDrawer}
-              >
-                <X size={20} />
-              </button>
-            </div>
-            <div className="drawer-body">
-              <EnvironmentForm environment={drawer.environment} kind={drawer.kind} groups={groups} kernels={usableKernels} proxies={state.proxies} native={nativeMode}
-                busy={savePending || !!drawer.creationOperationId || !!drawer.creationUnconfirmed} generating={generating} profileBusy={profileBusy}
-                kernelLocked={drawer.kind === "edit" && (!nativeMode || state.environments.find(environment => environment.id === drawer.environment.id)?.coreId !== "kernel-pending")}
-                canGenerate={canGenerateProfile} fresh={profileIsFresh} preview={drawer.fingerprint} history={drawer.history} dataRef={drawer.userDataRef}
-                quantity={quantity} previewError={previewError} onChange={patchDraft} onQuantity={setQuantity} onGenerate={regenerate => void generateProfile(regenerate)} onRestore={revision => void previewProfileRestore(revision)}
-                onImportProxy={openProxyImport} canConfigure={canConfigureProfileField} onKernels={() => { setDrawerSuspended(true); navigate("kernels"); }} />
-              {formError && (
-                <div className="form-error" role="alert">
-                  <TriangleAlert size={16} />
-                  {formError}
-                </div>
-              )}
-            </div>
-            <div className="drawer-footer">
-              <span>
-                <ShieldCheck size={14} />
-                {drawer.creationOperationId || drawer.creationUnconfirmed ? "保留原创建请求，重试只核实结果" : generating ? "正在准备指纹预览…" : !canSaveProfile ? "请选择可用内核；预览会自动准备" : nativeMode ? "保存到本机 · 关闭后身份不变" : "演示模式 · 不启动真实浏览器"}
-              </span>
-              <div>
-                <Button disabled={savePending || !!drawer.creationOperationId || drawer.creationUnconfirmed} onClick={closeDrawer}>
-                  取消
-                </Button>
-                <Button
-                  className={drawer.kind === "edit" || quantity > 1 || drawer.creationOperationId ? "primary" : ""}
-                  disabled={savePending || (!drawer.creationOperationId && (generating || !canSaveProfile))}
-                  onClick={() => void saveEnvironment()}
-                >
-                  <Check size={16} />
-                  {drawer.creationOperationId || drawer.creationUnconfirmed ? "重试核实创建结果" : drawer.kind === "create" ? quantity > 1 ? nativeMode ? `查看 ${quantity} 项创建计划` : `创建 ${quantity} 个环境` : "创建" : "保存"}
-                </Button>
-                {drawer.kind === "create" && !drawer.creationOperationId && !drawer.creationUnconfirmed && quantity === 1 && <Button className="primary" disabled={generating || savePending || !canSaveProfile} onClick={() => void saveEnvironment(true)}><Monitor size={16} />创建并打开</Button>}
-              </div>
-            </div>
-          </div>
+          <EnvironmentEditorWindow dialogRef={drawerOverlayRef} error={formError}
+            saving={savePending} canSave={canSaveProfile}
+            recoveringCreation={!!drawer.creationOperationId || !!drawer.creationUnconfirmed}
+            onClose={closeDrawer} onSave={open => void saveEnvironment(open)}
+            form={{ environment: drawer.environment, kind: drawer.kind, groups,
+              kernels: usableKernels, proxies: state.proxies, native: nativeMode,
+              busy: savePending || !!drawer.creationOperationId || !!drawer.creationUnconfirmed,
+              generating, profileBusy,
+              kernelLocked: drawer.kind === "edit" && (!nativeMode || state.environments.find(e => e.id === drawer.environment.id)?.coreId !== "kernel-pending"),
+              canGenerate: canGenerateProfile, fresh: profileIsFresh, preview: drawer.fingerprint,
+              history: drawer.history, dataRef: drawer.userDataRef, quantity, previewError,
+              onChange: patchDraft, onQuantity: value => { if (!environmentConfirmationRef.current) setQuantity(value); },
+              onGenerate: regenerate => void generateProfile(regenerate),
+              onRestore: revision => void previewProfileRestore(revision),
+              onImportProxy: openProxyImport, canConfigure: canConfigureProfileField,
+              onKernels: () => { setDrawerSuspended(true); navigate("kernels"); } }} />
         </div>
       )}
       {nativeMode && nativeCookieEnvironment && <NativeCookieImport key={nativeCookieEnvironment.id} application={application} workspace={workspace} environment={nativeCookieEnvironment} onClose={() => setNativeCookieEnvironment(null)} />}
@@ -2158,10 +2198,21 @@ export default function App({ application }: { application: ApplicationService }
         <div className="modal-body"><p className="modal-intro">环境草稿已保留。导入成功后可直接选择新代理，不会改变指纹。</p><NativeProxyManager application={application} workspace={workspace} importOnly importOpen onImportOpenChange={open => { setDraftProxyImportOpen(open); if (!open) setDraftProxyImportBusy(false); }} onBusyChange={setDraftProxyImportBusy} onImported={ids => { if (ids[0]) patchDraft({ proxyId: ids[0] }); notify(`已导入 ${ids.length} 条代理，环境草稿已保留`); }} /></div>
         <div className="modal-footer"><Button disabled={draftProxyImportBusy} onClick={() => setDraftProxyImportOpen(false)}>返回环境配置</Button></div>
       </div></div>}
-      {dialog && (
-        <div className={`overlay modal-overlay ${drawerVisible ? "stacked-overlay" : ""}`}>
+      {dialog?.kind === "cookies" && <div className={`overlay modal-overlay ${drawerVisible ? "stacked-overlay" : ""}`} inert={Boolean(environmentConfirmation || storageIssue)}>
+        <DemoCookieImportWindow environment={state.environments.find(e => e.id === dialog.id)!}
+          text={cookieText} result={cookieResult} error={formError} dialogRef={overlayRef}
+          onText={text => { setCookieText(text); setCookieResult(null); }}
+          onParse={() => setCookieResult(parseCookies(cookieText))}
+          onClose={() => setDialog(null)} onSave={saveDemoCookie} />
+      </div>}
+      {dialog?.kind === "delete" && <div className="overlay modal-overlay" inert={Boolean(environmentConfirmation || storageIssue)}>
+        <DemoEnvironmentRemoveWindow count={dialog.ids.length} error={formError}
+          dialogRef={overlayRef} onClose={() => setDialog(null)} onRemove={removeEnvironments} />
+      </div>}
+      {dialog && dialog.kind !== "cookies" && dialog.kind !== "delete" && (
+        <div className={`overlay modal-overlay ${drawerVisible ? "stacked-overlay" : ""}`} inert={Boolean(environmentConfirmation || storageIssue)}>
           <div
-            className={`modal ${["proxy", "cookies"].includes(dialog.kind) ? "wide-modal" : ""} ${dialog.kind === "group" ? "group-modal" : ""}`}
+            className={`modal ${dialog.kind === "proxy" ? "wide-modal" : ""} ${dialog.kind === "group" ? "group-modal" : ""}`}
             ref={overlayRef}
             tabIndex={-1}
             role="dialog"
@@ -2174,15 +2225,11 @@ export default function App({ application }: { application: ApplicationService }
                   ? "编辑代理配置"
                   : dialog.kind === "proxy"
                     ? "批量导入代理"
-                    : dialog.kind === "cookies"
-                      ? "导入 Cookie"
-                      : dialog.kind === "delete"
-                        ? "移除浏览器环境"
-                        : dialog.kind === "restore"
-                          ? "恢复原型快照"
-                          : dialog.kind === "kernel"
-                            ? "内核能力与接入"
-                            : "调整环境分组"}
+                    : dialog.kind === "restore"
+                      ? "恢复原型快照"
+                      : dialog.kind === "kernel"
+                        ? "内核能力与接入"
+                        : "调整环境分组"}
               </h2>
               <button
                 className="icon-button"
@@ -2285,147 +2332,6 @@ export default function App({ application }: { application: ApplicationService }
                       ))}
                     </div>
                   )}
-                </>
-              )}
-              {dialog.kind === "cookies" && (
-                <>
-                  <div className="target-info">
-                    <Fingerprint size={17} />
-                    {state.environments.find((e) => e.id === dialog.id)?.name}
-                    <small className="mono">{dialog.id.slice(0, 12)}</small>
-                    <Tag>示例数据导入</Tag>
-                  </div>
-                  <p className="modal-intro">
-                    粘贴 JSON 数组或 Netscape
-                    文本。保留空值、过期时间及分区字段；当前只写入原型记录，不会写入真实浏览器。
-                  </p>
-                  <Field label="Cookie 内容（JSON / Netscape）">
-                    <textarea
-                      aria-label="Cookie 内容"
-                      className="code-input"
-                      rows={7}
-                      value={cookieText}
-                      onChange={(e) => {
-                        setCookieText(e.target.value);
-                        setCookieResult(null);
-                      }}
-                      placeholder={
-                        '[{"name":"session","value":"demo","domain":"example.com","path":"/"}]'
-                      }
-                    />
-                  </Field>
-                  <input
-                    ref={cookieFile}
-                    type="file"
-                    accept=".json,.txt"
-                    hidden
-                    onChange={async (e) => {
-                      const f = e.target.files?.[0];
-                      if (f) {
-                        setCookieText(await f.text());
-                        setCookieResult(null);
-                      }
-                      e.target.value = "";
-                    }}
-                  />
-                  <div className="inline-actions">
-                    <Button onClick={() => cookieFile.current?.click()}>
-                      <ArrowUpFromLine size={15} />
-                      选择文件
-                    </Button>
-                    <button
-                      className="text-button"
-                      onClick={() => {
-                        setCookieText(
-                          JSON.stringify(
-                            [
-                              {
-                                name: "example_session",
-                                value: "demo-only",
-                                domain: "example.com",
-                                path: "/",
-                                secure: true,
-                              },
-                              {
-                                name: "empty_preference",
-                                value: "",
-                                domain: "example.com",
-                                path: "/",
-                              },
-                            ],
-                            null,
-                            2,
-                          ),
-                        );
-                        setCookieResult(null);
-                      }}
-                    >
-                      填入示例
-                    </button>
-                    <Button
-                      className="soft-primary"
-                      onClick={() => setCookieResult(parseCookies(cookieText))}
-                    >
-                      校验并预览
-                    </Button>
-                  </div>
-                  {cookieResult && (
-                    <div className="import-preview">
-                      <h3>
-                        校验结果{" "}
-                        <span>
-                          {cookieResult.cookies.length} 条有效 /{" "}
-                          {cookieResult.errors.length} 条错误
-                        </span>
-                      </h3>
-                      {cookieResult.cookies.map((c, i) => (
-                        <div key={i}>
-                          <CheckCircle2 size={15} />
-                          <strong>{c.name}</strong>
-                          <span>
-                            {c.domain} ·{" "}
-                            {c.value === "" ? "空值保留" : "值已隐藏"}
-                            {Number(c.expires ?? c.expirationDate) > 0 &&
-                            Number(c.expires ?? c.expirationDate) <
-                              Date.now() / 1000
-                              ? " · 已过期，仅保留解析记录"
-                              : ""}
-                          </span>
-                        </div>
-                      ))}
-                      {cookieResult.errors.map((err) => (
-                        <div className="invalid-row" key={err}>
-                          <TriangleAlert size={15} />
-                          {err}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </>
-              )}
-              {dialog.kind === "delete" && (
-                <>
-                  <div className="warning-illustration">
-                    <Trash2 size={26} />
-                  </div>
-                  <p>
-                    将从工作区移除 <strong>{dialog.ids.length}</strong>{" "}
-                    个环境。正在运行的环境必须先关闭。
-                  </p>
-                  <label className="checkbox-card">
-                    <input
-                      type="checkbox"
-                      checked={deleteData}
-                      onChange={(e) => setDeleteData(e.target.checked)}
-                    />
-                    <span>
-                      <strong>同时删除浏览器数据</strong>
-                      <small>
-                        桌面版将删除对应独立目录。当前原型仅移除示例记录，不操作真实文件。
-                      </small>
-                    </span>
-                  </label>
-                  <p className="field-hint">建议先到备份页面保存快照。</p>
                 </>
               )}
               {dialog.kind === "restore" && (
@@ -2708,49 +2614,6 @@ export default function App({ application }: { application: ApplicationService }
                   导入 {proxyRows.filter((r) => r.node).length} 个代理
                 </Button>
               )}
-              {dialog.kind === "cookies" && (
-                <Button
-                  className="primary"
-                  disabled={
-                    !cookieResult ||
-                    !cookieResult.cookies.length ||
-                    cookieResult.errors.length > 0
-                  }
-                  onClick={() => {
-                    if (!cookieResult) return;
-                    if (!update((s) => ({
-                      ...s,
-                      environments: s.environments.map((e) =>
-                        e.id === dialog.id
-                          ? {
-                              ...e,
-                              cookies: mergeCookies(
-                                e.cookies,
-                                cookieResult.cookies,
-                              ),
-                            }
-                          : e,
-                      ),
-                    }), log(
-                      "导入示例 Cookie",
-                      state.environments.find((e) => e.id === dialog.id)
-                        ?.name || "",
-                      `已将 ${cookieResult.cookies.length} 条 Cookie 保真写入原型记录；未写真实浏览器。`,
-                    ))) return;
-                    setDialog(null);
-                    notify(
-                      `已导入 ${cookieResult.cookies.length} 条示例 Cookie`,
-                    );
-                  }}
-                >
-                  导入到原型记录
-                </Button>
-              )}
-              {dialog.kind === "delete" && (
-                <Button className="danger" onClick={removeEnvironments}>
-                  确认移除
-                </Button>
-              )}
               {dialog.kind === "restore" && (
                 <Button className="primary" onClick={confirmRestore}>
                   确认恢复
@@ -2800,6 +2663,17 @@ export default function App({ application }: { application: ApplicationService }
           </Button>
         </div>
       )}
+      {environmentConfirmation && <div className="overlay modal-overlay environment-confirmation-overlay" inert={Boolean(storageIssue)}>
+        {environmentConfirmation.kind === "dirty" ? <EnvironmentConfirmation title="放弃未保存修改？" titleId="environment-dirty-title"
+          dialogRef={confirmationOverlayRef} onCancel={cancelEnvironmentConfirmation} onConfirm={confirmEnvironmentAction} confirmLabel="放弃修改">
+          <p>本次编辑未保存，放弃后已保存身份与数据保持不变。</p>
+          <p>取消可继续编辑当前草稿。</p>
+        </EnvironmentConfirmation> : <EnvironmentConfirmation title="强制结束指定会话？" titleId="environment-force-title"
+          dialogRef={confirmationOverlayRef} onCancel={cancelEnvironmentConfirmation} onConfirm={confirmEnvironmentAction} confirmLabel="确认强制结束" danger>
+          <p>仅强制结束这份已确认会话，可能丢失尚未保存的网页内容。不会结束其他环境，也不会清空浏览数据。</p>
+          <p>{environmentConfirmation.name}<br />环境 ID：{environmentConfirmation.environmentId}<br />会话 ID：{environmentConfirmation.sessionId}</p>
+        </EnvironmentConfirmation>}
+      </div>}
       {storageIssue && (
         <div className="overlay modal-overlay workspace-blocker">
           <div

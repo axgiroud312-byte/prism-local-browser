@@ -57,9 +57,13 @@ test("native busy rows retain reconcile, cleanup, pending, force confirmation an
   await expect(row("工作环境 B 5")).toContainText("结果待保存");
   await expect(row("工作环境 B 5").getByRole("button", { name: "打开", exact: true })).toHaveCount(0);
   const force = row("测试环境 C 6").getByRole("button", { name: "强制结束", exact: true });
-  page.once("dialog", async dialog => { expect(dialog.message()).toContain("这份已确认会话"); await dialog.dismiss(); });
-  await force.click(); expect((await nativeReferenceView(page)).calls.filter(call => call.method === "Runtime.ForceStop")).toHaveLength(0);
-  page.once("dialog", dialog => dialog.accept()); await force.click();
+  await force.click();
+  const confirmation = page.getByRole("alertdialog", { name: "强制结束指定会话？", exact: true });
+  await expect(confirmation).toHaveCSS("width", "400px");
+  await expect(confirmation).toContainText("这份已确认会话");
+  await confirmation.getByRole("button", { name: "取消", exact: true }).click();
+  expect((await nativeReferenceView(page)).calls.filter(call => call.method === "Runtime.ForceStop")).toHaveLength(0);
+  await force.click(); await confirmation.getByRole("button", { name: "确认强制结束", exact: true }).click();
   await row("测试环境 C").getByRole("button", { name: "核对会话", exact: true }).click();
   await row("工作环境 A 4").getByRole("button", { name: "重试资源清理", exact: true }).click();
   await page.getByRole("button", { name: "取消排队启动", exact: true }).click();

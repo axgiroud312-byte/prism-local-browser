@@ -208,7 +208,7 @@ test("injected native invalid quantities keep the draft editable without submitt
   await page.getByRole("button", { name: "新建环境", exact: true }).click();
   await page.getByLabel("环境名称", { exact: true }).fill("数量恢复合成样本");
   const editor = page.getByRole("dialog", { name: "新建浏览器环境" });
-  await editor.locator("details").first().locator(":scope > summary").click();
+  await expect(editor.getByRole("region", { name: "基础设置", exact: true }).getByLabel("创建数量")).toBeVisible();
   for (const invalid of ["0", "-1", "", "0.5", "1.5", "9007199254740992"]) {
     await page.getByLabel("创建数量").fill(invalid);
     await editor.getByRole("button", { name: Number(invalid) > 1 ? `查看 ${Number(invalid)} 项创建计划` : "创建", exact: true }).click();
