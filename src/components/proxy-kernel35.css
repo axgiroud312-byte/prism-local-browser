@@ -3,6 +3,9 @@
 .pk35-tabs > .selected { border: 1px solid #2f54eb; border-radius: 2px; padding: 4px 28px; color: white; background: #2f54eb; height: 29px; }
 .pk35-mode { color: #8c8c8c; }
 .pk35-list-panel { padding: 0 10px 10px; background: #fff; border-radius: 3px; min-height: calc(100dvh - 140px); }
+:is(.kernel35-page, .proxy35-page) > .pk35-list-panel { display: flex; flex-direction: column; max-height: calc(100dvh - 99px); }
+:is(.kernel35-page, .proxy35-page) > .pk35-list-panel > :not(.pk35-table-scroll) { flex-shrink: 0; }
+:is(.kernel35-page, .proxy35-page) > .pk35-list-panel > .pk35-table-scroll { min-height: 0; }
 .pk35-toolbar { display: flex; align-items: center; gap: 10px; min-height: 51px; flex-wrap: wrap; }
 .pk35-toolbar .button, .pk35-modal .button { min-height: 31px; padding: 5px 14px; font-size: 12px; border-radius: 2px; }
 .pk35-toolbar-tail { flex: 1; }
