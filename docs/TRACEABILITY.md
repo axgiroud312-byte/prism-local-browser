@@ -12,6 +12,8 @@
 
 [#34](https://github.com/axgiroud312-byte/prism-local-browser/issues/34) 的连续环境表单、660px窗口、Cookie/批次/回收模块与72张合成证据已合入 `590a993`；正式App窗口挂载和400px未保存/强制结束确认仍在集成，不能把外部预览当已落地主入口。服务保护及实际定向结果见 [#34记录](verification/issue34.md)。本轮统一由 [草稿PR #38](https://github.com/axgiroud312-byte/prism-local-browser/pull/38) 交付；不因源码合入关闭票。
 
+PRX-001 / CORE-001 / FP-002 / UX-001：[#35模块](verification/issue35.md) 已合入 `c6371eb`，唯一 [`ProxyImportWindow`](../src/components/ProxyImportWindow.tsx) 和 [`内存session`](../src/components/proxy-import-session.ts) 保留输入/所选/错误/原未知请求，成功消费已提交行；[`ProxyEditWindow`](../src/components/ProxyEditWindow.tsx) 保留认证keep/replace/clear与精确修订。内核 [`任务owner`](../src/components/kernel-task-owner.ts) 保留原受理/待保存/历史重试/迟到保护；迁移读取准确saved策略/revision，不猜direct，取消保原身份/数据。限定12+4+2项、两份noEmit通过；正式App挂载/跨页和真实桌面仍待分别验收，100张组件harness图不代替它们。
+
 路由是运行应用后的 hash 路由。源码链接指向文件，函数名用于定位；前端持续修改时不依赖易失效的固定行号。领域逻辑自动测试入口为 [`tests/domain.test.ts`](../tests/domain.test.ts)，页面流程仍需真实浏览器操作检查。
 
 ## 12 项需求映射
