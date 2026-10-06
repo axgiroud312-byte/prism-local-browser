@@ -38,6 +38,7 @@
 .env34-error { color: #f5222d; background: #fff1f0; padding: 8px 10px; margin: 10px 0; font-size: 12px; line-height: 18px; overflow-wrap: anywhere; }
 .env34-technical > summary { cursor: pointer; color: #2f54eb; padding: 10px 0; }
 .env34-kernel-picker { position: relative; width: 264px; max-width: 100%; }
+.env34-kernel-picker > select { padding-right: 24px; }
 .env34-kernel-menu { position: absolute; left: 0; right: 0; top: 32px; z-index: 3; background: white; box-shadow: 0 1px 5px #0004; border-top: 2px solid #2f54eb; }
 .env34-kernel-menu button { width: 100%; min-height: 32px; padding: 6px 16px; text-align: left; font-size: 12px; }
 .env34-kernel-menu button[aria-selected="true"], .env34-kernel-menu button:hover, .env34-kernel-menu button:focus-visible { background: #e6e9fc; color: #2f54eb; }
@@ -74,6 +75,14 @@
 .env34-table td { height: 48px; padding: 8px 10px; border-bottom: 1px solid #f0f0f0; font-size: 12px; line-height: 18px; overflow-wrap: anywhere; vertical-align: middle; white-space: normal; }
 .env34-table th:first-child, .env34-table td:first-child { width: 45px; text-align: center; }
 .env34-batch-table th:first-child, .env34-batch-table td:first-child { width: 60px; min-width: 60px; white-space: nowrap; overflow-wrap: normal; }
+@media (min-width: 980px) {
+  .environment-overlay:not([inert]):has(.environment-form-reference) ~ :is(.toast, .batch-progress) { left: calc((100vw - 700px) / 2); max-width: calc(100vw - 724px); }
+}
+@media (max-width: 979px) {
+  .environment-overlay:not([inert]):has(.environment-form-reference) ~ :is(.toast, .batch-progress) { left: 12px; transform: none; min-width: 0; max-width: calc(100vw - 24px); }
+  .environment-overlay:not([inert]):has(.environment-form-reference) ~ .toast { top: 88px; }
+  .environment-overlay:not([inert]):has(.environment-form-reference) ~ .batch-progress { bottom: max(160px, 25dvh); }
+}
 @media (max-width: 720px) {
   .env34-rail { left: 0; top: 40px; width: 100%; padding: 0; display: flex; z-index: 2; border-bottom: 1px solid #f0f0f0; }
   .env34-rail button { flex: 1; height: 32px; }

@@ -82,7 +82,7 @@ export function EnvironmentForm({ environment, kind, groups, kernels, proxies, n
     </section>
     <section className="env34-section" data-environment-section="fingerprint" aria-label="指纹设置">
       <h3>指纹设置</h3>
-      <Field label="浏览器内核" hint={kernelLocked ? "已保存的精确内核固定；更换版本请到内核管理迁移。" : native ? "本机已安装、已核验的 fingerprint-chromium。" : "演示选项，网页不会安装或启动内核。"}>
+      <Field label="浏览器内核" hint={kernelLocked ? `已保存的精确内核固定；更换版本请到内核管理迁移。${native ? "内核系列：fingerprint-chromium。" : ""}` : native ? "本机已安装、已核验的 fingerprint-chromium。" : "演示选项，网页不会安装或启动内核。"}>
       <EnvironmentKernelSelect kernels={kernels} value={environment.coreId} disabled={frozen || generating || kernelLocked || !kernels.length} native={native} onChange={id => onChange({ coreId: id })} />
     </Field>
       {!canGenerate && <div className="env34-notice" role="status"><ShieldCheck size={17} /><div><strong>{kind === "create" ? "没有可用的内核，暂时不能创建并打开。" : "已保存的内核当前不可用，打开前需要核验。"}</strong><p>先安装并核验 fingerprint-chromium，再返回环境配置。当前填写内容会保留。</p><button type="button" className="text-button" disabled={busy} onClick={onKernels}>打开内核管理</button></div></div>}
