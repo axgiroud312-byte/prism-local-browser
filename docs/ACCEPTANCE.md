@@ -2,11 +2,23 @@
 
 # 当前交付验收记录
 
+## #29/#30 核心流程文档与验收准备（2026-10-06；PENDING）
+
+[#30](https://github.com/axgiroud312-byte/prism-local-browser/issues/30) 唯一承接环境表和统一创建/编辑窗口，[#29](https://github.com/axgiroud312-byte/prism-local-browser/issues/29) 逐条核对整体流程。本文档准备同步名称/分组、服务内核、直连/代理、自动指纹、“换一套”、创建/创建并打开/保存、默认收起高级设置，以及代理导入保草稿、已创建但打开失败重试原 ID 的契约。不因文档提交、#30 实现或旧 13/13 自动认定 #29 完成。
+
+逐票验收及证据见 [#28–#30 矩阵](verification/issue28-30.md)。协调者在基线 `245634c` 定义的自动指纹定向测试曾预期 RED（1 failed，6.3 秒，旧表单没有可见“换一套”）；新实现后的定向点击、demo/注入 bridge、一次共享 `npm run check`、最新远程 job 和三张合成截图均为 **PENDING**，必须填实际输出后才改变状态。文档链接核对结果也单列，不能替代页面验收。
+
+本次文档准备实际运行 `npm run check:docs`：首轮追踪表缺 `activity` 路由映射而失败，补回映射后 **52 份文档/本地链接、12 个需求、6 个路由、4 份内嵌文档通过**，检查脚本未改。未运行 UI 或后台测试；源码集成后的行为一致性仍待协调者验证。
+
+待生成截图：`docs/screenshots/issue30-environments.png`、`docs/screenshots/issue30-create.png`、`docs/screenshots/issue30-narrow.png`。它们将来自 Vite/Playwright 合成数据；不是旧候选 exe、真实内核、SQLite 或流量证据。注入 bridge fixture 使用的 sessionStorage 仅证明模拟重载。未执行新安装/构建、Go/Wails 全套、UI Automation、真实内核/进程/网络验证；旧候选身份和下方历史事实不改写，正式 **4/21、T05–T21 / #6–#22 OPEN** 保持不变。
+
 ## 日常 CI 精简为浏览器点击（2026-10-06）
 
 [#28](https://github.com/axgiroud312-byte/prism-local-browser/issues/28)：默认 CI 从两版本前端检查和桌面安装任务缩为一个 Node.js 24 / Windows 的浏览器任务。仅安装 npm 依赖、Playwright Chromium headless shell 并运行 `test:ui`；Playwright 启动/关闭 Vite，失败附件保留 7 天。`npm run check` 同步为页面测试，不执行生产构建、Go/Wails、安装包或产品内核探测。
 
 本地首次因缺少 Playwright 对应浏览器而无法启动，补齐测试浏览器后，`npm run check` **13/13 通过（41.8 秒）**。现有创建/编辑/重载、取消、校验、失败重试、跨标签页、窄窗口及模拟 bridge 交互断言均保留。报告在 `output/playwright/report/`；远程执行结果回写 #28，不能由本地通过推定远程通过。本轮没有运行完整后台测试或构建。
+
+#28 远程实际结果已核对：[37419040709](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37419040709)，保留的 `53ac883` 提交只有 Browser clicks 一个 job，1 分 27 秒完成，13/13 浏览器用例通过（34.1 秒）。没有生产构建/Go/Wails/安装或产品内核探测；成功 run 的失败附件上传按条件跳过，仅配置存在，不冒称实际上传已验。该旧结果不能作为 #29/#30 新用例通过的证据。
 
 验证范围为 demo 和模拟 bridge 的页面行为，不增加原生能力验收计数。当前规则已移除旧六页布局约束、禁止浏览器点击及自动续跑旧路线；[#29 Ant Browser 主流程](https://github.com/axgiroud312-byte/prism-local-browser/issues/29) 仅创建任务，界面尚未修改。下方保留原候选交付的历史结果。
 
