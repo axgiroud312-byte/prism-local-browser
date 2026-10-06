@@ -1,0 +1,15 @@
+import { useState } from "react";
+import type { WorkspaceView } from "../application/contract";
+import { ProxyKernelModal } from "./ProxyKernelModal";
+
+export function ProxyUsageWindow({ name, ids, total, workspace, onClose, onAssign }: { name: string; ids: string[]; total: number; workspace: WorkspaceView; onClose: () => void; onAssign?: (ids: string[]) => void }) {
+  const [search, setSearch] = useState(""), [page, setPage] = useState(1), [selected, setSelected] = useState<string[]>([]);
+  const rows = ids.map(id => ({ id, environment: workspace.state.environments.find(environment => environment.id === id) })).filter(row => !search || `${row.id} ${row.environment?.name ?? ""} ${row.environment?.group ?? ""}`.includes(search));
+  const maxPage = Math.max(1, Math.ceil(rows.length / 10)), currentPage = Math.min(page, maxPage), items = rows.slice((currentPage - 1) * 10, currentPage * 10);
+  return <ProxyKernelModal title={`已绑定环境 · ${name}`} width={1040} height={592} onClose={onClose} className="proxy35-usage" footer={<><span className="pk35-footer-note">明确选择 {selected.length} 项 · 服务使用数 {total}</span>{onAssign && <button className="button primary" disabled={!selected.length} onClick={() => onAssign([...selected])}>为所选环境重新分配代理</button>}<button className="button primary" onClick={onClose}>确定</button></>}>
+    <div className="pk35-toolbar"><input aria-label="搜索已绑定环境" placeholder="输入名称 / 编号 / 分组" value={search} onChange={event => { setSearch(event.target.value); setPage(1); }} /><button className="button" onClick={() => { setSearch(""); setPage(1); }}>重置</button><span>准确引用列表，不把当前环境页当全量。</span></div>
+    <div className="pk35-table-scroll proxy35-usage-scroll"><table className="pk35-table"><thead><tr><th>选择</th><th>环境编号</th><th>分组</th><th>环境名称</th><th>状态 / 数据范围</th></tr></thead><tbody>{items.length ? items.map(row => <tr key={row.id}><td><input type="checkbox" aria-label={`选择绑定环境 ${row.id}`} checked={selected.includes(row.id)} onChange={event => setSelected(previous => event.target.checked ? [...previous, row.id] : previous.filter(id => id !== row.id))} /></td><td className="pk35-wrap">{row.environment?.code ?? row.id}</td><td>{row.environment?.group ?? "未读取"}</td><td>{row.environment?.name ?? "跨页环境（仅服务引用 ID）"}</td><td>{row.environment?.status ?? "详情未读取，不猜运行或网络策略"}</td></tr>) : <tr><td colSpan={5} className="pk35-empty">没有已读取的使用引用</td></tr>}</tbody></table></div>
+    <div className="pk35-pagination"><button disabled={currentPage <= 1} onClick={() => setPage(currentPage - 1)}>上一页</button><span>第 {currentPage} 页 · 已返回 {ids.length} / 服务共 {total} 项</span><button disabled={currentPage >= maxPage} onClick={() => setPage(currentPage + 1)}>下一页</button><button className="button primary" disabled={!items.length} onClick={() => setSelected(previous => [...new Set([...previous, ...items.map(row => row.id)])])}>全选该页</button><button className="button" onClick={() => setSelected([])}>取消选择全部</button></div>
+    {total > ids.length && <p className="pk35-warning">服务仅返回部分引用 ID；不能宣称已列出全部 {total} 项，也不会把未返回环境加入分配范围。</p>}
+  </ProxyKernelModal>;
+}

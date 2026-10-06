@@ -1,0 +1,780 @@
+{
+  "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+  "viewportPNGs": 100,
+  "modes": {
+    "native": 68,
+    "demo": 32
+  },
+  "crops": 9,
+  "pairs": 50,
+  "pageErrors": 0,
+  "documentOverflow": 0,
+  "localMarkdownLinks": 90,
+  "originalAssets": false,
+  "realDesktopVerification": false,
+  "files": [
+    {
+      "file": "1440x900/native-proxy-list.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 42786,
+      "sha256": "552d1be0e66acd4a0ab1e8f73ab77c9d70c7068a63b844966512b0d79a819fef"
+    },
+    {
+      "file": "1440x900/native-proxy-add.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 55298,
+      "sha256": "8d4d56ce9dc9d105097e85658f18b140e9a4703b9a04e6d3de0873d6dc10e9ec"
+    },
+    {
+      "file": "1440x900/native-proxy-import-text.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 73122,
+      "sha256": "b47a5b99ca290314269d0fc1721c88cd91b74bb1f557553f5604cd82ce65c943"
+    },
+    {
+      "file": "1440x900/native-proxy-import-preview.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 73233,
+      "sha256": "57d614fec5c62ddeed7d549a6a59a7dd04400a49141b0293c52535f3b55b0f75"
+    },
+    {
+      "file": "1440x900/native-proxy-import-error.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 73367,
+      "sha256": "49abc1bbee6b52424896083a42f7e7ca4479e2e04b05a4f3b428f7517eca897b"
+    },
+    {
+      "file": "1440x900/native-proxy-import-duplicates.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 75479,
+      "sha256": "8fac0f19c5132e001093975b5dd8ade92406d4679d4b38c03127a4d2fa7f5191"
+    },
+    {
+      "file": "1440x900/native-proxy-import-file.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 58666,
+      "sha256": "62e24e1acbeaafb674889af04fc690869cfa9b2d073b235f14295096d1d92c9c"
+    },
+    {
+      "file": "1440x900/native-proxy-import-file-selected.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 58847,
+      "sha256": "c95df4d19b77353768ad02129cfd61db39b80d9f504e40895e06bb921b2e2470"
+    },
+    {
+      "file": "1440x900/native-proxy-import-file-error.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 61990,
+      "sha256": "c111e51775efc56906c896de94b9e164dcc9a80923233b9839f1b380a32d1102"
+    },
+    {
+      "file": "1440x900/native-proxy-edit.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 55397,
+      "sha256": "c0772212986d35e12a5455a8df2596a9fae4d32bce11e81ac1df42aba1e3862e"
+    },
+    {
+      "file": "1440x900/native-proxy-edit-replace.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 56589,
+      "sha256": "234200e86f2ec0310372fcd5c96a713952bfcb46014221539a59ff5ea0b241ed"
+    },
+    {
+      "file": "1440x900/native-proxy-edit-clear.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 55022,
+      "sha256": "ca4c2a97a93d85d8e0c719f7c7108a53f65c098551e948d4b8092a8f51246c9e"
+    },
+    {
+      "file": "1440x900/native-proxy-bound.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 45086,
+      "sha256": "4016f6eb2f5c2c910cfdde5cb7c70c71080147862912d1d0850b71f3b063a4f7"
+    },
+    {
+      "file": "1440x900/native-proxy-delete-confirm.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 50875,
+      "sha256": "5ee118bc5a34d30f412c0c7b3f07e84c3ed1f62b1adbfe4a87df58e9f5ba7fe5"
+    },
+    {
+      "file": "1440x900/native-kernel-list.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 57988,
+      "sha256": "912eb6899869adc2b91e719b037ab93ea9a7fe97840da2fc3558ef73b694a0eb"
+    },
+    {
+      "file": "1440x900/native-kernel-delete-confirm.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 66691,
+      "sha256": "62bd8b29c7e417b9c74d59a2be7a9684ba5fa0373b790adf2ce5adba5e47b488"
+    },
+    {
+      "file": "1440x900/native-kernel-prepare.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 74051,
+      "sha256": "7d343a2dae17043e8313337bac5020bd6fe43588675d035bfd877f8b593ed97b"
+    },
+    {
+      "file": "1440x900/native-kernel-prepare-local.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 71275,
+      "sha256": "352ce6f960fbefdcf7b5aaac8b9f3c684f416a89ddaa7628f06ebfa149cee07a"
+    },
+    {
+      "file": "1440x900/native-kernel-progress.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 72870,
+      "sha256": "b6ef3222b19a95d69af5aca7ee3a177162953cf155baf6f0794a65540611086e"
+    },
+    {
+      "file": "1440x900/native-kernel-persistence-pending.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 73744,
+      "sha256": "5712027b5b370f6352129dc8aeb63582b2d8ab6c1a9ca5b765aee1f64ab86e45"
+    },
+    {
+      "file": "1440x900/native-kernel-error.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 75336,
+      "sha256": "abe01aec8215084558199912d9082fc58526c3010d032cf112685e735a2551ac"
+    },
+    {
+      "file": "1440x900/native-kernel-history.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 60737,
+      "sha256": "f6bee78301009adb0700d44e63e30766336b1bd2456936c8f716a1342e369992"
+    },
+    {
+      "file": "1440x900/native-kernel-retry.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 72851,
+      "sha256": "b7f4dac33a2e2cf97b48b90d925df5f6e4518232216d4901dcba648b488a6add"
+    },
+    {
+      "file": "1440x900/native-kernel-cancelled.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 72086,
+      "sha256": "9771eb0ec470a0e1d21852f05a33394fe1c74f0e97700b8a4809c5d3d870d37d"
+    },
+    {
+      "file": "1440x900/native-kernel-details.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 99802,
+      "sha256": "5a072f9fd2c2d7dcb56c6c072e134e9c94b9daeb28d1432eb74970941b9f30e4"
+    },
+    {
+      "file": "1440x900/demo-proxy-list.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 40740,
+      "sha256": "2a8c65c3d6af3fb3a91bdec704aaa442e9835d01872975dbd1cbf20405f5c00e"
+    },
+    {
+      "file": "1440x900/demo-proxy-add.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 55835,
+      "sha256": "7977a91a02b7987777828b7a1c62af827daf0faa796f9a3e13df4aaa8e2534fe"
+    },
+    {
+      "file": "1440x900/demo-proxy-import-text.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 73261,
+      "sha256": "d60a51d1611f793a38c6be434d6aac52128f3919f8752db7a3d4b5389b237646"
+    },
+    {
+      "file": "1440x900/demo-proxy-import-preview.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 73370,
+      "sha256": "12088149c2a9e13693b965ad6d9d3f5a37fbcde40b00937fd4c94859fd5a0939"
+    },
+    {
+      "file": "1440x900/demo-proxy-import-error.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 73904,
+      "sha256": "c15b1cc97f6c6974c061dec61849aac7f38a48be81a88839665bdb655bb0d619"
+    },
+    {
+      "file": "1440x900/demo-proxy-import-duplicates.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 75620,
+      "sha256": "cf632eefda410aaa1d50152a9ad65367f8507a959d98695bc4d46dfaddf93a7b"
+    },
+    {
+      "file": "1440x900/demo-proxy-import-file.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 58842,
+      "sha256": "cd46d43f0fa6f9037c9b824516c43faf7f5a5e7aab2bb82c2cf878b0132a3850"
+    },
+    {
+      "file": "1440x900/demo-proxy-import-file-selected.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 59024,
+      "sha256": "255ee9ed56cafbfcb37432a4c523d0134a155c527db64edc486d1844e7728c49"
+    },
+    {
+      "file": "1440x900/demo-proxy-import-file-error.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 62164,
+      "sha256": "3e81e8a5416b6c4ca790a44cd96ff71398b72a65d8a5571cd7d2a00c57bb0d7a"
+    },
+    {
+      "file": "1440x900/demo-proxy-edit.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 57604,
+      "sha256": "0a47b36e71ef4dad72d40a58e9313fe8631ce6538be47e7451e7835399d4bbaf"
+    },
+    {
+      "file": "1440x900/demo-proxy-edit-replace.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 52759,
+      "sha256": "458cee7249dc3f7107484e953576483ba36c745d0cacce3752cc64e5f869bf46"
+    },
+    {
+      "file": "1440x900/demo-proxy-edit-clear.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 57199,
+      "sha256": "ebe0dde2967e0ce0d787dce8261c2e9f709e0dab3e217adafeb50c23b29b13da"
+    },
+    {
+      "file": "1440x900/demo-proxy-bound.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 56544,
+      "sha256": "a155a9ad51f5942fa973b1a2add4f011f807f7e9c5aab31fdc6c8b5eab16b67a"
+    },
+    {
+      "file": "1440x900/demo-proxy-delete-confirm.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 48272,
+      "sha256": "0fc7dcbab1adabe8caec573aa3981eef009b8bc94a5995cc01ff47bcebaca4cc"
+    },
+    {
+      "file": "1440x900/demo-kernel-list.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 44214,
+      "sha256": "dad8d4e5c9892c66b2336ed17f8bb2ea8607c2f6bfe04021f492eef87a58facd"
+    },
+    {
+      "file": "1440x900/demo-kernel-details.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 63718,
+      "sha256": "5101d736f63149ed5f9ca3525047829a0154ff9e56b229b9a31ed4d87ff38bac"
+    },
+    {
+      "file": "1440x900/native-proxy-save-error.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 78846,
+      "sha256": "61fc2b3c6cdaad25c5531bfe98b36383c722ed3e4c3d0665fdc2fe0b7d31154a"
+    },
+    {
+      "file": "1440x900/native-proxy-import-unknown.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 78212,
+      "sha256": "f9b5cb97289c5ae637ecb047adc00be6b88a23c71b7b0cc2b47415fb3b87fe88"
+    },
+    {
+      "file": "1440x900/native-proxy-import-return.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 78212,
+      "sha256": "f9b5cb97289c5ae637ecb047adc00be6b88a23c71b7b0cc2b47415fb3b87fe88"
+    },
+    {
+      "file": "1440x900/native-migration-select.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 56965,
+      "sha256": "1057bde72b0813af97155019efd049760ae01fddbf116185dde221c6671d9ca2"
+    },
+    {
+      "file": "1440x900/native-migration-diff.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 71482,
+      "sha256": "f2d8e488e35135c9214532fe6cad5250efdd636c146733e73aab32063be07030"
+    },
+    {
+      "file": "1440x900/native-migration-confirm.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 81349,
+      "sha256": "22a141c73177e500209f7f362ea3acd8143cf837a18c4aee7153a9f1ad959a84"
+    },
+    {
+      "file": "1440x900/native-migration-progress.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 72076,
+      "sha256": "6127c27cb3275b437953333f5eb322e8c2bc434946443200d4d5128ae6bfa0ee"
+    },
+    {
+      "file": "1440x900/native-migration-cancelled.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 66368,
+      "sha256": "e54c4032848eddef680d3ead7b87f14965385cdb8ab325459326741f232ae35f"
+    },
+    {
+      "file": "1440x900/native-kernel-accepted-refresh-error.png",
+      "width": 1440,
+      "height": 900,
+      "bytes": 75370,
+      "sha256": "9251e8b3d82118e4da90278dce30fb99c0a0162eb50585298adfd213c0efb589"
+    },
+    {
+      "file": "1280x800/native-proxy-list.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 41652,
+      "sha256": "b947edc500a93a0af69dca2d8eff4bb39557b005773f746f5b2434af0412f098"
+    },
+    {
+      "file": "1280x800/native-proxy-add.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 50986,
+      "sha256": "40349f2752ce227aee5d0a2bda17b2242044776ebb1c3333725fd5da10671c6a"
+    },
+    {
+      "file": "1280x800/native-proxy-import-text.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 65386,
+      "sha256": "cc177755764c13e98f1a130462221596f7968d0b9cd31419db6bcde227a4bf32"
+    },
+    {
+      "file": "1280x800/native-proxy-import-preview.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 64611,
+      "sha256": "9a747bfe0fb0779bb73eb484c75528b262c08656a07bfda74bafafc7c677e93f"
+    },
+    {
+      "file": "1280x800/native-proxy-import-error.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 65655,
+      "sha256": "bb9aa707023e558db7e23179ba76ac6ba868136d9fc3ad7861f7fabee5f2328d"
+    },
+    {
+      "file": "1280x800/native-proxy-import-duplicates.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 66830,
+      "sha256": "6362891e0e50cac7479d23b42ad68be5a78e819177fec8daf4e5da1a5a336a87"
+    },
+    {
+      "file": "1280x800/native-proxy-import-file.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 54417,
+      "sha256": "bd5d30310f10ca328b649345e68b3fe0896e4b88ddf8914f9e0ea5e9746d7b0f"
+    },
+    {
+      "file": "1280x800/native-proxy-import-file-selected.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 54580,
+      "sha256": "57d1c55695f472c27ac08988315507c81d404e4631d6c3992a37531341b56997"
+    },
+    {
+      "file": "1280x800/native-proxy-import-file-error.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 57621,
+      "sha256": "dc7d3c4e7fb3de13d642647bfd27f1b1839efb38071279101af4957664097abb"
+    },
+    {
+      "file": "1280x800/native-proxy-edit.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 49761,
+      "sha256": "9c7e357404bdcb0f81e0c99d5220c807851d128007f271733ab1cec435de5f3f"
+    },
+    {
+      "file": "1280x800/native-proxy-edit-replace.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 52184,
+      "sha256": "9a688473ebd006ce84baed57cc5d987f4641ca56c261594acfaa9afb42a5940a"
+    },
+    {
+      "file": "1280x800/native-proxy-edit-clear.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 49417,
+      "sha256": "4e2bbbe9420988c1b2cd4bc18a1c3a47a23c08ef9e5991ea5d8ef6dd7bb81afd"
+    },
+    {
+      "file": "1280x800/native-proxy-bound.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 36321,
+      "sha256": "19d2986ac60d41619320cde701628f97215433a212e39eae1883bae45729085b"
+    },
+    {
+      "file": "1280x800/native-proxy-delete-confirm.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 45548,
+      "sha256": "6760e0d0e0d7f6643c8cfc50c7cc39870a3924ee270b9935256bc7740c719308"
+    },
+    {
+      "file": "1280x800/native-kernel-list.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 55728,
+      "sha256": "b754fb97d024c1ef5deeb8c5d66e129bfdfd2bf35883ccfc4f36cb6aa9a56cdd"
+    },
+    {
+      "file": "1280x800/native-kernel-delete-confirm.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 61143,
+      "sha256": "a509a033c529e2f22bb6dd34854ef6226ffc999e0e824802a5e3ce0b273c0b99"
+    },
+    {
+      "file": "1280x800/native-kernel-prepare.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 68702,
+      "sha256": "0ef55036349b941baf1111791d5283c6b6436ce532a97355b112e1d1793d12a5"
+    },
+    {
+      "file": "1280x800/native-kernel-prepare-local.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 66783,
+      "sha256": "b286fadcdf37c64d69c264eef9b277942719bc9ceb135e12d4c1669dbfe88d44"
+    },
+    {
+      "file": "1280x800/native-kernel-progress.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 68140,
+      "sha256": "6d1166c46d6c05f98262b77a5e80a29102e259f316461e997293f3663610f743"
+    },
+    {
+      "file": "1280x800/native-kernel-persistence-pending.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 69095,
+      "sha256": "73c6995f46ff4c357db2e5c436965cb2b334985026a745bb28ab356a482e71df"
+    },
+    {
+      "file": "1280x800/native-kernel-error.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 69649,
+      "sha256": "4bfba724e162b9a2a6ab68ffb21d4683f715c37680d4090ca57668613a5273c2"
+    },
+    {
+      "file": "1280x800/native-kernel-history.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 55448,
+      "sha256": "495f52e5956c95670fb8f013199ff6d0fc40d456e7b70ecbdc07aac1d8105c52"
+    },
+    {
+      "file": "1280x800/native-kernel-retry.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 68124,
+      "sha256": "3375cb287a1305ff04243a1f7e6283474a5cea17a83938a38acf29eacb8ed9fd"
+    },
+    {
+      "file": "1280x800/native-kernel-cancelled.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 66548,
+      "sha256": "c7ed35ad4ba92a22aa9a8121cb162817ceeed1e3fb06189f8030c6eccc80c510"
+    },
+    {
+      "file": "1280x800/native-kernel-details.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 87041,
+      "sha256": "9b59563002cdf7b3e6e3b1a0ce3261875e02ed880f722c33d00d5d773a9f263b"
+    },
+    {
+      "file": "1280x800/demo-proxy-list.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 39620,
+      "sha256": "45de583f72a6a67e58d05be8f22f5b3c2327ccc2ef9c174421a9acb382ddcb06"
+    },
+    {
+      "file": "1280x800/demo-proxy-add.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 51441,
+      "sha256": "3c965429e3b67dbf209f3c1d1ca15c4e68a2c5a7706576575e8d4dac6a9ef2a5"
+    },
+    {
+      "file": "1280x800/demo-proxy-import-text.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 65519,
+      "sha256": "6ffb7935030f50684ef0df0d7210780ba4b8c38f381f75a6631a6efed214c3db"
+    },
+    {
+      "file": "1280x800/demo-proxy-import-preview.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 64739,
+      "sha256": "42685b211ca9522d9f67fd4ae393674b0f41a3f19971860c561348c7c169ec64"
+    },
+    {
+      "file": "1280x800/demo-proxy-import-error.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 66193,
+      "sha256": "e36abe627dfd4454991857781de4c2339a9da65bb76d8a4180eec131f4e0b0d7"
+    },
+    {
+      "file": "1280x800/demo-proxy-import-duplicates.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 66958,
+      "sha256": "d4378c83d80790b6c171f285ab9713257ebb6193c27aff99cad6551f19c370c3"
+    },
+    {
+      "file": "1280x800/demo-proxy-import-file.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 54200,
+      "sha256": "d090e4684a2a3cfee59389b2c6b13feefa332ed6e7fddc1a8443274d942776e4"
+    },
+    {
+      "file": "1280x800/demo-proxy-import-file-selected.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 54368,
+      "sha256": "9a9b808c02e3b5f7004136c99f4aa4a8a24313e232cd58ef8bb3db8494c44106"
+    },
+    {
+      "file": "1280x800/demo-proxy-import-file-error.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 57393,
+      "sha256": "65e591f81b0faad69cc09e5afcdf31f2f8b22d6061703f1bc5e1308091841286"
+    },
+    {
+      "file": "1280x800/demo-proxy-edit.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 51706,
+      "sha256": "4d16c1b245e5a68b0cab79b8e3a89463b7199c0b923982cc9b9f64b2d8576a0f"
+    },
+    {
+      "file": "1280x800/demo-proxy-edit-replace.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 47041,
+      "sha256": "e126e94dd7471a7d15e2de766b400bea37e92883f0d0e5d534dcfa0fc9244634"
+    },
+    {
+      "file": "1280x800/demo-proxy-edit-clear.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 51327,
+      "sha256": "4640cf14a87ae306ac3c077ca49271d4cc21ea3ac5f1ebeda8e09cda868b0407"
+    },
+    {
+      "file": "1280x800/demo-proxy-bound.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 47192,
+      "sha256": "c602271473cde44218fe964d97228c2d897d0fc1223e2c530d3c55e613e61077"
+    },
+    {
+      "file": "1280x800/demo-proxy-delete-confirm.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 44579,
+      "sha256": "8320bed1fa04442df6f8e1a0fba54f6f794883b8c5e847479ae93ff8363333bd"
+    },
+    {
+      "file": "1280x800/demo-kernel-list.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 42207,
+      "sha256": "6fe65f906bc231d162dcaf9112ee7c636e00c6021ca8f8a7dd78da35e72712a6"
+    },
+    {
+      "file": "1280x800/demo-kernel-details.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 57171,
+      "sha256": "fc58a5e07867498b1de20d854d4ec35d5af2b1947843f4f49902b0823dd89df7"
+    },
+    {
+      "file": "1280x800/native-proxy-save-error.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 70130,
+      "sha256": "b6c1c27508d9ef2914b4d349452df04fbb3cbb52bbf9b7081b950a798b7cdff5"
+    },
+    {
+      "file": "1280x800/native-proxy-import-unknown.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 69487,
+      "sha256": "68248046365531c25f893739e206c56b84b872f554e57ce22f2a9a91598a1df0"
+    },
+    {
+      "file": "1280x800/native-proxy-import-return.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 69487,
+      "sha256": "68248046365531c25f893739e206c56b84b872f554e57ce22f2a9a91598a1df0"
+    },
+    {
+      "file": "1280x800/native-migration-select.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 46000,
+      "sha256": "2bf140668b0e9801d17dd8bcd40afb5ce570c13c8ab9d3827ee360f55ec4be2c"
+    },
+    {
+      "file": "1280x800/native-migration-diff.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 59416,
+      "sha256": "9d89fa6c77fbefe67048f95e22e2cfaae47657b8df02e8133e3d05af414f006a"
+    },
+    {
+      "file": "1280x800/native-migration-confirm.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 69253,
+      "sha256": "effc2cc538d2dc92a55a83222207e50d98384da1b0052ff03f5e4bbaaf9fc8e5"
+    },
+    {
+      "file": "1280x800/native-migration-progress.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 67439,
+      "sha256": "ee749bc7996a85fab876b7d245917669c4e41770e4faaa15e09063caec526ea0"
+    },
+    {
+      "file": "1280x800/native-migration-cancelled.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 63214,
+      "sha256": "9b105ab9cb03cb03b0e411c636ff2bb430909c1351a153326a027482d9f42fa1"
+    },
+    {
+      "file": "1280x800/native-kernel-accepted-refresh-error.png",
+      "width": 1280,
+      "height": 800,
+      "bytes": 69808,
+      "sha256": "3fcc5e3366cb6af5287ecca37a12d2a80b085b11e9e35612a7c13d8729d8b3c2"
+    },
+    {
+      "file": "crops/1280-native-proxy-import-preview-dialog.png",
+      "width": 1050,
+      "height": 610,
+      "bytes": 33913,
+      "sha256": "7e072b37ab10ccf30b038e660cdce19f66022866423b12b0ee58ccc4b93b9436"
+    },
+    {
+      "file": "crops/1280-native-proxy-import-file-error-dialog.png",
+      "width": 500,
+      "height": 360,
+      "bytes": 15137,
+      "sha256": "a175b7e194d4c4291f90272808e0e5adbf4644aa73cf55230f94c59baeab4ac8"
+    },
+    {
+      "file": "crops/1280-native-proxy-save-error-dialogFooter.png",
+      "width": 1050,
+      "height": 79,
+      "bytes": 7483,
+      "sha256": "75e3c51c0cf1b460de4cb2e85710a17af38580a6ffa188b288124efbd9f140a1"
+    },
+    {
+      "file": "crops/1280-native-proxy-import-unknown-dialogFooter.png",
+      "width": 1050,
+      "height": 79,
+      "bytes": 7560,
+      "sha256": "fac54a799ccbf182c8cf7fe36bb8cf0e97d567a2f4d298b3bd799c8f32785ca1"
+    },
+    {
+      "file": "crops/1280-demo-proxy-bound-dialog.png",
+      "width": 1040,
+      "height": 592,
+      "bytes": 21373,
+      "sha256": "dc175f4b20456426b2956d1d9cbf4d3b35eaf89d3a0bb3be118a29808d12b8f0"
+    },
+    {
+      "file": "crops/1280-native-kernel-prepare-dialog.png",
+      "width": 620,
+      "height": 420,
+      "bytes": 17087,
+      "sha256": "b71bb6c570012269d47b4fcd860920aa66aa115b6983addb7157f1f79173339a"
+    },
+    {
+      "file": "crops/1280-native-kernel-prepare-local-dialog.png",
+      "width": 620,
+      "height": 530,
+      "bytes": 17719,
+      "sha256": "629d5a0e135483b06fdc08c3f30183f51165de1025b9b65572b63ba20c4b3b84"
+    },
+    {
+      "file": "crops/1280-native-kernel-accepted-refresh-error-dialog.png",
+      "width": 400,
+      "height": 346,
+      "bytes": 10632,
+      "sha256": "5fc88a241d99fb769f3dd4b837817a3020e6fe665f5d56590864781e9f240383"
+    },
+    {
+      "file": "crops/1280-native-migration-diff-dialog.png",
+      "width": 1040,
+      "height": 592,
+      "bytes": 25233,
+      "sha256": "6e265d24cd0719b9c50cec60f53d358be4251263ae950141fea4aadce9c0371c"
+    }
+  ]
+}

@@ -1,168 +1,87 @@
-import { useEffect, useRef, useState, type FormEvent } from "react";
-import { LoaderCircle, RefreshCw, ShieldCheck, Trash2 } from "lucide-react";
-import { mergeOperation, operationIsTerminal, type ApplicationResult, type ApplicationService, type NativeProxy, type Operation, type ProxyConfiguration, type ProxyImportPreview, type WorkspaceView } from "../application/contract";
-import "./native-proxy.css";
+import { useEffect, useState, useSyncExternalStore } from "react";
+import { mergeOperation, operationIsTerminal, type ApplicationService, type NativeProxy, type Operation, type ProxyConfiguration, type WorkspaceView } from "../application/contract";
 import { proxyResolutionLabel, proxyStageLabel } from "../application/proxy-network";
+import { ProxyManagementPage } from "./ProxyManagementPage";
+import { ProxyImportWindow } from "./ProxyImportWindow";
+import { ProxyEditWindow } from "./ProxyEditWindow";
+import { ProxyUsageWindow } from "./ProxyUsageWindow";
+import { ProxyKernelModal } from "./ProxyKernelModal";
+import { getNativeProxyActions } from "./native-proxy-actions";
+import "./native-proxy.css";
 
-const statusLabels = { unchecked: "尚未检查", connected: "本次检查通过", failed: "检查未通过" };
-const failureMessage = (result: ApplicationResult<unknown> | undefined) => !result ? "当前桌面服务不支持此操作，没有模拟保存。" : result.ok ? "" : `${result.error.code}：${result.error.message}`;
-
-export function NativeProxyManager({ application, workspace, importOpen, onImportOpenChange, importOnly = false, onImported, onBusyChange }: { application: ApplicationService; workspace: WorkspaceView; importOpen: boolean; onImportOpenChange: (open: boolean) => void; importOnly?: boolean; onImported?: (ids: string[]) => void; onBusyChange?: (busy: boolean) => void }) {
-  const records = workspace.nativeProxyRecords ?? [];
-  const [text, setText] = useState("");
-  const [showText, setShowText] = useState(false);
-  const [preview, setPreview] = useState<ProxyImportPreview>();
-  const [selected, setSelected] = useState<number[]>([]);
-  const [editing, setEditing] = useState<NativeProxy>();
-  const [configuration, setConfiguration] = useState<ProxyConfiguration>();
-  const [credentialAction, setCredentialAction] = useState<"keep" | "replace" | "clear">("keep");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [deleting, setDeleting] = useState<NativeProxy>();
-  const [busy, setBusy] = useState(false);
-  const [message, setMessage] = useState("");
-  const [localOperations, setLocalOperations] = useState<Record<string, Operation>>({});
-  const alive = useRef(true), busyRef = useRef(false), generation = useRef(0), previewId = useRef<string | undefined>(undefined);
-  const importOpenRef = useRef(importOpen); importOpenRef.current = importOpen;
+export interface NativeProxyManagerProps {
+  application: ApplicationService; workspace: WorkspaceView; importOpen: boolean; onImportOpenChange: (open: boolean) => void;
+  importOnly?: boolean; onImported?: (ids: string[]) => void; onBusyChange?: (busy: boolean) => void;
+  onAssign?: (ids?: string[]) => void; visible?: boolean; modalLifecycle?: "self" | "parent";
+}
+export function NativeProxyManager({ application, workspace, importOpen, onImportOpenChange, importOnly = false, onImported, onBusyChange, onAssign, visible = true, modalLifecycle = "self" }: NativeProxyManagerProps) {
+  const owner = getNativeProxyActions(application), actions = useSyncExternalStore(owner.subscribe, owner.getSnapshot, owner.getSnapshot);
+  const records = workspace.nativeProxyRecords ?? [], pending = actions.pending;
+  const [editing, setEditing] = useState<NativeProxy>(), [configuration, setConfiguration] = useState<ProxyConfiguration>();
+  const [editHidden, setEditHidden] = useState(false);
+  const [credentialAction, setCredentialAction] = useState<"keep" | "replace" | "clear">("keep"), [username, setUsername] = useState(""), [password, setPassword] = useState("");
+  const [deleting, setDeleting] = useState<NativeProxy>(), [usage, setUsage] = useState<NativeProxy>(), [detail, setDetail] = useState<NativeProxy>();
+  const [importMode, setImportMode] = useState<"text" | "file" | "single">("text");
   const operations = new Map<string, Operation>();
   for (const operation of workspace.proxyOperations ?? []) operations.set(operation.id, operation);
-  for (const operation of Object.values(localOperations)) operations.set(operation.id, mergeOperation(operations.get(operation.id), operation));
-  const active = [...operations.values()].filter(operation => !operationIsTerminal(operation));
-  const activeKey = active.map(operation => operation.id).sort().join(",");
+  for (const operation of Object.values(actions.operations)) operations.set(operation.id, mergeOperation(operations.get(operation.id), operation));
+  const active = [...operations.values()].filter(operation => !operationIsTerminal(operation)), activeKey = active.map(operation => operation.id).sort().join(",");
   const activeByProxy = new Map(active.map(operation => [operation.proxyId, operation]));
-  const waiting = busy || !!editing || !!deleting;
-
-  function discardPreview() {
-    generation.current++;
-    const old = previewId.current; previewId.current = undefined;
-    if (old) void application.discardProxyImport?.(old);
-    setPreview(undefined); setSelected([]);
-  }
-  function clearCredentials() { setUsername(""); setPassword(""); setCredentialAction("keep"); }
-  function closeImport() { discardPreview(); setText(""); setShowText(false); onImportOpenChange(false); }
+  const busy = actions.busy || actions.unknown || !!workspace.issue;
+  useEffect(() => { onBusyChange?.(actions.busy); }, [actions.busy, onBusyChange]);
   useEffect(() => {
-    alive.current = true;
-    return () => { alive.current = false; generation.current++; if (previewId.current) void application.discardProxyImport?.(previewId.current); previewId.current = undefined; };
-  }, [application]);
-  useEffect(() => { if (!importOpen) { discardPreview(); setText(""); setShowText(false); } }, [importOpen]);
-  useEffect(() => { onBusyChange?.(busy); }, [busy, onBusyChange]);
-
+    if (pending?.kind !== "update") return;
+    setConfiguration(pending.request.configuration);
+    setCredentialAction(pending.request.credentials.action);
+    setUsername(pending.request.credentials.action === "replace" ? pending.request.credentials.username : "");
+    setPassword(pending.request.credentials.action === "replace" ? pending.request.credentials.password : "");
+  }, [pending]);
   useEffect(() => {
     if (!activeKey) return;
     let disposed = false, timer: ReturnType<typeof setTimeout>;
-    const ids = activeKey.split(",");
     async function read() {
       let stillActive = false, completed = false;
-      for (const id of ids) {
-        const response = await application.getOperation(id);
-        if (disposed) return;
-        if (!response.ok) { stillActive = true; setMessage(`${response.error.code}：${response.error.message} 结果尚未确认，继续读取。`); continue; }
-        setLocalOperations(previous => ({ ...previous, [id]: mergeOperation(previous[id], response.data) }));
-        if (!operationIsTerminal(response.data)) stillActive = true;
-        else { completed = true; setMessage(response.data.state === "completed" ? "本次代理检查已完成；历史结果不保证下次启动可用。" : `${response.data.error?.code ?? response.data.state}：${response.data.error?.message ?? "检查未完成"}`); }
+      for (const id of activeKey.split(",")) {
+        try {
+          const response = await application.getOperation(id); if (disposed) return;
+          if (!response.ok) { stillActive = true; owner.message(`${response.error.code}：${response.error.message} 结果尚未确认，继续读取。`); continue; }
+          owner.observe(response.data);
+          if (!operationIsTerminal(owner.getSnapshot().operations[id])) stillActive = true;
+          else { completed = true; owner.message(response.data.state === "completed" ? "本次检查已完成；历史结果不保证下次启动可用或永久保护。" : `${response.data.error?.code ?? response.data.state}：${response.data.error?.message ?? "检查未完成"}`); }
+        } catch { if (!disposed) { stillActive = true; owner.message("检查任务读取未确认，继续保留原任务。"); } }
       }
       if (completed) await application.refresh?.();
       if (!disposed && stillActive) timer = setTimeout(read, 750);
     }
-    void read();
-    return () => { disposed = true; clearTimeout(timer); };
-  }, [application, activeKey]);
-
-  async function perform<T>(action: () => Promise<ApplicationResult<T>> | undefined, done: (data: T) => void) {
-    if (busyRef.current) return;
-    busyRef.current = true; setBusy(true); setMessage("");
-    try {
-      const result = await action();
-      if (!alive.current) return;
-      if (!result?.ok) { setMessage(failureMessage(result)); return; }
-      done(result.data);
-    } finally { busyRef.current = false; if (alive.current) setBusy(false); }
+    void read(); return () => { disposed = true; clearTimeout(timer); };
+  }, [application, owner, activeKey]);
+  function closeEdit() { setEditHidden(true); setEditing(undefined); setConfiguration(undefined); setUsername(""); setPassword(""); setCredentialAction("keep"); }
+  function edit(record: NativeProxy) { setEditHidden(false); setEditing(record); setConfiguration({ name: record.name, type: record.type, host: record.host, port: record.port, country: record.country }); setUsername(""); setPassword(""); setCredentialAction("keep"); }
+  async function save() {
+    if (actions.unknown) { if (await owner.retry()) closeEdit(); return; }
+    if (!editing || !configuration) return;
+    if (await owner.run({ kind: "update", request: { proxyId: editing.id, expectedRevision: editing.revision, requestId: crypto.randomUUID(), configuration, credentials: credentialAction === "replace" ? { action: "replace", username, password } : { action: credentialAction } } })) closeEdit();
   }
-  async function parse() {
-    if (busyRef.current) return;
-    discardPreview();
-    const current = generation.current;
-    busyRef.current = true; setBusy(true); setMessage("");
-    try {
-      const result = await application.parseProxyImport?.(text);
-      if (!alive.current || !importOpenRef.current || generation.current !== current) { if (result?.ok) void application.discardProxyImport?.(result.data.previewId); return; }
-      if (!result?.ok) { setMessage(failureMessage(result)); return; }
-      const data = result.data; previewId.current = data.previewId; setPreview(data);
-      setSelected(data.rows.filter(row => row.configuration && !row.error && !row.duplicateCount && !row.existingCount).map(row => row.line));
-      setMessage("已解析，尚未保存。重复候选默认不选，可明确选择另存节点。");
-    } finally { busyRef.current = false; if (alive.current) setBusy(false); }
+  async function check(ids: string[]) {
+    for (const id of ids) {
+      if (owner.getSnapshot().unknown) return;
+      const record = records.find(record => record.id === id); if (!record || activeByProxy.has(id)) continue;
+      await owner.run({ kind: "check", request: { proxyId: id, expectedRevision: record.revision, requestId: crypto.randomUUID() } });
+    }
   }
-  async function loadFile(file: File | undefined) {
-    if (!file || busyRef.current) return;
-    discardPreview();
-    if (file.size > 2 * 1024 * 1024) { setMessage("文本文件不能超过2MiB；请分文件导入，这不是代理数量限制。"); return; }
-    const current = generation.current;
-    busyRef.current = true; setBusy(true);
-    try {
-      const value = new TextDecoder("utf-8", { fatal: true }).decode(await file.arrayBuffer());
-      if (!alive.current || generation.current !== current || !importOpenRef.current) return;
-      setText(value); setMessage("文件内容已读取，尚未保存；请选择解析预览。");
-    } catch { if (alive.current) setMessage("文本文件需为有效UTF-8；没有保存或执行任何内容。"); }
-    finally { busyRef.current = false; if (alive.current) setBusy(false); }
-  }
-  function edit(record: NativeProxy) {
-    setDeleting(undefined); setEditing(record); clearCredentials();
-    setConfiguration({ name: record.name, type: record.type, host: record.host, port: record.port, country: record.country });
-  }
-  function save(event: FormEvent) {
-    event.preventDefault(); if (!editing || !configuration) return;
-    const record = editing;
-    void perform(() => application.updateProxy?.({ proxyId: record.id, expectedRevision: record.revision, requestId: crypto.randomUUID(), configuration, credentials: credentialAction === "replace" ? { action: "replace", username, password } : { action: credentialAction } }), () => {
-      clearCredentials(); setEditing(undefined); setConfiguration(undefined); setMessage("代理已保存，旧检查结果已失效；环境seed保持不变。");
-    });
-  }
-
-  return <div className="native-proxy-manager">
-    {!importOnly && <><div className="info-strip"><ShieldCheck size={19} /><div><strong>本机凭据保护，独立环境通道</strong><p>HTTP / HTTPS / SOCKS5通道代码已接；环境启动重新建独立通道并做同通道前检，不凭历史成功启动。SOCKS5目标域名交给代理解析，无认证与用户名密码分别协商，不降级；HTTPS代理TLS不能跳验证。实际验收与运行期全路径保护仍待补。</p></div></div>
-    <div className="info-strip"><ShieldCheck size={19} /><div><strong>代理启动按实际会话核对隔离资源</strong><p>正式启动会创建独立容器和专属代理桥，核对进程树与同通道前检；缺失、失败或状态不明时拒绝启动。独立检查不能代替这套核对。当前受控本机启动闭环已验证，外部全路径及故障验收仍待补齐；支持前提是Windows网络隔离机制正常工作。</p></div></div></>}
-    {importOpen && <section className="work-card native-proxy-form" aria-labelledby="native-proxy-import-title">
-      <h2 id="native-proxy-import-title">导入代理 · 先预览再保存</h2>
-      <p>每行一条：<code>http://user:password@host:port</code>、<code>https://host:port</code>、<code>socks5://user:password@host:port</code>或<code>host:port:user:password</code>。IPv6使用<code>socks5://[2001:db8::1]:1080</code>；分隔符按URI编码。SOCKS5账号密码各需1–255个UTF-8字节。HTTP/SOCKS5到代理不加密认证，HTTPS才提供TLS保护；预览不回显凭据。</p>
-      <label>原始导入文本（只在本次表单保留）<textarea className={!showText ? "proxy-secret-input" : ""} autoComplete="off" aria-label="原始代理导入文本" value={text} disabled={busy} rows={5} spellCheck={false} onChange={event => { discardPreview(); setText(event.target.value); }} /></label>
-      <div className="native-proxy-actions"><label className="native-proxy-inline"><input type="checkbox" checked={showText} disabled={busy} onChange={event => setShowText(event.target.checked)} />显示原始输入（可能含凭据）</label><label className="native-proxy-file">选择UTF-8文本文件<input type="file" accept=".txt,text/plain" disabled={busy} onChange={event => { void loadFile(event.target.files?.[0]); event.target.value = ""; }} /></label></div>
-      <div className="native-proxy-actions"><button className="btn" disabled={busy || !text.trim()} onClick={() => void parse()}>解析预览</button><button className="btn" disabled={busy} onClick={closeImport}>取消并清除输入</button></div>
-      {preview && <>
-        <p role="status">有效{preview.rows.filter(row => !!row.configuration).length}行 · 错误{preview.rows.filter(row => !!row.error).length}行 · 忽略空白/注释{preview.ignoredLines}行。勾选{selected.length}行；预览15分钟后失效。</p>
-        <div className="table-scroll"><table><thead><tr><th>保存</th><th>原始行号</th><th>安全配置 / 错误</th><th>认证</th><th>重复候选</th></tr></thead><tbody>{preview.rows.map(row => <tr key={row.line}>
-          <td><input type="checkbox" aria-label={`保存第${row.line}行`} disabled={busy || !row.configuration || !!row.error} checked={selected.includes(row.line)} onChange={event => setSelected(previous => event.target.checked ? [...previous, row.line] : previous.filter(line => line !== row.line))} /></td>
-          <td>{row.line}</td><td>{row.error ?? (row.configuration && `${row.configuration.type.toUpperCase()} · ${row.configuration.host}:${row.configuration.port}`)}</td><td>{row.configuration ? row.hasAuthentication ? "已输入认证（不回显）" : "无认证" : "—"}</td><td>{row.duplicateCount || row.existingCount ? `本批另有${row.duplicateCount}行 / 已存${row.existingCount}个节点地址相同` : "—"}</td>
-        </tr>)}</tbody></table></div>
-        {Object.keys(preview.duplicateGroups).length > 0 && <details><summary>查看重复组的原始行号（地址相同不代表认证相同）</summary>{Object.entries(preview.duplicateGroups).map(([groupId, group]) => <p key={groupId}>行号：{group.lines.join("、")}；已存同地址节点：{group.existingProxyIds.length}个。</p>)}</details>}
-        <button className="btn primary" disabled={busy || !selected.length} onClick={() => void perform(() => application.commitProxyImport?.({ previewId: preview.previewId, selectedRows: selected, requestId: crypto.randomUUID() }), data => {
-          const saved = new Set(data.importedLines), remaining = text.split(/\n/).filter((_, index) => !saved.has(index+1)).join("\n");
-          previewId.current = undefined; setPreview(undefined); setSelected([]); setText(remaining); setShowText(false);
-          setMessage(`已保存${data.importedIds.length}个代理；${remaining.trim() ? "未选与错误行仍留在输入框，可修正后重新解析。" : "原始凭据输入已清除。"}`);
-          onImported?.(data.importedIds);
-          if (!remaining.trim()) onImportOpenChange(false);
-        })}>保存所选有效行</button>
-      </>}
-    </section>}
-    {editing && configuration && <section className="work-card native-proxy-form" aria-labelledby="native-proxy-edit-title"><h2 id="native-proxy-edit-title">编辑代理 · {editing.name}</h2><p>修订{editing.revision}；保存会使旧检查结果失效。已有认证不会回显，默认保留。</p><form onSubmit={save}>
-      <div className="native-proxy-fields"><label>名称<input value={configuration.name} disabled={busy} required maxLength={256} onChange={event => setConfiguration({ ...configuration, name: event.target.value })} /></label><label>协议<select value={configuration.type} disabled={busy} onChange={event => setConfiguration({ ...configuration, type: event.target.value as ProxyConfiguration["type"] })}><option value="http">HTTP</option><option value="https">HTTPS · TLS到代理</option><option value="socks5">SOCKS5 · 远端解析目标域名</option></select></label><label>主机名或IP<input value={configuration.host} disabled={busy} required onChange={event => setConfiguration({ ...configuration, host: event.target.value })} /></label><label>端口<input type="number" min={1} max={65535} required value={configuration.port} disabled={busy} onChange={event => setConfiguration({ ...configuration, port: Number(event.target.value) })} /></label><label>地区标签（自行填写，非实测）<input value={configuration.country} disabled={busy} maxLength={128} onChange={event => setConfiguration({ ...configuration, country: event.target.value })} /></label><label>认证处理<select value={credentialAction} disabled={busy} onChange={event => { setUsername(""); setPassword(""); setCredentialAction(event.target.value as typeof credentialAction); }}><option value="keep">保留现有认证（{editing.hasAuthentication ? "已设置" : "未设置"}）</option><option value="replace">明确替换用户名和密码</option><option value="clear">明确清除认证</option></select></label></div>
-      {credentialAction === "replace" && <div className="native-proxy-fields"><label>新用户名（不回显旧值）<input type="password" value={username} disabled={busy} autoComplete="off" maxLength={4096} onChange={event => setUsername(event.target.value)} /></label><label>新密码<input type="password" value={password} disabled={busy} autoComplete="new-password" maxLength={4096} onChange={event => setPassword(event.target.value)} /></label></div>}
-      {configuration.type === "socks5" && <p>目标域名由上游解析；代理服务器自身的主机名仍需本机解析。用户名/密码各需1–255个UTF-8字节（不是字符数）。{credentialAction === "replace" ? `当前：用户名${new TextEncoder().encode(username).length}字节，密码${new TextEncoder().encode(password).length}字节。` : "保留认证不读取或清除旧值；切换协议后若不兼容，检查和启动会阻断，请明确替换或清除。"}普通SOCKS5链路不加密认证，IPv6能否到达以实际检查结果为准。</p>}
-      <div className="native-proxy-actions"><button className="btn primary" disabled={busy}>确认保存</button><button type="button" className="btn" disabled={busy} onClick={() => { clearCredentials(); setEditing(undefined); setConfiguration(undefined); }}>取消并清除新凭据</button></div>
-    </form></section>}
-    {deleting && <section className="work-card native-proxy-form" role="group" aria-label="删除代理确认"><h2>确认删除 {deleting.name}？</h2><p>只删除本机代理配置与其受保护认证，不改变环境设备身份；被引用的节点不能直接删除。</p><div className="native-proxy-actions"><button className="btn danger" disabled={busy} onClick={() => void perform(() => application.deleteProxy?.({ proxyId: deleting.id, expectedRevision: deleting.revision, requestId: crypto.randomUUID() }), () => { setDeleting(undefined); setMessage("代理配置已删除。"); })}>确认删除</button><button className="btn" disabled={busy} onClick={() => setDeleting(undefined)}>取消</button></div></section>}
-    {!importOnly && <section className="work-card"><div className="section-toolbar"><h2>本机代理 <span>{records.length}</span></h2><button className="btn" disabled={busy} onClick={() => void application.refresh?.()}><RefreshCw size={15} />重新读取</button></div>
-      <div className="table-scroll"><table><thead><tr><th>名称 / 地址</th><th>认证 / 绑定</th><th>真实检查 / 实际出口</th><th>操作</th></tr></thead><tbody>{records.map(record => {
-        const task = activeByProxy.get(record.id), report = task ? task.proxyReport : record.checkReport;
-        return <tr key={record.id}>
-          <td><strong>{record.name}</strong><span className="cell-secondary">{record.type.toUpperCase()} · {record.host.includes(":") ? `[${record.host}]` : record.host}:{record.port}</span><span className="cell-secondary">{record.country || "未填地区标签"} · 修订{record.revision}</span></td>
-          <td>{record.hasAuthentication ? "已设置认证（不回显）" : "无认证"}<span className="cell-secondary">绑定{record.usedCount ?? record.usedBy.length}个环境</span>{record.type === "socks5" && <span className="cell-secondary">固定策略：远端解析目标域名</span>}</td>
-          <td><span role={task ? "status" : undefined}>{task ? task.persistencePending ? "结果待保存 · 修复存储后重新读取" : proxyStageLabel(task.stage ?? "queued") : statusLabels[record.status]}</span>{report?.exitIp && <span className="cell-secondary">本次观测IP：{report.exitIp}</span>}{report?.finishedAt && <span className="cell-secondary">{new Date(report.finishedAt).toLocaleString()} · {report.durationMs}ms</span>}{report?.error && <span className="cell-secondary">{report.error.code}：{report.error.message}</span>}{report?.resolutionPolicy && <span className="cell-secondary">{proxyResolutionLabel(report.resolutionPolicy)}</span>}
-            {report?.steps.length ? <details className="native-proxy-report"><summary>分阶段结果</summary><ul>{report.steps.map((step, index) => <li key={index}>{proxyStageLabel(step.stage)} · {step.status === "passed" ? "通过" : step.status === "running" ? "进行中" : step.status === "unsupported" ? "不支持" : "失败"}：{step.message}</li>)}</ul><p>目标：{report.targetOrigin || "尚未访问目标"}；不跟随重定向，不跳过TLS验证。这是独立临时通道观测，环境启动仍须在自己的新通道重新前检。</p></details> : null}
-          </td>
-          <td><div className="native-proxy-actions"><button className="btn" disabled={waiting || !!task} onClick={() => void perform(() => application.checkProxy?.({ proxyId: record.id, expectedRevision: record.revision, requestId: crypto.randomUUID() }), data => setLocalOperations(previous => ({ ...previous, [data.operation.id]: mergeOperation(previous[data.operation.id], data.operation) })))}>{task && <LoaderCircle size={14} className="spin" />}检查</button>{task && <button className="btn" disabled={busy || task.cancelRequested || task.persistencePending} onClick={() => void perform(() => application.cancelOperation(task.id), data => setLocalOperations(previous => ({ ...previous, [data.id]: mergeOperation(previous[data.id], data) })))}>取消检查</button>}<button className="btn" disabled={waiting || !!task} onClick={() => edit(record)}>编辑</button><button className="btn danger" disabled={waiting || !!task || !!(record.usedCount ?? record.usedBy.length)} title={(record.usedCount ?? record.usedBy.length) ? "先修改引用环境的绑定" : "删除本机节点"} onClick={() => setDeleting(record)}><Trash2 size={14} />删除</button></div></td>
-        </tr>;
-      })}</tbody></table></div>
-      {!records.length && <div className="native-proxy-empty"><p>没有本机代理。演示数据不会进入这里。</p><button className="btn primary" onClick={() => onImportOpenChange(true)}>导入代理</button></div>}
-    </section>}
-    {(busy || message) && <p className="native-proxy-message" role="status" aria-live="polite">{busy && <LoaderCircle size={16} className="spin" />}{message || "本机服务正在处理，尚未确认保存。"}</p>}
-  </div>;
+  const effectiveEdit = editing ?? (!editHidden && pending?.kind === "update" ? records.find(record => record.id === pending.request.proxyId) : undefined);
+  const editConfiguration = actions.unknown && pending?.kind === "update" ? pending.request.configuration : configuration;
+  const reportRecord = (detail && records.find(record => record.id === detail.id)) ?? detail;
+  const reportTask = reportRecord && operations.size ? [...operations.values()].filter(op => op.proxyId === reportRecord.id).at(-1) : undefined;
+  const report = reportTask?.proxyReport ?? reportRecord?.checkReport;
+  return <>
+    {visible && !importOnly && <ProxyManagementPage native records={records.map(record => { const task = activeByProxy.get(record.id); return { ...record, usedCount: record.usedCount ?? record.usedBy.length, deleteProtected: !!(record.usedCount ?? record.usedBy.length), busy: !!task, cancelDisabled: !!task?.cancelRequested || !!task?.persistencePending, statusText: task ? task.persistencePending ? "结果待保存" : proxyStageLabel(task.stage ?? "queued") : undefined, exitIp: record.checkReport?.exitIp }; })} busy={busy} message={actions.message} onImport={mode => { setImportMode(mode); onImportOpenChange(true); }} onEdit={id => { const record = records.find(record => record.id === id); if (record) edit(record); }} onDelete={id => setDeleting(records.find(record => record.id === id))} onCheck={ids => void check(ids)} onUsage={id => setUsage(records.find(record => record.id === id))} onDetails={id => setDetail(records.find(record => record.id === id))} onRefresh={() => void application.refresh?.()} onAssign={onAssign ? () => onAssign() : undefined} onCancelCheck={id => { const task = activeByProxy.get(id); if (!task || task.persistencePending) return; void application.cancelOperation(task.id).then(result => { if (result.ok) owner.observe(result.data); else owner.message(`${result.error.code}：${result.error.message}`); }).catch(() => owner.message("取消结果未知，请核对原检查任务。")); }}>
+      {actions.unknown && <button className="button primary" disabled={actions.busy} onClick={() => void owner.retry()}>核实原代理{pending?.kind === "update" ? "保存" : pending?.kind === "delete" ? "删除" : "检查"}请求</button>}
+    </ProxyManagementPage>}
+    <ProxyImportWindow application={application} open={importOpen && visible} onClose={() => onImportOpenChange(false)} onImported={onImported} onBusyChange={onBusyChange} context={importOnly ? "environment" : "page"} initialMode={importMode} lifecycle={modalLifecycle} />
+    {visible && effectiveEdit && editConfiguration && <ProxyEditWindow configuration={editConfiguration} onConfiguration={setConfiguration} credentialAction={credentialAction} onCredentialAction={value => { setUsername(""); setPassword(""); setCredentialAction(value); }} username={username} password={password} onUsername={setUsername} onPassword={setPassword} hasAuthentication={effectiveEdit.hasAuthentication} native busy={actions.busy || !!workspace.issue} unknown={actions.unknown} message={actions.message} onClose={closeEdit} onSave={() => void save()} />}
+    {visible && deleting && <ProxyKernelModal title="删除代理确认" width={400} onClose={() => setDeleting(undefined)} busy={actions.busy} footer={<><button className="button" disabled={actions.busy} onClick={() => setDeleting(undefined)}>取消</button><button className="button danger" disabled={actions.busy || !!workspace.issue} onClick={async () => { if (await owner.run({ kind: "delete", request: { proxyId: deleting.id, expectedRevision: deleting.revision, requestId: crypto.randomUUID() } })) setDeleting(undefined); }}>确认删除</button></>}><p>确定删除 {deleting.name}？只删除本机配置及其受保护认证，不改变设备身份；被引用节点不能删除。</p>{actions.message && <p role="status">{actions.message}</p>}</ProxyKernelModal>}
+    {visible && usage && <ProxyUsageWindow name={usage.name} ids={usage.usedBy} total={usage.usedCount ?? usage.usedBy.length} workspace={workspace} onClose={() => setUsage(undefined)} onAssign={onAssign ? ids => { setUsage(undefined); onAssign(ids); } : undefined} />}
+    {visible && reportRecord && <ProxyKernelModal title={`代理检查详情 · ${reportRecord.name}`} width={620} onClose={() => setDetail(undefined)} footer={<button className="button primary" onClick={() => setDetail(undefined)}>确定</button>}><p>修订 {reportRecord.revision} · {reportTask?.persistencePending ? "结果待保存，尚非持久终态" : reportRecord.status === "unchecked" ? "尚未检查" : reportRecord.status === "failed" ? "检查未通过" : "本次检查通过"}</p>{report ? <><p>本次观测 IP：{report.exitIp ?? "未取得"} · {report.durationMs}ms<br />{report.finishedAt ? new Date(report.finishedAt).toLocaleString() : "未完成"}</p>{report.error && <p className="pk35-warning">{report.error.code}：{report.error.message}</p>}<table className="pk35-table"><thead><tr><th>阶段</th><th>结果</th><th>说明</th></tr></thead><tbody>{report.steps.map((step, index) => <tr key={index}><td>{proxyStageLabel(step.stage)}</td><td>{step.status === "passed" ? "通过" : step.status === "running" ? "进行中" : step.status === "unsupported" ? "不支持" : "失败"}</td><td>{step.message}</td></tr>)}</tbody></table>{report.resolutionPolicy && <p>{proxyResolutionLabel(report.resolutionPolicy)}</p>}<p>目标：{report.targetOrigin || "尚未访问目标"}；不跟随重定向，不跳过 TLS 验证。</p></> : <p>暂无本次安全观测报告，不推断出口或认证成功。</p>}<p>独立临时通道观测不是环境启动许可；每次启动重新核对自己的通道。人工 UI 与独立远端全路径仍待验，不作永久保护承诺。</p></ProxyKernelModal>}
+  </>;
 }
