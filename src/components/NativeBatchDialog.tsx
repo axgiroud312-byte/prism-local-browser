@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight, LoaderCircle } from "lucide-react";
 import { mergeOperation, operationIsTerminal, type ApplicationResult, type ApplicationService, type NativeBatchPage, type NativeBatchPreviewRequest, type Operation, type WorkspaceView } from "../application/contract";
 import { mergeBatchPage } from "../application/batch-model";
 import { EnvironmentTaskResult, EnvironmentWindowFrame } from "./EnvironmentDialogParts";
-import { lockBodyScroll, ownsTopModal, restoreModalFocus } from "./modal-lifecycle";
+import { lockBodyScroll, maintainModalFocus, ownsTopModal, restoreModalFocus } from "./modal-lifecycle";
 import "./environment-batch.css";
 
 export interface NativeBatchDialogInput { kind: "create" | "clone" | "assign" | "history"; sourceIds?: string[]; initialPage?: NativeBatchPage }
@@ -49,6 +49,7 @@ export function NativeBatchDialog({ application, workspace, input, onClose }: { 
     mounted.current = true;
     const previous = document.activeElement as HTMLElement | null;
     const releaseScroll = lockBodyScroll();
+    const releaseFocus = maintainModalFocus(() => modal.current);
     if (ownsTopModal(modal.current)) modal.current?.querySelector<HTMLElement>("button")?.focus();
     const key = (event: KeyboardEvent) => {
       if (event.defaultPrevented || !ownsTopModal(modal.current)) return;
@@ -62,7 +63,7 @@ export function NativeBatchDialog({ application, workspace, input, onClose }: { 
       if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
     };
     document.addEventListener("keydown", key); void application.refresh?.();
-    return () => { mounted.current = false; generation.current++; releaseScroll(); document.removeEventListener("keydown", key); restoreModalFocus(previous); };
+    return () => { mounted.current = false; generation.current++; releaseScroll(); releaseFocus(); document.removeEventListener("keydown", key); restoreModalFocus(previous); };
   }, [application]);
 
   useEffect(() => {
