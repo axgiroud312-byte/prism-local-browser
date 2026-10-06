@@ -8,8 +8,8 @@
 
 - [#28](https://github.com/axgiroud312-byte/prism-local-browser/issues/28) 已实现并有本地/远程实际结果，提交 `53ac88334ad813d3bd15eb537bda7af5b1b78695` 已保留。已验证不等于已合并主分支或关闭 issue。
 - [#30](https://github.com/axgiroud312-byte/prism-local-browser/issues/30) 唯一承接环境表和统一创建/编辑窗口实现；[#29](https://github.com/axgiroud312-byte/prism-local-browser/issues/29) 对整体方向和全部六项验收逐项核对，不重复实现页面、不因 #30 完成自动勾选。
-- 实现 `9e5b819`、审查修复 `d039147` 已集成到 `e1573ca`；最后一次共享 `npm run check` **21/21，45.2 秒**。当前源码预览 `http://127.0.0.1:5173/#/environments`。最新远程单 job/head 的实际回执随交付 PR/三票记录补入，不用 #28 原 13/13 代替。
-- 源码、测试和文档分别负责，子分支基于同一集成成果，非破坏性合并；#29 六条与 #30 七条逐项核对，共用实现/结果，不用文档提交或单票完成代替整批验收。最终交付采用 `codex/issue28-30-delivery` 向现有集成分支的增量 PR；PR #27 保留草稿和历史边界。
+- 实现 `9e5b819`、审查修复 `d039147` 已集成到 `e1573ca`；最后一次共享 `npm run check` **21/21，45.2 秒**。当前源码预览 `http://127.0.0.1:5173/#/environments`。远程交付 head `935cf5f` 的单 Browser clicks job **21/21，57.2 秒**，见 E-CI，不用 #28 原 13/13 代替。
+- 源码、测试和文档分别负责，子分支基于同一集成成果，非破坏性合并；#29 六条与 #30 七条逐项核对，共用实现/结果，不用文档提交或单票完成代替整批验收。交付 [PR #31](https://github.com/axgiroud312-byte/prism-local-browser/pull/31)：`codex/issue28-30-delivery` → `goal/v1-remaining-integration`，**待合并**；[PR #27](https://github.com/axgiroud312-byte/prism-local-browser/pull/27) 保留草稿和历史边界。本轮没有自动合并。
 - 正式验收保持 **4/21**，T05–T21 / #6–#22 保持 OPEN；历史 candidate.4/candidate.6 的来源、版本、摘要、签名及缺口以 [首版报告](V1-final.md) 和 [候选回执](V1-candidate-acceptance.json) 为准，未重建或改写。
 
 `PASS` 只表示表中明确的证据层级；`PENDING` 表示尚无本轮已核对输出，不能当作通过、跳过或取消验收要求。
@@ -37,7 +37,7 @@
 | E-DEMO | [environment.spec.ts](../../tests/ui/environment.spec.ts) 的创建/编辑/取消/重载、服务内核、自动档案、代理导入、分组/搜索/部分失败、窄窗口 | **PASS：14/14**，含服务选项、稳定 seed、Cookie 保留、导入取消/写失败/成功往返、逐项成功/失败/未执行和模拟中间写失败重试。localStorage 只证明 demo 配置持久化。 |
 | E-BRIDGE | [native-boundary.spec.ts](../../tests/ui/native-boundary.spec.ts) 的创建一次/打开失败重试、显式 direct、混合批量策略、无可用内核、坏桥阻断 | **PASS：7/7**，合成 Wails bridge 的请求和页面状态；创建提交一次、异步打开失败后仅重试原 ID，显式 direct/proxy 不弹内部确认，忙字段保护。fixture sessionStorage 只用于测试重载，不是 SQLite。 |
 | E-CHECK | 集成后共享的 `npm run check`（#29/#30 共用） | **PASS：21/21，45.2 秒**，代码 `e1573ca` 与最后的正确控件标签测试；Playwright 直接启动/关闭 Vite，报告 `output/playwright/report/`。保留原 13 条并按实际流程调整、新增 8 条，不跳过。不逐票重复整轮，之前失败修复后才复验。 |
-| E-CI | 最新交付 head 的远程 Browser clicks job | **PENDING**：记录实际 run URL/head、单 job 及结果；不能用 E28-R 代替新行为远程检查。 |
+| E-CI | [远程 CI 37424312735](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37424312735)，交付代码 head `935cf5f2344db0c39af5d874a09727083936b0fa` | **PASS：21/21，57.2 秒；仅 Browser clicks 一个 job，1 分 38 秒**。核对实际步骤只有依赖/测试浏览器安装和 Vite 页面测试，无构建/Go/Wails/安装包/产品探针。失败附件步骤因成功跳过。本回执文档提交不改变源码/测试；最终提交的最新 head/run 再由 [PR #31 checks](https://github.com/axgiroud312-byte/prism-local-browser/pull/31/checks) 及三票评论登记，不能把这一轮冒称为不同 head。 |
 | E-SHOT-LIST | [环境列表](../screenshots/issue30-environments.png) | **PASS（可见布局）**：从 Vite 当前源码生成并逐图核对，仅合成 demo 数据；1440×1000，分组/搜索、网络/版本/状态、行操作清晰。 |
 | E-SHOT-CREATE | [新建窗口](../screenshots/issue30-create.png) | **PASS（可见布局）**：同一常用窗口、直连/代理、服务内核、自动摘要/换一套和两种创建按钮，高级默认收起。不是产品内核截图。 |
 | E-SHOT-NARROW | [窄窗口](../screenshots/issue30-narrow.png) | **PASS（可见布局）**：390×844，常用表单可滚动、主操作固定可达；截图不代替实际点击/焦点检查。 |
@@ -73,9 +73,9 @@
 | 29-3 | 单个环境无需用户查看批次计划、配置哈希或内部修订即可完成常用操作。 | 默认收起高级详情仍能创建、创建并打开、编辑保存和重开；native 单条走 `Environment.Create` 而非 `Batch.Preview`；打开无内部 ID/修订确认。保留未保存放弃、删除/恢复等必要确认。 | E-SOURCE、E-DEMO、E-BRIDGE、E-SHOT-CREATE；**PASS** |
 | 29-4 | 直连/代理和内核版本可明确选择，指纹可一键生成且保存后稳定。 | 来自服务的不同版本、直连和已有代理均可选；新建自动预览，换一套仅改草稿，取消不提交；普通编辑/换代理/关闭重开不换 seed，不换已存内核/数据引用；无可用内核引导、代理失败不直连。 | E-SOURCE、E-DEMO、E-BRIDGE；**PASS（页面配置）** |
 | 29-5 | 界面连接现有应用服务，demo 与注入 bridge 的验证结果如实标记；真实桌面未执行的部分保持未验证。 | 保存/打开消费原契约及白名单、修订/幂等保护；打开失败只重试已创建 ID；坏 bridge 不回退 demo。分别登记 demo/合成桥结果，并明确未运行 SQLite、真实内核/进程/流量/安装。 | E-SOURCE、E-DEMO、E-BRIDGE、第 7 节；**PASS（接入及证据边界）** |
-| 29-6 | 默认只运行 #28 的浏览器点击测试，按改动更新相关用例，不反复构建或打包。 | 按实际标签调整行为测试而不弱化断言；定向检查后共享一次 `npm run check`，核对最新远程单 job；交付记录含命令/实际结果，不运行默认范围外构建。 | E-CHECK、E-CI、E-DOCS；**PENDING** |
+| 29-6 | 默认只运行 #28 的浏览器点击测试，按改动更新相关用例，不反复构建或打包。 | 按实际标签调整行为测试而不弱化断言；定向检查后共享一次 `npm run check`，核对交付远程单 job；交付记录含命令/实际结果，不运行默认范围外构建。 | E-CHECK、E-CI、E-DOCS；**PASS（轻量检查）** |
 
-前五项已分别核对；第六项本地检查通过，最新远程结果补入后才完成发布收尾。#30、旧 13/13 或历史候选通过不能自动替代 #29 的这一轮检查。
+六项分别核对通过，范围限定为页面/现有服务接入与轻量工作流，待 PR 合并。#30、旧 13/13 或历史候选通过没有自动替代 #29 的这一轮检查。
 
 ## 6 #30 实现验收矩阵（不自动转为 #29 通过）
 
@@ -86,7 +86,7 @@
 | 30-3 | 同一新建窗口可选择直连/已有代理、内核版本、生成或更换指纹，完成“创建”及“创建并打开”；代理导入返回后草稿仍在。 | E-DEMO/E-BRIDGE；成功/取消/写失败重试保留名称、分组、内核、seed，顶层 Escape/焦点恢复；**PASS** |
 | 30-4 | 编辑保存后重新打开或刷新能读到保存内容；取消不提交；普通编辑不换 seed；打开失败不重复创建。 | E-DEMO/E-BRIDGE；持久读回、取消不保存、创建提交一次/重试原 ID、非法数量草稿恢复；**PASS** |
 | 30-5 | 常用屏幕和窄窗口下，表单、列表及主操作可操作，不被遮挡；日常单个环境操作无需经过技术报告或批次确认页。 | E-DEMO、E-BRIDGE、三张截图；390px 实际创建打开/关闭和正常菜单点击、焦点/滚动已核对；**PASS（布局/交互）** |
-| 30-6 | 沿用 #28 的轻量检查：按改动调整现有 Playwright 点击用例并运行 `npm run check`，直接使用 Vite 源码页面；不默认运行构建、打包或完整桌面验收。在 PR 中记录 demo/模拟 bridge 的实际覆盖与真实桌面未验证项。 | E-CHECK/E-CI；最终 PR 由协调者记录；**PENDING** |
+| 30-6 | 沿用 #28 的轻量检查：按改动调整现有 Playwright 点击用例并运行 `npm run check`，直接使用 Vite 源码页面；不默认运行构建、打包或完整桌面验收。在 PR 中记录 demo/模拟 bridge 的实际覆盖与真实桌面未验证项。 | E-CHECK/E-CI；PR #31 分别登记 demo/合成桥和真实未验边界；**PASS** |
 | 30-7 | 按实际行为更新相关 PRD 和需求追踪；保留原有数据及身份保护，关联本 issue 提交交付记录。 | E-SOURCE/E-DOCS；[PRD](../PRD.md)/[追踪](../TRACEABILITY.md) 与实际源码一致，源码提交关联 #29/#30；**PASS（文档/身份保护）** |
 
 ## 7 验证边界与最终收尾
@@ -97,4 +97,4 @@
 - 本次文档代理不安装依赖/工具链；本批次不新增工具链、不生产构建、不运行 Go/Wails 全套、安装卸载、Windows UI Automation、真实内核探针或系统级实验。#28 的现有 CI 仍按需安装 npm 依赖和 Playwright 测试浏览器，不是安装产品内核。历史安装/真实桌面证据只保留原范围，不重用来证明新 UI。
 - 独立远端出口、人工桌面完整流程、精确候选的干净 Windows 等历史缺口仍保留；没有新真实 native 验收声明，也不自动关闭 T05–T21。
 
-本地收尾已完成：共享整轮、源码审查修复、类型、文档及截图均有实际结果。发布收尾仍需最新远程单 Browser clicks job 和最终 issue/PR 回执；没有合并前保持待合并，不提前关闭票、不自动续跑历史任务。
+共享本地整轮、远程代码交付单 job、源码审查修复、类型、文档及截图均有实际结果。本文件回执提交后的最终 head 远程结果登记在 PR #31 和三票评论，通过后才置为可评审；没有合并前保持待合并，不提前关闭票、不自动续跑历史任务。PR #31 目标不是默认分支，关闭关键词不等于 issue 已自动关闭；须先合入集成成果，再由主分支交付 PR 关联关闭已满足的票，不能只合并旧 PR #27 head 就关闭 #29/#30。

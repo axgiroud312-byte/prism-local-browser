@@ -10,6 +10,8 @@
 
 独立代码审查发现 2 个 P2，无 P1；与联调揭示的菜单遮挡一起修复并回归通过。非法数量不提交且草稿可恢复；真正未知提交继续保留原请求/幂等保护。demo 持久化失败明确失败/未执行，保留已成功项和原记录，完成写失败后恢复存储可重试。`npm run typecheck` 通过；`npm run check:docs` **52 文档/链接、12 需求、6 路由、4 内嵌文档通过**，首轮遗漏 `activity` 的失败修复保留，检查脚本未改。最新远程单 job/head/时间与待合并交付回填对应 PR/issue。
 
+[PR #31](https://github.com/axgiroud312-byte/prism-local-browser/pull/31) 向现有集成分支增量交付，待合并；PR #27 保持草稿及历史未验说明。[远程 CI 37424312735](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37424312735) 对交付 head `935cf5f` **21/21，57.2 秒**，仅一个 Browser clicks job、1 分 38 秒，步骤未包含构建或桌面测试。回执文档不改变源码/测试；最终最新 head/run 另核对并登记 PR/三票，不能把旧 head 结果冒称最终提交。
+
 已生成并核对：[环境表](screenshots/issue30-environments.png)、[新建窗口](screenshots/issue30-create.png)、[窄窗口](screenshots/issue30-narrow.png)，Vite 当前源码合成 demo 数据、页面错误 0。不是旧候选 exe、真实内核、SQLite 或流量证据。注入 bridge fixture 的 sessionStorage 仅证明模拟重载。未执行生产构建/打包、Go/Wails 全套、安装卸载、Windows UIA、真实内核/进程/网络验证；旧候选身份和下方历史事实不改写，正式 **4/21、T05–T21 / #6–#22 OPEN** 保持不变。
 
 ## 日常 CI 精简为浏览器点击（2026-10-06）
