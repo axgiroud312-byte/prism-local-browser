@@ -200,6 +200,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1280, height: 800
     test("activity detail is reachable and demo export uses only original callback", async ({ page }) => {
       await openDemo(page, "activity"); await expect(page.getByRole("columnheader", { name: "操作对象", exact: true })).toBeVisible(); await page.getByRole("button", { name: /创建合成环境 工作环境 A 详情/ }).click();
       await expect(dialog(page, "操作记录详情")).toContainText("非真实桌面执行"); await page.keyboard.press("Escape"); await expect(page.getByRole("button", { name: /创建合成环境 工作环境 A 详情/ })).toBeFocused();
+      const pagination = (await page.locator(".local-page-pagination").boundingBox())!; expect(pagination.height).toBe(30); expect(Math.abs(pagination.y - 282.578)).toBeLessThan(1);
       await page.getByRole("button", { name: "导出记录", exact: true }).click(); const download = await page.evaluate(() => (window as unknown as { __localPagesHarness: { downloads: { name: string }[] } }).__localPagesHarness.downloads); expect(download).toHaveLength(1); expect(download[0].name).toBe("prism-activity.json");
     });
     test("activity direct-reference density survives global styles; filters and pagination preserve records", async ({ page }) => {
@@ -230,12 +231,20 @@ test("narrow windows keep pinned footer reachable and return to accessible navig
   await page.getByRole("button", { name: "查看操作记录", exact: true }).click(); await page.getByRole("button", { name: /创建合成环境 工作环境 A 详情/ }).click(); await expect(dialog(page, "操作记录详情").getByRole("button", { name: "强制结束此会话", exact: true })).toHaveCount(0);
 });
 
-test("actual App workspace fault outranks an open restore result and nested diagnostics return to the blocker", async ({ page }) => {
+for (const viewport of [{ width: 1440, height: 900 }, { width: 1280, height: 800 }]) test(`actual App workspace fault outranks an open restore result and nested diagnostics return to the blocker at ${viewport.width}x${viewport.height}`, async ({ page }) => {
+  await page.setViewportSize(viewport);
   await localPagesNativeBridge(page, "restore-progress"); await page.goto("/#/backups"); await expect(page.getByRole("button", { name: "导入完整备份", exact: true })).toBeEnabled(); await preflight(page); await confirmNative(page);
   const result = page.getByRole("dialog", { name: "完整恢复结果", exact: true, includeHidden: true });
   await page.evaluate(() => { (window as unknown as { __localPagesFixture: Fixture }).__localPagesFixture.workspace.issue = { code: "NATIVE_UNAVAILABLE", message: "合成工作区故障；原恢复窗口必须保留。", retryable: true }; });
   const blocker = page.getByRole("alertdialog", { name: "工作区需要处理", exact: true, includeHidden: true }); await expect(blocker).toBeVisible(); await expect.poll(() => blocker.evaluate(e => e.contains(document.activeElement))).toBe(true);
+  await expect(result.locator("..")).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
   for (const key of ["Escape", "Control+k", "Tab", "Shift+Tab"]) { await page.keyboard.press(key); await expect(blocker).toBeVisible(); await expect(result).toBeAttached(); await expect.poll(() => blocker.evaluate(e => e.contains(document.activeElement))).toBe(true); }
-  await blocker.getByRole("button", { name: "生成诊断预览", exact: true }).click(); const preview = dialog(page, "脱敏诊断预览"); await expect(preview).toContainText("公开字段摘要"); await expect.poll(() => preview.evaluate(e => e.contains(document.activeElement))).toBe(true); await page.keyboard.press("Escape"); await expect(preview).toHaveCount(0); await expect(blocker).toBeVisible(); await expect.poll(() => blocker.evaluate(e => e.contains(document.activeElement))).toBe(true); await expect(result).toBeAttached(); expect(await calls(page, "Backup.ApplyRestore")).toHaveLength(1);
+  await blocker.getByRole("button", { name: "生成诊断预览", exact: true }).click(); const preview = dialog(page, "脱敏诊断预览"); await expect(preview).toContainText("公开字段摘要"); await expect.poll(() => preview.evaluate(e => e.contains(document.activeElement))).toBe(true);
+  // Focus/hit testing ignores inert layers, but painting does not: a higher
+  // host overlay must not visually cover the diagnostic or double the mask.
+  expect(await preview.locator("..").evaluate(e => Number(getComputedStyle(e).zIndex))).toBeGreaterThan(await blocker.locator("..").evaluate(e => Number(getComputedStyle(e).zIndex)));
+  await expect.poll(() => preview.evaluate(e => { const r = e.getBoundingClientRect(); return e.contains(document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2)); })).toBe(true);
+  await expect(blocker.locator("..")).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+  await preview.getByRole("button", { name: "返回", exact: true }).click(); await expect(preview).toHaveCount(0); await expect(blocker).toBeVisible(); await expect.poll(() => blocker.evaluate(e => e.contains(document.activeElement))).toBe(true); await expect(blocker.locator("..")).toHaveCSS("background-color", "rgba(0, 0, 0, 0.4)"); await expect(result).toBeAttached(); expect(await calls(page, "Backup.ApplyRestore")).toHaveLength(1);
   await page.evaluate(() => { (window as unknown as { __localPagesFixture: Fixture }).__localPagesFixture.workspace.issue = undefined; }); await expect(blocker).toHaveCount(0); await expect.poll(() => result.evaluate(e => e.contains(document.activeElement))).toBe(true); await expect(page.locator(".sidebar")).toHaveJSProperty("inert", true); await expect(page.locator(".main-shell")).toHaveJSProperty("inert", true); await page.keyboard.press("Escape"); await expect(result).toHaveCount(0); await expect(page.locator(".sidebar")).toHaveJSProperty("inert", false); await expect(page.locator(".main-shell")).toHaveJSProperty("inert", false); expect(await page.evaluate(() => document.body.style.overflow)).toBe(""); await page.getByRole("button", { name: "查看操作记录", exact: true }).click(); await expect(page).toHaveURL(/#\/activity$/);
 });

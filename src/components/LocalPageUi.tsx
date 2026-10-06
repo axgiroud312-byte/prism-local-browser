@@ -8,9 +8,18 @@ import "./local-pages.css";
 // top window prevents App's lower Escape/Tab handlers from also firing.
 type WindowOwner = { element: HTMLElement; returnFocus: HTMLElement | null };
 const windows: WindowOwner[] = [];
-const inertOwners = new Map<HTMLElement, { count: number; previous: boolean }>();
+const inertOwners = new Map<HTMLElement, { count: number; previous: boolean; previousUnderlay: boolean }>();
 let bodyOverflow = "";
 let handoffFocus: HTMLElement | null = null;
+const modalLayer = (modal: HTMLElement) => {
+  let highest = 0;
+  for (let node: HTMLElement | null = modal; node; node = node.parentElement) {
+    const z = Number(getComputedStyle(node).zIndex);
+    if (Number.isFinite(z)) highest = Math.max(highest, z);
+  }
+  return highest;
+};
+const visibleModals = () => [...document.querySelectorAll<HTMLElement>('[aria-modal="true"]')].filter(modal => modal.getClientRects().length && !modal.closest("[inert]"));
 
 export function LocalPageWindow({ title, children, footer, onClose, busy = false, width = 500, height, className = "" }: {
   title: string; children: ReactNode; footer: ReactNode; onClose(): void;
@@ -24,7 +33,10 @@ export function LocalPageWindow({ title, children, footer, onClose, busy = false
     handoffFocus = null;
     if (!windows.length) { bodyOverflow = document.body.style.overflow; document.body.style.overflow = "hidden"; }
     windows.push(owner);
-    element.style.zIndex = String(120 + windows.length * 2);
+    // An existing fault blocker remains above an older task window; a child
+    // opened from that blocker must, however, paint above it as well as focus.
+    const previousLayer = visibleModals().filter(modal => !element.contains(modal)).reduce((highest, modal) => Math.max(highest, modalLayer(modal)), 120);
+    element.style.zIndex = String(previousLayer + 2);
     const background = [...document.body.children].flatMap(child => {
       if (!(child instanceof HTMLElement) || child === element || ["SCRIPT", "STYLE"].includes(child.tagName)) return [];
       // Do not inert the whole React root: a new, higher-priority workspace
@@ -33,22 +45,26 @@ export function LocalPageWindow({ title, children, footer, onClose, busy = false
       return shell ? [...shell.children].filter((region): region is HTMLElement => region instanceof HTMLElement) : [child];
     });
     for (const child of background) {
-      const owner = inertOwners.get(child) ?? { count: 0, previous: child.inert };
+      const owner = inertOwners.get(child) ?? { count: 0, previous: child.inert, previousUnderlay: child.classList.contains("local-page-managed-underlay") };
       owner.count++; inertOwners.set(child, owner); child.inert = true;
+      if (child.matches(".overlay")) child.classList.add("local-page-managed-underlay");
     }
-    // React also owns these regions' inert prop. Resolving a host blocker must
-    // not re-enable the page while a lower #36 window is still open.
-    const backgroundChanges = new MutationObserver(() => { for (const child of background) if (inertOwners.get(child)?.count && !child.inert) child.inert = true; });
-    for (const child of background) backgroundChanges.observe(child, { attributes: true, attributeFilter: ["inert"] });
     const tabbables = () => [...element.querySelectorAll<HTMLElement>('button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), a[href], summary, [tabindex="0"]')].filter(item => item.getClientRects().length && !item.closest("[inert]"));
     const focusFirst = () => (tabbables()[0] ?? element).focus();
     const isTop = () => {
       if (windows.at(-1) !== owner) return false;
-      const layer = (modal: HTMLElement) => { let highest = 0; for (let node: HTMLElement | null = modal; node; node = node.parentElement) { const z = Number(getComputedStyle(node).zIndex); if (Number.isFinite(z)) highest = Math.max(highest, z); } return highest; };
-      const modals = [...document.querySelectorAll<HTMLElement>('[aria-modal="true"]')].filter(modal => modal.getClientRects().length && !modal.closest("[inert]"));
-      const top = modals.reduce<HTMLElement | undefined>((current, modal) => !current || layer(modal) >= layer(current) ? modal : current, undefined);
+      const top = visibleModals().reduce<HTMLElement | undefined>((current, modal) => !current || modalLayer(modal) >= modalLayer(current) ? modal : current, undefined);
       return !top || element.contains(top);
     };
+    // React owns inert too, and host faults may appear after this mount. Keep
+    // our regions protected and only the visually effective top mask opaque.
+    const refreshBackground = () => {
+      for (const child of background) if (inertOwners.get(child)?.count && !child.inert) child.inert = true;
+      element.toggleAttribute("data-local-page-underlay", !isTop());
+    };
+    const backgroundChanges = new MutationObserver(refreshBackground);
+    backgroundChanges.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["inert", "style", "class"] });
+    refreshBackground();
     focusFirst();
     const key = (event: KeyboardEvent) => {
       if (!isTop()) return;
@@ -73,7 +89,8 @@ export function LocalPageWindow({ title, children, footer, onClose, busy = false
         const owner = inertOwners.get(child)!; owner.count--;
         if (!owner.count) {
           const hostStillBlocks = child.matches(".sidebar, .main-shell") && !!document.querySelector('#root [aria-modal="true"]');
-          child.inert = owner.previous || hostStillBlocks; inertOwners.delete(child);
+          child.inert = owner.previous || hostStillBlocks;
+          child.classList.toggle("local-page-managed-underlay", owner.previousUnderlay); inertOwners.delete(child);
         }
       }
       const top = windows.at(-1);
