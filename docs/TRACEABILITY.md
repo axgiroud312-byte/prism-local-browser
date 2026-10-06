@@ -10,6 +10,8 @@
 
 当前视觉增量由 [#33](https://github.com/axgiroud312-byte/prism-local-browser/issues/33) 承接：「完整代码」冻结标识 `202609160208` 唯一基准，替换旧 shell/统计卡/工具栏，增加 `/#/groups` 派生标签页。来源/40 状态/能力映射见 [UI_REFERENCE](UI_REFERENCE.md)，公共责任见 [UI_CONTRACT](UI_CONTRACT.md)，定向点击与两视口视觉分别见 [#33 记录](verification/issue33.md)。不覆盖上方 #29/#30 历史 21/21 或增加真实桌面计数。
 
+[#34](https://github.com/axgiroud312-byte/prism-local-browser/issues/34) 的连续环境表单、660px窗口、Cookie/批次/回收模块与72张合成证据已合入 `590a993`；正式App窗口挂载和400px未保存/强制结束确认仍在集成，不能把外部预览当已落地主入口。服务保护及实际定向结果见 [#34记录](verification/issue34.md)。本轮统一由 [草稿PR #38](https://github.com/axgiroud312-byte/prism-local-browser/pull/38) 交付；不因源码合入关闭票。
+
 路由是运行应用后的 hash 路由。源码链接指向文件，函数名用于定位；前端持续修改时不依赖易失效的固定行号。领域逻辑自动测试入口为 [`tests/domain.test.ts`](../tests/domain.test.ts)，页面流程仍需真实浏览器操作检查。
 
 ## 12 项需求映射
