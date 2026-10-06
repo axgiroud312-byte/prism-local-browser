@@ -57,8 +57,26 @@
     "localTopLevelTestsPassed": 4,
     "localSemanticSubtestsPassed": 12,
     "kernelVet": "passed",
-    "remoteRetest": "pending"
+    "remoteRetest": "passed"
   },
+  "successfulRetestCI": {
+    "runID": 37401271261,
+    "url": "https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37401271261",
+    "commit": "6cf17688811018434f0f32aa2acdd20691d32a90",
+    "status": "completed",
+    "conclusion": "success",
+    "checks": { "node22.12.0": "success", "node24": "success", "desktop": "success" },
+    "frontendTestsPerNodeVersion": 131,
+    "goAllPackagesAndVet": "passed",
+    "installerBuilds": ["0.3.0-preview.1 development-preview", "0.3.0-preview.2 development-preview"],
+    "real148ArchiveProbeSeconds": 14.82,
+    "realSavedProfileProbeSeconds": 22.31,
+    "normalDiagnosticProcessExits": true,
+    "artifactUpload": "success",
+    "productInstallerVerificationExecuted": false,
+    "automatedUIClickStepsExecuted": false
+  },
+  "readOnlyReview": "No credible P1/P2 or weakened access assertions found; static only, separate from CI proof",
   "formallyAcceptedTasks": 4,
   "totalTasks": 21
 }

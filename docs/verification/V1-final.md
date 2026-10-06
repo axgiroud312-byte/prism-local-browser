@@ -6,7 +6,7 @@
 
 最终分享前发现并修复构建隐私缺口：首轮46649c0主程序带编译机路径，Wails改用官方`-trimpath`，不改业务逻辑。**最终4b38dc8包已重新构建且无点击复验通过**；主程序buildinfo确认trimpath=true，主程序/维护helper路径扫描未发现Windows编译用户路径。旧包仅在本机忽略的历史证据目录，不对外分发。
 
-后台回归、本机真实固定档案、正式代理保护链、三种存储、备份恢复及硬中断均有下列证据。GitHub登录/推送/草稿PR/17票评论同步已完成；首轮远程CI两Node检查通过，desktop权限恢复回归失败，见[远程回执](V1-remote-sync.json)和[PR #27](https://github.com/axgiroud312-byte/prism-local-browser/pull/27)。CI修复、独立远端、特殊真实场景、人工完整页面和干净Windows仍缺，**未达到正式交付条件**。候选仅用于合成数据检查，不用于真实账号/凭据。
+后台回归、本机真实固定档案、正式代理保护链、三种存储、备份恢复及硬中断均有下列证据。GitHub登录/推送/草稿PR/17票同步及修订远程CI已完成；首轮FAIL保留，6cf1768三job通过，见[远程回执](V1-remote-sync.json)和[PR #27](https://github.com/axgiroud312-byte/prism-local-browser/pull/27)。独立远端、特殊真实场景、人工完整页面和干净Windows仍缺，**未达到正式交付条件**。候选仅用于合成数据检查，不用于真实账号/凭据。
 
 **候选已构建并完成本机无点击安装闭环。** 主交付目录`output/delivery/0.3.0-preview.4-v1-candidate/`，主包`prism-browser-0.3.0-preview.4-windows-amd64-setup.exe`，14,763,334字节；SHA-256：
 
@@ -38,6 +38,7 @@ NSIS bootstrap为i386是既有体系行为，安装限定x64，主程序和维�
 | 安装后独立只读收尾核对 | 默认数据/程序/注册与两快捷方式均不存在，六自有工作台PID均不存在；没有删除真实数据 | `install-postconditions.json` |
 | 二进制路径隐私与buildinfo | 主程序`-trimpath=true`，两payload exe未发现Windows编译用户路径；首轮含路径包撤出交付，只留本机历史 | `binary-path-privacy.json`、`binary-go-buildinfo.log` |
 | 最新文档与格式 | 50份文档、本地链接/12需求/6路由/4嵌入文档通过；暂存diff格式通过 | `docs-final.log`和本会话回执 |
+| 2026-10-06 GitHub默认无点击CI（6cf1768） | 三job通过；Node22.12.0/24各131/131后台、Go全部包/vet、preview.1/.2构建、真实148探测14.82秒及保存档案22.31秒通过。没有产品安装/自动点击，不算完整check或干净Windows产品验收 | [实际运行](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37401271261)、[回执](V1-remote-sync.json)、`github-ci-acl-retest.log` |
 
 除第一行之外表中日志均在`output/goal/V1-final/`。没有运行`npm run check`或Playwright/UI自动点击，**不声称完整check通过**。人工替代项见下文。网页build保留原有大chunk和Lucide `use client`警告，候选production实际结果已另列。首轮46649c0包与安装记录留在本机`pre-trimpath-artifacts/`，本表最终构建/安装日志和回执都对应4b38dc8，不混用哈希。
 
@@ -125,9 +126,11 @@ NSIS bootstrap为i386是既有体系行为，安装限定x64，主程序和维�
 
 10月5日认证失效，10月6日用户恢复后`gh auth status --hostname github.com`已核对正确身份。38个本地提交普通push成功，创建并关联[草稿PR #27](https://github.com/axgiroud312-byte/prism-local-browser/pull/27)，不强制覆盖、不合并或关闭任务。#6–#22共17条实际结果/缺口评论已发布，再读确认全部OPEN，原blocking保留；URL见[同步回执](V1-remote-sync.json)。
 
-[首轮远程CI](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37400229514)对应b8adc31：两Node后台检查通过，desktop在`TestNetworkStoreRecoversPartialTreeGrantIncludingNewFiles`失败。测试只请求DACL却比较完整SDDL，日志ACE条目相同，owner/group及AI呈现不同；尚须按实际owner/group、ACE、继承保护核实，不能直接视为误报或删安全测试。安装构建/真实内核步骤未执行，artifact上传无文件是前序未产包的后果；首轮整轮FAIL保留。修复方案为先核对实质权限，再修根因并定向/CI复验，待用户确认。
+[首轮远程CI](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37400229514)对应b8adc31：两Node后台检查通过，desktop在`TestNetworkStoreRecoversPartialTreeGrantIncludingNewFiles`失败。测试只请求DACL却比较完整SDDL，日志ACE条目相同，owner/group及AI呈现不同；当时未直接视为误报或删安全测试，先请用户确认按实际owner/group、ACE、继承保护核实的方案。安装构建/真实内核步骤未执行，artifact上传无文件是前序未产包的后果；首轮整轮FAIL保留。
 
-**修复已获用户明确确认，并完成本机定向验证。** 仅测试修改：GetNamedSecurityInfo显式请求owner/group/DACL，比较实际所有者/组SID、全部ACE原字节和顺序、每条继承标记、DACL继承保护；不比较AUTO_INHERITED完成元数据或未请求的描述字段。新增12子例区分允许/拒绝、权限扩大、SID/顺序/继承与保护改变，并拒绝部分或NULL DACL，不能通过删除安全回归绕过。原实际目录恢复/新文件授权撤销和根替换占用回归继续执行。`go test -p 1 -count=1 -v ./internal/kernel -run '^Test(NetworkStore|NetworkACLPermissionSnapshot)'`4个顶层/12子例通过，kernel vet通过；生产ACL/provider未改，原失败runner是否通过需待CI实跑，不仅凭本机判定。
+**修复已获用户明确确认，并完成本机定向及Windows CI复验。** 仅测试修改：GetNamedSecurityInfo显式请求owner/group/DACL，比较实际所有者/组SID、全部ACE原字节和顺序、每条继承标记、DACL继承保护；不比较AUTO_INHERITED完成元数据或未请求的描述字段。新增12子例区分允许/拒绝、权限扩大、SID/顺序/继承与保护改变，并拒绝部分或NULL DACL，不能通过删除安全回归绕过。原实际目录恢复/新文件授权撤销和根替换占用回归继续执行。`go test -p 1 -count=1 -v ./internal/kernel -run '^Test(NetworkStore|NetworkACLPermissionSnapshot)'`4个顶层/12子例、kernel vet本机通过，只读复核无可信P1/P2。生产ACL/provider未改；6cf1768在Windows CI的原真实目录回归和全包测试通过，owner/group、完整ACE和保护一致，不仅凭本机判断。
+
+[修订远程CI 37401271261](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37401271261)对应6cf1768：Node22.12.0/24各131/131、类型/build/50文档通过；Go所有包/vet、Windows preview.1/.2构建、真实148探测14.82秒与档案保存/重生成/回滚22.31秒通过，三个job均SUCCESS。上传的远程产物是本workflow的development-preview.1/.2，不是本机来源4b38dc8的最终candidate.4；不混淆版本或哈希。同步记录的后续文档提交不改业务代码，新head实际检查以PR当前checks为准。
 
 CI旧点击步骤未启用，当前workflow也没有运行新候选无点击安装脚本；不能用runner上的后台检查推导干净Windows产品安装验收。候选来源仍4b38dc8，本次状态文档不改变原二进制或哈希。
 

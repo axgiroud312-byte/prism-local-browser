@@ -5,13 +5,13 @@
 - Goal：正式验收**4/21**；T05–T21共17票均有本地实现/部分验证，保持OPEN，首版候选不等于正式交付。
 - 当前任务：阶段5本地检查、阶段6候选/无点击安装闭环与资料已完成；尚未正式交付。[包/SHA、逐票矩阵和缺口](verification/V1-final.md)为准确状态。主包`output/delivery/0.3.0-preview.4-v1-candidate/`，最终源码`4b38dc8`，已trimpath、未签名/无内核。
 - 已有实跑：正式代理启动/关闭/重开、故障和资源恢复、FIFO/Cookie、真实148→150代理迁移/完整回退；direct三存储/回收/恢复五切点只算各自范围。
-- 现场：`goal/v1-remaining-integration`，主代理唯一写，子代理只读。四个交接修复保留并提交；无自动点击/停服/真实数据修改。2026-10-06已核对恢复登录，38个本地提交推送至远端，创建[草稿PR #27](https://github.com/axgiroud312-byte/prism-local-browser/pull/27)，默认无点击CI已启动，暂不合并或关闭票。
+- 现场：`goal/v1-remaining-integration`，主代理唯一写，子代理只读。四个交接修复保留并提交；无自动点击/停服/真实数据修改。2026-10-06已核对恢复登录，38个原本本地提交已推送，创建[草稿PR #27](https://github.com/axgiroud312-byte/prism-local-browser/pull/27)；修订默认无点击CI已通过，暂不合并或关闭票。
 
 ## 当前阻塞与恢复入口
 
 - 正式provider、proxy迁移副本及本机故障矩阵已验证；跨登录/重启及独立外部全路径仍待验，未知清理继续占用。
-- 148/150均已获核验并运行；专用外部代理/独立观察器未发现，开发HTTP_PROXY不算授权资源。最小配置与人工步骤见报告；干净Windows/runner仍缺，本机空产品根不是干净用户。
-- GitHub认证/推送/开PR阻塞已解除；[首轮CI](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37400229514)两Node检查通过、desktop权限回归失败。用户已确认修复：显式读取owner/group/DACL，逐条比较实际权限与继承保护；4项定向/12子例及vet本机通过，生产代码未改，待同PR远程复验。[同步回执](verification/V1-remote-sync.json)。独立远端、特殊真实场景、人工与干净Windows仍缺。
+- 148/150均已获核验并运行；专用外部代理/独立观察器未发现，开发HTTP_PROXY不算授权资源。最小配置与人工步骤见报告；干净Windows产品安装/人工验收仍缺，新runner后台检查和本机空产品根都不能替代。
+- GitHub认证/推送/开PR/CI阻塞已解除；[修订CI](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37401271261)对应6cf1768，三个job全绿。两Node各131项后台、Go全部包/vet、preview.1/.2构建、真实148探测及保存档案读回通过；点击步骤未启用，未验证runner产品安装。生产ACL/provider未改，首轮FAIL保留。[回执](verification/V1-remote-sync.json)。独立远端、特殊真实场景、人工与干净Windows仍缺。
 
 ## 任务状态
 
@@ -37,11 +37,13 @@
 | T18 | #19 | 五主切点真实读回、占用及回滚再中断通过 | [清单](verification/T18.md)、[集中结果](verification/V1-final.md)；未闭票 |
 | T19 | #20 | 服务/Windows目录及10个硬中断切点通过 | [清单](verification/T19.md)；真实三存储回收/找回通过，人工永久删除/故障待验 |
 | T20 | #21 | 两真实build代理迁移/回退及4硬中断切点通过 | [清单](verification/T20.md)；独立远端、人工与网站兼容待验 |
-| T21 | #22 | 诊断/候选/本机无点击安装闭环通过，正式待验 | [报告](verification/V1-final.md)、[回执](verification/V1-candidate-acceptance.json)；独立远端、人工、干净Windows/CI仍缺 |
+| T21 | #22 | 诊断/候选/本机无点击安装闭环通过，正式待验 | [报告](verification/V1-final.md)、[回执](verification/V1-candidate-acceptance.json)；远程CI通过，独立远端、人工及干净Windows产品安装仍缺 |
 
 ## 最近检查与当前工作
 
-- 2026-10-06远程接续：恢复登录已核对；origin/main无新增分叉，38提交普通push成功，无强制覆盖；[草稿PR #27](https://github.com/axgiroud312-byte/prism-local-browser/pull/27)已创建并关联会话。17票结果评论已发布且全部OPEN；首轮默认CI两Node检查通过、desktop原SDDL字符串断言失败，安装构建/真实内核步骤未执行，首轮FAIL保留。用户明确确认方案后，仅修测试观测：显式owner/group/DACL，保持owner/group、每条ACE字节/顺序/继承标记及DACL保护一致；自动继承完成元数据AI不当成授权差异。12子例验证权限扩大、deny改变、SID/顺序/保护等都拒绝；不完整/NULL DACL拒绝。原实际目录恢复和占用回归仍执行，本机4项与vet通过，生产保护代码/候选不改，远程复验待实际结果。
+- 2026-10-06远程接续：恢复登录已核对；origin/main无新增分叉，38提交普通push成功，无强制覆盖；[草稿PR #27](https://github.com/axgiroud312-byte/prism-local-browser/pull/27)已创建并关联会话。17票结果评论已发布且全部OPEN；首轮默认CI两Node检查通过、desktop原SDDL字符串断言失败，安装构建/真实内核步骤未执行，首轮FAIL保留。用户明确确认方案后，仅修测试观测：显式owner/group/DACL，保持owner/group、每条ACE字节/顺序/继承标记及DACL保护一致；自动继承完成元数据AI不当成授权差异。12子例验证权限扩大、deny改变、SID/顺序/保护等都拒绝；不完整/NULL DACL拒绝。原实际目录恢复和占用回归仍执行，本机4项与vet通过，生产保护代码/候选不改，远程复验结果见下一条。
+
+- 2026-10-06远程复验结果：6cf1768[三job全部通过](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37401271261)，Windows CI上的原实际权限恢复回归已通过；只读复核无可信P1/P2。Node22.12.0/24各131/131、类型/build/50文档通过；Go全部包/vet及Windows preview.1/.2构建成功，真实148探测14.82秒、档案保存/重生成/回滚22.31秒正常退出。未运行任何点击或产品安装验证，不能算干净Windows产品验收；不闭票、不合并，候选.4来源/哈希不变。最终记录提交仅改文档。
 
 - 阶段6：最终候选`.3/.4`同一干净`4b38dc8`source/trimpath构建、全部许可和9文件清单、无点击实际NSIS安装/启动重开/升级/拒降级/默认保留卸载/重装/仅删自有合成根通过。6次native只读页面与正常exit0、同一ID/seed/偏好已核对，最终数据/程序/注册/快捷方式均清理，无自有工作台进程。主`.4`SHA=`0f1e29c50b64838c0ff0926127b6bf50b2375a2f955d208642f0aa72693fe324`；未签名、无内核。不是干净Windows或人工流程验收，不闭票；首轮NSIS FAIL已修并保留，首轮含编译路径包撤出分享目录。
 

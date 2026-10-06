@@ -4,9 +4,11 @@
 
 ## 远程同步接续（2026-10-06；不增加完整验收计数）
 
-用户恢复登录后已核对GitHub身份；38个本地提交普通推送成功，创建[草稿PR #27](https://github.com/axgiroud312-byte/prism-local-browser/pull/27)，17票实测/缺口评论均已发布，全部仍OPEN。[首轮默认无点击CI](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37400229514)两Node检查通过，desktop权限恢复安全回归失败；原SDDL全字符串断言报告owner/group/继承标记不一致，须进一步核对实际权限，不先认定误报。安装构建及真实内核步骤未执行，后续无artifact上传失败为前序未产包的结果，不宣称完整CI通过。[同步回执](verification/V1-remote-sync.json)记录URL/commit/范围。GitHub认证不再是当前阻塞；CI修复、独立外部、特殊真实场景、人工、干净Windows仍缺，正式4/21不变。
+用户恢复登录后已核对GitHub身份；38个本地提交普通推送成功，创建[草稿PR #27](https://github.com/axgiroud312-byte/prism-local-browser/pull/27)，17票实测/缺口评论均已发布，全部仍OPEN。[首轮默认无点击CI](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37400229514)两Node检查通过，desktop原SDDL全字符串断言失败；当时未先认定误报，后续实际权限核对见下段。首轮安装构建及真实内核步骤未执行，无artifact上传失败为前序未产包的结果，不把首轮改记成功。[同步回执](verification/V1-remote-sync.json)记录URL/commit/范围。GitHub认证和修订CI阻塞已解除；独立外部、特殊真实场景、人工、干净Windows仍缺，正式4/21不变。
 
 用户已明确确认CI修复范围；仅修改测试查询/断言，不改生产ACL/provider。显式请求owner/group/DACL并比较实际SID、每条ACE字节/顺序和DACL继承保护；新增12个语义子例确保权限扩大/deny/身份/继承/顺序改变被拒，部分/NULL DACL也拒。实际目录回收与占用安全回归未删或跳过，本机4个顶层用例/12子例及kernel vet通过；远程复验另记，不重建未改的候选业务二进制。
+
+**修订远程CI已通过：**[37401271261](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37401271261)对应6cf1768，三个job全绿。Node22.12.0/24各131项后台/类型/build/文档通过，Go全包/vet及Windows preview.1/.2构建成功，真实148内核探测14.82秒、保存/重生成/回滚22.31秒正常退出。Windows CI的实际owner/group、完整ACE与DACL保护不变核对通过，确认修订没有放行实质权限变化；只读评审亦无可信P1/P2。自动点击和产品安装步骤都没执行，**不当作干净Windows产品安装或人工业务验收**。首轮FAIL仍保留，正式4/21不变；候选.4及其4b38dc8来源不变。
 
 ## 首版集中验收与候选交付（2026-10-05）
 

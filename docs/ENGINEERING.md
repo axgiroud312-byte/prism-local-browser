@@ -8,7 +8,7 @@
 
 当前仓库保留 React/TypeScript 独立交互原型。领域规则在 `src/domain.ts`，页面和旧模拟任务在 `src/App.tsx`；T01 已提取应用契约与 DemoAdapter，创建编辑经注入契约，localStorage 由 DemoAdapter 管理。T02 的 WailsAdapter、Go/Wails 壳与 SQLite 配置服务、T03 用户级安装预览、T04精确内核安装与隔离诊断已验收；现有实际入口应以源码为准。
 
-T05–T21的服务实现现均已接入，T11正式隔离、T14 FIFO与T20代理副本共用保护链；本机受控实跑及无点击集中检查见[首版验收报告](verification/V1-final.md)。独立远端、人工UI、干净Windows和远程CI缺口分别记录，候选包不等于正式交付。待验收票保持OPEN、不计完成；首版支持前提经用户明确调整，见[D017](DECISIONS.md#d017--首版以正常-windows-网络隔离为支持前提2026-10-05)。
+T05–T21的服务实现现均已接入，T11正式隔离、T14 FIFO与T20代理副本共用保护链；本机受控实跑及无点击集中检查见[首版验收报告](verification/V1-final.md)。独立远端、人工UI与干净Windows仍待验，远程CI的实际结果及范围分别记录，候选包不等于正式交付。待验收票保持OPEN、不计完成；首版支持前提经用户明确调整，见[D017](DECISIONS.md#d017--首版以正常-windows-网络隔离为支持前提2026-10-05)。
 
 每个任务选择以下交付层级，并按其所需证据验收：
 

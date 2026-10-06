@@ -1,6 +1,6 @@
 # 首版六阶段执行与验收
 
-2026-10-05首版计划，2026-10-06远程同步接续。沿用`goal/v1-remaining-integration`，本地集中检查/候选安装已完成，成果已推送草稿PR #27，17票结果已同步；首轮远程CI两Node检查通过、desktop权限恢复回归失败。正式验收仍4/21，T05–T21共17票保留OPEN。实现、本机验证和正式交付分开，实际结果见[报告](verification/V1-final.md)与[进度](PROGRESS.md)。
+2026-10-05首版计划，2026-10-06远程同步接续。沿用`goal/v1-remaining-integration`，本地集中检查/候选安装、草稿PR #27和17票同步完成；首轮CI权限回归失败保留，测试观测修订后的6cf1768三job已通过。正式验收仍4/21，T05–T21共17票OPEN。实现、本机验证和正式交付分开，实际结果见[报告](verification/V1-final.md)与[进度](PROGRESS.md)。
 
 ## 支持条件与范围决策
 
@@ -40,9 +40,9 @@ Windows Home、原生Chromium沙箱、固定seed/原数据引用保持要求。�
 | --- | --- | --- |
 | 可控代理、独立远端观察端 | 阶段 3；阶段 2 外网闭环也需有效代理 | 仅旧 loopback 合成实验已知可用；外部资源未核实，需可控断线/认证与出口日志，凭据不入仓库 |
 | 两个不同版本已核验真实内核 | 阶段 5 迁移回退 | 148与150均已实算SHA并运行；代理迁移/完整回退已有本机证据，无需重新下载 |
-| 干净 Windows 或合适 runner | 阶段 6 | 当前仅已知本机 Home；旧 T03 runner 证据不等于本版运行器可用 |
+| 干净 Windows 或合适 runner | 阶段 6 | 新runner后台/构建/真实148探测已通过，但未运行产品安装或人工页面，仍不能算本候选干净Windows安装验收 |
 | 少量人工界面操作 | 阶段 2 产品闭环、阶段 6 最终验收 | 遵守不自动点击；准备可运行产物后提供最短人工操作及观测入口 |
-| GitHub 认证、推送/CI 条件 | 远程收尾 | 2026-10-06认证/38提交普通push/[草稿PR #27](https://github.com/axgiroud312-byte/prism-local-browser/pull/27)/17评论完成；首轮CI两Node检查通过、desktop安全回归失败待核实修复；其他验收不自动满足 |
+| GitHub 认证、推送/CI 条件 | 远程收尾 | 2026-10-06认证/38提交普通push/[草稿PR #27](https://github.com/axgiroud312-byte/prism-local-browser/pull/27)/17评论完成；首轮FAIL经确认只修测试观测，6cf1768[三job通过](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37401271261)；其他验收不自动满足 |
 
 缺外部条件只阻塞对应验收，继续不依赖它的实现。不重复已失败的系统服务实验，不在当前工作机注入底层服务故障。
 
