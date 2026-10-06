@@ -1,5 +1,5 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
-import { mergeOperation, operationIsTerminal, type ApplicationService, type NativeProxy, type Operation, type ProxyConfiguration, type WorkspaceView } from "../application/contract";
+import { mergeOperation, operationIsTerminal, type ApplicationService, type NativeProxy, type Operation, type ProxyCheckReport, type ProxyConfiguration, type WorkspaceView } from "../application/contract";
 import { proxyResolutionLabel, proxyStageLabel } from "../application/proxy-network";
 import { ProxyManagementPage } from "./ProxyManagementPage";
 import { ProxyImportWindow } from "./ProxyImportWindow";
@@ -13,6 +13,9 @@ export interface NativeProxyManagerProps {
   application: ApplicationService; workspace: WorkspaceView; importOpen: boolean; onImportOpenChange: (open: boolean) => void;
   importOnly?: boolean; onImported?: (ids: string[]) => void; onBusyChange?: (busy: boolean) => void;
   onAssign?: (ids?: string[]) => void; visible?: boolean; modalLifecycle?: "self" | "parent";
+}
+function currentProxyReport(record: NativeProxy, report?: ProxyCheckReport) {
+  return report?.mode === "native" && report.proxyId === record.id && report.revision === record.revision ? report : undefined;
 }
 export function NativeProxyManager({ application, workspace, importOpen, onImportOpenChange, importOnly = false, onImported, onBusyChange, onAssign, visible = true, modalLifecycle = "self" }: NativeProxyManagerProps) {
   const owner = getNativeProxyActions(application), actions = useSyncExternalStore(owner.subscribe, owner.getSnapshot, owner.getSnapshot);
@@ -71,11 +74,11 @@ export function NativeProxyManager({ application, workspace, importOpen, onImpor
   }
   const effectiveEdit = editing ?? (!editHidden && pending?.kind === "update" ? records.find(record => record.id === pending.request.proxyId) : undefined);
   const editConfiguration = actions.unknown && pending?.kind === "update" ? pending.request.configuration : configuration;
-  const reportRecord = (detail && records.find(record => record.id === detail.id)) ?? detail;
-  const reportTask = reportRecord && operations.size ? [...operations.values()].filter(op => op.proxyId === reportRecord.id).at(-1) : undefined;
-  const report = reportTask?.proxyReport ?? reportRecord?.checkReport;
+  const reportRecord = detail && records.find(record => record.id === detail.id);
+  const reportTask = reportRecord ? active.find(op => op.kind === "proxy-check" && op.proxyId === reportRecord.id && currentProxyReport(reportRecord, op.proxyReport)) : undefined;
+  const report = reportTask?.proxyReport ?? (reportRecord ? currentProxyReport(reportRecord, reportRecord.checkReport) : undefined);
   return <>
-    {visible && !importOnly && <ProxyManagementPage native records={records.map(record => { const task = activeByProxy.get(record.id); return { ...record, usedCount: record.usedCount ?? record.usedBy.length, deleteProtected: !!(record.usedCount ?? record.usedBy.length), busy: !!task, cancelDisabled: !!task?.cancelRequested || !!task?.persistencePending, statusText: task ? task.persistencePending ? "结果待保存" : proxyStageLabel(task.stage ?? "queued") : undefined, exitIp: record.checkReport?.exitIp }; })} busy={busy} message={actions.message} onImport={mode => { setImportMode(mode); onImportOpenChange(true); }} onEdit={id => { const record = records.find(record => record.id === id); if (record) edit(record); }} onDelete={id => setDeleting(records.find(record => record.id === id))} onCheck={ids => void check(ids)} onUsage={id => setUsage(records.find(record => record.id === id))} onDetails={id => setDetail(records.find(record => record.id === id))} onRefresh={() => void application.refresh?.()} onAssign={onAssign ? () => onAssign() : undefined} onCancelCheck={id => { const task = activeByProxy.get(id); if (!task || task.persistencePending) return; void application.cancelOperation(task.id).then(result => { if (result.ok) owner.observe(result.data); else owner.message(`${result.error.code}：${result.error.message}`); }).catch(() => owner.message("取消结果未知，请核对原检查任务。")); }}>
+    {visible && !importOnly && <ProxyManagementPage native records={records.map(record => { const task = activeByProxy.get(record.id); return { ...record, usedCount: record.usedCount ?? record.usedBy.length, deleteProtected: !!(record.usedCount ?? record.usedBy.length), busy: !!task, cancelDisabled: !!task?.cancelRequested || !!task?.persistencePending, statusText: task ? task.persistencePending ? "结果待保存" : proxyStageLabel(task.stage ?? "queued") : undefined, exitIp: currentProxyReport(record, record.checkReport)?.exitIp }; })} busy={busy} message={actions.message} onImport={mode => { setImportMode(mode); onImportOpenChange(true); }} onEdit={id => { const record = records.find(record => record.id === id); if (record) edit(record); }} onDelete={id => setDeleting(records.find(record => record.id === id))} onCheck={ids => void check(ids)} onUsage={id => setUsage(records.find(record => record.id === id))} onDetails={id => setDetail(records.find(record => record.id === id))} onRefresh={() => void application.refresh?.()} onAssign={onAssign ? () => onAssign() : undefined} onCancelCheck={id => { const task = activeByProxy.get(id); if (!task || task.persistencePending) return; void application.cancelOperation(task.id).then(result => { if (result.ok) owner.observe(result.data); else owner.message(`${result.error.code}：${result.error.message}`); }).catch(() => owner.message("取消结果未知，请核对原检查任务。")); }}>
       {actions.unknown && <button className="button primary" disabled={actions.busy} onClick={() => void owner.retry()}>核实原代理{pending?.kind === "update" ? "保存" : pending?.kind === "delete" ? "删除" : "检查"}请求</button>}
     </ProxyManagementPage>}
     <ProxyImportWindow application={application} open={importOpen && visible} onClose={() => onImportOpenChange(false)} onImported={onImported} onBusyChange={onBusyChange} context={importOnly ? "environment" : "page"} initialMode={importMode} lifecycle={modalLifecycle} />

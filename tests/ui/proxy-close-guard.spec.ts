@@ -39,6 +39,8 @@ for (const method of ["Proxy.ParseImport", "Proxy.CommitImport"]) {
     await expect.poll(() => page.evaluate(() => (window as unknown as { __proxyBusyHeld: boolean }).__proxyBusyHeld)).toBe(true);
     await expect(dialog.getByRole("button", { name: "取消", exact: true })).toBeDisabled();
     await expect(dialog.getByRole("button", { name: "关闭批量添加代理", exact: true })).toBeDisabled();
+    await page.keyboard.press("Tab");
+    await expect.poll(() => dialog.evaluate(element => element.contains(document.activeElement))).toBe(true);
     await page.keyboard.press("Escape");
     await expect(dialog).toBeVisible();
     await page.mouse.click(2, 2);
