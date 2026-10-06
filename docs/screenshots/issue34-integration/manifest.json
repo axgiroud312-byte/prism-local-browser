@@ -1,0 +1,851 @@
+{
+  "schemaVersion": 1,
+  "title": "#34 actual source mounting evidence",
+  "sourceCommit": "c7fbbf33e21955a3dd7cc6a44eeb907794e20120",
+  "renderer": "Vite actual src/App.tsx; no source transforms",
+  "frozenReference": "202609160208",
+  "publicAssets": "Prism + Lucide + synthetic data only; original references remain external",
+  "count": 16,
+  "records": [
+    {
+      "id": "environment-create",
+      "label": "新建顶部",
+      "file": "1440x900/environment-create.png",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "demo",
+      "reference": "environment-create",
+      "referenceRelation": "direct-container-supported-fields-cropped",
+      "sourceCommit": "c7fbbf33e21955a3dd7cc6a44eeb907794e20120",
+      "geometry": {
+        "frame": {
+          "x": 780,
+          "y": 40,
+          "width": 660,
+          "height": 852
+        },
+        "header": {
+          "x": 780,
+          "y": 40,
+          "width": 660,
+          "height": 40
+        },
+        "body": {
+          "x": 780,
+          "y": 80,
+          "width": 660,
+          "height": 741
+        },
+        "footer": {
+          "x": 780,
+          "y": 821,
+          "width": 660,
+          "height": 71
+        },
+        "rail": {
+          "x": 739,
+          "y": 40,
+          "width": 40,
+          "height": 180
+        },
+        "scrollTop": 0,
+        "scrollHeight": 1450,
+        "dpr": 1,
+        "visualScale": 1
+      },
+      "sha256": "01da276f132eb55d519b25f87a3813e44c7ce0c9193a492309a40626b6a3fe05",
+      "bytes": 111671,
+      "pageErrors": [],
+      "consoleErrors": [],
+      "outbound": [],
+      "forceRequests": null
+    },
+    {
+      "id": "environment-fingerprint",
+      "label": "连续指纹分区与固定 footer",
+      "file": "1440x900/environment-fingerprint.png",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "demo",
+      "reference": "environment-create-fingerprint",
+      "referenceRelation": "direct-container-supported-fields-cropped",
+      "sourceCommit": "c7fbbf33e21955a3dd7cc6a44eeb907794e20120",
+      "geometry": {
+        "frame": {
+          "x": 780,
+          "y": 40,
+          "width": 660,
+          "height": 852
+        },
+        "header": {
+          "x": 780,
+          "y": 40,
+          "width": 660,
+          "height": 40
+        },
+        "body": {
+          "x": 780,
+          "y": 80,
+          "width": 660,
+          "height": 741
+        },
+        "footer": {
+          "x": 780,
+          "y": 821,
+          "width": 660,
+          "height": 71
+        },
+        "rail": {
+          "x": 739,
+          "y": 40,
+          "width": 40,
+          "height": 180
+        },
+        "scrollTop": 709,
+        "scrollHeight": 1450,
+        "dpr": 1,
+        "visualScale": 1
+      },
+      "sha256": "1369b7e45234938bb0a1246d8a43a7fd497b8a5940e5f68b0597bb8049192a9c",
+      "bytes": 118804,
+      "pageErrors": [],
+      "consoleErrors": [],
+      "outbound": [],
+      "forceRequests": null
+    },
+    {
+      "id": "environment-edit",
+      "label": "编辑顶部",
+      "file": "1440x900/environment-edit.png",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "demo",
+      "reference": "environment-edit",
+      "referenceRelation": "direct-container-supported-fields-cropped",
+      "sourceCommit": "c7fbbf33e21955a3dd7cc6a44eeb907794e20120",
+      "geometry": {
+        "frame": {
+          "x": 780,
+          "y": 40,
+          "width": 660,
+          "height": 852
+        },
+        "header": {
+          "x": 780,
+          "y": 40,
+          "width": 660,
+          "height": 40
+        },
+        "body": {
+          "x": 780,
+          "y": 80,
+          "width": 660,
+          "height": 741
+        },
+        "footer": {
+          "x": 780,
+          "y": 821,
+          "width": 660,
+          "height": 71
+        },
+        "rail": {
+          "x": 739,
+          "y": 40,
+          "width": 40,
+          "height": 180
+        },
+        "scrollTop": 0,
+        "scrollHeight": 1370,
+        "dpr": 1,
+        "visualScale": 1
+      },
+      "sha256": "102b7b656eb2c57e9364a5a0b74e8fd5fbfe257d70c2133f041a1986838db68e",
+      "bytes": 110380,
+      "pageErrors": [],
+      "consoleErrors": [],
+      "outbound": [],
+      "forceRequests": null
+    },
+    {
+      "id": "environment-save-failed",
+      "label": "demo 写入失败保留草稿",
+      "file": "1440x900/environment-save-failed.png",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "demo",
+      "reference": "environment-edit",
+      "referenceRelation": "mapped-container-not-same-execution-screen",
+      "sourceCommit": "c7fbbf33e21955a3dd7cc6a44eeb907794e20120",
+      "geometry": {
+        "frame": {
+          "x": 780,
+          "y": 40,
+          "width": 660,
+          "height": 852
+        },
+        "header": {
+          "x": 780,
+          "y": 40,
+          "width": 660,
+          "height": 40
+        },
+        "body": {
+          "x": 780,
+          "y": 80,
+          "width": 660,
+          "height": 741
+        },
+        "footer": {
+          "x": 780,
+          "y": 821,
+          "width": 660,
+          "height": 71
+        },
+        "rail": {
+          "x": 739,
+          "y": 40,
+          "width": 40,
+          "height": 180
+        },
+        "scrollTop": 673,
+        "scrollHeight": 1424,
+        "dpr": 1,
+        "visualScale": 1
+      },
+      "sha256": "79567defafceb8690d11a8b02cfe461312b3c553811c70df8b528d4e9ffce517",
+      "bytes": 121359,
+      "pageErrors": [],
+      "consoleErrors": [],
+      "outbound": [],
+      "forceRequests": null
+    },
+    {
+      "id": "dirty-confirm",
+      "label": "未保存草稿确认",
+      "file": "1440x900/dirty-confirm.png",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "demo",
+      "reference": "group-delete-confirm",
+      "referenceRelation": "mapped-container-not-same-execution-screen",
+      "sourceCommit": "c7fbbf33e21955a3dd7cc6a44eeb907794e20120",
+      "geometry": {
+        "frame": {
+          "x": 520,
+          "y": 376.5,
+          "width": 400,
+          "height": 163
+        },
+        "header": {
+          "x": 520,
+          "y": 376.5,
+          "width": 400,
+          "height": 54
+        },
+        "body": {
+          "x": 520,
+          "y": 430.5,
+          "width": 400,
+          "height": 60
+        },
+        "footer": {
+          "x": 520,
+          "y": 490.5,
+          "width": 400,
+          "height": 49
+        },
+        "rail": null,
+        "scrollTop": 0,
+        "scrollHeight": 60,
+        "dpr": 1,
+        "visualScale": 1
+      },
+      "sha256": "6963214aa91b633e9dc142e986e794886d69bde79d20d190506f5245263eabc3",
+      "bytes": 110332,
+      "pageErrors": [],
+      "consoleErrors": [],
+      "outbound": [],
+      "forceRequests": null
+    },
+    {
+      "id": "force-confirm",
+      "label": "明确原会话强制结束确认",
+      "file": "1440x900/force-confirm.png",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "synthetic-native",
+      "reference": "group-delete-confirm",
+      "referenceRelation": "mapped-container-not-same-execution-screen",
+      "sourceCommit": "c7fbbf33e21955a3dd7cc6a44eeb907794e20120",
+      "geometry": {
+        "frame": {
+          "x": 520,
+          "y": 349.5,
+          "width": 400,
+          "height": 217
+        },
+        "header": {
+          "x": 520,
+          "y": 349.5,
+          "width": 400,
+          "height": 54
+        },
+        "body": {
+          "x": 520,
+          "y": 403.5,
+          "width": 400,
+          "height": 114
+        },
+        "footer": {
+          "x": 520,
+          "y": 517.5,
+          "width": 400,
+          "height": 49
+        },
+        "rail": null,
+        "scrollTop": 0,
+        "scrollHeight": 114,
+        "dpr": 1,
+        "visualScale": 1
+      },
+      "sha256": "72578ee6b8424413ca66513f8d890b8a8cfa54032a34781baefa24235e432662",
+      "bytes": 105523,
+      "pageErrors": [],
+      "consoleErrors": [],
+      "outbound": [],
+      "forceRequests": 0
+    },
+    {
+      "id": "demo-cookie-preview",
+      "label": "demo Cookie 文本与安全预览",
+      "file": "1440x900/demo-cookie-preview.png",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "demo",
+      "reference": "proxy-import-preview",
+      "referenceRelation": "mapped-container-not-same-execution-screen",
+      "sourceCommit": "c7fbbf33e21955a3dd7cc6a44eeb907794e20120",
+      "geometry": {
+        "frame": {
+          "x": 195,
+          "y": 153.140625,
+          "width": 1050,
+          "height": 609.71875
+        },
+        "header": {
+          "x": 195,
+          "y": 153.140625,
+          "width": 1050,
+          "height": 40
+        },
+        "body": {
+          "x": 195,
+          "y": 193.140625,
+          "width": 1050,
+          "height": 497.71875
+        },
+        "footer": {
+          "x": 195,
+          "y": 690.859375,
+          "width": 1050,
+          "height": 72
+        },
+        "rail": null,
+        "scrollTop": 0,
+        "scrollHeight": 498,
+        "dpr": 1,
+        "visualScale": 1
+      },
+      "sha256": "8e3a09952ba9a60dad0dd957186f9b5c147759e9c2df1c1aafa0007229801486",
+      "bytes": 80161,
+      "pageErrors": [],
+      "consoleErrors": [],
+      "outbound": [],
+      "forceRequests": null
+    },
+    {
+      "id": "demo-remove-confirm",
+      "label": "准确两项 demo 移除",
+      "file": "1440x900/demo-remove-confirm.png",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "demo",
+      "reference": "environment-delete-confirm",
+      "referenceRelation": "mapped-container-not-same-execution-screen",
+      "sourceCommit": "c7fbbf33e21955a3dd7cc6a44eeb907794e20120",
+      "geometry": {
+        "frame": {
+          "x": 520,
+          "y": 367.5,
+          "width": 400,
+          "height": 181
+        },
+        "header": {
+          "x": 520,
+          "y": 367.5,
+          "width": 400,
+          "height": 54
+        },
+        "body": {
+          "x": 520,
+          "y": 421.5,
+          "width": 400,
+          "height": 78
+        },
+        "footer": {
+          "x": 520,
+          "y": 499.5,
+          "width": 400,
+          "height": 49
+        },
+        "rail": null,
+        "scrollTop": 0,
+        "scrollHeight": 78,
+        "dpr": 1,
+        "visualScale": 1
+      },
+      "sha256": "6eb9ee8f4c83735263c261abc7e29fd7ff5b537712fcfd3ad76cdf768e13b977",
+      "bytes": 98703,
+      "pageErrors": [],
+      "consoleErrors": [],
+      "outbound": [],
+      "forceRequests": null
+    },
+    {
+      "id": "environment-create",
+      "label": "新建顶部",
+      "file": "1280x800/environment-create.png",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "mode": "demo",
+      "reference": "environment-create",
+      "referenceRelation": "direct-container-supported-fields-cropped",
+      "sourceCommit": "c7fbbf33e21955a3dd7cc6a44eeb907794e20120",
+      "geometry": {
+        "frame": {
+          "x": 620,
+          "y": 40,
+          "width": 660,
+          "height": 752
+        },
+        "header": {
+          "x": 620,
+          "y": 40,
+          "width": 660,
+          "height": 40
+        },
+        "body": {
+          "x": 620,
+          "y": 80,
+          "width": 660,
+          "height": 641
+        },
+        "footer": {
+          "x": 620,
+          "y": 721,
+          "width": 660,
+          "height": 71
+        },
+        "rail": {
+          "x": 579,
+          "y": 40,
+          "width": 40,
+          "height": 180
+        },
+        "scrollTop": 0,
+        "scrollHeight": 1450,
+        "dpr": 1,
+        "visualScale": 1
+      },
+      "sha256": "98c85cb090332db248b3e39b515f7a4336dddc2fc306374ec2920cb6111cc81e",
+      "bytes": 84504,
+      "pageErrors": [],
+      "consoleErrors": [],
+      "outbound": [],
+      "forceRequests": null
+    },
+    {
+      "id": "environment-fingerprint",
+      "label": "连续指纹分区与固定 footer",
+      "file": "1280x800/environment-fingerprint.png",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "mode": "demo",
+      "reference": "environment-create-fingerprint",
+      "referenceRelation": "direct-container-supported-fields-cropped",
+      "sourceCommit": "c7fbbf33e21955a3dd7cc6a44eeb907794e20120",
+      "geometry": {
+        "frame": {
+          "x": 620,
+          "y": 40,
+          "width": 660,
+          "height": 752
+        },
+        "header": {
+          "x": 620,
+          "y": 40,
+          "width": 660,
+          "height": 40
+        },
+        "body": {
+          "x": 620,
+          "y": 80,
+          "width": 660,
+          "height": 641
+        },
+        "footer": {
+          "x": 620,
+          "y": 721,
+          "width": 660,
+          "height": 71
+        },
+        "rail": {
+          "x": 579,
+          "y": 40,
+          "width": 40,
+          "height": 180
+        },
+        "scrollTop": 809,
+        "scrollHeight": 1450,
+        "dpr": 1,
+        "visualScale": 1
+      },
+      "sha256": "a36ad7410454d53822a07a815e8e658a6a7a12518b96dabc4ba2c23b38d4ec67",
+      "bytes": 89383,
+      "pageErrors": [],
+      "consoleErrors": [],
+      "outbound": [],
+      "forceRequests": null
+    },
+    {
+      "id": "environment-edit",
+      "label": "编辑顶部",
+      "file": "1280x800/environment-edit.png",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "mode": "demo",
+      "reference": "environment-edit",
+      "referenceRelation": "direct-container-supported-fields-cropped",
+      "sourceCommit": "c7fbbf33e21955a3dd7cc6a44eeb907794e20120",
+      "geometry": {
+        "frame": {
+          "x": 620,
+          "y": 40,
+          "width": 660,
+          "height": 752
+        },
+        "header": {
+          "x": 620,
+          "y": 40,
+          "width": 660,
+          "height": 40
+        },
+        "body": {
+          "x": 620,
+          "y": 80,
+          "width": 660,
+          "height": 641
+        },
+        "footer": {
+          "x": 620,
+          "y": 721,
+          "width": 660,
+          "height": 71
+        },
+        "rail": {
+          "x": 579,
+          "y": 40,
+          "width": 40,
+          "height": 180
+        },
+        "scrollTop": 0,
+        "scrollHeight": 1370,
+        "dpr": 1,
+        "visualScale": 1
+      },
+      "sha256": "882acdc9ccc39721e8aface152feb03a6911126afe26547f1035f039ede43f62",
+      "bytes": 81776,
+      "pageErrors": [],
+      "consoleErrors": [],
+      "outbound": [],
+      "forceRequests": null
+    },
+    {
+      "id": "environment-save-failed",
+      "label": "demo 写入失败保留草稿",
+      "file": "1280x800/environment-save-failed.png",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "mode": "demo",
+      "reference": "environment-edit",
+      "referenceRelation": "mapped-container-not-same-execution-screen",
+      "sourceCommit": "c7fbbf33e21955a3dd7cc6a44eeb907794e20120",
+      "geometry": {
+        "frame": {
+          "x": 620,
+          "y": 40,
+          "width": 660,
+          "height": 752
+        },
+        "header": {
+          "x": 620,
+          "y": 40,
+          "width": 660,
+          "height": 40
+        },
+        "body": {
+          "x": 620,
+          "y": 80,
+          "width": 660,
+          "height": 641
+        },
+        "footer": {
+          "x": 620,
+          "y": 721,
+          "width": 660,
+          "height": 71
+        },
+        "rail": {
+          "x": 579,
+          "y": 40,
+          "width": 40,
+          "height": 180
+        },
+        "scrollTop": 773,
+        "scrollHeight": 1424,
+        "dpr": 1,
+        "visualScale": 1
+      },
+      "sha256": "4af4e60ac6a97293344d4492d4c2d5d9a5dcce01707ecddebda17e954646bbdb",
+      "bytes": 90073,
+      "pageErrors": [],
+      "consoleErrors": [],
+      "outbound": [],
+      "forceRequests": null
+    },
+    {
+      "id": "dirty-confirm",
+      "label": "未保存草稿确认",
+      "file": "1280x800/dirty-confirm.png",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "mode": "demo",
+      "reference": "group-delete-confirm",
+      "referenceRelation": "mapped-container-not-same-execution-screen",
+      "sourceCommit": "c7fbbf33e21955a3dd7cc6a44eeb907794e20120",
+      "geometry": {
+        "frame": {
+          "x": 440,
+          "y": 326.5,
+          "width": 400,
+          "height": 163
+        },
+        "header": {
+          "x": 440,
+          "y": 326.5,
+          "width": 400,
+          "height": 54
+        },
+        "body": {
+          "x": 440,
+          "y": 380.5,
+          "width": 400,
+          "height": 60
+        },
+        "footer": {
+          "x": 440,
+          "y": 440.5,
+          "width": 400,
+          "height": 49
+        },
+        "rail": null,
+        "scrollTop": 0,
+        "scrollHeight": 60,
+        "dpr": 1,
+        "visualScale": 1
+      },
+      "sha256": "dafa95c75ec1bb0e89cf54bbfcb1b22df69a4d63a19557b01b0e2e63e5f41083",
+      "bytes": 82629,
+      "pageErrors": [],
+      "consoleErrors": [],
+      "outbound": [],
+      "forceRequests": null
+    },
+    {
+      "id": "force-confirm",
+      "label": "明确原会话强制结束确认",
+      "file": "1280x800/force-confirm.png",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "mode": "synthetic-native",
+      "reference": "group-delete-confirm",
+      "referenceRelation": "mapped-container-not-same-execution-screen",
+      "sourceCommit": "c7fbbf33e21955a3dd7cc6a44eeb907794e20120",
+      "geometry": {
+        "frame": {
+          "x": 440,
+          "y": 299.5,
+          "width": 400,
+          "height": 217
+        },
+        "header": {
+          "x": 440,
+          "y": 299.5,
+          "width": 400,
+          "height": 54
+        },
+        "body": {
+          "x": 440,
+          "y": 353.5,
+          "width": 400,
+          "height": 114
+        },
+        "footer": {
+          "x": 440,
+          "y": 467.5,
+          "width": 400,
+          "height": 49
+        },
+        "rail": null,
+        "scrollTop": 0,
+        "scrollHeight": 114,
+        "dpr": 1,
+        "visualScale": 1
+      },
+      "sha256": "cefe20d1d208127f6660c3da95c61b0be9b4bbf6ccf4ddb0a8b01b3e48db9e39",
+      "bytes": 90296,
+      "pageErrors": [],
+      "consoleErrors": [],
+      "outbound": [],
+      "forceRequests": 0
+    },
+    {
+      "id": "demo-cookie-preview",
+      "label": "demo Cookie 文本与安全预览",
+      "file": "1280x800/demo-cookie-preview.png",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "mode": "demo",
+      "reference": "proxy-import-preview",
+      "referenceRelation": "mapped-container-not-same-execution-screen",
+      "sourceCommit": "c7fbbf33e21955a3dd7cc6a44eeb907794e20120",
+      "geometry": {
+        "frame": {
+          "x": 115,
+          "y": 103.140625,
+          "width": 1050,
+          "height": 609.71875
+        },
+        "header": {
+          "x": 115,
+          "y": 103.140625,
+          "width": 1050,
+          "height": 40
+        },
+        "body": {
+          "x": 115,
+          "y": 143.140625,
+          "width": 1050,
+          "height": 497.71875
+        },
+        "footer": {
+          "x": 115,
+          "y": 640.859375,
+          "width": 1050,
+          "height": 72
+        },
+        "rail": null,
+        "scrollTop": 0,
+        "scrollHeight": 498,
+        "dpr": 1,
+        "visualScale": 1
+      },
+      "sha256": "036043c79d3b54581a85e368c6bcd2bb1127e286f63269740d26a53ca5e544f9",
+      "bytes": 71276,
+      "pageErrors": [],
+      "consoleErrors": [],
+      "outbound": [],
+      "forceRequests": null
+    },
+    {
+      "id": "demo-remove-confirm",
+      "label": "准确两项 demo 移除",
+      "file": "1280x800/demo-remove-confirm.png",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "mode": "demo",
+      "reference": "environment-delete-confirm",
+      "referenceRelation": "mapped-container-not-same-execution-screen",
+      "sourceCommit": "c7fbbf33e21955a3dd7cc6a44eeb907794e20120",
+      "geometry": {
+        "frame": {
+          "x": 440,
+          "y": 317.5,
+          "width": 400,
+          "height": 181
+        },
+        "header": {
+          "x": 440,
+          "y": 317.5,
+          "width": 400,
+          "height": 54
+        },
+        "body": {
+          "x": 440,
+          "y": 371.5,
+          "width": 400,
+          "height": 78
+        },
+        "footer": {
+          "x": 440,
+          "y": 449.5,
+          "width": 400,
+          "height": 49
+        },
+        "rail": null,
+        "scrollTop": 0,
+        "scrollHeight": 78,
+        "dpr": 1,
+        "visualScale": 1
+      },
+      "sha256": "43ba6c236cf6cbfd132d4a6fc30f8863c0739f2d2d01b701af6080bc22d5d04e",
+      "bytes": 84714,
+      "pageErrors": [],
+      "consoleErrors": [],
+      "outbound": [],
+      "forceRequests": null
+    }
+  ]
+}
