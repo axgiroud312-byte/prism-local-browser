@@ -19,6 +19,13 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1280, height: 800
     const dialog = page.getByRole("dialog", { name: "新建浏览器环境" });
     const bounds = await dialog.boundingBox();
     expect(bounds).toMatchObject({ x: viewport.width - 660, y: 40, width: 660, height: viewport.height - 48 });
+    expect(await dialog.locator(".drawer-header").boundingBox()).toMatchObject({ y: 40, height: 40 });
+    expect(await dialog.locator(".drawer-footer").boundingBox()).toMatchObject({ y: viewport.height - 79, height: 71 });
+    expect(await dialog.locator(".drawer-body").boundingBox()).toMatchObject({ y: 80, height: viewport.height - 159 });
+    await expect(dialog.getByRole("button", { name: "换一套", exact: true })).toHaveCount(1);
+    await expect(dialog.locator(".drawer-footer").getByRole("button", { name: "换一套", exact: true })).toBeVisible();
+    await page.mouse.click(30, 430);
+    await expect(dialog).toBeVisible(); // The frozen reference backdrop does not dismiss the editor.
     await expect(dialog.getByRole("navigation", { name: "环境配置分区" })).toBeVisible();
     await expect(dialog.getByRole("heading", { name: "基础设置", exact: true })).toBeVisible();
     await expect(dialog.locator("[data-environment-section]")).toHaveCount(4);
@@ -44,8 +51,8 @@ test("environment windows: explicit regeneration and cancellation do not mutate 
   await page.getByRole("button", { name: "换一套", exact: true }).click();
   await expect(page.getByLabel("固定指纹种子")).not.toHaveValue(seed);
   expect(await stored(page)).toEqual(before);
-  page.once("dialog", dialog => dialog.accept());
   await page.getByRole("button", { name: "取消", exact: true }).click();
+  await page.getByRole("alertdialog", { name: "放弃未保存修改？", exact: true }).getByRole("button", { name: "放弃修改", exact: true }).click();
   await expect(page.getByRole("dialog")).toHaveCount(0);
   expect(await stored(page)).toEqual(before);
 });
