@@ -5,8 +5,10 @@ import { migrationWorkflowBridge, type MigrationWorkflowScenario } from "./migra
 
 export type MigrationDiscardReply = "known" | "unknown" | "invalid" | "demo" | "refused" | "throw";
 interface MigrationDiscardHooks {
-  snapshot(): { syntheticOnly: true; calls: NativeRequest[]; held: { label: string; request: NativeRequest }[] };
+  snapshot(): { syntheticOnly: true; calls: NativeRequest[]; held: { label: string; request: NativeRequest }[]; selectionBusy: boolean; ordinarySourceActive: boolean };
   setDiscardReply(reply: MigrationDiscardReply): void;
+  setSelectionBusy(busy: boolean): void;
+  enableOrdinarySource(): void;
   hold(method: string, label: string): void;
   reply(label: string, reply?: MigrationDiscardReply): Promise<void>;
 }
@@ -22,7 +24,7 @@ export async function migrationDiscardRecoveryBridge(page: Page, scenario: Migra
     type Go = { main: { DesktopApp: { Call: Call } } };
     const calls: NativeRequest[] = [], holds: { method: string; label: string }[] = [];
     const held = new Map<string, { request: NativeRequest; original: Call; resolve(result: ApplicationResult<unknown>): void; reject(error: Error): void }>();
-    let discardReply: MigrationDiscardReply = "known", go: Go | undefined;
+    let discardReply: MigrationDiscardReply = "known", go: Go | undefined, selectionBusy = false, ordinarySourceEnabled = false, ordinarySourceActive = false;
     const copy = <T,>(value: T): T => structuredClone(value);
     const response = async (request: NativeRequest, original: Call, reply: MigrationDiscardReply) => {
       if (reply === "known") return original(request);
@@ -31,8 +33,10 @@ export async function migrationDiscardRecoveryBridge(page: Page, scenario: Migra
       return { ok: false as const, mode: "native" as const, error: { code: reply === "refused" ? "RESTORE_NOT_ACCEPTED" : "NATIVE_UNAVAILABLE", message: "合成原响应尚未确认；未执行真实桌面操作。", retryable: true } };
     };
     window.__migrationDiscard = {
-      snapshot: () => copy({ syntheticOnly: true, calls, held: [...held.entries()].map(([label, value]) => ({ label, request: value.request })) }),
+      snapshot: () => copy({ syntheticOnly: true, calls, held: [...held.entries()].map(([label, value]) => ({ label, request: value.request })), selectionBusy, ordinarySourceActive }),
       setDiscardReply(value) { discardReply = value; },
+      setSelectionBusy(value) { selectionBusy = value; },
+      enableOrdinarySource() { ordinarySourceEnabled = true; },
       hold(method, label) { if (held.has(label) || holds.some(h => h.label === label)) throw new Error("Duplicate synthetic hold"); holds.push({ method, label }); },
       async reply(label, value = "known") {
         const item = held.get(label); if (!item) throw new Error("Unknown synthetic hold"); held.delete(label);
@@ -43,6 +47,11 @@ export async function migrationDiscardRecoveryBridge(page: Page, scenario: Migra
       go = value; const original = value.main.DesktopApp.Call;
       value.main.DesktopApp.Call = async request => {
         calls.push(copy(request));
+        if (request.method === "Migration.SelectRollback" && selectionBusy) return { ok: false, mode: "native", error: { code: "PROFILE_BUSY", message: "请先完成当前维护。", retryable: true } };
+        // New explicit ordinary-source test support only. No allocation on the
+        // busy selection branch; no hidden SelectRollback call or fallback.
+        if (request.method === "Backup.SelectRestoreSource" && ordinarySourceEnabled) { ordinarySourceActive = true; return { ok: true, mode: "native", data: { status: "selected", sourceToken: "synthetic-ordinary-supported-source", name: "synthetic-ordinary.prismbackup" } }; }
+        if (request.method === "Backup.DiscardRestore" && (request.payload as { sourceToken?: string }).sourceToken === "synthetic-ordinary-supported-source" && ordinarySourceActive) { ordinarySourceActive = false; return { ok: true, mode: "native", data: { status: "discarded" } }; }
         const index = holds.findIndex(h => h.method === request.method);
         if (index >= 0) {
           const [hold] = holds.splice(index, 1);

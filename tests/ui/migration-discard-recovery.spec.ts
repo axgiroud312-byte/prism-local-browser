@@ -16,9 +16,12 @@ test.afterEach(async ({ page }, info) => {
   if (trace) {
     await info.attach("M22-synthetic-original-cleanup-trace", { body: JSON.stringify(trace, null, 2), contentType: "application/json" });
     expect(await page.evaluate(() => window.__migrationWorkflow.snapshot().faults)).toEqual([]);
-    for (const method of ["Runtime.Start", "Runtime.ForceStop", "Kernel.Install", "Fingerprint.Generate", "Preview.Regenerate", "Environment.Create", "Environment.Update", "Migration.Prepare", "Backup.SelectRestoreSource"]) {
+    for (const method of ["Runtime.Start", "Runtime.ForceStop", "Kernel.Install", "Fingerprint.Generate", "Preview.Regenerate", "Environment.Create", "Environment.Update", "Migration.Prepare"]) {
       expect(trace.calls.filter(c => c.method === method), `${method} is never a cleanup fallback`).toHaveLength(0);
     }
+    // Every existing case still requires zero ordinary-source calls. Only the
+    // new annotated scenario explicitly selects one supported source by UI.
+    expect(trace.calls.filter(c => c.method === "Backup.SelectRestoreSource")).toHaveLength(info.annotations.some(a => a.type === "M22-explicit-ordinary-source") ? 1 : 0);
   }
   expect(errors.get(page), "no unhandled rejection on cancellation/hide/unmount").toEqual([]);
 });
@@ -48,6 +51,44 @@ async function verifyBlocked(page: Page, selects = 1, previews = 1, restores = 0
 }
 
 for (const viewport of [{ width: 1440, height: 900 }, { width: 1280, height: 800 }]) {
+  test(`M22 definite SelectRollback PROFILE_BUSY allows only later explicit ordinary source and rollback ${viewport.width}`, async ({ page }, info) => {
+    info.annotations.push({ type: "M22-explicit-ordinary-source", description: "one user-selected supported source after definite resource-free refusal; never a fallback" });
+    await page.setViewportSize(viewport); const selection = await open(page);
+    const before = await page.evaluate(() => window.__migrationWorkflow.snapshot().workspace);
+    await page.evaluate(() => { window.__migrationDiscard.setSelectionBusy(true); window.__migrationDiscard.enableOrdinarySource(); });
+    await selection.getByRole("button", { name: "预检升级前完整恢复", exact: true }).click();
+    await expect(selection.getByRole("alert")).toContainText("PROFILE_BUSY");
+    await expect(dialog(page, "升级前预检清理待核实")).toHaveCount(0);
+    await expect(selection.getByRole("button", { name: "预检升级前完整恢复", exact: true })).toBeEnabled();
+    expect(await page.evaluate(() => window.__migrationWorkflow.snapshot().sourceActive)).toBe(false);
+    expect(await calls(page, "Backup.DiscardRestore")).toHaveLength(0); expect(await calls(page, "Backup.PreviewRestore")).toHaveLength(0);
+    await page.evaluate(() => window.__migrationDiscard.setSelectionBusy(false));
+    expect(await calls(page, "Migration.SelectRollback")).toHaveLength(1); expect(await calls(page, "Backup.SelectRestoreSource")).toHaveLength(0);
+    await selection.getByRole("button", { name: "关闭", exact: true }).click();
+    await page.getByRole("link", { name: "备份与恢复", exact: true }).click();
+    await expect(page.getByRole("button", { name: "查看原预检清理", exact: true })).toHaveCount(0);
+    await page.getByRole("button", { name: "导入完整备份", exact: true }).click();
+    const ordinary = dialog(page, "导入本机备份");
+    await ordinary.getByRole("button", { name: "选择本机备份包", exact: true }).click();
+    await expect(ordinary).toContainText("synthetic-ordinary.prismbackup");
+    await expect(ordinary.getByRole("button", { name: "完整校验并预览", exact: true })).toBeEnabled();
+    expect(await calls(page, "Backup.SelectRestoreSource")).toEqual([{ mode: "native", method: "Backup.SelectRestoreSource", payload: {} }]);
+    expect(await calls(page, "Backup.PreviewRestore")).toHaveLength(0); expect(await calls(page, "Backup.ApplyRestore")).toHaveLength(0);
+    await ordinary.getByRole("button", { name: "取消", exact: true }).click(); await expect(ordinary).toHaveCount(0);
+    expect(await calls(page, "Backup.DiscardRestore")).toEqual([{ mode: "native", method: "Backup.DiscardRestore", payload: { previewId: "", sourceToken: "synthetic-ordinary-supported-source" } }]);
+    expect((await snapshot(page)).ordinarySourceActive).toBe(false);
+    await page.getByRole("link", { name: "内核管理", exact: true }).click();
+    await page.getByRole("button", { name: "选定环境迁移", exact: true }).click();
+    await selection.getByText("迁移记录与升级前恢复", { exact: true }).click();
+    await selection.getByRole("button", { name: "预检升级前完整恢复", exact: true }).click();
+    await expect(selection).toContainText("升级前完整恢复预检");
+    const selections = await calls(page, "Migration.SelectRollback"); expect(selections).toHaveLength(2); expect(selections[0]).toEqual(selections[1]);
+    expect((await calls(page, "Backup.PreviewRestore"))[0].payload).toEqual({ sourceToken: "synthetic-upgrade-source" });
+    expect(await calls(page, "Backup.ApplyRestore")).toHaveLength(0);
+    expect(await page.evaluate(() => window.__migrationWorkflow.snapshot().workspace)).toEqual(before);
+    await expect(dialog(page, "升级前预检清理待核实")).toHaveCount(0);
+  });
+
   for (const reply of ["unknown", "invalid", "demo", "refused", "throw"] as const) {
     test(`M22 ${reply} cleanup only retries original owner across hide and route remount ${viewport.width}`, async ({ page, baseURL }) => {
       await page.setViewportSize(viewport);

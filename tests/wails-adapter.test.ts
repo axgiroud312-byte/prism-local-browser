@@ -369,6 +369,89 @@ test("M22 source-selection transport loss without a token cannot invent cleanup 
   assert.equal(calls.filter(c => c.method === "Backup.DiscardRestore").length, 0, "empty IDs do not prove that an unknown source was cleaned");
 });
 
+const selectionBusy: ApplicationResult<never> = { ok: false, mode: "native", error: { code: "PROFILE_BUSY", message: "请先完成当前维护。", retryable: true } };
+test("M22 definite SelectRollback PROFILE_BUSY releases only tokenless preallocation ownership for explicit supported retry", async () => {
+  for (const next of ["rollback", "ordinary"] as const) {
+    const task = finishedMigration(); let busy = true; const projections: ReturnType<typeof rollbackCleanup>[] = [];
+    const { app, calls } = fixture(r => {
+      if (r.method === "Operation.Read") return ok(task);
+      if (r.method === "Migration.SelectRollback") return busy ? selectionBusy : ok({ sourceToken: "M22-supported-rollback-source", archiveSha256: "a".repeat(64) });
+      if (r.method === "Backup.SelectRestoreSource") return ok({ status: "selected", sourceToken: "M22-supported-ordinary-source", name: "synthetic.prismbackup" });
+      if (r.method === "Backup.PreviewRestore") return ok(restorePreview());
+      return ok({ status: "discarded" });
+    });
+    const unsubscribe = app.subscribe(() => projections.push(rollbackCleanup(app)));
+    const refused = await app.previewMigrationRollback(task.id); assert.deepEqual(refused, selectionBusy);
+    assert.equal(rollbackCleanup(app), undefined, "Go rejected before any source token or preview was allocated");
+    assert.deepEqual(projections, [undefined]);
+    assert.equal(calls.filter(c => c.method === "Backup.DiscardRestore").length, 0);
+    assert.equal(calls.filter(c => c.method === "Backup.PreviewRestore").length, 0);
+    busy = false; const before = calls.length; await Promise.resolve();
+    assert.equal(calls.length, before, "maintenance completion is not an automatic retry or fallback");
+    if (next === "rollback") {
+      assert.ok((await app.previewMigrationRollback(task.id)).ok);
+      const selections = calls.filter(c => c.method === "Migration.SelectRollback"); assert.equal(selections.length, 2); assert.deepEqual(selections[1], selections[0]);
+      assert.deepEqual(calls.find(c => c.method === "Backup.PreviewRestore")?.payload, { sourceToken: "M22-supported-rollback-source" });
+      assert.equal((await app.previewMigrationRollback(task.id)).ok, false, "the later live owner is not released by the old finalizer");
+    } else {
+      const selected = await app.selectRestoreSource(); assert.ok(selected.ok); assert.equal(selected.data.sourceToken, "M22-supported-ordinary-source");
+      assert.deepEqual(calls.find(c => c.method === "Backup.SelectRestoreSource")?.payload, {});
+      assert.equal(calls.filter(c => c.method === "Backup.PreviewRestore").length, 0);
+      assert.ok((await app.previewRestore(selected.data.sourceToken!)).ok);
+      assert.deepEqual(calls.find(c => c.method === "Backup.PreviewRestore")?.payload, { sourceToken: selected.data.sourceToken });
+    }
+    assert.equal(calls.filter(c => c.method === "Backup.DiscardRestore" || c.method === "Backup.ApplyRestore" || c.method === "Fingerprint.Generate").length, 0);
+    unsubscribe();
+  }
+});
+
+test("M22 malformed mode-wrong or unknown PROFILE_BUSY selection replies retain tokenless uncertainty", async () => {
+  const replies: unknown[] = [
+    { ...selectionBusy, mode: "demo" }, { ok: false, mode: "native", error: { code: "PROFILE_BUSY" } },
+    { ok: false, mode: "native", error: { code: "PROFILE_BUSY", message: "busy", retryable: "true" } },
+    { ...selectionBusy, operationId: "foreign-operation" }, { ...selectionBusy, data: { sourceToken: "not-a-refusal" } },
+    { ok: false, mode: "native", error: { code: "PROFILE_BUSY", message: "busy", retryable: true, details: { sourceToken: "ambiguous" } } },
+    ok({ sourceToken: null, archiveSha256: "a".repeat(64) }), rejected, null, "throw",
+  ];
+  for (const reply of replies) {
+    const task = finishedMigration();
+    const { app, calls } = fixture(r => { if (r.method === "Operation.Read") return ok(task); if (reply === "throw") throw new Error("PROFILE_BUSY is not a transport receipt"); return reply as ApplicationResult<unknown>; });
+    assert.equal((await app.previewMigrationRollback(task.id)).ok, false);
+    assert.deepEqual(rollbackCleanup(app), { operationId: task.id, pending: false });
+    await app.discardMigrationRollback();
+    const count = calls.length;
+    assert.equal((await app.previewMigrationRollback(task.id)).ok, false); assert.equal((await app.selectRestoreSource()).ok, false);
+    assert.equal(calls.length, count); assert.equal(calls.filter(c => c.method === "Backup.DiscardRestore").length, 0);
+  }
+});
+
+test("M22 PROFILE_BUSY after token acquisition never releases original cleanup references", async () => {
+  for (const previewBusy of [false, true]) {
+    const task = finishedMigration(); let known = false;
+    const { app, calls } = fixture(r => r.method === "Operation.Read" ? ok(task) : r.method === "Migration.SelectRollback" ? ok({ sourceToken: "M22-known-busy-token", archiveSha256: "a".repeat(64) }) : r.method === "Backup.PreviewRestore" ? previewBusy ? selectionBusy : ok(restorePreview()) : known ? ok({ status: "discarded" }) : selectionBusy);
+    assert.equal((await app.previewMigrationRollback(task.id)).ok, !previewBusy);
+    if (!previewBusy) await app.discardMigrationRollback();
+    assert.ok(rollbackCleanup(app)); await app.discardMigrationRollback(); assert.ok(rollbackCleanup(app));
+    const count = calls.length; assert.equal((await app.selectRestoreSource()).ok, false); assert.equal((await app.previewMigrationRollback(task.id)).ok, false); assert.equal(calls.length, count);
+    const discards = calls.filter(c => c.method === "Backup.DiscardRestore"); assert.equal(discards.length, 2); assert.deepEqual(discards[0], discards[1]);
+    assert.deepEqual(discards[0].payload, { previewId: previewBusy ? "" : restorePreview().previewId, sourceToken: "M22-known-busy-token" });
+    known = true; await app.discardMigrationRollback(); assert.equal(rollbackCleanup(app), undefined);
+    assert.deepEqual(calls.filter(c => c.method === "Backup.DiscardRestore")[2], discards[0]);
+  }
+});
+
+test("M22 late definite SelectRollback PROFILE_BUSY releases cancelled tokenless owner without touching the next owner", async () => {
+  const task = finishedMigration(); let deliver!: (r: ApplicationResult<unknown>) => void, busy = true;
+  const { app, calls } = fixture(r => r.method === "Operation.Read" ? ok(task) : r.method === "Migration.SelectRollback" ? busy ? new Promise(resolve => { deliver = resolve; }) : ok({ sourceToken: "M22-next-explicit-source", archiveSha256: "a".repeat(64) }) : ok(restorePreview()));
+  const first = app.previewMigrationRollback(task.id); while (!deliver) await Promise.resolve();
+  await app.discardMigrationRollback(); assert.equal(rollbackCleanup(app)?.pending, true);
+  deliver(selectionBusy); assert.deepEqual(await first, selectionBusy); assert.equal(rollbackCleanup(app), undefined);
+  assert.equal(calls.filter(c => c.method === "Backup.DiscardRestore").length, 0);
+  busy = false; assert.ok((await app.previewMigrationRollback(task.id)).ok);
+  assert.equal((await app.previewMigrationRollback(task.id)).ok, false);
+  assert.equal(calls.filter(c => c.method === "Migration.SelectRollback").length, 2);
+});
+
 test("recycle commit projects explicit original confirmation without paths or client identities", async () => {
   const task = recycleOperation();
   const { app, calls } = fixture(r => r.method === "Workspace.Read" ? ok({ ...empty(), recycleOperations: [task], recycleMaintenance: task }) : ok({ status: "accepted", operation: task }));

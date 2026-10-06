@@ -245,7 +245,13 @@ export class WailsAdapter implements ApplicationService {
       const expected = operation.data.migrationReport.archiveSha256;
       owner.selectionAttempted = true;
       const selected = await this.invoke<{ sourceToken: string; archiveSha256: string }>("Migration.SelectRollback", { operationId });
-      if (!selected.ok) return selected;
+      if (!selected.ok) {
+        // Go SelectRollback's native PROFILE_BUSY branch returns before token
+        // allocation. This is a no-source refusal, not a successful discard.
+        const error = selected.error;
+        if (this.rollbackOwner === owner && !owner.sourceToken && !owner.previewId && selected.mode === "native" && Object.keys(selected).length === 3 && error && typeof error === "object" && !Array.isArray(error) && Object.keys(error).length === 3 && error.code === "PROFILE_BUSY" && typeof error.message === "string" && error.message.length > 0 && error.retryable === true) owner.selectionAttempted = false;
+        return selected;
+      }
       if (typeof selected.data.sourceToken === "string" && selected.data.sourceToken) owner.sourceToken = selected.data.sourceToken;
       if (!owner.sourceToken || selected.data.archiveSha256 !== expected || owner.cancelled || this.rollbackOwner !== owner) return unconfirmed();
       const preview = await this.previewRestore(owner.sourceToken);
