@@ -1,6 +1,7 @@
 import type { FormEvent } from "react";
 import type { ProxyConfiguration } from "../application/contract";
 import { ProxyKernelModal } from "./ProxyKernelModal";
+import { socks5CredentialByteError } from "./proxy-credential-validation";
 
 export interface ProxyEditWindowProps {
   title?: string; configuration: ProxyConfiguration; onConfiguration: (value: ProxyConfiguration) => void;
@@ -12,9 +13,11 @@ export interface ProxyEditWindowProps {
 }
 export function ProxyEditWindow({ title = "修改代理", configuration, onConfiguration, credentialAction, onCredentialAction, username, password, onUsername, onPassword, hasAuthentication, native, busy, unknown = false, message, simulateFailure, onSimulateFailure, onClose, onSave }: ProxyEditWindowProps) {
   const locked = busy || unknown;
+  // Native remains authoritative, and reconciliation must not validate a new draft.
+  const credentialError = native || unknown ? undefined : socks5CredentialByteError(configuration.type, credentialAction, username, password);
   const patch = (change: Partial<ProxyConfiguration>) => onConfiguration({ ...configuration, ...change });
   return <ProxyKernelModal title={title} width={620} height={native && credentialAction === "replace" ? 726 : 614} busy={busy} onClose={onClose} className="proxy35-edit" footer={<><span className="pk35-footer-note">保存使旧检查失效，不改变环境 seed</span><button className="button" disabled={busy} onClick={onClose}>取消</button><button className="button primary" type="submit" form="proxy35-edit-form" disabled={busy}>{unknown ? "核实原保存请求" : "确认保存"}</button></>}>
-    <form id="proxy35-edit-form" onSubmit={event => { event.preventDefault(); onSave(event); }}>
+    <form id="proxy35-edit-form" onSubmit={event => { event.preventDefault(); if (!credentialError) onSave(event); }}>
       <label className="reference-field"><span>代理名称</span><input aria-label="名称" value={configuration.name} required maxLength={256} disabled={locked} onChange={event => patch({ name: event.target.value })} /></label>
       <label className="reference-field"><span>代理类型</span><select aria-label="协议" value={configuration.type} disabled={locked} onChange={event => patch({ type: event.target.value as ProxyConfiguration["type"] })}><option value="socks5">SOCKS5</option><option value="http">HTTP</option><option value="https">HTTPS · TLS 到代理</option></select></label>
       <label className="reference-field"><span>代理主机</span><input aria-label="主机名或IP" value={configuration.host} required disabled={locked} onChange={event => patch({ host: event.target.value })} /></label>
@@ -25,6 +28,7 @@ export function ProxyEditWindow({ title = "修改代理", configuration, onConfi
       {!native && onSimulateFailure && <label className="pk35-checkbox"><input type="checkbox" checked={!!simulateFailure} disabled={locked} onChange={event => onSimulateFailure(event.target.checked)} />模拟连接失败（只影响示例检测）</label>}
       <p className="pk35-muted">{native ? "旧账号、密码从不回显；保留与清除不携带新凭据。" : "仅演示配置，请勿使用真实凭据。"}HTTP / SOCKS5 不加密到代理的认证；HTTPS 才提供 TLS。</p>
       {configuration.type === "socks5" && <p className="pk35-muted">目标域名固定由上游解析，代理主机自身仍需本机 DNS；不降级直连。{credentialAction === "replace" && `用户名 ${new TextEncoder().encode(username).length} 字节，密码 ${new TextEncoder().encode(password).length} 字节（各需 1–255）。`}</p>}
+      {credentialError && <p role="alert" className="pk35-warning">{credentialError}</p>}
       {message && <p role="status" className="pk35-message">{message}</p>}
     </form>
   </ProxyKernelModal>;

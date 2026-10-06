@@ -1,5 +1,6 @@
 import { parseProxyText, uid, type ProxyNode } from "../domain";
 import type { ApplicationService, ProxyImportPreview } from "../application/contract";
+import { socks5CredentialByteError } from "./proxy-credential-validation";
 
 export type ProxyImportView = Omit<ProxyImportPreview, "mode">;
 type ImportRequest = { previewId: string; selectedRows: number[]; requestId: string };
@@ -78,7 +79,14 @@ export class ProxyImportSession {
         if (generation !== this.generation) { void this.application.discardProxyImport?.(result.data.previewId); return; }
         preview = result.data;
       } else {
-        const rows = parseProxyText(this.state.text);
+        const rows = parseProxyText(this.state.text).map(row => {
+          if (!row.node) return row;
+          const { type, username, password } = row.node;
+          // URL normalizes empty userinfo away; explicit @ is not a no-auth request.
+          const action = username || password || row.raw.includes("@") ? "replace" : "clear";
+          const error = socks5CredentialByteError(type, action, username, password);
+          return error ? { ...row, node: undefined, error } : row;
+        });
         const address = (p: ProxyNode) => `${p.type}|${p.host}|${p.port}`;
         const saved = this.application.getSnapshot().state.proxies;
         const groups: ProxyImportView["duplicateGroups"] = {};
