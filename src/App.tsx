@@ -7,6 +7,7 @@ import {
   useSyncExternalStore,
   type ReactNode,
 } from "react";
+import { createPortal } from "react-dom";
 import {
   Activity as ActivityIcon,
   ArrowDownToLine,
@@ -357,15 +358,15 @@ export default function App({ application }: { application: ApplicationService }
     if (toastTimer.current) clearTimeout(toastTimer.current);
     toastTimer.current = setTimeout(() => setToast(null), 4200);
   };
-  const update = (fn: (s: State) => State, activity?: Pick<Activity, "action" | "target" | "detail" | "result">) => {
+  const updateDemo = (fn: (s: State) => State, activity?: Pick<Activity, "action" | "target" | "detail" | "result">) => {
     const result = application.compatibility?.update((s) => {
       const next = fn(s);
       return activity ? { ...next, activities: [{ ...activity, id: uid("log"), time: now() }, ...next.activities] } : next;
-    });
-    if (!result) notify("此演示操作尚未接入桌面服务。", true);
-    else if (!result.ok) notify(result.error.message, true);
-    return Boolean(result?.ok);
+    }) ?? { ok: false as const, mode: application.mode, error: { code: "CAPABILITY_UNSUPPORTED", message: "此演示操作尚未接入桌面服务。", retryable: false } };
+    if (!result.ok) notify(result.error.message, true);
+    return result;
   };
+  const update = (fn: (s: State) => State, activity?: Pick<Activity, "action" | "target" | "detail" | "result">) => updateDemo(fn, activity).ok;
   const log = (
     action: string,
     target: string,
@@ -650,8 +651,9 @@ export default function App({ application }: { application: ApplicationService }
         setDrawer(null);
         return;
       }
-      if (nativeMode && quantity > 1) {
-        if (!Number.isSafeInteger(quantity) || quantity < 1) { setFormError("数量必须是可精确表示的正整数；没有保存总数产品配额。"); return; }
+      const recoveringCreation = !!drawer.creationOperationId || !!drawer.creationUnconfirmed;
+      if (!recoveringCreation && (!Number.isSafeInteger(quantity) || quantity < 1)) { setFormError("数量必须是可精确表示的正整数；没有保存总数产品配额。"); return; }
+      if (!recoveringCreation && nativeMode && quantity > 1) {
         const planned = await application.previewBatch?.({ kind: "create", create: { ...request, count: quantity } });
         if (drawerRef.current?.previewId !== target) return;
         if (!planned?.ok) { setFormError(planned && !planned.ok ? planned.error.message : "当前桌面服务未提供持久批次。"); return; }
@@ -755,6 +757,18 @@ export default function App({ application }: { application: ApplicationService }
     void read();
     return () => { cancelled = true; clearTimeout(timer); };
   }, [application, nativeMode, pendingRuntimeOutcomeKey]);
+  function failDemoWrite(targets: string[], index: number, action: "打开" | "关闭", message: string) {
+    const id = targets[index];
+    const saved = application.getSnapshot().state.environments.find(item => item.id === id);
+    const detail = saved && ["starting", "stopping"].includes(saved.status) ? `${message} 已保存状态仍为${statusLabels[saved.status]}；恢复存储后重试${action}会继续保存模拟结果。` : message;
+    const unexecuted = new Set(targets.slice(index + 1));
+    setOutcomes(previous => previous.map(item => {
+      if (item.action !== action || !["pending", "accepted"].includes(item.state)) return item;
+      if (item.id === id) return { ...item, state: "error", message: detail };
+      if (unexecuted.has(item.id)) return { ...item, state: "skipped", message: "前一项未能保存，本项尚未执行；恢复存储后可重新操作。" };
+      return item;
+    }));
+  }
   async function launch(ids: string[], created = false) {
     if (nativeMode) {
       if (!application.startRuntime) { notify("当前桌面版本未接入真实启停。", true); return; }
@@ -787,60 +801,64 @@ export default function App({ application }: { application: ApplicationService }
     batchCancelled.current = false;
     let done = 0;
     setMenu(null);
-    const targets = [...new Set(ids)];
+    const targets = [...new Set(ids)].filter(id => !runtimeActions.current.has(id));
     targets.forEach(id => setOutcome({ id, name: current.current.environments.find(environment => environment.id === id)?.name ?? "所选环境", action: "打开", state: "pending", message: "等待模拟打开", created }));
-    for (const id of targets) {
-      const e = current.current.environments.find((i) => i.id === id);
-      if (batchCancelled.current) { setOutcome({ id, name: e?.name ?? "所选环境", action: "打开", state: "skipped", message: "已取消，未继续打开", created }); continue; }
-      if (!e) { setOutcome({ id, name: "所选环境", action: "打开", state: "error", message: "环境已不存在，请刷新列表", created }); continue; }
-      if (["running", "starting", "stopping"].includes(e.status)) {
-        setOutcome({ id, name: e.name, action: "打开", state: "skipped", message: e.status === "running" ? "已运行，无需重复打开" : "启停进行中，请稍候", created });
-        continue;
-      }
-      setBatch({ label: "启动环境", done, total: ids.length });
-      const failure = launchError(e, current.current);
-      if (failure) {
-        if (!update((s) => ({
-          ...s,
-          environments: s.environments.map((i) =>
-            i.id === id ? { ...i, status: "error", error: failure } : i,
-          ),
-        }), log("启动被阻止", e.name, failure, "error"))) break;
-        setOutcome({ id, name: e.name, action: "打开", state: "error", message: failure, created });
+    try {
+      for (const [index, id] of targets.entries()) {
+        const snapshot = application.getSnapshot().state;
+        const e = snapshot.environments.find((i) => i.id === id);
+        if (batchCancelled.current) {
+          setOutcomes(previous => previous.map(item => item.id === id && item.action === "打开" && item.state === "pending" ? { ...item, state: "skipped", message: "已取消，未继续打开" } : item));
+          continue;
+        }
+        if (!e) { setOutcome({ id, name: "所选环境", action: "打开", state: "error", message: "环境已不存在，请刷新列表", created }); continue; }
+        if (["running", "stopping"].includes(e.status) || runtimeActions.current.has(id)) {
+          setOutcome({ id, name: e.name, action: "打开", state: "skipped", message: e.status === "running" ? "已运行，无需重复打开" : "请先完成关闭，再打开", created });
+          continue;
+        }
+        setBatch({ label: "启动环境", done, total: targets.length });
+        const failure = launchError(e, snapshot);
+        if (failure) {
+          const result = updateDemo((s) => ({
+            ...s,
+            environments: s.environments.map((i) =>
+              i.id === id ? { ...i, status: "error", error: failure } : i,
+            ),
+          }), log("启动被阻止", e.name, failure, "error"));
+          if (!result.ok) { failDemoWrite(targets, index, "打开", result.error.message); break; }
+          setOutcome({ id, name: e.name, action: "打开", state: "error", message: failure, created });
+          done++;
+          continue;
+        }
+        // A failed completion write leaves the saved starting state intact.
+        // Retrying finishes that write instead of treating it as active work.
+        if (e.status !== "starting") {
+          const result = updateDemo((s) => ({
+            ...s,
+            environments: s.environments.map((i) =>
+              i.id === id ? { ...i, status: "starting", error: undefined } : i,
+            ),
+          }));
+          if (!result.ok) { failDemoWrite(targets, index, "打开", result.error.message); break; }
+          setOutcome({ id, name: e.name, action: "打开", state: "accepted", message: "正在模拟打开", created });
+          await sleep(650);
+        }
+        if (application.getSnapshot().state.environments.find((i) => i.id === id)?.status === "starting") {
+          const result = updateDemo((s) => ({
+            ...s,
+            environments: s.environments.map((i) =>
+              i.id === id && i.status === "starting"
+                ? { ...i, status: "running", lastOpened: now() }
+                : i,
+            ),
+          }), log("模拟启动", e.name, "演示状态已变为运行中；未启动真实浏览器进程。"));
+          if (!result.ok) { failDemoWrite(targets, index, "打开", result.error.message); break; }
+        }
+        const latest = application.getSnapshot().state.environments.find(item => item.id === id);
+        setOutcomes(previous => previous.map(item => item.id === id && item.action === "打开" ? { ...item, state: latest?.status === "running" ? "success" : "skipped", message: latest?.status === "running" ? "已模拟打开，未启动真实浏览器" : "打开已取消" } : item));
         done++;
-        continue;
       }
-      if (!update((s) => ({
-        ...s,
-        environments: s.environments.map((i) =>
-          i.id === id ? { ...i, status: "starting", error: undefined } : i,
-        ),
-      }))) break;
-      setOutcome({ id, name: e.name, action: "打开", state: "accepted", message: "正在模拟打开", created });
-      await sleep(650);
-      if (
-        current.current.environments.find((i) => i.id === id)?.status ===
-        "starting"
-      ) {
-        if (!update((s) => ({
-          ...s,
-          environments: s.environments.map((i) =>
-            i.id === id && i.status === "starting"
-              ? { ...i, status: "running", lastOpened: now() }
-              : i,
-          ),
-        }), log(
-          "模拟启动",
-          e.name,
-          "演示状态已变为运行中；未启动真实浏览器进程。",
-        ))) break;
-      }
-      const latest = application.getSnapshot().state.environments.find(item => item.id === id);
-      if (outcomesRef.current.find(item => item.id === id)?.action === "打开") setOutcome({ id, name: e.name, action: "打开", state: latest?.status === "running" ? "success" : "skipped", message: latest?.status === "running" ? "已模拟打开，未启动真实浏览器" : "打开已取消", created });
-      done++;
-    }
-    batchBusy.current = false;
-    setBatch(null);
+    } finally { batchBusy.current = false; setBatch(null); }
   }
   async function stop(ids: string[]) {
     if (nativeMode) {
@@ -863,25 +881,32 @@ export default function App({ application }: { application: ApplicationService }
       return;
     }
     batchCancelled.current = true;
-    for (const id of ids) {
-      const e = current.current.environments.find((i) => i.id === id);
-      if (!e || !["running", "starting"].includes(e.status)) { if (e) setOutcome({ id, name: e.name, action: "关闭", state: "skipped", message: "已停止，无需重复关闭" }); continue; }
+    const targets = [...new Set(ids)].filter(id => !runtimeActions.current.has(id));
+    targets.forEach(id => setOutcome({ id, name: current.current.environments.find(environment => environment.id === id)?.name ?? "所选环境", action: "关闭", state: "pending", message: "等待模拟关闭" }));
+    for (const [index, id] of targets.entries()) {
+      const e = application.getSnapshot().state.environments.find((i) => i.id === id);
+      if (!e) { setOutcome({ id, name: "所选环境", action: "关闭", state: "error", message: "环境已不存在，请刷新列表" }); continue; }
+      if (!["running", "starting", "stopping"].includes(e.status)) { setOutcome({ id, name: e.name, action: "关闭", state: "skipped", message: "已停止，无需重复关闭" }); continue; }
       if (!beginRuntimeAction(id)) continue;
       setOutcome({ id, name: e.name, action: "关闭", state: "accepted", message: "正在模拟关闭" });
       try {
-        if (!update((s) => ({
-          ...s,
-          environments: s.environments.map((i) =>
-            i.id === id ? { ...i, status: "stopping" } : i,
-          ),
-        }))) return;
-        await sleep(350);
-        if (!update((s) => ({
+        if (e.status !== "stopping") {
+          const result = updateDemo((s) => ({
+            ...s,
+            environments: s.environments.map((i) =>
+              i.id === id ? { ...i, status: "stopping" } : i,
+            ),
+          }));
+          if (!result.ok) { failDemoWrite(targets, index, "关闭", result.error.message); break; }
+          await sleep(350);
+        }
+        const result = updateDemo((s) => ({
           ...s,
           environments: s.environments.map((i) =>
             i.id === id ? { ...i, status: "ready" } : i,
           ),
-        }), log("模拟关闭", e.name, "固定指纹和示例 Cookie 已保留。"))) return;
+        }), log("模拟关闭", e.name, "固定指纹和示例 Cookie 已保留。"));
+        if (!result.ok) { failDemoWrite(targets, index, "关闭", result.error.message); break; }
         setOutcome({ id, name: e.name, action: "关闭", state: "success", message: "已模拟关闭，指纹与示例数据已保留" });
       } finally { endRuntimeAction(id); }
     }
@@ -1502,6 +1527,7 @@ export default function App({ application }: { application: ApplicationService }
                         const p = state.proxies.find((p) => p.id === e.proxyId);
                         const runtimeSession = nativeMode ? workspace.runtimeSessions?.[e.id] : undefined;
                         const runtimeActionPending = runtimeActionIds.includes(e.id);
+                        const demoWriteRetry = !nativeMode && !runtimeActionPending && (e.status === "stopping" || e.status === "starting" && !batch);
                         const core = state.kernels.find(
                           (k) => k.id === e.coreId,
                         );
@@ -1589,12 +1615,12 @@ export default function App({ application }: { application: ApplicationService }
                                 className={`status ${e.status}`}
                                 title={e.error}
                               >
-                                {["starting", "stopping"].includes(e.status) ? (
+                                {["starting", "stopping"].includes(e.status) && !demoWriteRetry ? (
                                   <LoaderCircle size={12} className="spin" />
                                 ) : (
                                   <span className="status-dot" />
                                 )}
-                                 {runtimeSession?.needsReconcile ? "待核对" : nativeMode && !core?.available ? "未就绪" : statusLabels[e.status]}
+                                 {demoWriteRetry ? "模拟结果待保存" : runtimeSession?.needsReconcile ? "待核对" : nativeMode && !core?.available ? "未就绪" : statusLabels[e.status]}
                                </span>
                                 {e.error && <div className="cell-secondary runtime-recovery-note" role="status">{e.error}</div>}
                                {runtimeSession?.nextAction && <div className="cell-secondary runtime-recovery-note">{runtimeSession.nextAction}</div>}
@@ -1608,7 +1634,9 @@ export default function App({ application }: { application: ApplicationService }
                             </td>
                             <td>
                               <div className="row-actions">
-                                {runtimeSession?.persistencePending ? (
+                                {demoWriteRetry ? (
+                                  <Button className="soft-primary compact" onClick={() => e.status === "starting" ? void launch([e.id]) : void stop([e.id])}>重试{e.status === "starting" ? "打开" : "关闭"}</Button>
+                                ) : runtimeSession?.persistencePending ? (
                                   <span className="cell-secondary runtime-recovery-note" role="status">结果待保存 · 修复存储后自动核对</span>
                                 ) : workspace.networkResources?.[e.id] ? (
                                   <Button className="soft-primary compact" disabled={runtimeActionPending} onClick={() => void handleRuntimeSessionAction(e.id, workspace.networkResources![e.id], "reconcile")}>重试资源清理</Button>
@@ -1655,11 +1683,11 @@ export default function App({ application }: { application: ApplicationService }
                                     className="icon-button"
                                     aria-label={`${e.name} 更多操作`}
                                     aria-expanded={menu === e.id}
-                                    onClick={event => { const rect = event.currentTarget.getBoundingClientRect(); setMenuPosition({ top: Math.min(rect.bottom + 4, window.innerHeight - 200), right: Math.max(12, window.innerWidth - rect.right) }); setMenu(menu === e.id ? null : e.id); }}
+                                    onClick={event => { const rect = event.currentTarget.getBoundingClientRect(); setMenuPosition({ top: Math.max(12, Math.min(rect.bottom + 4, window.innerHeight - 200)), right: Math.max(12, window.innerWidth - rect.right) }); setMenu(menu === e.id ? null : e.id); }}
                                   >
                                     <Ellipsis size={19} />
                                   </button>
-                                  {menu === e.id && (
+                                  {menu === e.id && createPortal(
                                     <div className="dropdown environment-row-menu" style={menuPosition}>
                                       <button onClick={() => openEdit(e)}>
                                         <Settings2 size={15} />
@@ -1689,7 +1717,7 @@ export default function App({ application }: { application: ApplicationService }
                                         <Trash2 size={15} />
                                         移除环境
                                       </button>
-                                    </div>
+                                    </div>, document.body
                                   )}
                                 </div>
                               </div>

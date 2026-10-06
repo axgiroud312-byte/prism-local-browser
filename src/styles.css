@@ -2609,7 +2609,7 @@ tbody tr.row-selected {
 .environment-table th:last-child, .environment-table td:last-child { position: sticky; right: 0; background: #fff; box-shadow: -5px 0 10px #19273f08; }
 .environment-table tr.row-selected td:last-child { background: #f6f9ff; }
 .environment-table .row-actions { justify-content: flex-end; }
-.environment-row-menu { position: fixed; top: auto; }
+.environment-row-menu { position: fixed; top: auto; max-height: calc(100dvh - 24px); overflow-y: auto; }
 .runtime-list-details { margin-top: 5px; font-size: 11px; color: #647691; max-width: 230px; white-space: normal; }
 .runtime-list-details summary { cursor: pointer; }
 .runtime-recovery-note { max-width: 230px; white-space: normal; line-height: 1.5; }
