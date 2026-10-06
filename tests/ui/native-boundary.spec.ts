@@ -26,9 +26,9 @@ async function environmentBridge(page: Page, options: { failStart?: boolean; noK
     const operations = new Map<string, Operation>();
     const calls: NativeRequest[] = [];
     let serial = 0, failStart = !!options.failStart;
+    let finishFailedStart: (() => void) | undefined;
     const save = () => { sessionStorage.setItem(key, JSON.stringify(view)); sessionStorage.setItem(`${key}-revisions`, JSON.stringify(revisions)); };
-    const ok = (data: unknown) => ({ ok: true, mode: "native", data });
-    const fail = (message: string) => ({ ok: false, mode: "native", error: { code: "PROXY_AUTH_FAILED", message, retryable: true } });
+    const ok = (data: unknown) => ({ ok: true, mode: "native", data: structuredClone(data) });
     function profile(e: Environment): DeviceProfile {
       const version = kernels.find(k => k.id === e.coreId)?.version ?? "";
       return { schemaVersion: 1, configRevision: view.fingerprints?.[e.id]?.profile.configRevision ?? 1, seed: e.seed, templateId: "windows-desktop-v1", templateVersion: e.fingerprintVersion, generatorVersion: "synthetic-only", platform: "windows", platformVersion: "15.0.0", brand: "Chrome", brandVersion: version, kernelId: e.coreId, coreActualVersion: version, coreExecutableSha256: "b".repeat(64), adapterVersion: "synthetic-only", capabilityVersion: "synthetic-only", language: e.language, acceptLanguages: [e.language], uiLanguage: "system", timezone: e.timezone, regionPreset: "synthetic-only", cpu: e.cpu, width: e.width, height: e.height, parameters: [], configHash: `${e.seed}-${e.coreId}-${e.width}` };
@@ -40,7 +40,7 @@ async function environmentBridge(page: Page, options: { failStart?: boolean; noK
       const task: Operation = { id: `fixture-operation-${++serial}`, kind, state: "completed", total: 1, completedIds: [id], cancelRequested: false, environmentId: id };
       operations.set(task.id, task); return task;
     }
-    Object.assign(window, { __nativeUI: { calls, view, failNextProxyStart: () => { failStart = true; } }, go: { main: { DesktopApp: { Call: async (request: NativeRequest) => {
+    Object.assign(window, { __nativeUI: { calls, view, failNextProxyStart: () => { failStart = true; }, finishFailedStart: () => { finishFailedStart?.(); finishFailedStart = undefined; } }, go: { main: { DesktopApp: { Call: async (request: NativeRequest) => {
       calls.push(structuredClone(request));
       const p = request.payload as Record<string, unknown>;
       if (request.method === "Workspace.Read") {
@@ -81,12 +81,20 @@ async function environmentBridge(page: Page, options: { failStart?: boolean; noK
         const e = view.state.environments.find(e => e.id === p.environmentId)!;
         const start = request.method === "Runtime.Start";
         const failed = start && !!e.proxyId && failStart; if (failed) failStart = false;
-        e.status = failed ? "error" : start ? "running" : "ready";
-        e.error = failed ? "合成代理认证失败；已保存环境，可以修复后重试打开。" : undefined;
+        e.status = failed ? "starting" : start ? "running" : "ready";
+        e.error = undefined;
         const task = operation(start ? "runtime-start" : "runtime-stop", e.id);
         const session: RuntimeSession = { mode: "native", environmentId: e.id, sessionId: `fixture-session-${e.id}`, operationId: task.id, state: e.status, revision: revisions[e.id], fingerprintRevision: revisions[e.id], kernelId: e.coreId, userDataRef: `environments/${e.id}/user-data`, networkPolicy: e.proxyId ? "proxy" : "direct", canControl: !failed && start, canForce: false, needsReconcile: false, persistencePending: false, resourcesPending: false, ...(e.proxyId ? { proxyId: e.proxyId, proxyRevision: 1 } : {}) };
+        if (failed) {
+          task.state = "accepted"; task.completedIds = [];
+          finishFailedStart = () => {
+            const error = { code: "PROXY_AUTH_FAILED", message: "合成代理认证失败；已保存环境，可以修复后重试打开。", retryable: true };
+            e.status = "error"; e.error = error.message; session.state = "error"; session.error = error;
+            task.state = "failed"; task.error = error; save();
+          };
+        }
         view.runtimeSessions![e.id] = session; save();
-        return failed ? fail(e.error!) : ok({ status: "accepted", operation: task });
+        return ok({ status: "accepted", operation: task });
       }
       return { ok: false, mode: "native", error: { code: "CAPABILITY_UNSUPPORTED", message: `Unimplemented synthetic fixture: ${request.method}`, retryable: false } };
     } } } } });
@@ -108,6 +116,8 @@ test("injected native bridge creates once, retries failed opening and preserves 
   await page.getByRole("button", { name: "换一套", exact: true }).click();
   const seed = await page.getByLabel("固定指纹种子").inputValue();
   await page.getByRole("button", { name: "创建并打开", exact: true }).click();
+  await expect.poll(async () => (await nativeView(page)).calls.filter(c => c.method === "Runtime.Start").length).toBe(1);
+  await page.evaluate(() => (window as unknown as { __nativeUI: { finishFailedStart: () => void } }).__nativeUI.finishFailedStart());
   await expect(page.getByRole("dialog")).toHaveCount(0);
   const row = page.getByRole("row").filter({ hasText: "桥接合成环境" });
   await expect(row).toContainText("需处理");
@@ -153,6 +163,13 @@ test("injected native bridge directly creates and opens explicit direct policy w
   expect(data.calls.filter(c => c.method === "Runtime.Start")[0].payload).toMatchObject({ networkPolicy: "direct", expectedRevision: 1 });
   expect(data.calls.filter(c => c.method === "Environment.Create")).toHaveLength(1);
   expect(confirmations).toEqual([]);
+  await page.getByRole("button", { name: "直连桥接样本 更多操作", exact: true }).click();
+  await page.getByRole("button", { name: "编辑环境", exact: true }).click();
+  await expect(page.getByLabel("环境名称", { exact: true })).toBeEnabled();
+  await expect(page.getByLabel("绑定代理")).toBeDisabled();
+  await expect(page.getByRole("button", { name: "换一套", exact: true })).toBeDisabled();
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog")).toHaveCount(0);
   await row.getByRole("button", { name: "关闭", exact: true }).click();
   await expect(row).toContainText("待启动");
   await page.getByRole("button", { name: "新建环境", exact: true }).click();
@@ -164,6 +181,8 @@ test("injected native bridge directly creates and opens explicit direct policy w
   await page.getByLabel("选择 批量桥接代理样本", { exact: true }).check();
   await page.evaluate(() => (window as unknown as { __nativeUI: { failNextProxyStart: () => void } }).__nativeUI.failNextProxyStart());
   await page.getByRole("button", { name: "批量打开", exact: true }).click();
+  await expect.poll(async () => (await nativeView(page)).calls.filter(c => c.method === "Runtime.Start").length).toBe(3);
+  await page.evaluate(() => (window as unknown as { __nativeUI: { finishFailedStart: () => void } }).__nativeUI.finishFailedStart());
   await expect(row).toContainText("运行中");
   await expect(page.getByRole("row").filter({ hasText: "批量桥接代理样本" })).toContainText("需处理");
   const batch = await nativeView(page);

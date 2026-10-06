@@ -163,6 +163,15 @@ test("compatibility snapshot and Cookie writes preserve inputs and never overrid
   await page.getByRole("button", { name: "导入到原型记录", exact: true }).click();
   await expect(page.getByRole("dialog")).toHaveCount(0);
   expect((await stored(page)).environments[0].cookies[0].value).toBe("");
+  const row = page.getByRole("row").filter({ hasText: "北美主店" });
+  await row.getByRole("button", { name: "打开", exact: true }).click();
+  await expect(row).toContainText("运行中");
+  await row.getByRole("button", { name: "关闭", exact: true }).click();
+  await expect(row).toContainText("待启动");
+  await row.getByRole("button", { name: "打开", exact: true }).click();
+  await expect(row).toContainText("运行中");
+  await page.reload();
+  expect((await stored(page)).environments[0].cookies[0]).toMatchObject({ name: "synthetic-session", value: "", domain: "example.test" });
 });
 
 test("a second tab blocks the stale editor without overwriting the newer workspace", async ({ page, context }) => {
