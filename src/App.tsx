@@ -275,6 +275,20 @@ function download(name: string, content: string, type = "application/json") {
   setTimeout(() => URL.revokeObjectURL(url), 1500);
 }
 
+function topModalElement() {
+  const modals = [...document.querySelectorAll<HTMLElement>('[aria-modal="true"]')]
+    .filter(element => element.getClientRects().length > 0 && !element.closest("[inert]"));
+  const layer = (element: HTMLElement) => {
+    let highest = 0;
+    for (let node: HTMLElement | null = element; node; node = node.parentElement) {
+      const zIndex = Number(getComputedStyle(node).zIndex);
+      if (Number.isFinite(zIndex)) highest = Math.max(highest, zIndex);
+    }
+    return highest;
+  };
+  return modals.reduce<HTMLElement | null>((top, candidate) => !top || layer(candidate) >= layer(top) ? candidate : top, null);
+}
+
 export default function App({ application }: { application: ApplicationService }) {
   const workspace = useSyncExternalStore(application.subscribe, application.getSnapshot);
   const state = workspace.state;
@@ -357,6 +371,7 @@ export default function App({ application }: { application: ApplicationService }
   const cookieFile = useRef<HTMLInputElement>(null);
   const proxyFile = useRef<HTMLInputElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
+  const workspaceOverlayRef = useRef<HTMLDivElement>(null);
   const drawerOverlayRef = useRef<HTMLDivElement>(null);
   const draftProxyOverlayRef = useRef<HTMLDivElement>(null);
   const proxyReturnFocus = useRef<HTMLElement | null>(null);
@@ -448,6 +463,16 @@ export default function App({ application }: { application: ApplicationService }
   };
   useEffect(() => {
     const key = (e: KeyboardEvent) => {
+      if (e.defaultPrevented) return;
+      if (storageIssue) {
+        if (e.key === "Escape" || (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") e.preventDefault();
+        return;
+      }
+      const top = topModalElement();
+      if (top && ![drawerOverlayRef.current, overlayRef.current, draftProxyOverlayRef.current].includes(top as HTMLDivElement)) {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") e.preventDefault();
+        return;
+      }
       if (nativeBatchInput || nativeCookieEnvironment || nativeRecycleSelection) {
         if ((e.ctrlKey || e.metaKey) && e.key === "k") e.preventDefault();
         return;
@@ -472,7 +497,7 @@ export default function App({ application }: { application: ApplicationService }
     };
     window.addEventListener("keydown", key);
     return () => window.removeEventListener("keydown", key);
-  }, [generating, drawer, drawerVisible, dialog, draftProxyImportOpen, draftProxyImportBusy, groupPending, nativeBatchInput, nativeCookieEnvironment, nativeRecycleSelection]);
+  }, [generating, drawer, drawerVisible, dialog, draftProxyImportOpen, draftProxyImportBusy, groupPending, nativeBatchInput, nativeCookieEnvironment, nativeRecycleSelection, storageIssue]);
   useEffect(() => {
     if (dialog?.kind === "proxy" || draftProxyImportOpen || !drawerVisible || !proxyReturnFocus.current) return;
     const timer = setTimeout(() => proxyReturnFocus.current?.focus(), 40);
@@ -484,23 +509,36 @@ export default function App({ application }: { application: ApplicationService }
     overlay?.querySelector('[role="alert"]')?.scrollIntoView({ block: "nearest" });
   }, [formError, Boolean(dialog), drawerVisible]);
   useEffect(() => {
-    if (!drawerVisible && !dialog && !draftProxyImportOpen) return;
+    if (!drawerVisible && !dialog && !draftProxyImportOpen && !storageIssue) return;
     const oldOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     const previous = document.activeElement as HTMLElement;
-    const topOverlay = () => draftProxyImportOpen ? draftProxyOverlayRef.current : dialog ? overlayRef.current : drawerOverlayRef.current;
-    const timer = setTimeout(() => topOverlay()?.querySelector<HTMLElement>("input:not(:disabled), textarea:not(:disabled), button:not(:disabled), select:not(:disabled)")?.focus(), 30);
+    const topOverlay = () => storageIssue ? workspaceOverlayRef.current : draftProxyImportOpen ? draftProxyOverlayRef.current : dialog ? overlayRef.current : drawerOverlayRef.current;
+    const focusable = (overlay: HTMLElement) => [...overlay.querySelectorAll<HTMLElement>(
+      'button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), a[href], summary, [tabindex="0"]',
+    )].filter(element => element.getClientRects().length > 0 && !element.closest("[inert]"));
+    const focusFirst = () => {
+      const overlay = topOverlay();
+      if (overlay && topModalElement() === overlay) (focusable(overlay)[0] ?? overlay).focus();
+    };
+    const timer = setTimeout(focusFirst, 30);
     const trap = (e: KeyboardEvent) => {
       const overlay = topOverlay();
-      if (e.key !== "Tab" || !overlay) return;
-      const elements = [
-        ...overlay.querySelectorAll<HTMLElement>(
-          "button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), a[href], summary",
-        ),
-      ].filter((el) => el.offsetParent !== null);
+      if (e.defaultPrevented || !overlay || topModalElement() !== overlay) return;
+      if (storageIssue && (e.key === "Escape" || (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k")) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        return;
+      }
+      if (e.key !== "Tab") return;
+      if (storageIssue) e.stopImmediatePropagation();
+      const elements = focusable(overlay);
       const first = elements[0],
         last = elements.at(-1);
-      if (e.shiftKey && (document.activeElement === first || !overlay.contains(document.activeElement))) {
+      if (!first) {
+        e.preventDefault();
+        overlay.focus();
+      } else if (e.shiftKey && (document.activeElement === first || !overlay.contains(document.activeElement))) {
         e.preventDefault();
         last?.focus();
       } else if (!e.shiftKey && (document.activeElement === last || !overlay.contains(document.activeElement))) {
@@ -508,15 +546,21 @@ export default function App({ application }: { application: ApplicationService }
         first?.focus();
       }
     };
-    document.addEventListener("keydown", trap);
+    const repairFocus = (event: FocusEvent) => {
+      const overlay = topOverlay();
+      if (overlay && topModalElement() === overlay && !overlay.contains(event.target as Node)) focusFirst();
+    };
+    document.addEventListener("keydown", trap, true);
+    document.addEventListener("focusin", repairFocus);
     return () => {
       document.body.style.overflow = oldOverflow;
       clearTimeout(timer);
-      document.removeEventListener("keydown", trap);
-      if (previous?.isConnected) previous.focus();
-      else if (menuAnchor?.isConnected) menuAnchor.focus();
+      document.removeEventListener("keydown", trap, true);
+      document.removeEventListener("focusin", repairFocus);
+      if (previous?.isConnected && !previous.closest("[inert]")) previous.focus();
+      else if (menuAnchor?.isConnected && !menuAnchor.closest("[inert]")) menuAnchor.focus();
     };
-  }, [drawerVisible, Boolean(dialog), draftProxyImportOpen]);
+  }, [drawerVisible, Boolean(dialog), draftProxyImportOpen, Boolean(storageIssue)]);
   const navigate = (r: Route) => {
     location.hash = `/${r}`;
   };
@@ -2033,7 +2077,7 @@ export default function App({ application }: { application: ApplicationService }
       {drawerVisible && drawer && (
         <div
           className="overlay environment-overlay"
-          inert={Boolean(dialog || draftProxyImportOpen)}
+          inert={Boolean(dialog || draftProxyImportOpen || storageIssue)}
           onMouseDown={(e) => {
             if (e.target === e.currentTarget) closeDrawer();
           }}
@@ -2041,6 +2085,7 @@ export default function App({ application }: { application: ApplicationService }
           <div
             className="drawer environment-drawer"
             ref={drawerOverlayRef}
+            tabIndex={-1}
             role="dialog"
             aria-modal="true"
             aria-labelledby="drawer-title"
@@ -2118,6 +2163,7 @@ export default function App({ application }: { application: ApplicationService }
           <div
             className={`modal ${["proxy", "cookies"].includes(dialog.kind) ? "wide-modal" : ""} ${dialog.kind === "group" ? "group-modal" : ""}`}
             ref={overlayRef}
+            tabIndex={-1}
             role="dialog"
             aria-modal="true"
             aria-labelledby="modal-title"
@@ -2758,6 +2804,8 @@ export default function App({ application }: { application: ApplicationService }
         <div className="overlay modal-overlay workspace-blocker">
           <div
             className="modal"
+            ref={workspaceOverlayRef}
+            tabIndex={-1}
             role="alertdialog"
             aria-modal="true"
             aria-label="工作区需要处理"
