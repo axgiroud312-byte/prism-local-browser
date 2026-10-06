@@ -16,7 +16,9 @@
 
 `npm run build:installer -- -PreviewRevision 5/6 -Candidate`分别通过；`npm run verify:installer -- --no-clicks --candidate --first-revision=5 --second-revision=6`实际安装/6次只读native加载与exit0/升级保身份/拒降级25/保留卸载/重装/只删自有合成根通过，五个产品位置均不存在。主程序与维护helper的ASCII/UTF16 Windows编译用户路径扫描未发现匹配。[当前脱敏回执](V1-candidate-acceptance.json)，原证据在`output/goal/V1-local-acceptance/`。这是本机空产品根，不是新Windows用户/完整人工流程。
 
-候选来源67c98db的[远程CI 37406703053](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37406703053)三个job已通过，所有点击分支仍跳过；该次尚无产品安装步骤。[本轮远程回执](V1-local-remote.json)含10个补验评论，仍不闭票。程序代码之后的workflow/验收报告修改不改变上述二进制来源。默认CI新增一次性Windows runner无点击产品安装步骤，实际远程结果另记；runner的development-preview.1/.2不冒充本机candidate.6或同一哈希。**下列`.4`仅为修复前历史产物，不再代表最新程序**。
+候选来源67c98db的[远程CI 37406703053](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37406703053)三个job已通过，点击分支跳过；该次尚无产品安装步骤。[本轮远程回执](V1-local-remote.json)含10个补验评论，仍不闭票。默认CI新增一次性Windows runner无点击安装，首轮[37407497714](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37407497714)在安装前被源码dirty门禁拒绝；两Node/Go/build通过，后续内核探测跳过，不把首轮整体改记通过。
+
+全新Windows检出已复现只有go.mod由CRLF变LF、规范化diff为空、锁文件摘要相同；Wails正常go mod tidy改写换行导致状态不干净。用户批准只修CI/构建管理，`.gitattributes`仅固定go.mod/go.sum为LF，没有取消tidy、忽略脏源码、重写manifest或放宽门禁；修订后的全新检出/远程安装实际结果另记。产品代码和本机`.6`来源不变，runner development-preview.1/.2不冒充candidate.6或同一哈希。**下列`.4`仅为修复前历史产物**。
 
 ### 修复前候选的历史来源与证据
 

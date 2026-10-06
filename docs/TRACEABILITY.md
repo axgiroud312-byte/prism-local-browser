@@ -39,7 +39,7 @@ ENV-003、PRX-001、DATA-001阶段2：[`独立持久资源日志`](../internal/k
 - ENV-003/DATA-001：shutdown容许无cancel的已停止观察，新增[`回归`](../internal/workspace/runtime_network_cleanup_test.go)通过；不改变准确Job/owner和未知清理占用。旧测试seam与provider缺失夹具复核，不放宽真实保护。
 - ENV-001/002/DATA-001：[`production目录批次回归`](../internal/workspace/batch_test.go)使用实际Windows空目录，源合成登录文件未动，clone新seed/ref，31项分页/重复请求通过；百万项仍只虚拟预览，不冒称实际规模。
 - BKP-001/CORE-001/PRX-001：[`预检回归`](../internal/workspace/restore_preview_test.go)核对同精确build不同ID候选且错hash拒绝；真实DPAPI当前用户可用、拒解注入后提示重输，密文原样/响应无秘密。不是跨SID实测。恢复/回收/迁移新增硬中断结果见报告。
-- DOC-001/UX-001：候选窗口/前端/manifest三层标记，全许可/指南与9文件hash一致，无内核再分发；最终`.3/.4`同干净4b38dc8/trimpath构建成功，NSIS首次PS5传参FAIL修复后通过；首轮含编译路径包不分发。无点击安装绑定SHA/source并拒已有五位置，nonce/只读空库保护；本机6次native加载/正常关闭、升级、保留卸载/重装、仅自有合成删除通过。[实际回执](verification/V1-candidate-acceptance.json)，不当作人工/干净机器。
+- DOC-001/UX-001：候选窗口/前端/manifest三层标记，全许可/指南与9文件hash一致，无内核再分发；历史`.3/.4`同干净4b38dc8/trimpath构建成功，NSIS首次PS5传参FAIL修复后通过；首轮含编译路径包不分发。无点击安装绑定SHA/source并拒已有五位置，nonce/只读空库保护；本机6次native加载/正常关闭、升级、保留卸载/重装、仅自有合成删除通过。[历史回执](verification/V1-candidate.4-acceptance.json)，不当作人工/干净机器；当前修复后`.6`见下方增量。
 
 2026-10-06 DATA-001/PRX-001测试观测增量：首轮CI在DACL-only查询的完整SDDL字符串比较失败。经用户确认，仅修[`原目录恢复回归`](../internal/kernel/network_store_windows_test.go)为显式owner/group/DACL查询和[`实际权限快照`](../internal/kernel/network_acl_snapshot_windows_test.go)，逐字节/原顺序比ACE和继承保护，不把系统AI完成标记当授权变化；owner/group缺失、NULL DACL及任何权限扩大/deny/身份/继承/顺序差异仍拒。4顶层/12子例及vet本机通过、只读评审无可信P1/P2；Windows CI的原实际目录回归和全包测试现已通过。生产授权/恢复未改，第一轮FAIL不改写。
 
@@ -48,6 +48,7 @@ ENV-003、PRX-001、DATA-001阶段2：[`独立持久资源日志`](../internal/k
 - ENV-001/002/DATA-001：[`生产批次wrapper`](../internal/workspace/batch_worker.go)转换接口前规范化nil lease，避免真实目录失败的清理崩溃；有效lease/归属核验与身份保留不变。[默认回归](../internal/workspace/batch_prepare_failure_test.go)、[无seam实际ACL/257项续跑](../internal/workspace/safe_gap_windows_test.go)通过。
 - ENV-003、CK-001、BKP-001：普通停止超时→ForceStop、Cookie边界、12项真实队列、两运行环境完整包/三存储恢复、备份/预检ACL、恢复ACL/SQLITE_FULL与永久删除权限原任务收尾均通过。[结果/源码SHA](verification/V1-local-acceptance.md)区分真实浏览器和合成目录，不将SQLite容量当NTFS满、本机上游当独立出口。
 - 131 Node、342 Go顶层PASS/30 opt-in/helper SKIP、全包vet通过；11个新opt-in另行通过。新干净67c98db候选`.5/.6`构建/本机无点击安装通过，来源commit远程三job也通过。默认CI新增一次性Windows无点击安装，旧四个点击分支仍显式opt-in，Go junction只指向固定setup-go工具、收据脱敏；实际新CI结果另记。[回执](verification/V1-local-remote.json)。无真实数据/服务故障实验/新产品依赖，旧`.4`仅历史；正式4/21与blocking不变。
+- DOC-001构建可复现性：新增runner无点击安装首轮在源码dirty门禁被拒（未安装），全新Windows检出复现go.mod仅CRLF→LF/规范化diff为空。用户批准只修构建管理，[`.gitattributes`](../.gitattributes)仅固定go.mod/go.sum为LF，实际依赖不变、真实内容变化仍拒，不删tidy/状态/hash检查。新全量CI与新检出构建实际结果另记，不把原FAIL改记通过。
 
 ### T11 隔离可行性增量（历史独立实验，不覆盖当前正式结果）
 
@@ -133,11 +134,11 @@ UX-001、DOC-001 的发布入口在 [安装器](../build/windows/installer/prism
 - DATA-001：长期会话/目录pins拒非法、链接与硬链接，Job全树退出才释放；正常profile不删，原seed/ref和三种存储停止重开已实跑核验。
 - 服务/目录/adapter、A/B真实三存储隔离和重开均已有通过结果；正式proxy与显式direct证据分开，人工UI未自动执行。[剩余验收](verification/T06.md)不据源码关闭#7。
 
-### T07 异常监督与重开核对（后台/根故障通过，实际ForceStop待验）
+### T07 异常监督与重开核对（后台/根故障与实际ForceStop通过，人工待验）
 
 - ENV-003、DATA-001：[`监督器`](../internal/workspace/runtime_supervisor.go)区分崩溃/断管/退出未确认，只在普通停止失败后允许指定当前Job结束；[`持久恢复`](../internal/workspace/runtime_persistence.go)与[`Windows身份核对`](../internal/kernel/runtime_recovery_windows.go)结合创建时间、session和实际锁，不接管裸PID、不按文件年龄删除锁。session/任务/活动同事务，存储失败保持保护及待写结果。
 - UX-001：Wails/App提供明确核对和指定会话结束及确认，显示安全错误/退出码/下一步；待核对即使无PID仍锁关键配置。活动使用environmentId/sessionId，旧记录不能控制后来新开的浏览器；批量关闭不自动强杀。
-- 监督器/Windows身份/adapter已后台通过；实际A根故障与B独立、旧session拒绝及管理器Kill有局部结果，普通停止失败后的实际ForceStop与人工仍待验。重开始终核对准确Job全树，不以根退出替代；[清单](verification/T07.md)。
+- 监督器/Windows身份/adapter后台通过，原A根故障/B独立/管理器Kill保留；10月6日实际普通停止超时后的原Job ForceStop/完整清理、保数据重开/B不变/旧session拒绝通过。[补验](verification/V1-local-acceptance.md)。完整会话恢复/跨登录与人工仍待验；准确Job全树核对不以根退出替代，[清单](verification/T07.md)。
 
 ### T08 原生代理配置与前检（后台/DPAPI通过，外部与人工待验）
 

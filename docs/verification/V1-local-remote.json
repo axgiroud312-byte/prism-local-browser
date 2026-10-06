@@ -1,5 +1,5 @@
 {
-  "recordedAt": "2026-10-06T03:06:30.314Z",
+  "recordedAt": "2026-10-06T03:34:05.851Z",
   "draftPullRequest": "https://github.com/axgiroud312-byte/prism-local-browser/pull/27",
   "candidateSourceCI": {
     "commit": "67c98dbe2a106976eb42e9d37a14cbde2b10f015",
@@ -101,8 +101,85 @@
       "action": "created"
     }
   ],
-  "nextNoClickRunnerInstallation": "Workflow-only extension uses existing development-preview.1/.2 on the disposable Windows host; actual result will be recorded, not inferred",
+  "nextNoClickRunnerInstallation": "Initial attempt blocked before installation by the clean-source guard; line-ending root cause reproduced, user approved lock-file LF attributes. Fresh-checkout and remote installation retest pending; no passing installation claim.",
   "issuesClosed": false,
   "formallyAcceptedTasks": 4,
-  "totalTasks": 21
+  "totalTasks": 21,
+  "noClickRunnerInstallationInitial": {
+    "commit": "3a5a4b0be43427bfc3bd1ad3bc2567ec14d2a1ca",
+    "runID": 37407497714,
+    "url": "https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37407497714",
+    "conclusion": "failure",
+    "actualCheckoutCommit": "4925c4cc2dca9af4ea01e4863e0f0e622eaba809",
+    "mergeCheckoutDistinctFromPRHead": true,
+    "sourceDirtyObservedInBuiltPreview": true,
+    "failure": "Clean committed-source guard rejected before installer execution; the specific source change is under investigation, not ignored.",
+    "installationStarted": false,
+    "previewRevisions": [
+      1,
+      2
+    ],
+    "candidate6Affected": false,
+    "jobs": [
+      {
+        "name": "desktop",
+        "conclusion": "failure",
+        "url": "https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37407497714/job/112088193829"
+      },
+      {
+        "name": "check (22.12.0)",
+        "conclusion": "success",
+        "url": "https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37407497714/job/112088193967"
+      },
+      {
+        "name": "check (24)",
+        "conclusion": "success",
+        "url": "https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37407497714/job/112088193977"
+      }
+    ],
+    "steps": [
+      {
+        "name": "Run npm run test:desktop",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run npm run build:installer",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run npm run build:installer -- -PreviewRevision 2",
+        "conclusion": "success"
+      },
+      {
+        "name": "Real install, native reopen, upgrade and removal without UI clicking",
+        "conclusion": "failure"
+      },
+      {
+        "name": "Real selected kernel private-pipe probe without UI clicking",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Real saved fingerprint regenerate, restore and reopen without UI clicking",
+        "conclusion": "skipped"
+      }
+    ],
+    "protectedSourceGuardRetained": true,
+    "automatedUIClicks": false,
+    "reproducedRootCause": {
+      "freshWindowsCheckout": true,
+      "changedPath": "go.mod",
+      "mechanism": "Windows core.autocrlf checkout writes CRLF; Wails go mod tidy writes LF. Git status remains modified despite an empty normalized diff.",
+      "normalizedTrackedDiffExit": 0,
+      "dependencyContentsUnchanged": true,
+      "goModSHA256": "1c7234bc2aab80ac84df77f0aa280b19149642610ed1954b3b6084ec6fb3f393",
+      "goSumSHA256": "2f7e9144531adab3b4b43b9b1e52e0a3b95850836b8bb6be07695099a3522fa8",
+      "rawEvidence": [
+        "output/goal/V1-local-acceptance/ci-repro-before-build.txt",
+        "output/goal/V1-local-acceptance/ci-repro-after-build.txt",
+        "output/goal/V1-local-acceptance/ci-repro-diff-stat.txt",
+        "output/goal/V1-local-acceptance/ci-repro-build.log"
+      ]
+    },
+    "approvedCorrectionScope": "User explicitly approved CI/build artifact management only; .gitattributes fixes LF for go.mod/go.sum. Do not skip tidy, dirty-source/hash checks or alter business/security policy."
+  }
 }

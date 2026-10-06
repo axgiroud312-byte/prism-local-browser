@@ -10,6 +10,8 @@
 
 ## 远程同步接续（2026-10-06；不增加完整验收计数）
 
+新增无点击runner安装首轮[37407497714](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37407497714)在执行安装之前被脏源码门禁挡住；两Node/Go/build通过，但本轮整体FAIL，内核后续探测未执行。全新检出复现Wails/go mod tidy使go.mod由CRLF变LF，只有该文件状态变脏、规范化diff为空、依赖SHA不变；用户批准继续仅修CI/构建管理，`.gitattributes`只固定go.mod/go.sum为LF。未忽略状态/移除tidy/放宽源码或安全核对，修订后的真实复验另记；本机candidate.6不受影响。[本轮远程回执](verification/V1-local-remote.json)保留首轮失败。
+
 用户恢复登录后已核对GitHub身份；38个本地提交普通推送成功，创建[草稿PR #27](https://github.com/axgiroud312-byte/prism-local-browser/pull/27)，17票实测/缺口评论均已发布，全部仍OPEN。[首轮默认无点击CI](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37400229514)两Node检查通过，desktop原SDDL全字符串断言失败；当时未先认定误报，后续实际权限核对见下段。首轮安装构建及真实内核步骤未执行，无artifact上传失败为前序未产包的结果，不把首轮改记成功。[同步回执](verification/V1-remote-sync.json)记录URL/commit/范围。GitHub认证和修订CI阻塞已解除；独立外部、特殊真实场景、人工、干净Windows仍缺，正式4/21不变。
 
 用户已明确确认CI修复范围；仅修改测试查询/断言，不改生产ACL/provider。显式请求owner/group/DACL并比较实际SID、每条ACE字节/顺序和DACL继承保护；新增12个语义子例确保权限扩大/deny/身份/继承/顺序改变被拒，部分/NULL DACL也拒。实际目录回收与占用安全回归未删或跳过，本机4个顶层用例/12子例及kernel vet通过；远程复验另记，不重建未改的候选业务二进制。
@@ -20,7 +22,7 @@
 
 [本轮报告](verification/V1-final.md)逐票列出T05–T21实现、命令、实际结果、证据与关闭条件。129项前端后台/6项修订、Go内部包/根包补编/vet通过；本轮实际空目录批次、DPAPI与精确build映射候选、固定档案真实保存/重生成/回滚、恢复占用/回滚再中断、回收10及迁移4个Kill切点通过。原Go整轮dist竞态FAIL和首轮测试RPC错误保留，不伪造完整check/UI/远程成功。
 
-最终干净`4b38dc8`源码/trimpath候选`.3/.4`构建和本机无点击实际NSIS闭环通过：6次native页面读取/正常exit0、升级保身份、拒降级25、默认保留卸载/重装及仅删自有合成根；最终五个产品位置均不存在。主包`.4`SHA和版本/签名/依赖见[报告](verification/V1-final.md)，[回执](verification/V1-candidate-acceptance.json)含最终原证据SHA。首轮含编译路径包只留本机历史，不分发。未签名、无内核，不冒称干净Windows/人工向导通过。独立外部、人工、干净Windows仍缺，GitHub认证已在上方接续记录解除；4/21、#6–#22保持OPEN。以下日期段落为**历史当时范围**，“未接入/未运行”不作为本轮状态。
+历史干净`4b38dc8`源码/trimpath候选`.3/.4`构建和本机无点击实际NSIS闭环通过：6次native页面读取/正常exit0、升级保身份、拒降级25、默认保留卸载/重装及仅删自有合成根；最终五个产品位置均不存在。旧`.4`SHA和版本/签名/依赖见[总报告历史段](verification/V1-final.md)，[历史回执](verification/V1-candidate.4-acceptance.json)含当时原证据SHA。首轮含编译路径包只留本机历史，不分发。未签名、无内核，不冒称干净Windows/人工向导通过。独立外部、人工、精确交付包干净Windows仍缺，GitHub认证已在上方解除；4/21、#6–#22保持OPEN。以下日期段落为**历史当时范围**，“未接入/未运行”不作为本轮状态。
 
 阶段4增量：[队列及功能集成](verification/T14.md)记录FIFO取消/重试、实际双代理Cookie启动与写后核对，以及真实148→150代理迁移/完整备份回退的通过结果。保留实现/本机验证/完整交付三个层级，正式验收计数不变。
 

@@ -12,6 +12,7 @@
 - 正式provider、proxy迁移副本及本机故障矩阵已验证；跨登录/重启及独立外部全路径仍待验，未知清理继续占用。
 - 148/150均已获核验并运行；专用外部代理/独立观察器未发现，开发HTTP_PROXY不算授权资源。最小配置与人工步骤见报告；干净Windows产品安装/人工验收仍缺，新runner后台检查和本机空产品根都不能替代。
 - GitHub认证/推送/开PR/CI阻塞已解除；[修订CI](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37401271261)对应6cf1768，三个job全绿。两Node各131项后台、Go全部包/vet、preview.1/.2构建、真实148探测及保存档案读回通过；点击步骤未启用，未验证runner产品安装。生产ACL/provider未改，首轮FAIL保留。[回执](verification/V1-remote-sync.json)。独立远端、特殊真实场景、人工与干净Windows仍缺。
+- 新runner无点击安装[37407497714](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37407497714)在源码dirty门禁失败，尚未安装；全新检出复现仅go.mod换行CRLF→LF/规范化diff为空。用户批准只修构建管理，固定Go两个锁文件LF，保留全部源码/安全检查；新检出构建与远程复验进行中。本机candidate.6及来源CI成功不改写为失败，也不将本次远程FAIL改记成功。
 
 ## 任务状态
 

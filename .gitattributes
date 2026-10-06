@@ -1,0 +1,4 @@
+# Go tooling writes these dependency locks with LF on every platform.
+# Keep fresh Windows checkouts stable without ignoring real source changes.
+go.mod text eol=lf
+go.sum text eol=lf
