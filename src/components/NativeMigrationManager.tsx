@@ -20,6 +20,9 @@ export function NativeMigrationManager({ application, workspace, open, onOpenCha
   const [policy, setPolicy] = useState<{ networkPolicy: "direct" | "proxy"; proxyId?: string }>();
   const [restore, setRestore] = useState<NativeRestorePreview>();
   const [restoreLocked, setRestoreLocked] = useState(false);
+  const [cleanup, setCleanup] = useState(() => application.getMigrationRollbackCleanup?.());
+  const [cleanupOpen, setCleanupOpen] = useState(false);
+  const rollbackPreparing = useRef(false), rollbackSequence = useRef(0);
   const [confirmTrial, setConfirmTrial] = useState(false), [confirmSwitch, setConfirmSwitch] = useState(false);
   const [switchTarget, setSwitchTarget] = useState<string>();
   const [busy, setBusy] = useState(false), [message, setMessage] = useState("");
@@ -31,18 +34,42 @@ export function NativeMigrationManager({ application, workspace, open, onOpenCha
   const current = lookup.items.find(e => e.id === environmentId);
   const maintenance = workspace.migrationMaintenance;
   const active = !!maintenance && !(operation?.id === maintenance.id && operationIsTerminal(operation)) || !!operation && !operationIsTerminal(operation);
-  const locked = busy || lookupBusy || active || !!pending || restoreLocked || !!workspace.issue || !!workspace.maintenance || !!workspace.recycleMaintenance;
+  const locked = busy || lookupBusy || active || !!pending || restoreLocked || !!cleanup || !!application.getPendingRestore?.() || !!workspace.issue || !!workspace.maintenance || !!workspace.recycleMaintenance;
   const report = operation?.migrationReport;
   // The migration's own maintenance lease is expected during trial/ready.
   // A restore/recycle lease, another migration owner, or an unconfirmed phase
   // must revoke an already-open confirmation, not just the selection form.
   const ownsTask = !!operation && operation.id === targetRef.current;
-  const commandLocked = busy || restoreLocked || !!workspace.issue || !!workspace.maintenance || !!workspace.recycleMaintenance || !!maintenance && maintenance.id !== operation?.id;
+  const commandLocked = busy || restoreLocked || !!cleanup || !!workspace.issue || !!workspace.maintenance || !!workspace.recycleMaintenance || !!maintenance && maintenance.id !== operation?.id;
   const canStop = ownsTask && !commandLocked && !operationIsTerminal(operation!) && (operation!.stage === "trial-running" || !!operation!.persistencePending && !!report?.after && !report.trialExited);
   const canSwitch = ownsTask && !commandLocked && !pending && operation!.stage === "ready" && !operation!.persistencePending && !operation!.cancelRequested && !!report?.backupVerified && report.trialExited && !report.committed;
   const canCancel = ownsTask && !commandLocked && active && !operation!.cancelRequested && !report?.committed;
   const canRecover = ownsTask && !commandLocked && !!operation!.persistencePending;
-  useEffect(() => { alive.current = true; return () => { alive.current = false; void application.discardMigrationRollback?.(); }; }, []);
+  useEffect(() => {
+    alive.current = true;
+    return () => {
+      alive.current = false; rollbackSequence.current++;
+      // An already-unknown cleanup requires deliberate retry, not another
+      // background attempt each time the user hides/leaves the page.
+      if (!application.getMigrationRollbackCleanup?.()) void application.discardMigrationRollback?.().catch(() => {});
+    };
+  }, [application]);
+  useEffect(() => {
+    const sync = () => {
+      if (!alive.current) return;
+      const original = application.getMigrationRollbackCleanup?.(); setCleanup(original);
+      if (original) setRestore(undefined); else setCleanupOpen(false);
+    };
+    sync(); return application.subscribe(sync);
+  }, [application]);
+  function closeSelection() {
+    setVisible(false);
+    if (rollbackPreparing.current) {
+      rollbackSequence.current++;
+      void application.discardMigrationRollback?.().catch(() => { if (alive.current) setMessage("原升级前预检清理尚未确认；不会另建预检。"); });
+      setCleanup(application.getMigrationRollbackCleanup?.());
+    }
+  }
   useEffect(() => { void loadEnvironments(1, ""); return () => { lookupSequence.current++; }; }, [application]);
   function observe(op: Operation) { if (op.kind === "migration" && op.id === targetRef.current) setOperation(old => mergeOperation(old?.id === op.id ? old : undefined, op)); }
   function select(id: string) { targetRef.current = id; setTarget(id); setOperation(undefined); setConfirmSwitch(false); setSwitchTarget(undefined); setConfirmation(value => value === "switch" ? undefined : value); }
@@ -127,19 +154,33 @@ export function NativeMigrationManager({ application, workspace, open, onOpenCha
   }
   async function rollback(id: string) {
     if (flight.current || locked) return;
-    flight.current = true; setBusy(true); setMessage(""); setRestore(undefined);
+    const sequence = ++rollbackSequence.current;
+    flight.current = true; rollbackPreparing.current = true; setBusy(true); setMessage(""); setRestore(undefined);
     try {
       await application.discardMigrationRollback?.();
-      if (!alive.current) return;
+      if (!alive.current || sequence !== rollbackSequence.current) return;
+      const original = application.getMigrationRollbackCleanup?.();
+      if (original) { setCleanup(original); setCleanupOpen(true); return; }
       const result = await application.previewMigrationRollback?.(id);
-      if (!alive.current) return;
+      if (!alive.current || sequence !== rollbackSequence.current) return;
       if (result?.ok) setRestore(result.data); else setMessage(result ? `${result.error.code}：${result.error.message}` : "恢复预检不可用。");
+      const remaining = application.getMigrationRollbackCleanup?.();
+      if (remaining) { setCleanup(remaining); setCleanupOpen(true); }
     } catch { if (alive.current) setMessage("升级前恢复预检未确认，请重试。"); }
-    finally { flight.current = false; if (alive.current) setBusy(false); }
+    finally { flight.current = false; rollbackPreparing.current = false; if (alive.current) { setBusy(false); setCleanup(application.getMigrationRollbackCleanup?.()); } }
+  }
+  async function retryRollbackCleanup() {
+    const original = application.getMigrationRollbackCleanup?.();
+    if (flight.current || !original || original.pending || application.getPendingRestore?.() || !application.discardMigrationRollback) return;
+    flight.current = true; setBusy(true); setMessage("");
+    try { await application.discardMigrationRollback(); }
+    catch { if (alive.current) setMessage("原升级前预检清理尚未确认；只重试原清理，不另建预检。"); }
+    finally { flight.current = false; if (alive.current) { setBusy(false); setCleanup(application.getMigrationRollbackCleanup?.()); } }
   }
   return <>
     {open === undefined && <div className="migration35-entry"><button className="button primary" onClick={() => setVisible(true)}>选定环境迁移</button><span>先完整备份，再用独立副本试用；旧身份与默认选择分开。</span>{(operation || pending) && <button className="button" onClick={() => setResultOpen(true)}>查看迁移任务</button>}</div>}
-    {visible && <ProxyKernelModal title="选定环境内核迁移" width={1040} height={592} onClose={() => setVisible(false)} className="migration35-selection" footer={<><span className="pk35-footer-note">一次一个明确环境；关闭不取消已受理任务</span><button className="button" onClick={() => setVisible(false)}>关闭</button>{(operation || pending) && <button className="button" onClick={() => setResultOpen(true)}>查看迁移任务</button>}{preview && <button className="button primary" disabled={locked || !policy} onClick={() => { setConfirmTrial(false); setConfirmation("trial"); }}>备份并试用副本</button>}</>}>
+    {cleanup && !visible && <div className="migration35-entry"><span role="status">原升级前预检清理尚未确认，不能创建新预检。</span><button className="button" onClick={() => setCleanupOpen(true)}>查看原预检清理</button></div>}
+    {visible && <ProxyKernelModal title="选定环境内核迁移" width={1040} height={592} onClose={closeSelection} className="migration35-selection" footer={<><span className="pk35-footer-note">一次一个明确环境；关闭不取消已受理任务</span><button className="button" onClick={closeSelection}>关闭</button>{(operation || pending) && <button className="button" onClick={() => setResultOpen(true)}>查看迁移任务</button>}{preview && <button className="button primary" disabled={locked || !policy} onClick={() => { setConfirmTrial(false); setConfirmation("trial"); }}>备份并试用副本</button>}</>}>
     <p>先在环境页正常停止目标。制作并核对完整备份后，用独立副本试用新构建；seed 保持不变，原环境保持停止。确认切换后才使用试用过的数据。一次明确选择一个环境。</p>
     <div className="native-kernel-actions"><input aria-label="查找迁移环境" placeholder="按环境名称或编号查找" disabled={locked} value={lookupSearch} onChange={e => setLookupSearch(e.target.value)} /><button className="button" disabled={locked} onClick={() => void findEnvironments(1)}>查找环境</button><button className="button" disabled={locked || lookup.page <= 1} onClick={() => void findEnvironments(lookup.page - 1)}>上一页</button><button className="button" disabled={locked || lookup.page * 25 >= lookup.total} onClick={() => void findEnvironments(lookup.page + 1)}>下一页</button><span>第 {lookup.page} 页 · 共 {lookup.total} 个</span></div>
     <div className="migration35-fields">
@@ -155,10 +196,17 @@ export function NativeMigrationManager({ application, workspace, open, onOpenCha
     </>}
     {pending && <button className="button primary" disabled={busy} onClick={() => void prepare()}>核实原迁移请求</button>}
     {pending && <p role="status">原请求 {pending.request.requestId} 待核实；保留原请求，不另建迁移。</p>}
+    {cleanup && <><p role="status">原升级前预检清理尚未确认；新来源、预检与恢复保持阻断。</p><button className="button" onClick={() => setCleanupOpen(true)}>查看原预检清理</button></>}
     {message && <p role="alert">{message}</p>}
     {!!workspace.migrationOperations?.length && <details><summary>迁移记录与升级前恢复</summary>{workspace.migrationOperations.map(op => <div key={op.id}><p>{op.environmentId} · {stages[op.stage ?? ""] ?? op.state}</p><button className="button" disabled={busy || active} onClick={() => { select(op.id); observe(op); setResultOpen(true); }}>查看记录</button><button className="button" disabled={locked || !operationIsTerminal(op) || !op.migrationReport?.backupVerified} onClick={() => void rollback(op.id)}>预检升级前完整恢复</button></div>)}</details>}
     {restore && <><h3>升级前完整恢复预检</h3><p>备份时间：{new Date(restore.createdAt).toLocaleString()} · 将恢复 {restore.environmentCount} 个原环境，覆盖 {restore.overwriteCount} 项；缺失精确构建 {restore.missingKernelCount} 项，配置冲突 {restore.conflictCount} 项。备份后的浏览数据与配置将被撤回。</p>{restore.kernels.map(k => <p key={k.id}>{k.version} · {k.state}</p>)}</>}
     <NativeRestoreExecution application={application} workspace={workspace} preview={restore} onConsumed={id => { application.consumeMigrationRollback?.(id); setRestore(undefined); }} onLockChange={setRestoreLocked} />
+    </ProxyKernelModal>}
+    {cleanupOpen && cleanup && <ProxyKernelModal title="升级前预检清理待核实" width={400} onClose={() => setCleanupOpen(false)} footer={<><button className="button" onClick={() => setCleanupOpen(false)}>仅隐藏，保留待核实</button><button className="button primary" disabled={busy || cleanup.pending || !!application.getPendingRestore?.()} onClick={() => void retryRollbackCleanup()}>重试清理原预检</button></>}>
+      <p role="status">原预检清理尚未确认；只重试清理原来源，不会另选备份、重新预检或执行恢复。隐藏或离页仍保留原清理。</p>
+      <p>原迁移：<span className="mono">{cleanup.operationId}</span></p>{cleanup.previewId && <p>原预检：<span className="mono">{cleanup.previewId}</span></p>}
+      {cleanup.pending ? <p role="status">正在等待原来源、预检或清理响应；请等待，不会创建新预检。</p> : <p>响应丢失、无效或清理被拒绝都不代表资源已释放。若原来源标识未返回，重试也不会猜测标识或创建替代来源。</p>}
+      {message && <p role="alert">{message}</p>}
     </ProxyKernelModal>}
     {resultOpen && <ProxyKernelModal title="迁移任务" width={400} onClose={() => setResultOpen(false)} footer={<><button className="button" onClick={() => setResultOpen(false)}>关闭</button>{pending && <button className="button primary" disabled={busy} onClick={() => void prepare()}>核实原迁移请求</button>}</>}>
       {pending && <p role="status">原请求 {pending.request.requestId} 待核实；不另建迁移。</p>}
