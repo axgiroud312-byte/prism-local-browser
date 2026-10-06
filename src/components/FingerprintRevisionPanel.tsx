@@ -11,8 +11,8 @@ export function FingerprintRevisionPanel({ preview, history, native, stale, busy
 }) {
   const profile = preview?.previewProfile;
   return <section className="fingerprint-revision-panel" aria-label="设备档案预览与历史">
-    <div className="fingerprint-preview-heading"><h3>先看预览，再保存</h3><button type="button" className="button soft-primary" disabled={busy || !canGenerate} onClick={onPreview}>生成并查看预览</button></div>
-    {!canGenerate && <p className="field-hint">当前只能保存待绑定配置，不能启动。先在基础页选择已安装、已核验的精确内核，再生成完整档案；旧种子不会自动改变。</p>}
+    <div className="fingerprint-preview-heading"><h3>技术详情与档案历史</h3><button type="button" className="text-button" disabled={busy || !canGenerate} onClick={onPreview}>生成并查看预览</button></div>
+    {!canGenerate && <p className="field-hint">当前构建不可用，不能启动。先选择已安装、已核验的精确内核；旧种子不会自动改变。</p>}
     {stale && <p className="fingerprint-stale" role="status">设备字段已改变，当前预览已过时。请重新生成预览后保存；不会自动更换种子。</p>}
     {profile && <>
       <p className="field-hint">{native ? "原生档案输入；能力引用所选构建的安装证据，不是当前环境实测。" : "演示档案与演示历史；没有真实内核或浏览器读值。"}生成与回滚都只改草稿，取消保留当前档案。</p>
@@ -27,9 +27,9 @@ export function FingerprintRevisionPanel({ preview, history, native, stale, busy
         <dt>规范化摘要</dt><dd className="mono">{profile.configHash}</dd>
         {dataRef && <><dt>已有数据引用</dt><dd>{dataRef}（本次档案修改保持不变）</dd></>}
       </dl>
-      {!!preview?.changes.length && <div className="fingerprint-change-preview"><strong>保存后的变更</strong><ul>{preview.changes.map(change => <li key={change.field}>{fieldLabels[change.field] ?? change.field}：<span>{change.before || "未核验"}</span> → <span>{change.after || "未核验"}</span></li>)}</ul><p>不会恢复旧名称或代理，也不会清除浏览数据。真实 Cookie 功能仍待接入。</p></div>}
+      {!!preview?.changes.length && <div className="fingerprint-change-preview"><strong>保存后的变更</strong><ul>{preview.changes.map(change => <li key={change.field}>{fieldLabels[change.field] ?? change.field}：<span>{change.before || "未核验"}</span> → <span>{change.after || "未核验"}</span></li>)}</ul><p>不会恢复旧名称或代理，也不会清除浏览数据。取消不提交这些变更。</p></div>}
       <details className="fingerprint-capabilities" open><summary>该构建的能力边界</summary>{preview?.capabilityReport.capabilities.map(capability => <div key={capability.field}><strong>{fieldLabels[capability.field] ?? capability.field}</strong><span>{statusLabels[capability.status]}</span><small>{capability.source === "source-derived" ? "源码推导，非本环境读值" : capability.source === "observed" ? "所选构建安装时实测，非本环境读值" : capability.source === "demo-only" ? "仅演示" : "应用策略或未探测"}</small><p>{capability.note}</p></div>)}</details>
-      <p className="field-hint">预览不启动浏览器，不编造 GPU、内存或字体读值。正常环境启停和真实 Cookie 仍待后续验收。</p>
+      <p className="field-hint">预览不启动浏览器，不编造 GPU、内存或字体读值。页面/合成 bridge 不能证明真实桌面能力已验收。</p>
     </>}
     {!!history?.length && <details className="fingerprint-history"><summary>已保存的档案历史（{history.length}）</summary><p>回滚只使用同一精确内核的旧设备输入，保存后形成新的修订，不倒退修订号。</p>{history.map(item => <div key={item.profile.configRevision}><div><strong>#{item.profile.configRevision} · seed {item.profile.seed}</strong><small>{item.createdAt} · {item.action}</small></div><button type="button" className="button" disabled={busy || item.profile.configRevision === history[0].profile.configRevision || (native && (item.profile.kernelId !== profile?.kernelId || item.profile.kernelId === "kernel-pending"))} onClick={() => onRestore(item.profile.configRevision)}>预览回滚到 #{item.profile.configRevision}</button></div>)}</details>}
   </section>;

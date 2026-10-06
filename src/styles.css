@@ -229,7 +229,7 @@ table:not(.environment-table):not(.reference-group-table) td { padding: 8px 12px
 .group-scope-note strong { color: #595959; }
 .group-scope-note + p { margin-top: 12px; color: #8c8c8c; }
 .stacked-overlay { z-index: 90; }
-.workspace-blocker { z-index: 110; }
+.workspace-blocker { z-index: 160; }
 .environment-overlay { justify-content: flex-end; align-items: flex-start; padding: 40px 0 8px; }
 .environment-drawer { width: 660px; max-width: 100%; height: calc(100dvh - 48px); background: white; display: flex; flex-direction: column; border-radius: 3px 0 0 3px; box-shadow: 0 1px 6px #0003; }
 .drawer-header { height: 40px; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; flex-shrink: 0; }

@@ -19,27 +19,27 @@ export function EnvironmentFilters({ search, group, status, groups, total, runni
   const act = (action: () => void) => { popup?.anchor.focus(); setPopup(null); action(); };
   return <>
     <section className="environment-search-toolbar" aria-label="环境搜索与创建">
-      <div className="split-button"><Button className="primary" onClick={onCreate}><Plus size={20} />新建环境</Button><button className="primary split-tail" aria-label="创建菜单" aria-expanded={popup?.kind === "create"} onClick={event => toggle("create", event.currentTarget)}><ChevronDown size={12} /></button></div>
+      <div className="split-button"><Button className="primary" disabled={blocked} onClick={onCreate}><Plus size={20} />新建环境</Button><button className="primary split-tail" disabled={blocked} aria-label="创建菜单" aria-expanded={popup?.kind === "create"} onClick={event => toggle("create", event.currentTarget)}><ChevronDown size={12} /></button></div>
       <span className="environment-count">已保存 <b>{total}</b> · 运行 <b>{running}</b><span className="count-boundary"> · 无数量配额</span></span>
-      <Button className="primary" onClick={onBackup}><HardDrive size={14} />导入 / 备份</Button>
-      <label className="toolbar-group"><select aria-label="筛选分组" value={group} onChange={event => onGroup(event.target.value)}><option>全部分组</option>{groups.map(value => <option key={value}>{value}</option>)}</select></label>
-      <label className="environment-search"><span>名称 / 编号 / 备注：</span><input ref={searchRef} aria-label="搜索环境" value={search} placeholder="请输入" onChange={event => onSearch(event.target.value)} /><Search size={15} /></label>
-      <button className="text-button advanced-search-trigger" aria-expanded={popup?.kind === "advanced"} onClick={event => { setDraftSearch(search); setDraftGroup(group); setDraftStatus(status); toggle("advanced", event.currentTarget); }}><ListFilter size={14} />高级搜索</button>
+      <Button className="primary" disabled={blocked} onClick={onBackup}><HardDrive size={14} />导入 / 备份</Button>
+      <label className="toolbar-group"><select disabled={blocked} aria-label="筛选分组" value={group} onChange={event => onGroup(event.target.value)}><option>全部分组</option>{groups.map(value => <option key={value}>{value}</option>)}</select></label>
+      <label className="environment-search"><span>名称 / 编号 / 备注：</span><input disabled={blocked} ref={searchRef} aria-label="搜索环境" value={search} placeholder="请输入" onChange={event => onSearch(event.target.value)} /><Search size={15} /></label>
+      <button className="text-button advanced-search-trigger" disabled={blocked} aria-expanded={popup?.kind === "advanced"} onClick={event => { setDraftSearch(search); setDraftGroup(group); setDraftStatus(status); toggle("advanced", event.currentTarget); }}><ListFilter size={14} />高级搜索</button>
     </section>
     <div className="environment-list-toolbar">
       <div className="environment-filter-tabs">
-        <button className={status === "all" ? "selected" : ""} onClick={() => onStatus("all")}>全部</button>
-        <button className={status === "ready" ? "selected" : ""} onClick={() => onStatus("ready")}>待启动</button>
-        <button className={status === "running" ? "selected" : ""} onClick={() => onStatus("running")}>已打开</button>
-        <button className={status === "error" ? "selected" : ""} onClick={() => onStatus("error")}>需处理{errors ? ` ${errors}` : ""}</button>
-        <button aria-label="分组筛选" aria-expanded={popup?.kind === "group"} className={group !== "全部分组" ? "selected" : ""} onClick={event => toggle("group", event.currentTarget)}>分组<ListFilter size={13} /></button>
+        <button disabled={blocked} className={status === "all" ? "selected" : ""} onClick={() => onStatus("all")}>全部</button>
+        <button disabled={blocked} className={status === "ready" ? "selected" : ""} onClick={() => onStatus("ready")}>待启动</button>
+        <button disabled={blocked} className={status === "running" ? "selected" : ""} onClick={() => onStatus("running")}>已打开</button>
+        <button disabled={blocked} className={status === "error" ? "selected" : ""} onClick={() => onStatus("error")}>需处理{errors ? ` ${errors}` : ""}</button>
+        <button disabled={blocked} aria-label="分组筛选" aria-expanded={popup?.kind === "group"} className={group !== "全部分组" ? "selected" : ""} onClick={event => toggle("group", event.currentTarget)}>分组<ListFilter size={13} /></button>
       </div>
       {selected > 0 && <div className="selection-bar"><span title={`已选择 ${selected} 个环境；当前页 ${pageSelected} 个；筛选和翻页不会扩大操作范围`}>已选：<strong>{selected}</strong></span><button className="text-button" onClick={onCancelSelection}>取消选择</button></div>}
       <div className="environment-toolbar-actions">
-        {selected > 0 && <><Button className="primary" onClick={onOpen}>批量打开</Button><Button className="primary" onClick={onStop}>批量关闭</Button><Button onClick={onAssign}>调整分组</Button></>}
-        {native && <button className="reference-square" aria-label="打开回收区" title="打开回收区" onClick={onRecycle}><Trash2 size={16} /></button>}
-        <Button className="primary" aria-expanded={popup?.kind === "more"} onClick={event => toggle("more", event.currentTarget)}>更多操作<ChevronDown size={12} /></Button>
-        <button className="reference-square" aria-label="刷新环境列表" title="刷新环境列表" onClick={onRefresh}><RefreshCw size={18} /></button>
+        {selected > 0 && <><Button className="primary" disabled={blocked} onClick={onOpen}>批量打开</Button><Button className="primary" disabled={blocked} onClick={onStop}>批量关闭</Button><Button disabled={blocked} onClick={onAssign}>调整分组</Button></>}
+        {native && <button className="reference-square" disabled={blocked} aria-label="打开回收区" title="打开回收区" onClick={onRecycle}><Trash2 size={16} /></button>}
+        <Button className="primary" disabled={blocked} aria-expanded={popup?.kind === "more"} onClick={event => toggle("more", event.currentTarget)}>更多操作<ChevronDown size={12} /></Button>
+        <button className="reference-square" disabled={blocked} aria-label="刷新环境列表" title="刷新环境列表" onClick={onRefresh}><RefreshCw size={18} /></button>
       </div>
     </div>
     {popup?.kind === "group" && <ReferencePopover anchor={popup.anchor} align="end" onClose={() => setPopup(null)} width={260} label="分组筛选菜单" className="environment-group-popup" role="dialog">
