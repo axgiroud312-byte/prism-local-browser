@@ -1,0 +1,6978 @@
+[
+  {
+    "id": "proxy-list",
+    "mode": "native",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "proxy-list",
+    "file": "1440x900/native-proxy-list.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": null,
+      "dialogHeader": null,
+      "dialogBody": null,
+      "dialogFooter": null,
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 48,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-add",
+    "mode": "native",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "proxy-add",
+    "file": "1440x900/native-proxy-add.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 410,
+        "y": 182,
+        "width": 620,
+        "height": 552,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 410,
+        "y": 182,
+        "width": 620,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 410,
+        "y": 222,
+        "width": 620,
+        "height": 454,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 410,
+        "y": 676,
+        "width": 620,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 48,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-import-text",
+    "mode": "native",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "proxy-import-text",
+    "file": "1440x900/native-proxy-import-text.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 195,
+        "y": 182,
+        "width": 1050,
+        "height": 552,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 195,
+        "y": 182,
+        "width": 1050,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 195,
+        "y": 222,
+        "width": 1050,
+        "height": 454,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 195,
+        "y": 676,
+        "width": 1050,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 48,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-import-preview",
+    "mode": "native",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "proxy-import-preview",
+    "file": "1440x900/native-proxy-import-preview.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 195,
+        "y": 153,
+        "width": 1050,
+        "height": 610,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 195,
+        "y": 153,
+        "width": 1050,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 195,
+        "y": 193,
+        "width": 1050,
+        "height": 512,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 195,
+        "y": 705,
+        "width": 1050,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 48,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-import-error",
+    "mode": "native",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "proxy-import-error",
+    "file": "1440x900/native-proxy-import-error.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 195,
+        "y": 182,
+        "width": 1050,
+        "height": 552,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 195,
+        "y": 182,
+        "width": 1050,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 195,
+        "y": 222,
+        "width": 1050,
+        "height": 454,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 195,
+        "y": 676,
+        "width": 1050,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 48,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-import-duplicates",
+    "mode": "native",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "proxy-import-preview",
+    "file": "1440x900/native-proxy-import-duplicates.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 195,
+        "y": 153,
+        "width": 1050,
+        "height": 610,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 195,
+        "y": 153,
+        "width": 1050,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 195,
+        "y": 193,
+        "width": 1050,
+        "height": 512,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 195,
+        "y": 705,
+        "width": 1050,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 48,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-import-file",
+    "mode": "native",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "proxy-import-file",
+    "file": "1440x900/native-proxy-import-file.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 470,
+        "y": 278,
+        "width": 500,
+        "height": 360,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 470,
+        "y": 278,
+        "width": 500,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 470,
+        "y": 318,
+        "width": 500,
+        "height": 262,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 470,
+        "y": 580,
+        "width": 500,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 48,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-import-file-selected",
+    "mode": "native",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "proxy-import-file",
+    "file": "1440x900/native-proxy-import-file-selected.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 470,
+        "y": 278,
+        "width": 500,
+        "height": 360,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 470,
+        "y": 278,
+        "width": 500,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 470,
+        "y": 318,
+        "width": 500,
+        "height": 262,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 470,
+        "y": 580,
+        "width": 500,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 48,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-import-file-error",
+    "mode": "native",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "proxy-import-file",
+    "file": "1440x900/native-proxy-import-file-error.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 470,
+        "y": 278,
+        "width": 500,
+        "height": 360,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 470,
+        "y": 278,
+        "width": 500,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 470,
+        "y": 318,
+        "width": 500,
+        "height": 241,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 470,
+        "y": 559,
+        "width": 500,
+        "height": 79,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 48,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-edit",
+    "mode": "native",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "proxy-edit",
+    "file": "1440x900/native-proxy-edit.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 410,
+        "y": 151,
+        "width": 620,
+        "height": 614,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 410,
+        "y": 151,
+        "width": 620,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 410,
+        "y": 191,
+        "width": 620,
+        "height": 516,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 410,
+        "y": 707,
+        "width": 620,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 48,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-edit-replace",
+    "mode": "native",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "proxy-edit",
+    "file": "1440x900/native-proxy-edit-replace.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 410,
+        "y": 95,
+        "width": 620,
+        "height": 726,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 410,
+        "y": 95,
+        "width": 620,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 410,
+        "y": 135,
+        "width": 620,
+        "height": 628,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 410,
+        "y": 763,
+        "width": 620,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 48,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-edit-clear",
+    "mode": "native",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "proxy-edit",
+    "file": "1440x900/native-proxy-edit-clear.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 410,
+        "y": 151,
+        "width": 620,
+        "height": 614,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 410,
+        "y": 151,
+        "width": 620,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 410,
+        "y": 191,
+        "width": 620,
+        "height": 516,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 410,
+        "y": 707,
+        "width": 620,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 48,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-bound",
+    "mode": "native",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "proxy-bound",
+    "file": "1440x900/native-proxy-bound.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 200,
+        "y": 162,
+        "width": 1040,
+        "height": 592,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 200,
+        "y": 162,
+        "width": 1040,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 200,
+        "y": 202,
+        "width": 1040,
+        "height": 494,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 200,
+        "y": 696,
+        "width": 1040,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 48,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-delete-confirm",
+    "mode": "native",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "group-delete-confirm",
+    "file": "1440x900/native-proxy-delete-confirm.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 520,
+        "y": 371,
+        "width": 400,
+        "height": 174,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 520,
+        "y": 371,
+        "width": 400,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 520,
+        "y": 411,
+        "width": 400,
+        "height": 76,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 520,
+        "y": 487,
+        "width": 400,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 48,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "kernel-list",
+    "mode": "native",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "proxy-list",
+    "file": "1440x900/native-kernel-list.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": null,
+      "dialogHeader": null,
+      "dialogBody": null,
+      "dialogFooter": null,
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 204,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "kernel-delete-confirm",
+    "mode": "native",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "group-delete-confirm",
+    "file": "1440x900/native-kernel-delete-confirm.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 520,
+        "y": 371,
+        "width": 400,
+        "height": 174,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 520,
+        "y": 371,
+        "width": 400,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 520,
+        "y": 411,
+        "width": 400,
+        "height": 76,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 520,
+        "y": 487,
+        "width": 400,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 204,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "kernel-prepare",
+    "mode": "native",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "proxy-add",
+    "file": "1440x900/native-kernel-prepare.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 410,
+        "y": 248,
+        "width": 620,
+        "height": 420,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 410,
+        "y": 248,
+        "width": 620,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 410,
+        "y": 288,
+        "width": 620,
+        "height": 322,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 410,
+        "y": 610,
+        "width": 620,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 204,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "kernel-prepare-local",
+    "mode": "native",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "proxy-add",
+    "file": "1440x900/native-kernel-prepare-local.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 410,
+        "y": 193,
+        "width": 620,
+        "height": 530,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 410,
+        "y": 193,
+        "width": 620,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 410,
+        "y": 233,
+        "width": 620,
+        "height": 432,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 410,
+        "y": 665,
+        "width": 620,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 204,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "kernel-progress",
+    "mode": "native",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "batch-progress-fixture",
+    "file": "1440x900/native-kernel-progress.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 520,
+        "y": 294,
+        "width": 400,
+        "height": 328,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 520,
+        "y": 294,
+        "width": 400,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 520,
+        "y": 334,
+        "width": 400,
+        "height": 230,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 520,
+        "y": 564,
+        "width": 400,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 204,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "kernel-persistence-pending",
+    "mode": "native",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "batch-progress-fixture",
+    "file": "1440x900/native-kernel-persistence-pending.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 520,
+        "y": 279,
+        "width": 400,
+        "height": 358,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 520,
+        "y": 279,
+        "width": 400,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 520,
+        "y": 319,
+        "width": 400,
+        "height": 260,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 520,
+        "y": 579,
+        "width": 400,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 204,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "kernel-error",
+    "mode": "native",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "batch-progress-fixture",
+    "file": "1440x900/native-kernel-error.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 520,
+        "y": 279,
+        "width": 400,
+        "height": 358,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 520,
+        "y": 279,
+        "width": 400,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 520,
+        "y": 319,
+        "width": 400,
+        "height": 260,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 520,
+        "y": 579,
+        "width": 400,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 204,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "kernel-history",
+    "mode": "native",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "proxy-edit",
+    "file": "1440x900/native-kernel-history.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 410,
+        "y": 188,
+        "width": 620,
+        "height": 540,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 410,
+        "y": 188,
+        "width": 620,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 410,
+        "y": 228,
+        "width": 620,
+        "height": 442,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 410,
+        "y": 670,
+        "width": 620,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 204,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "kernel-retry",
+    "mode": "native",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "batch-progress-fixture",
+    "file": "1440x900/native-kernel-retry.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 520,
+        "y": 294,
+        "width": 400,
+        "height": 328,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 520,
+        "y": 294,
+        "width": 400,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 520,
+        "y": 334,
+        "width": 400,
+        "height": 230,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 520,
+        "y": 564,
+        "width": 400,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 204,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "kernel-cancelled",
+    "mode": "native",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "batch-progress-fixture",
+    "file": "1440x900/native-kernel-cancelled.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 520,
+        "y": 294,
+        "width": 400,
+        "height": 328,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 520,
+        "y": 294,
+        "width": 400,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 520,
+        "y": 334,
+        "width": 400,
+        "height": 230,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 520,
+        "y": 564,
+        "width": 400,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 204,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "kernel-details",
+    "mode": "native",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "environment-edit",
+    "file": "1440x900/native-kernel-details.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 780,
+        "y": 40,
+        "width": 660,
+        "height": 852,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 780,
+        "y": 40,
+        "width": 660,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 780,
+        "y": 80,
+        "width": 660,
+        "height": 754,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 780,
+        "y": 834,
+        "width": 660,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 204,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-list",
+    "mode": "demo",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "proxy-list",
+    "file": "1440x900/demo-proxy-list.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": null,
+      "dialogHeader": null,
+      "dialogBody": null,
+      "dialogFooter": null,
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 48,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-add",
+    "mode": "demo",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "proxy-add",
+    "file": "1440x900/demo-proxy-add.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 410,
+        "y": 182,
+        "width": 620,
+        "height": 552,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 410,
+        "y": 182,
+        "width": 620,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 410,
+        "y": 222,
+        "width": 620,
+        "height": 454,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 410,
+        "y": 676,
+        "width": 620,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 48,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-import-text",
+    "mode": "demo",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "proxy-import-text",
+    "file": "1440x900/demo-proxy-import-text.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 195,
+        "y": 182,
+        "width": 1050,
+        "height": 552,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 195,
+        "y": 182,
+        "width": 1050,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 195,
+        "y": 222,
+        "width": 1050,
+        "height": 454,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 195,
+        "y": 676,
+        "width": 1050,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 48,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-import-preview",
+    "mode": "demo",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "proxy-import-preview",
+    "file": "1440x900/demo-proxy-import-preview.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 195,
+        "y": 153,
+        "width": 1050,
+        "height": 610,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 195,
+        "y": 153,
+        "width": 1050,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 195,
+        "y": 193,
+        "width": 1050,
+        "height": 512,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 195,
+        "y": 705,
+        "width": 1050,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 48,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-import-error",
+    "mode": "demo",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "proxy-import-error",
+    "file": "1440x900/demo-proxy-import-error.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 195,
+        "y": 182,
+        "width": 1050,
+        "height": 552,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 195,
+        "y": 182,
+        "width": 1050,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 195,
+        "y": 222,
+        "width": 1050,
+        "height": 454,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 195,
+        "y": 676,
+        "width": 1050,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 48,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-import-duplicates",
+    "mode": "demo",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "proxy-import-preview",
+    "file": "1440x900/demo-proxy-import-duplicates.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 195,
+        "y": 153,
+        "width": 1050,
+        "height": 610,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 195,
+        "y": 153,
+        "width": 1050,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 195,
+        "y": 193,
+        "width": 1050,
+        "height": 512,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 195,
+        "y": 705,
+        "width": 1050,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 48,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-import-file",
+    "mode": "demo",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "proxy-import-file",
+    "file": "1440x900/demo-proxy-import-file.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 470,
+        "y": 278,
+        "width": 500,
+        "height": 360,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 470,
+        "y": 278,
+        "width": 500,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 470,
+        "y": 318,
+        "width": 500,
+        "height": 262,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 470,
+        "y": 580,
+        "width": 500,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 48,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-import-file-selected",
+    "mode": "demo",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "proxy-import-file",
+    "file": "1440x900/demo-proxy-import-file-selected.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 470,
+        "y": 278,
+        "width": 500,
+        "height": 360,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 470,
+        "y": 278,
+        "width": 500,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 470,
+        "y": 318,
+        "width": 500,
+        "height": 262,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 470,
+        "y": 580,
+        "width": 500,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 48,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-import-file-error",
+    "mode": "demo",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "proxy-import-file",
+    "file": "1440x900/demo-proxy-import-file-error.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 470,
+        "y": 278,
+        "width": 500,
+        "height": 360,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 470,
+        "y": 278,
+        "width": 500,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 470,
+        "y": 318,
+        "width": 500,
+        "height": 241,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 470,
+        "y": 559,
+        "width": 500,
+        "height": 79,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 48,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-edit",
+    "mode": "demo",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "proxy-edit",
+    "file": "1440x900/demo-proxy-edit.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 410,
+        "y": 151,
+        "width": 620,
+        "height": 614,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 410,
+        "y": 151,
+        "width": 620,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 410,
+        "y": 191,
+        "width": 620,
+        "height": 516,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 410,
+        "y": 707,
+        "width": 620,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 48,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-edit-replace",
+    "mode": "demo",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "proxy-edit",
+    "file": "1440x900/demo-proxy-edit-replace.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 410,
+        "y": 151,
+        "width": 620,
+        "height": 614,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 410,
+        "y": 151,
+        "width": 620,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 410,
+        "y": 191,
+        "width": 620,
+        "height": 516,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 410,
+        "y": 707,
+        "width": 620,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 48,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-edit-clear",
+    "mode": "demo",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "proxy-edit",
+    "file": "1440x900/demo-proxy-edit-clear.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 410,
+        "y": 151,
+        "width": 620,
+        "height": 614,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 410,
+        "y": 151,
+        "width": 620,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 410,
+        "y": 191,
+        "width": 620,
+        "height": 516,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 410,
+        "y": 707,
+        "width": 620,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 48,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-bound",
+    "mode": "demo",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "proxy-bound",
+    "file": "1440x900/demo-proxy-bound.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 200,
+        "y": 162,
+        "width": 1040,
+        "height": 592,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 200,
+        "y": 162,
+        "width": 1040,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 200,
+        "y": 202,
+        "width": 1040,
+        "height": 494,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 200,
+        "y": 696,
+        "width": 1040,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 48,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-delete-confirm",
+    "mode": "demo",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "group-delete-confirm",
+    "file": "1440x900/demo-proxy-delete-confirm.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 520,
+        "y": 371,
+        "width": 400,
+        "height": 174,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 520,
+        "y": 371,
+        "width": 400,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 520,
+        "y": 411,
+        "width": 400,
+        "height": 76,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 520,
+        "y": 487,
+        "width": 400,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 48,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "kernel-list",
+    "mode": "demo",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "proxy-list",
+    "file": "1440x900/demo-kernel-list.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": null,
+      "dialogHeader": null,
+      "dialogBody": null,
+      "dialogFooter": null,
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 204,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "kernel-details",
+    "mode": "demo",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "environment-edit",
+    "file": "1440x900/demo-kernel-details.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 780,
+        "y": 40,
+        "width": 660,
+        "height": 852,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 780,
+        "y": 40,
+        "width": 660,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 780,
+        "y": 80,
+        "width": 660,
+        "height": 754,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 780,
+        "y": 834,
+        "width": 660,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 204,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-save-error",
+    "mode": "native",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "proxy-import-error",
+    "file": "1440x900/native-proxy-save-error.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 195,
+        "y": 153,
+        "width": 1050,
+        "height": 610,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 195,
+        "y": 153,
+        "width": 1050,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 195,
+        "y": 193,
+        "width": 1050,
+        "height": 491,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 195,
+        "y": 684,
+        "width": 1050,
+        "height": 79,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 48,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-import-unknown",
+    "mode": "native",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "proxy-import-error",
+    "file": "1440x900/native-proxy-import-unknown.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 195,
+        "y": 153,
+        "width": 1050,
+        "height": 610,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 195,
+        "y": 153,
+        "width": 1050,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 195,
+        "y": 193,
+        "width": 1050,
+        "height": 491,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 195,
+        "y": 684,
+        "width": 1050,
+        "height": 79,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 48,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-import-return",
+    "mode": "native",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "proxy-import-preview",
+    "file": "1440x900/native-proxy-import-return.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 195,
+        "y": 153,
+        "width": 1050,
+        "height": 610,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 195,
+        "y": 153,
+        "width": 1050,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 195,
+        "y": 193,
+        "width": 1050,
+        "height": 491,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 195,
+        "y": 684,
+        "width": 1050,
+        "height": 79,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 48,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "migration-select",
+    "mode": "native",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "proxy-bound",
+    "file": "1440x900/native-migration-select.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 200,
+        "y": 162,
+        "width": 1040,
+        "height": 592,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 200,
+        "y": 162,
+        "width": 1040,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 200,
+        "y": 202,
+        "width": 1040,
+        "height": 494,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 200,
+        "y": 696,
+        "width": 1040,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 204,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "migration-diff",
+    "mode": "native",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "proxy-bound",
+    "file": "1440x900/native-migration-diff.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 200,
+        "y": 162,
+        "width": 1040,
+        "height": 592,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 200,
+        "y": 162,
+        "width": 1040,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 200,
+        "y": 202,
+        "width": 1040,
+        "height": 494,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 200,
+        "y": 696,
+        "width": 1040,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 204,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "migration-confirm",
+    "mode": "native",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "group-delete-confirm",
+    "file": "1440x900/native-migration-confirm.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 520,
+        "y": 348,
+        "width": 400,
+        "height": 220,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 520,
+        "y": 348,
+        "width": 400,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 520,
+        "y": 388,
+        "width": 400,
+        "height": 122,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 520,
+        "y": 510,
+        "width": 400,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 204,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "migration-progress",
+    "mode": "native",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "batch-progress-fixture",
+    "file": "1440x900/native-migration-progress.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 520,
+        "y": 295.5,
+        "width": 400,
+        "height": 325,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 520,
+        "y": 295.5,
+        "width": 400,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 520,
+        "y": 335.5,
+        "width": 400,
+        "height": 227,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 520,
+        "y": 562.5,
+        "width": 400,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 204,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "migration-cancelled",
+    "mode": "native",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "batch-progress-fixture",
+    "file": "1440x900/native-migration-cancelled.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 520,
+        "y": 326,
+        "width": 400,
+        "height": 264,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 520,
+        "y": 326,
+        "width": 400,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 520,
+        "y": 366,
+        "width": 400,
+        "height": 166,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 520,
+        "y": 532,
+        "width": 400,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 204,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "kernel-accepted-refresh-error",
+    "mode": "native",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "reference": "batch-progress-fixture",
+    "file": "1440x900/native-kernel-accepted-refresh-error.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1220,
+        "height": 760,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 520,
+        "y": 285,
+        "width": 400,
+        "height": 346,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 520,
+        "y": 285,
+        "width": 400,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 520,
+        "y": 325,
+        "width": 400,
+        "height": 248,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 520,
+        "y": 573,
+        "width": 400,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 204,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1200,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-list",
+    "mode": "native",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "proxy-list",
+    "file": "1280x800/native-proxy-list.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": null,
+      "dialogHeader": null,
+      "dialogBody": null,
+      "dialogFooter": null,
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 41.59375,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-add",
+    "mode": "native",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "proxy-add",
+    "file": "1280x800/native-proxy-add.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 330,
+        "y": 132,
+        "width": 620,
+        "height": 552,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 330,
+        "y": 132,
+        "width": 620,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 330,
+        "y": 172,
+        "width": 620,
+        "height": 454,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 330,
+        "y": 626,
+        "width": 620,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 41.59375,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-import-text",
+    "mode": "native",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "proxy-import-text",
+    "file": "1280x800/native-proxy-import-text.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 115,
+        "y": 132,
+        "width": 1050,
+        "height": 552,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 115,
+        "y": 132,
+        "width": 1050,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 115,
+        "y": 172,
+        "width": 1050,
+        "height": 454,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 115,
+        "y": 626,
+        "width": 1050,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 41.59375,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-import-preview",
+    "mode": "native",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "proxy-import-preview",
+    "file": "1280x800/native-proxy-import-preview.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 115,
+        "y": 103,
+        "width": 1050,
+        "height": 610,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 115,
+        "y": 103,
+        "width": 1050,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 115,
+        "y": 143,
+        "width": 1050,
+        "height": 512,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 115,
+        "y": 655,
+        "width": 1050,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 41.59375,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-import-error",
+    "mode": "native",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "proxy-import-error",
+    "file": "1280x800/native-proxy-import-error.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 115,
+        "y": 132,
+        "width": 1050,
+        "height": 552,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 115,
+        "y": 132,
+        "width": 1050,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 115,
+        "y": 172,
+        "width": 1050,
+        "height": 454,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 115,
+        "y": 626,
+        "width": 1050,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 41.59375,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-import-duplicates",
+    "mode": "native",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "proxy-import-preview",
+    "file": "1280x800/native-proxy-import-duplicates.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 115,
+        "y": 103,
+        "width": 1050,
+        "height": 610,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 115,
+        "y": 103,
+        "width": 1050,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 115,
+        "y": 143,
+        "width": 1050,
+        "height": 512,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 115,
+        "y": 655,
+        "width": 1050,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 41.59375,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-import-file",
+    "mode": "native",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "proxy-import-file",
+    "file": "1280x800/native-proxy-import-file.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 390,
+        "y": 228,
+        "width": 500,
+        "height": 360,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 390,
+        "y": 228,
+        "width": 500,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 390,
+        "y": 268,
+        "width": 500,
+        "height": 262,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 390,
+        "y": 530,
+        "width": 500,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 41.59375,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-import-file-selected",
+    "mode": "native",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "proxy-import-file",
+    "file": "1280x800/native-proxy-import-file-selected.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 390,
+        "y": 228,
+        "width": 500,
+        "height": 360,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 390,
+        "y": 228,
+        "width": 500,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 390,
+        "y": 268,
+        "width": 500,
+        "height": 262,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 390,
+        "y": 530,
+        "width": 500,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 41.59375,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-import-file-error",
+    "mode": "native",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "proxy-import-file",
+    "file": "1280x800/native-proxy-import-file-error.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 390,
+        "y": 228,
+        "width": 500,
+        "height": 360,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 390,
+        "y": 228,
+        "width": 500,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 390,
+        "y": 268,
+        "width": 500,
+        "height": 241,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 390,
+        "y": 509,
+        "width": 500,
+        "height": 79,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 41.59375,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-edit",
+    "mode": "native",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "proxy-edit",
+    "file": "1280x800/native-proxy-edit.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 330,
+        "y": 101,
+        "width": 620,
+        "height": 614,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 330,
+        "y": 101,
+        "width": 620,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 330,
+        "y": 141,
+        "width": 620,
+        "height": 516,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 330,
+        "y": 657,
+        "width": 620,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 41.59375,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-edit-replace",
+    "mode": "native",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "proxy-edit",
+    "file": "1280x800/native-proxy-edit-replace.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 330,
+        "y": 45,
+        "width": 620,
+        "height": 726,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 330,
+        "y": 45,
+        "width": 620,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 330,
+        "y": 85,
+        "width": 620,
+        "height": 628,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 330,
+        "y": 713,
+        "width": 620,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 41.59375,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-edit-clear",
+    "mode": "native",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "proxy-edit",
+    "file": "1280x800/native-proxy-edit-clear.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 330,
+        "y": 101,
+        "width": 620,
+        "height": 614,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 330,
+        "y": 101,
+        "width": 620,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 330,
+        "y": 141,
+        "width": 620,
+        "height": 516,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 330,
+        "y": 657,
+        "width": 620,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 41.59375,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-bound",
+    "mode": "native",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "proxy-bound",
+    "file": "1280x800/native-proxy-bound.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 120,
+        "y": 112,
+        "width": 1040,
+        "height": 592,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 120,
+        "y": 112,
+        "width": 1040,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 120,
+        "y": 152,
+        "width": 1040,
+        "height": 494,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 120,
+        "y": 646,
+        "width": 1040,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 41.59375,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-delete-confirm",
+    "mode": "native",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "group-delete-confirm",
+    "file": "1280x800/native-proxy-delete-confirm.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 440,
+        "y": 321,
+        "width": 400,
+        "height": 174,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 440,
+        "y": 321,
+        "width": 400,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 440,
+        "y": 361,
+        "width": 400,
+        "height": 76,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 440,
+        "y": 437,
+        "width": 400,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 41.59375,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "kernel-list",
+    "mode": "native",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "proxy-list",
+    "file": "1280x800/native-kernel-list.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": null,
+      "dialogHeader": null,
+      "dialogBody": null,
+      "dialogFooter": null,
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 176.796875,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "kernel-delete-confirm",
+    "mode": "native",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "group-delete-confirm",
+    "file": "1280x800/native-kernel-delete-confirm.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 440,
+        "y": 321,
+        "width": 400,
+        "height": 174,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 440,
+        "y": 321,
+        "width": 400,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 440,
+        "y": 361,
+        "width": 400,
+        "height": 76,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 440,
+        "y": 437,
+        "width": 400,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 176.796875,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "kernel-prepare",
+    "mode": "native",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "proxy-add",
+    "file": "1280x800/native-kernel-prepare.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 330,
+        "y": 198,
+        "width": 620,
+        "height": 420,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 330,
+        "y": 198,
+        "width": 620,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 330,
+        "y": 238,
+        "width": 620,
+        "height": 322,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 330,
+        "y": 560,
+        "width": 620,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 176.796875,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "kernel-prepare-local",
+    "mode": "native",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "proxy-add",
+    "file": "1280x800/native-kernel-prepare-local.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 330,
+        "y": 143,
+        "width": 620,
+        "height": 530,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 330,
+        "y": 143,
+        "width": 620,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 330,
+        "y": 183,
+        "width": 620,
+        "height": 432,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 330,
+        "y": 615,
+        "width": 620,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 176.796875,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "kernel-progress",
+    "mode": "native",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "batch-progress-fixture",
+    "file": "1280x800/native-kernel-progress.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 440,
+        "y": 244,
+        "width": 400,
+        "height": 328,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 440,
+        "y": 244,
+        "width": 400,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 440,
+        "y": 284,
+        "width": 400,
+        "height": 230,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 440,
+        "y": 514,
+        "width": 400,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 176.796875,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "kernel-persistence-pending",
+    "mode": "native",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "batch-progress-fixture",
+    "file": "1280x800/native-kernel-persistence-pending.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 440,
+        "y": 229,
+        "width": 400,
+        "height": 358,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 440,
+        "y": 229,
+        "width": 400,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 440,
+        "y": 269,
+        "width": 400,
+        "height": 260,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 440,
+        "y": 529,
+        "width": 400,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 176.796875,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "kernel-error",
+    "mode": "native",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "batch-progress-fixture",
+    "file": "1280x800/native-kernel-error.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 440,
+        "y": 229,
+        "width": 400,
+        "height": 358,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 440,
+        "y": 229,
+        "width": 400,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 440,
+        "y": 269,
+        "width": 400,
+        "height": 260,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 440,
+        "y": 529,
+        "width": 400,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 176.796875,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "kernel-history",
+    "mode": "native",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "proxy-edit",
+    "file": "1280x800/native-kernel-history.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 330,
+        "y": 138,
+        "width": 620,
+        "height": 540,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 330,
+        "y": 138,
+        "width": 620,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 330,
+        "y": 178,
+        "width": 620,
+        "height": 442,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 330,
+        "y": 620,
+        "width": 620,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 176.796875,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "kernel-retry",
+    "mode": "native",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "batch-progress-fixture",
+    "file": "1280x800/native-kernel-retry.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 440,
+        "y": 244,
+        "width": 400,
+        "height": 328,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 440,
+        "y": 244,
+        "width": 400,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 440,
+        "y": 284,
+        "width": 400,
+        "height": 230,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 440,
+        "y": 514,
+        "width": 400,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 176.796875,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "kernel-cancelled",
+    "mode": "native",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "batch-progress-fixture",
+    "file": "1280x800/native-kernel-cancelled.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 440,
+        "y": 244,
+        "width": 400,
+        "height": 328,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 440,
+        "y": 244,
+        "width": 400,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 440,
+        "y": 284,
+        "width": 400,
+        "height": 230,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 440,
+        "y": 514,
+        "width": 400,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 176.796875,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "kernel-details",
+    "mode": "native",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "environment-edit",
+    "file": "1280x800/native-kernel-details.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 620,
+        "y": 40,
+        "width": 660,
+        "height": 752,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 620,
+        "y": 40,
+        "width": 660,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 620,
+        "y": 80,
+        "width": 660,
+        "height": 654,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 620,
+        "y": 734,
+        "width": 660,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 176.796875,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-list",
+    "mode": "demo",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "proxy-list",
+    "file": "1280x800/demo-proxy-list.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": null,
+      "dialogHeader": null,
+      "dialogBody": null,
+      "dialogFooter": null,
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 41.59375,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-add",
+    "mode": "demo",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "proxy-add",
+    "file": "1280x800/demo-proxy-add.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 330,
+        "y": 132,
+        "width": 620,
+        "height": 552,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 330,
+        "y": 132,
+        "width": 620,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 330,
+        "y": 172,
+        "width": 620,
+        "height": 454,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 330,
+        "y": 626,
+        "width": 620,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 41.59375,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-import-text",
+    "mode": "demo",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "proxy-import-text",
+    "file": "1280x800/demo-proxy-import-text.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 115,
+        "y": 132,
+        "width": 1050,
+        "height": 552,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 115,
+        "y": 132,
+        "width": 1050,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 115,
+        "y": 172,
+        "width": 1050,
+        "height": 454,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 115,
+        "y": 626,
+        "width": 1050,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 41.59375,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-import-preview",
+    "mode": "demo",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "proxy-import-preview",
+    "file": "1280x800/demo-proxy-import-preview.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 115,
+        "y": 103,
+        "width": 1050,
+        "height": 610,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 115,
+        "y": 103,
+        "width": 1050,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 115,
+        "y": 143,
+        "width": 1050,
+        "height": 512,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 115,
+        "y": 655,
+        "width": 1050,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 41.59375,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-import-error",
+    "mode": "demo",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "proxy-import-error",
+    "file": "1280x800/demo-proxy-import-error.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 115,
+        "y": 132,
+        "width": 1050,
+        "height": 552,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 115,
+        "y": 132,
+        "width": 1050,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 115,
+        "y": 172,
+        "width": 1050,
+        "height": 454,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 115,
+        "y": 626,
+        "width": 1050,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 41.59375,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-import-duplicates",
+    "mode": "demo",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "proxy-import-preview",
+    "file": "1280x800/demo-proxy-import-duplicates.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 115,
+        "y": 103,
+        "width": 1050,
+        "height": 610,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 115,
+        "y": 103,
+        "width": 1050,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 115,
+        "y": 143,
+        "width": 1050,
+        "height": 512,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 115,
+        "y": 655,
+        "width": 1050,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 41.59375,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-import-file",
+    "mode": "demo",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "proxy-import-file",
+    "file": "1280x800/demo-proxy-import-file.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 390,
+        "y": 228,
+        "width": 500,
+        "height": 360,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 390,
+        "y": 228,
+        "width": 500,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 390,
+        "y": 268,
+        "width": 500,
+        "height": 262,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 390,
+        "y": 530,
+        "width": 500,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 41.59375,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-import-file-selected",
+    "mode": "demo",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "proxy-import-file",
+    "file": "1280x800/demo-proxy-import-file-selected.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 390,
+        "y": 228,
+        "width": 500,
+        "height": 360,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 390,
+        "y": 228,
+        "width": 500,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 390,
+        "y": 268,
+        "width": 500,
+        "height": 262,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 390,
+        "y": 530,
+        "width": 500,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 41.59375,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-import-file-error",
+    "mode": "demo",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "proxy-import-file",
+    "file": "1280x800/demo-proxy-import-file-error.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 390,
+        "y": 228,
+        "width": 500,
+        "height": 360,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 390,
+        "y": 228,
+        "width": 500,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 390,
+        "y": 268,
+        "width": 500,
+        "height": 241,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 390,
+        "y": 509,
+        "width": 500,
+        "height": 79,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 41.59375,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-edit",
+    "mode": "demo",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "proxy-edit",
+    "file": "1280x800/demo-proxy-edit.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 330,
+        "y": 101,
+        "width": 620,
+        "height": 614,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 330,
+        "y": 101,
+        "width": 620,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 330,
+        "y": 141,
+        "width": 620,
+        "height": 516,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 330,
+        "y": 657,
+        "width": 620,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 41.59375,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-edit-replace",
+    "mode": "demo",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "proxy-edit",
+    "file": "1280x800/demo-proxy-edit-replace.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 330,
+        "y": 101,
+        "width": 620,
+        "height": 614,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 330,
+        "y": 101,
+        "width": 620,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 330,
+        "y": 141,
+        "width": 620,
+        "height": 516,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 330,
+        "y": 657,
+        "width": 620,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 41.59375,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-edit-clear",
+    "mode": "demo",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "proxy-edit",
+    "file": "1280x800/demo-proxy-edit-clear.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 330,
+        "y": 101,
+        "width": 620,
+        "height": 614,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 330,
+        "y": 101,
+        "width": 620,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 330,
+        "y": 141,
+        "width": 620,
+        "height": 516,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 330,
+        "y": 657,
+        "width": 620,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 41.59375,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-bound",
+    "mode": "demo",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "proxy-bound",
+    "file": "1280x800/demo-proxy-bound.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 120,
+        "y": 112,
+        "width": 1040,
+        "height": 592,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 120,
+        "y": 112,
+        "width": 1040,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 120,
+        "y": 152,
+        "width": 1040,
+        "height": 494,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 120,
+        "y": 646,
+        "width": 1040,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 41.59375,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-delete-confirm",
+    "mode": "demo",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "group-delete-confirm",
+    "file": "1280x800/demo-proxy-delete-confirm.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 440,
+        "y": 321,
+        "width": 400,
+        "height": 174,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 440,
+        "y": 321,
+        "width": 400,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 440,
+        "y": 361,
+        "width": 400,
+        "height": 76,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 440,
+        "y": 437,
+        "width": 400,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 41.59375,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "kernel-list",
+    "mode": "demo",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "proxy-list",
+    "file": "1280x800/demo-kernel-list.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": null,
+      "dialogHeader": null,
+      "dialogBody": null,
+      "dialogFooter": null,
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 176.796875,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "kernel-details",
+    "mode": "demo",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "environment-edit",
+    "file": "1280x800/demo-kernel-details.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 620,
+        "y": 40,
+        "width": 660,
+        "height": 752,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 620,
+        "y": 40,
+        "width": 660,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 620,
+        "y": 80,
+        "width": 660,
+        "height": 654,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 620,
+        "y": 734,
+        "width": 660,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 176.796875,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-save-error",
+    "mode": "native",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "proxy-import-error",
+    "file": "1280x800/native-proxy-save-error.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 115,
+        "y": 103,
+        "width": 1050,
+        "height": 610,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 115,
+        "y": 103,
+        "width": 1050,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 115,
+        "y": 143,
+        "width": 1050,
+        "height": 491,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 115,
+        "y": 634,
+        "width": 1050,
+        "height": 79,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 41.59375,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-import-unknown",
+    "mode": "native",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "proxy-import-error",
+    "file": "1280x800/native-proxy-import-unknown.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 115,
+        "y": 103,
+        "width": 1050,
+        "height": 610,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 115,
+        "y": 103,
+        "width": 1050,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 115,
+        "y": 143,
+        "width": 1050,
+        "height": 491,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 115,
+        "y": 634,
+        "width": 1050,
+        "height": 79,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 41.59375,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "proxy-import-return",
+    "mode": "native",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "proxy-import-preview",
+    "file": "1280x800/native-proxy-import-return.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 115,
+        "y": 103,
+        "width": 1050,
+        "height": 610,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 115,
+        "y": 103,
+        "width": 1050,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 115,
+        "y": 143,
+        "width": 1050,
+        "height": 491,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 115,
+        "y": 634,
+        "width": 1050,
+        "height": 79,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 41.59375,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "migration-select",
+    "mode": "native",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "proxy-bound",
+    "file": "1280x800/native-migration-select.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 120,
+        "y": 112,
+        "width": 1040,
+        "height": 592,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 120,
+        "y": 112,
+        "width": 1040,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 120,
+        "y": 152,
+        "width": 1040,
+        "height": 494,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 120,
+        "y": 646,
+        "width": 1040,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 176.796875,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "migration-diff",
+    "mode": "native",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "proxy-bound",
+    "file": "1280x800/native-migration-diff.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 120,
+        "y": 112,
+        "width": 1040,
+        "height": 592,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 120,
+        "y": 112,
+        "width": 1040,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 120,
+        "y": 152,
+        "width": 1040,
+        "height": 494,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 120,
+        "y": 646,
+        "width": 1040,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 176.796875,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "migration-confirm",
+    "mode": "native",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "group-delete-confirm",
+    "file": "1280x800/native-migration-confirm.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 440,
+        "y": 298,
+        "width": 400,
+        "height": 220,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 440,
+        "y": 298,
+        "width": 400,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 440,
+        "y": 338,
+        "width": 400,
+        "height": 122,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 440,
+        "y": 460,
+        "width": 400,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 176.796875,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "migration-progress",
+    "mode": "native",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "batch-progress-fixture",
+    "file": "1280x800/native-migration-progress.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 440,
+        "y": 245.5,
+        "width": 400,
+        "height": 325,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 440,
+        "y": 245.5,
+        "width": 400,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 440,
+        "y": 285.5,
+        "width": 400,
+        "height": 227,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 440,
+        "y": 512.5,
+        "width": 400,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 176.796875,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "migration-cancelled",
+    "mode": "native",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "batch-progress-fixture",
+    "file": "1280x800/native-migration-cancelled.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 440,
+        "y": 276,
+        "width": 400,
+        "height": 264,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 440,
+        "y": 276,
+        "width": 400,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 440,
+        "y": 316,
+        "width": 400,
+        "height": 166,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 440,
+        "y": 482,
+        "width": 400,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 176.796875,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  },
+  {
+    "id": "kernel-accepted-refresh-error",
+    "mode": "native",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "reference": "batch-progress-fixture",
+    "file": "1280x800/native-kernel-accepted-refresh-error.png",
+    "geometry": {
+      "panel": {
+        "x": 210,
+        "y": 89,
+        "width": 1060,
+        "height": 660,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialog": {
+        "x": 440,
+        "y": 235,
+        "width": 400,
+        "height": 346,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogHeader": {
+        "x": 440,
+        "y": 235,
+        "width": 400,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "dialogBody": {
+        "x": 440,
+        "y": 275,
+        "width": 400,
+        "height": 248,
+        "fontSize": "12px",
+        "overflow": "auto"
+      },
+      "dialogFooter": {
+        "x": 440,
+        "y": 523,
+        "width": 400,
+        "height": 58,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "header": {
+        "x": 220,
+        "y": 140,
+        "width": 176.796875,
+        "height": 40,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "row": {
+        "x": 220,
+        "y": 190,
+        "width": 1040,
+        "height": 48,
+        "fontSize": "12px",
+        "overflow": "visible"
+      },
+      "documentOverflow": false
+    },
+    "errors": [],
+    "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+    "evidence": "standalone exported modules in #33 shell; not final App integration or real desktop"
+  }
+]

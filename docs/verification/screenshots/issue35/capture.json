@@ -1,0 +1,25 @@
+{
+  "sourceCommit": "c096f9b4d01685871de4fc3ece04721d4ce8ea26",
+  "referenceRelease": "202609160208",
+  "viewports": [
+    {
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "width": 1280,
+      "height": 800
+    }
+  ],
+  "deviceScaleFactor": 1,
+  "zoom": "100%",
+  "locale": "zh-CN",
+  "timezoneId": "Asia/Shanghai",
+  "capture": "viewport-only, CSS pixels, disabled animations, hidden caret",
+  "browser": "Playwright Chromium",
+  "moduleHarness": "tests/ui/fixtures/proxy-kernel-harness.jsx",
+  "captures": 100,
+  "finalAppIntegration": false,
+  "realDesktopVerification": false,
+  "originalAssetsPublished": false
+}
