@@ -18,6 +18,8 @@ BKP-001 / DATA-001 / DOC-001 / UX-001：[#36模块](verification/issue36.md) 合
 
 ENV-001/002/003、FP-001/002、PRX-001、CORE-001、CK-001、BKP-001、DATA-001、UX-001、DOC-001：[#37整组](verification/issue37.md) 已完成正式App接线和审查修复；准确native代理模式/ID/修订报告、预检取消失败原上下文恢复、DOM替换/禁用焦点与最高单遮罩均有RED→GREEN记录。一次共享 `npm run check` 在 `681f823` **196/196，4.7分钟**；之后Cookie hover/空预览合成夹具及通知位置小修分别定向6/6、5/5通过，不把共享结果冒称最新head全套。PRD取证等待正文后重拍及native密集备份第二页仅补取证/检查，不改App；当前 `70943b0` 的 **346张实际App图** 绑定全部源码/4份文档及合成夹具，逐项参考适配、映射和缺参考见 [视觉结论](screenshots/issue37/visual-review.json)。后台、ApplicationService/适配层、RPC/SQLite/格式/依赖相对 `e170099` 未改；正式4/21、旧exe不含本轮UI和真实桌面未验边界不变。
 
+ENV-003 / UX-001 / BKP-001 / DOC-001 完整目标复查：普通控制通道不等于准确Job强制归属资格；备份导入头部hover需保持可见；活动详情上的force确认必须屏蔽下层portal。独立审查及修复前24图保留22 MAPPED/2 FAIL，精确原预检重读/最高确认取消4/4。#33–#35恢复OPEN，当前源码入口→语义状态→证据交叉表及迁移实际App合成链继续补齐；原346图和共享196/196不代表全部支持态。最新实际结果见 [继续补核](verification/issue37-continuation.md)。
+
 路由是运行应用后的 hash 路由。源码链接指向文件，函数名用于定位；前端持续修改时不依赖易失效的固定行号。领域逻辑自动测试入口为 [`tests/domain.test.ts`](../tests/domain.test.ts)，页面流程仍需真实浏览器操作检查。
 
 ## 12 项需求映射
