@@ -220,7 +220,7 @@ table:not(.environment-table):not(.reference-group-table) td { padding: 8px 12px
 .modal-body { min-height: 0; overflow: auto; padding: 20px 20px 0; }
 .modal-body > p { font-size: 12px; line-height: 18px; margin-bottom: 18px; }
 .modal-footer { display: flex; align-items: center; justify-content: flex-end; gap: 10px; flex-shrink: 0; min-height: 71px; padding: 20px; }
-.modal-footer > .button:first-child { background: #eee; border-color: #eee; }
+.modal-footer > .button:first-child:not(.primary):not(.danger) { background: #eee; border-color: #eee; }
 .group-modal { height: 339.86px; transform: translateY(8px); }
 .group-modal .modal-header h2 { transform: translate(-8px, 7px); }
 .group-modal .modal-body { flex: 1; padding: 20px 60px 0; }
