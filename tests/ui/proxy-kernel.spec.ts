@@ -250,7 +250,9 @@ test("a workspace fault stays above the kernel modal and recovery preserves the 
   await page.getByRole("button", { name: "准备精确内核", exact: true }).click();
   await page.getByLabel("精确发行版本").fill("151.0.9000.11");
   await page.getByLabel("预期归档 SHA-256").fill("a".repeat(64));
-  await page.evaluate(() => (window as unknown as { __proxyKernel: { setWorkspaceFailure(value: boolean): void } }).__proxyKernel.setWorkspaceFailure(true));
+  // Admit the task first; fail its subsequent workspace refresh, never the
+  // background read that could correctly block the install button beforehand.
+  await page.evaluate(() => (window as unknown as { __proxyKernel: { failWorkspaceAfterNextInstall(): void } }).__proxyKernel.failWorkspaceAfterNextInstall());
   await page.getByRole("button", { name: "安装并核验", exact: true }).click();
   const blocker = page.getByRole("alertdialog", { name: "工作区需要处理", exact: true });
   await expect(blocker).toBeVisible();

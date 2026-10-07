@@ -13,14 +13,14 @@ export async function proxyKernelBridge(page: Page, outcome: "failure" | "unknow
     ];
     const kernels = ["synthetic-build-a", "synthetic-build-b"].map((id, i) => ({ id, version: i ? "151.0.9000.11" : "148.0.7778.215", architecture: "amd64", status: "verified", usedBy: i ? [] : ["synthetic-environment"], source: { kind: "official", location: "https://example.invalid/synthetic.zip", tag: i ? "151.0.9000.11" : "148.0.7778.215", commit: null }, archiveSha256: "a".repeat(64), executableSha256: "b".repeat(64), installPath: `kernels/${id}`, executableRelativePath: "chrome.exe", installedAt: "2026-10-06T00:00:00Z", report: { adapterVersion: "synthetic-not-probed", version: "synthetic-capability", sampledAt: "2026-10-06T00:00:00Z", transport: "synthetic-not-probed", sandbox: true, observations: [], capabilities: [{ field: "cpu", status: "configurable", source: "observed", note: "合成字段，不是真实观测" }, { field: "gpu", status: "seed-generated", source: "source-derived", note: "合成源码推导" }, { field: "screen/location/webgpu/tls/mac", status: "unverified", source: "not-probed", note: "未探测，不开放编辑" }] } }));
     const environments = [{ ...environment, id: "synthetic-environment", name: "合成环境 A", coreId: kernels[0].id, proxyId: proxies[0].id, seed: "172600001", status: "ready", note: "合成数据" }];
-    let serial = 0, currentOutcome = outcome, updateOutcome = "completed", workspaceFailure = false, taskState = "running", persistencePending = false;
+    let serial = 0, currentOutcome = outcome, updateOutcome = "completed", workspaceFailure = false, workspaceFailureAfterInstall = false, taskState = "running", persistencePending = false;
     const previews = new Map<string, { rows: Record<string, unknown>[] }>();
     const receipts = new Map<string, unknown>();
     const tasks = new Map<string, Record<string, unknown>>();
     const ok = (data: unknown) => ({ ok: true, mode: "native", data: structuredClone(data) });
     const fail = (code: string, message: string) => ({ ok: false, mode: "native", error: { code, message, retryable: true } });
     const workspace = () => ({ mode: "native", state: { schemaVersion: 1, environments, proxies: proxies.map(p => ({ ...p, username: "", password: "" })), kernels: kernels.map(k => ({ id: k.id, version: k.version, available: k.status === "verified", source: "fingerprint-chromium", note: "合成元数据" })), backups: [], activities: [] }, kernelRecords: kernels, nativeProxyRecords: proxies, kernelOperations: [...tasks.values()].filter(t => String(t.kind).startsWith("kernel-")), proxyOperations: [...tasks.values()].filter(t => t.kind === "proxy-check"), defaultKernel: { kernelId: kernels[0].id, revision: 1 } });
-    Object.assign(window, { __proxyKernel: { calls, setOutcome(value: typeof outcome) { currentOutcome = value; }, setUpdateOutcome(value: string) { updateOutcome = value; }, setWorkspaceFailure(value: boolean) { workspaceFailure = value; }, finish(state = "completed", pending = false) { taskState = state; persistencePending = pending; }, view: workspace }, go: { main: { DesktopApp: { Call: async (request: { method: string; payload: Record<string, unknown> }) => {
+    Object.assign(window, { __proxyKernel: { calls, setOutcome(value: typeof outcome) { currentOutcome = value; }, setUpdateOutcome(value: string) { updateOutcome = value; }, setWorkspaceFailure(value: boolean) { workspaceFailure = value; }, failWorkspaceAfterNextInstall() { workspaceFailureAfterInstall = true; }, finish(state = "completed", pending = false) { taskState = state; persistencePending = pending; }, view: workspace }, go: { main: { DesktopApp: { Call: async (request: { method: string; payload: Record<string, unknown> }) => {
       calls.push(structuredClone(request));
       const p = request.payload;
       if (request.method === "Workspace.Read") return workspaceFailure ? fail("STORAGE_READ_FAILED", "合成本机工作区读取失败") : ok(workspace());
@@ -63,7 +63,10 @@ export async function proxyKernelBridge(page: Page, outcome: "failure" | "unknow
         const kind = request.method === "Proxy.Check" ? "proxy-check" : `kernel-${request.method.split(".")[1].toLowerCase()}`;
         const id = `synthetic-task-${++serial}`;
         const operation = { id, kind, state: "running", stage: kind === "proxy-check" ? "authentication" : "probing", total: 1, completedIds: [], cancelRequested: false, kernelId: p.kernelId, proxyId: p.proxyId };
-        tasks.set(id, operation); taskState = "running"; persistencePending = false; return ok({ status: "accepted", operation });
+        tasks.set(id, operation); taskState = "running"; persistencePending = false;
+        // Fault only after admission so the owner's normal refresh observes it.
+        if (request.method === "Kernel.Install" && workspaceFailureAfterInstall) { workspaceFailureAfterInstall = false; workspaceFailure = true; }
+        return ok({ status: "accepted", operation });
       }
       if (request.method === "Operation.Read") { const operation = tasks.get(String(p.operationId)); if (!operation) return fail("VALIDATION_FAILED", "未知合成任务"); Object.assign(operation, { state: taskState, persistencePending, stage: taskState === "running" ? operation.stage : taskState, ...(taskState === "failed" ? { error: { code: operation.kind === "proxy-check" ? "PROXY_AUTH_FAILED" : "KERNEL_INTEGRITY_FAILED", message: "合成核验失败", retryable: true } } : {}) }); return ok(operation); }
       if (request.method === "Operation.Cancel") { const operation = tasks.get(String(p.operationId)); if (!operation) return fail("VALIDATION_FAILED", "未知任务"); Object.assign(operation, { state: "cancelled", stage: "cancelled", cancelRequested: true }); taskState = "cancelled"; return ok(operation); }
