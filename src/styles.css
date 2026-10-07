@@ -328,8 +328,8 @@ table:not(.environment-table):not(.reference-group-table) td { padding: 8px 12px
 .document-body pre { overflow: auto; padding: 12px; background: #f5f5f5; }
 .document-body th, .document-body td { white-space: normal; overflow-wrap: anywhere; }
 .page-footer { display: flex; justify-content: space-between; gap: 12px; color: #8c8c8c; padding: 12px; font-size: 11px; }
-@media (max-width: 1100px) {
-  /* Wrap full controls, not their labels; the frozen desktop geometry stays above this breakpoint. */
+@media (max-width: 1279px) {
+  /* Wrap full controls below the frozen 1280px desktop; never hide their labels or actions. */
   .environment-search-toolbar { height: auto; min-height: 52.86px; flex-wrap: wrap; gap: 8px; }
   .environment-search { flex: 1 0 280px; }
   .environment-count, .advanced-search-trigger { flex-shrink: 0; }

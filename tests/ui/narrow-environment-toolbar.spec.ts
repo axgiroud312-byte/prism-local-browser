@@ -174,20 +174,29 @@ test("900x720 selected no-results state stays compact and clear restores the sam
   await tableBudget(page);
 });
 
-test("long synthetic labels and selection survive both sides of the 850px sidebar breakpoint", async ({ page }) => {
+test("selected upper responsive edge and 850px breakpoint preserve long labels and exact selection", async ({ page }) => {
   const state = referenceWorkspace(), group = "跨境业务专用长分组名称".repeat(3);
   state.environments = state.environments.map((environment, index) => ({ ...environment, name: `${"超长合成环境名称".repeat(3)} ${index + 1}`, group }));
-  await page.setViewportSize({ width: 1100, height: 720 });
+  await page.setViewportSize({ width: 1101, height: 720 });
   await demo(page, state);
   await page.getByLabel(`选择 ${state.environments[0].name}`, { exact: true }).check();
+  await page.getByLabel(`选择 ${state.environments[1].name}`, { exact: true }).check();
   await page.getByLabel("筛选分组", { exact: true }).selectOption(group);
-  for (const width of [1100, 1099, 851, 850, 800]) {
-    await page.setViewportSize({ width, height: 720 });
+  for (const width of [1101, 1170, 1199, 1200, 1279, 1280, 1100, 1099, 851, 850, 800]) {
+    await page.setViewportSize({ width, height: width === 1280 ? 800 : 720 });
     await toolbarReachable(page);
-    await tableBudget(page);
+    if (width < 1280) await tableBudget(page);
+    else {
+      // At the frozen desktop boundary, retain its original (not rounded) table budget.
+      const header = await box(page.locator(".environment-table thead")), footer = await box(page.locator(".environment-pagination"));
+      expect([header.x, header.y, header.width, header.height]).toEqual([220, 162.859375, 1040, 40]);
+      await expect(page.locator(".environment-table tbody")).toHaveCSS("height", "482px");
+      expect([footer.x, footer.y, footer.width, footer.height]).toEqual([220, 694.859375, 1040, 30]);
+      await expect(page.locator(".environment-table tbody tr")).toHaveCount(10);
+    }
     expect((await box(page.locator(".sidebar"))).width).toBe(width > 850 ? 200 : 56);
     await expect(page.getByLabel("筛选分组", { exact: true })).toHaveValue(group);
-    await expect(page.locator(".environment-list-toolbar .selection-bar strong")).toHaveText("1");
+    await expect(page.locator(".environment-list-toolbar .selection-bar strong")).toHaveText("2");
     await button(page, "高级搜索").click();
     await expect(page.getByLabel("高级搜索分组", { exact: true })).toHaveValue(group);
     await page.keyboard.press("Escape");
