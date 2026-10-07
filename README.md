@@ -10,6 +10,8 @@
 
 最新[五项输入/焦点/布局续修](docs/verification/issue37-recovery-and-layout.md)已普通合入 `4a2afbf`：Cookie迟到读取、内核窗口返回焦点、保存阻断误报、中间宽度工具栏及长标题；MAIN定向 **40/40**、两项noEmit成功。[18张修复对照](docs/screenshots/issue37-recovery-layout/index.html)单列新来源及独立逐图结论，修复前失败保留；旧20包/926记录及私有1300项不重算。完整1:1和真实桌面仍未验收。
 
+**当前修复已交付，停止新增截图及扩展审计。** [五类参考阻塞与补齐条件](docs/verification/issue37-reference-blockers.md)单列；等参考补齐再验收对应1:1，缺口不计通过。六票OPEN、PR #38草稿及正式4/21不变。
+
 此前 #28–#30 的 **21/21，45.2秒** 为 [历史页面验收](docs/verification/issue28-30.md)，不是本轮检查结果。日常 CI 仍只运行 Vite 浏览器点击，不构建或打包。
 
 既有正式验收仍为4/21。固定档案、独立会话、AppContainer代理保护、FIFO、Cookie、批次、完整备份/预检/恢复、回收、迁移和诊断均有本地实现。本机真实三存储隔离/重开、代理故障、双版本迁移和恢复已有证据；独立远端出口、人工新页面及干净Windows验收尚缺。候选身份、实际检查和逐票关闭条件见[验收报告](docs/verification/V1-final.md)。网页原型仍独立为demo，浏览器点击通过不等于原生能力验收通过。
