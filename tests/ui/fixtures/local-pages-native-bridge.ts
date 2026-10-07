@@ -58,7 +58,7 @@ export async function localPagesNativeBridge(page: Page, scenario: LocalPageScen
       // This fixture has no Cookie preview. Only the owner's empty-preview cleanup is supported.
       if (request.method === "Cookie.DiscardImport" && p.previewId === "") return ok({ status: "discarded" });
       if (request.method === "Backup.SelectDestination") { if (scenario === "backup-cancel") return ok({ status: "cancelled" }); destination = true; return ok({ status: "selected", destinationToken: "synthetic-destination", name: "synthetic.prismbackup" }); }
-      if (request.method === "Backup.SelectRestoreSource") { if (scenario === "source-cancel") return ok({ status: "cancelled" }); source = true; return ok({ status: "selected", sourceToken: "synthetic-source", name: "synthetic.prismbackup" }); }
+      if (request.method === "Backup.SelectRestoreSource") { const owner = { mode: "native", requestId: p.requestId, preflightRunning: false, cleanupPending: false }; if (scenario === "source-cancel") return ok({ ...owner, status: "cancelled" }); source = true; return ok({ ...owner, status: "selected", sourceToken: "synthetic-source", name: "synthetic.prismbackup" }); }
       if (request.method === "Backup.PreviewRestore") {
         if (!source || p.sourceToken !== "synthetic-source") return fail("PREVIEW_EXPIRED");
         if (scenario === "preflight-failed") return fail("BACKUP_INVALID");

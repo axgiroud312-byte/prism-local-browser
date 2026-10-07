@@ -8,11 +8,12 @@ import type {
   NativeBatchPreviewRequest, NativeBatchPage, NativeEnvironmentQuery, NativeBackupExportRequest, NativeBackupPending, NativeRestorePreview, NativeRestorePage, NativeRestoreRequest,
   NativeRecycleAction, NativeRecyclePage, NativeRecyclePageRequest, NativeRecycleRequest,
   NativeMigrationPreview, NativeMigrationRequest,
+  NativeRestoreSourceState, NativeRestoreSourcePending,
 } from "./contract.ts";
 import { mergeOperation, operationIsTerminal } from "./contract.ts";
 import { validBatchPage, validBatchReport } from "./batch-model.ts";
 import { confirmsBackupRequest, invalidBackupOperation } from "./backup-model.ts";
-import { confirmsRestoreRequest, invalidRestoreOperation } from "./restore-model.ts";
+import { confirmsRestoreRequest, invalidRestoreOperation, validRestoreSourceState, validRestorePreview } from "./restore-model.ts";
 import { confirmsRecycleRequest, invalidRecycleOperation, validRecyclePage } from "./recycle-model.ts";
 import { confirmsMigrationRequest, invalidMigrationOperation, validMigrationPreview } from "./migration-model.ts";
 import { DiagnosticsClient } from "./diagnostics-client.ts";
@@ -49,6 +50,9 @@ export class WailsAdapter implements ApplicationService {
   private environmentQuery?: NativeEnvironmentQuery;
   private pendingBackup?: NativeBackupPending;
   private pendingRestore?: { request: NativeRestoreRequest; operationId?: string };
+  private restoreSourceOwner?: NativeRestoreSourcePending;
+  private restoreSelectionFlight?: Promise<ApplicationResult<{ status: "selected" | "cancelled"; sourceToken?: string; name?: string }>>;
+  private restoreSourceDiscardFlight?: Promise<ApplicationResult<{ status: "discarded" }>>;
   private restoreFlights = new Map<string, Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>>();
   private restoreRefusal?: string;
   private pendingRecycle?: { request: NativeRecycleRequest; operationId?: string };
@@ -394,15 +398,66 @@ export class WailsAdapter implements ApplicationService {
   commitBatch(request: { planId: string; requestId: string }) { return this.batchMutation("Batch.Commit", { planId: request.planId, requestId: request.requestId }, request.planId); }
   retryBatch(request: { operationId: string; requestId: string }) { return this.batchMutation("Batch.Retry", { operationId: request.operationId, requestId: request.requestId }); }
   selectBackupDestination() { return this.invoke<{ status: "selected" | "cancelled"; destinationToken?: string; name?: string }>("Backup.SelectDestination", {}); }
-  selectRestoreSource() { return this.rollbackOwner?.cancelled ? Promise.resolve(rollbackCleanupUnconfirmed<{ status: "selected" | "cancelled"; sourceToken?: string; name?: string }>()) : this.invoke<{ status: "selected" | "cancelled"; sourceToken?: string; name?: string }>("Backup.SelectRestoreSource", {}); }
-  discardRestore(previewId: string, sourceToken: string) { return this.invoke<{ status: "discarded" }>("Backup.DiscardRestore", { previewId, sourceToken }); }
+  getPendingRestoreSource() { return this.restoreSourceOwner ? { ...this.restoreSourceOwner } : undefined; }
+  private restoreSourceUnconfirmed<T>(): ApplicationResult<T> { return { ok: false, mode: "native", error: { code: "RESTORE_SOURCE_UNCONFIRMED", message: "原来源或清理尚未确认，请核实原来源或重试清理；未另选来源。", retryable: true } }; }
+  selectRestoreSource(): Promise<ApplicationResult<{ status: "selected" | "cancelled"; sourceToken?: string; name?: string }>> {
+    if (this.rollbackOwner?.cancelled) return Promise.resolve(rollbackCleanupUnconfirmed());
+    if (this.restoreSelectionFlight) return this.restoreSourceOwner ? this.restoreSelectionFlight : Promise.resolve(this.restoreSourceUnconfirmed());
+    if (this.restoreSourceOwner || this.pendingRestore) return Promise.resolve(this.restoreSourceUnconfirmed());
+    const owner: NativeRestoreSourcePending = { requestId: globalThis.crypto.randomUUID(), selectionPending: true, preflightPending: false, cleanupRequested: false };
+    this.restoreSourceOwner = owner;
+    const promise = this.invoke<NativeRestoreSourceState>("Backup.SelectRestoreSource", { requestId: owner.requestId }).then((result: ApplicationResult<NativeRestoreSourceState>): ApplicationResult<{ status: "selected" | "cancelled"; sourceToken?: string; name?: string }> => {
+      owner.selectionPending = false;
+      if (this.restoreSourceOwner !== owner) return this.restoreSourceUnconfirmed();
+      if (this.restoreSourceOwner === owner && result.ok) {
+        if (!validRestoreSourceState(result.data, owner.requestId)) return this.restoreSourceUnconfirmed();
+        if (result.data.status === "selected" && typeof result.data.sourceToken === "string" && result.data.sourceToken) { owner.sourceToken = result.data.sourceToken; owner.name = result.data.name; }
+        else if (result.data.status === "cancelled") this.restoreSourceOwner = undefined;
+        else return this.restoreSourceUnconfirmed<{ status: "selected" | "cancelled"; sourceToken?: string; name?: string }>();
+      }
+      return result.ok ? { ok: true, mode: "native", data: { status: result.data.status as "selected" | "cancelled", sourceToken: result.data.sourceToken, name: result.data.name } } : result;
+    }).finally(() => { if (this.restoreSelectionFlight === promise) this.restoreSelectionFlight = undefined; this.publish(); });
+    this.restoreSelectionFlight = promise; return promise;
+  }
+  async recoverRestoreSource(): Promise<ApplicationResult<NativeRestoreSourceState>> {
+    const owner = this.restoreSourceOwner;
+    if (!owner || this.pendingRestore) return this.restoreSourceUnconfirmed();
+    const result = await this.invoke<NativeRestoreSourceState>("Backup.ReadRestoreSource", { requestId: owner.requestId });
+    if (!result.ok) return result;
+    if (!validRestoreSourceState(result.data, owner.requestId)) return this.restoreSourceUnconfirmed();
+    if (this.restoreSourceOwner !== owner) return this.restoreSourceUnconfirmed();
+    if (this.restoreSourceOwner === owner) {
+      const state = result.data;
+      if (["cancelled", "failed", "discarded"].includes(state.status)) this.restoreSourceOwner = undefined;
+      else { owner.sourceToken = state.sourceToken; owner.name = state.name; owner.previewId = state.preview?.previewId; owner.selectionPending = state.status === "selecting"; owner.preflightPending = state.preflightRunning; }
+      this.publish();
+    }
+    return result;
+  }
+  discardPendingRestoreSource(): Promise<ApplicationResult<{ status: "discarded" }>> {
+    if (this.restoreSourceDiscardFlight) return this.restoreSourceDiscardFlight;
+    const owner = this.restoreSourceOwner;
+    if (!owner || this.pendingRestore) return Promise.resolve(this.restoreSourceUnconfirmed());
+    owner.cleanupRequested = true;
+    const promise = this.invoke<{ status: "discarded" }>("Backup.DiscardRestore", { requestId: owner.requestId, previewId: owner.previewId ?? "", sourceToken: owner.sourceToken ?? "" }).then(result => {
+      if (result.ok && result.data.status === "discarded") { if (this.restoreSourceOwner === owner) this.restoreSourceOwner = undefined; }
+      else if (result.ok) return this.restoreSourceUnconfirmed<{ status: "discarded" }>();
+      return result;
+    }).finally(() => { if (this.restoreSourceDiscardFlight === promise) this.restoreSourceDiscardFlight = undefined; this.publish(); });
+    this.restoreSourceDiscardFlight = promise; this.publish(); return promise;
+  }
+  discardRestore(previewId: string, sourceToken: string) {
+    if (sourceToken && this.restoreSourceOwner?.sourceToken === sourceToken) return this.discardPendingRestoreSource();
+    return this.invoke<{ status: "discarded" }>("Backup.DiscardRestore", { previewId, sourceToken });
+  }
   async previewRestore(sourceToken: string): Promise<ApplicationResult<NativeRestorePreview>> {
     if (this.rollbackOwner?.cancelled) return rollbackCleanupUnconfirmed();
+    const owner = this.restoreSourceOwner?.sourceToken === sourceToken ? this.restoreSourceOwner : undefined;
+    if (owner?.cleanupRequested || this.restoreSourceOwner && !owner) return this.restoreSourceUnconfirmed();
+    if (owner) owner.preflightPending = true;
     const result = await this.invoke<NativeRestorePreview>("Backup.PreviewRestore", { sourceToken });
-    if (result.ok) {
-      const p = result.data, hash = /^[0-9a-f]{64}$/;
-      if (p.mode !== "native" || p.format !== "prism-local-backup" || !p.previewId || !hash.test(p.archiveSha256) || !hash.test(p.manifestSha256) || ![p.environmentCount, p.addCount, p.overwriteCount, p.conflictCount, p.missingKernelCount, p.credentialReentryCount, p.bytes].every(n => Number.isSafeInteger(n) && n >= 0) || p.addCount + p.overwriteCount !== p.environmentCount || p.canRestore !== (p.conflictCount === 0 && p.missingKernelCount === 0) || !Array.isArray(p.kernels) || !Array.isArray(p.credentials)) return { ok: false, mode: "native", error: { code: "BACKUP_INVALID", message: "恢复预览格式或统计无法核对；没有接入演示数据。", retryable: false } };
-    }
+    if (owner) { owner.preflightPending = false; if (result.ok && this.restoreSourceOwner === owner) owner.previewId = result.data.previewId; this.publish(); }
+    if (result.ok && !validRestorePreview(result.data)) return { ok: false, mode: "native", error: { code: "BACKUP_INVALID", message: "恢复预览格式或统计无法核对；没有接入演示数据。", retryable: false } };
     return result; // No refresh: read-only preflight must not flush pending writes.
   }
   async readRestorePage(request: { previewId: string; offset: number; pageSize: number }): Promise<ApplicationResult<NativeRestorePage>> {
@@ -419,7 +474,7 @@ export class WailsAdapter implements ApplicationService {
     const checked = this.confirmOperation(result); await this.refresh(); return checked;
   }
   private confirmPendingRestore(operation: Operation) {
-    if (confirmsRestoreRequest(operation, this.pendingRestore?.request)) { this.consumeMigrationRollback(this.pendingRestore!.request.previewId); this.pendingRestore = undefined; }
+    if (confirmsRestoreRequest(operation, this.pendingRestore?.request)) { const previewId = this.pendingRestore!.request.previewId; this.consumeMigrationRollback(previewId); if (this.restoreSourceOwner?.previewId === previewId) this.restoreSourceOwner = undefined; this.pendingRestore = undefined; }
   }
   applyRestore(request: NativeRestoreRequest): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>> {
     const projected = { previewId: request.previewId, archiveSha256: request.archiveSha256, confirmOverwrite: request.confirmOverwrite, acknowledgeCredentials: request.acknowledgeCredentials, stopRunning: request.stopRunning, requestId: request.requestId };

@@ -265,6 +265,9 @@ func (s *Service) confirmMigrationAcceptance(task *migrationTask) Result {
 }
 
 func (s *Service) startMigrationWorker(task *migrationTask, worker func(context.Context, *migrationTask)) {
+	if s.closed || s.closeRequested.Load() {
+		return
+	}
 	ctx, cancel := context.WithCancel(context.Background())
 	task.running = true
 	task.cancel = cancel

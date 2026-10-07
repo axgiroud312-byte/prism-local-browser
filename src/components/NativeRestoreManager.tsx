@@ -22,22 +22,61 @@ export function NativeRestoreManager({ application, workspace }: { application: 
   const mounted = useRef(true), generation = useRef(0), flight = useRef(false);
   const discardFlight = useRef(false);
   const owned = useRef({ previewId: "", sourceToken: "" });
-  useEffect(() => { mounted.current = true; return () => { mounted.current = false; generation.current++; const current = owned.current; if ((current.previewId || current.sourceToken) && !executionLock.current && application.getPendingRestore?.()?.request.previewId !== current.previewId) void discardUnused(current.previewId, current.sourceToken); }; }, [application]);
+  const [sourceUnconfirmed, setSourceUnconfirmed] = useState(!!application.getPendingRestoreSource?.());
+  useEffect(() => {
+    mounted.current = true;
+    if (application.getPendingRestoreSource?.() && !application.getPendingRestore?.()) void recoverSource();
+    return () => {
+      mounted.current = false; generation.current++;
+      const current = owned.current;
+      if (executionLock.current || application.getPendingRestore?.()) return;
+      // The adapter retains this exact owner after a failed or late cleanup.
+      if (application.getPendingRestoreSource?.()) void application.discardPendingRestoreSource?.();
+      else if (current.previewId || current.sourceToken) void discardUnused(current.previewId, current.sourceToken);
+    };
+  }, [application]);
   async function discardUnused(previewId: string, sourceToken: string) {
     try { await application.discardRestore?.(previewId, sourceToken); } catch { /* Best-effort cleanup never changes the current read or its ownership. */ }
   }
-  function closeReadOnly() { if (executionLock.current || cancelUnconfirmed || !source) setWindow(undefined); else void discard(); }
-  async function choose() {
-    if (flight.current || discardFlight.current || executionLock.current) return; flight.current = true; setBusy(true); setMessage(""); const current = ++generation.current;
-    const result = await application.selectRestoreSource?.();
-    if (!mounted.current || current !== generation.current) { if (result?.ok && result.data.sourceToken && result.data.sourceToken !== owned.current.sourceToken) void discardUnused("", result.data.sourceToken); return; }
+  function closeReadOnly() { if (executionLock.current || cancelUnconfirmed || !source && !application.getPendingRestoreSource?.()) setWindow(undefined); else void discard(); }
+  async function recoverSource() {
+    if (discardFlight.current || executionLock.current) return;
+    const requestId = application.getPendingRestoreSource?.()?.requestId;
+    if (!requestId) return;
+    const current = ++generation.current; setBusy(true); setSourceUnconfirmed(true);
+    const result = await application.recoverRestoreSource?.();
+    if (!mounted.current || current !== generation.current) return;
+    const pending = application.getPendingRestoreSource?.();
+    if (pending && pending.requestId !== requestId) return;
     flight.current = false; setBusy(false);
-    if (!result?.ok) { setMessage(result?.error.message ?? "本机文件选择不可用。"); return; }
+    if (!pending && !application.getPendingRestore?.()) { owned.current = { previewId: "", sourceToken: "" }; setSource(undefined); setPreview(undefined); setPage(undefined); setSourceUnconfirmed(false); setCancelUnconfirmed(false); setMessage("原来源已确认结束，可重新选择。"); return; }
+    if (!result?.ok) { setMessage(result?.error.message ?? "原来源核实尚未确认。"); setCancelUnconfirmed(true); return; }
+    const state = result.data;
+    if (state.status !== "selected" || !state.sourceToken) {
+      if (state.status === "selecting") { setMessage("原文件选择尚未结束，请关闭原系统选择器后核实；未另选来源。"); setCancelUnconfirmed(true); return; }
+      owned.current = { previewId: "", sourceToken: "" }; setSource(undefined); setPreview(undefined); setPage(undefined); setSourceUnconfirmed(false); setCancelUnconfirmed(false); setMessage("原选择已结束且未保留来源，可重新选择。"); return;
+    }
+    owned.current = { previewId: state.preview?.previewId ?? "", sourceToken: state.sourceToken };
+    setSource({ token: state.sourceToken, name: state.name ?? "原本机备份" });
+    const cleanup = !!application.getPendingRestoreSource?.()?.cleanupRequested || state.cleanupPending;
+    setSourceUnconfirmed(false); setCancelUnconfirmed(cleanup || state.preflightRunning);
+    if (cleanup || state.preflightRunning) { setPreview(undefined); setPage(undefined); setMessage(state.preflightRunning ? "原预检仍在结束与清理，请稍后重试原清理。" : "原来源已核实，暂存清理仍须确认；请重试原清理。"); return; }
+    setPreview(state.preview); setMessage("已核实原来源；未重新选择文件或提交恢复。");
+    if (state.preview) { setWindow("preflight"); await readPage(state.preview, 0, current); }
+  }
+  async function choose() {
+    if (flight.current || discardFlight.current || executionLock.current || sourceUnconfirmed || cancelUnconfirmed) return;
+    if (source && !await discard()) return;
+    setWindow("import");
+    flight.current = true; setBusy(true); setMessage(""); const current = ++generation.current;
+    const result = await application.selectRestoreSource?.();
+    if (!mounted.current || current !== generation.current) return;
+    flight.current = false; setBusy(false);
+    if (!result?.ok) { setSourceUnconfirmed(!!application.getPendingRestoreSource?.()); setMessage(result?.error.message ?? "本机文件选择不可用。"); return; }
     if (result.data.status === "selected" && result.data.sourceToken) {
-      const previous = owned.current;
-      if (previous.sourceToken && previous.sourceToken !== result.data.sourceToken) void discardUnused(previous.previewId, previous.sourceToken);
       owned.current = { previewId: "", sourceToken: result.data.sourceToken }; setSource({ token: result.data.sourceToken, name: result.data.name ?? "本机备份" }); setPreview(undefined); setPage(undefined); setCancelUnconfirmed(false);
-    } else setMessage("已取消文件选择；未预检或恢复，原输入保留。");
+    } else if (result.data.status === "cancelled") setMessage("已取消文件选择；未预检或恢复。");
+    else { setSourceUnconfirmed(true); setCancelUnconfirmed(true); setMessage("原选择返回未包含可靠来源，请核实原来源；未另选文件。"); }
   }
   async function readPage(p: NativeRestorePreview, offset: number, current: number) {
     const token = owned.current.sourceToken;
@@ -49,12 +88,12 @@ export function NativeRestoreManager({ application, workspace }: { application: 
     if (result?.ok) { setPage(result.data); setCancelUnconfirmed(false); setMessage(""); } else setMessage(result ? `${result.error.code}：${result.error.message} 可重读影响清单，不提交恢复。` : "无法读取影响清单。");
   }
   async function inspect() {
-    if (!source || source.token !== owned.current.sourceToken || flight.current || discardFlight.current || executionLock.current) return; flight.current = true; setBusy(true); setMessage(""); setPreview(undefined); setPage(undefined); const current = ++generation.current, token = source.token;
+    if (!source || sourceUnconfirmed || cancelUnconfirmed || source.token !== owned.current.sourceToken || flight.current || discardFlight.current || executionLock.current) return; flight.current = true; setBusy(true); setMessage(""); setPreview(undefined); setPage(undefined); const current = ++generation.current, token = source.token;
     const result = await application.previewRestore?.(token);
     if (!mounted.current || current !== generation.current || owned.current.sourceToken !== token) {
       // A retry may still use this token. Clean only the obsolete preview, not
       // its source or any later preview selected by the current generation.
-      if (result?.ok && result.data.previewId !== owned.current.previewId) void discardUnused(result.data.previewId, "");
+      if (!application.getPendingRestoreSource?.() && result?.ok && result.data.previewId !== owned.current.previewId) void discardUnused(result.data.previewId, "");
       return;
     }
     flight.current = false; setBusy(false);
@@ -62,18 +101,18 @@ export function NativeRestoreManager({ application, workspace }: { application: 
     owned.current.previewId = result.data.previewId; setPreview(result.data); setCancelUnconfirmed(false); setSection("environments"); setWindow("preflight"); await readPage(result.data, 0, current);
   }
   async function discard() {
-    if (!owned.current.sourceToken || discardFlight.current || executionLock.current) return;
+    if ((!owned.current.sourceToken && !application.getPendingRestoreSource?.()) || discardFlight.current || executionLock.current) return false;
     const current = owned.current;
     discardFlight.current = true; setDiscarding(true); const cancelled = ++generation.current;
     const isCurrent = () => mounted.current && owned.current === current && generation.current === cancelled;
     function unconfirmed(detail: string) { setCancelUnconfirmed(true); setMessage(detail); }
     try {
-      const result = await application.discardRestore?.(current.previewId, current.sourceToken);
-      if (!isCurrent()) return;
-      if (!result?.ok || result.data.status !== "discarded") { unconfirmed(result && !result.ok ? `${result.error.code}：${result.error.message}` : "没有收到有效的丢弃回执。"); return; }
+      const result = application.getPendingRestoreSource?.() ? await application.discardPendingRestoreSource?.() : await application.discardRestore?.(current.previewId, current.sourceToken);
+      if (!isCurrent()) return false;
+      if (!result?.ok || result.data.status !== "discarded") { unconfirmed(result && !result.ok ? `${result.error.code}：${result.error.message}` : "没有收到有效的丢弃回执。"); return false; }
       generation.current++; flight.current = false;
-      owned.current = { previewId: "", sourceToken: "" }; setSource(undefined); setPreview(undefined); setPage(undefined); setBusy(false); setPageBusy(false); setCancelUnconfirmed(false); setWindow(undefined); setMessage("已丢弃预检；当前数据库与浏览数据未修改。");
-    } catch { if (isCurrent()) unconfirmed("本机取消请求未返回有效回执。"); }
+      owned.current = { previewId: "", sourceToken: "" }; setSource(undefined); setPreview(undefined); setPage(undefined); setBusy(false); setPageBusy(false); setSourceUnconfirmed(false); setCancelUnconfirmed(false); setWindow(undefined); setMessage("已丢弃预检；当前数据库与浏览数据未修改。"); return true;
+    } catch { if (isCurrent()) unconfirmed("本机取消请求未返回有效回执。"); return false; }
     finally {
       discardFlight.current = false;
       if (mounted.current) setDiscarding(false);
@@ -85,9 +124,10 @@ export function NativeRestoreManager({ application, workspace }: { application: 
   const recoveryMessage = cancelUnconfirmed ? `取消未确认：${message} 原文件与已知预览保留，可重试取消或仅关闭窗口；未提交恢复。` : message;
   return <div className="local-page-restore-entry" aria-label="恢复只读预检">
     <ReferenceButton disabled={busy || discarding || executionLocked} onClick={() => { setWindow(preview ? "preflight" : "import"); if (!cancelUnconfirmed) setMessage(""); }}>导入完整备份</ReferenceButton>
-    {window === "import" && <LocalPageWindow title="导入本机备份" height={359} busy={busy || discarding} onClose={closeReadOnly} footer={<><ReferenceButton disabled={discarding || executionLocked} onClick={() => { if (source) void discard(); else setWindow(undefined); }}>{busy ? "取消只读预检" : cancelUnconfirmed ? "重试取消只读预检" : "取消"}</ReferenceButton>{cancelUnconfirmed && <ReferenceButton disabled={busy || discarding || executionLocked} onClick={closeReadOnly}>仅关闭窗口</ReferenceButton>}<ReferenceButton className="primary" disabled={busy || discarding || executionLocked || !source} onClick={() => void inspect()}>完整校验并预览</ReferenceButton></>}>
+    {window === "import" && <LocalPageWindow title="导入本机备份" height={359} busy={busy || discarding} onClose={closeReadOnly} footer={<><ReferenceButton disabled={discarding || executionLocked} onClick={() => { if (source || application.getPendingRestoreSource?.()) void discard(); else setWindow(undefined); }}>{busy ? "取消只读预检" : cancelUnconfirmed ? "重试取消只读预检" : "取消"}</ReferenceButton>{cancelUnconfirmed && <ReferenceButton disabled={busy || discarding || executionLocked} onClick={closeReadOnly}>仅关闭窗口</ReferenceButton>}<ReferenceButton className="primary" disabled={busy || discarding || executionLocked || !source || sourceUnconfirmed || cancelUnconfirmed} onClick={() => void inspect()}>完整校验并预览</ReferenceButton></>}>
       <p>只读核对完整 .prismbackup；不会停止环境、写数据库或替换目录。演示 JSON 不可用。</p>
-      <div className="local-page-upload"><div className="local-page-upload-head"><span>本机完整备份包<br />不上传到云端</span><ReferenceButton disabled={busy || discarding || executionLocked} onClick={() => void choose()}>选择本机备份包</ReferenceButton></div><p>{source?.name ?? "尚未选择文件"}</p></div>
+      <div className="local-page-upload"><div className="local-page-upload-head"><span>本机完整备份包<br />不上传到云端</span><ReferenceButton disabled={busy || discarding || executionLocked || sourceUnconfirmed || cancelUnconfirmed} onClick={() => void choose()}>选择本机备份包</ReferenceButton></div><p>{source?.name ?? (sourceUnconfirmed ? "原文件选择待核实" : "尚未选择文件")}</p></div>
+      {(sourceUnconfirmed || cancelUnconfirmed) && <ReferenceButton disabled={busy || discarding || executionLocked} onClick={() => void recoverSource()}>核实原来源</ReferenceButton>}
       <p className="subtle-text">摘要、路径与精确内核由服务校验；取消系统选择器不会开始恢复。</p>
       {busy && <p role="status">正在流式读取全部文件并核对摘要…</p>}{recoveryMessage && <p role="alert">{recoveryMessage}</p>}
     </LocalPageWindow>}

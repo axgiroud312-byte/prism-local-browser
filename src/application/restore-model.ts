@@ -1,4 +1,18 @@
-import type { NativeRestoreRequest, Operation } from "./contract.ts";
+import type { NativeRestoreRequest, NativeRestorePreview, NativeRestoreSourceState, Operation } from "./contract.ts";
+
+export function validRestorePreview(p: NativeRestorePreview): boolean {
+  const hash = /^[0-9a-f]{64}$/;
+  return !!p && p.mode === "native" && p.format === "prism-local-backup" && typeof p.previewId === "string" && !!p.previewId && hash.test(p.archiveSha256) && hash.test(p.manifestSha256)
+    && [p.environmentCount, p.addCount, p.overwriteCount, p.conflictCount, p.missingKernelCount, p.credentialReentryCount, p.bytes].every(n => Number.isSafeInteger(n) && n >= 0)
+    && p.addCount + p.overwriteCount === p.environmentCount && p.canRestore === (p.conflictCount === 0 && p.missingKernelCount === 0) && Array.isArray(p.kernels) && Array.isArray(p.credentials);
+}
+
+export function validRestoreSourceState(value: NativeRestoreSourceState, requestId: string): boolean {
+  return !!value && value.mode === "native" && value.requestId === requestId && ["selecting", "selected", "cancelled", "failed", "discarded"].includes(value.status)
+    && typeof value.preflightRunning === "boolean" && typeof value.cleanupPending === "boolean"
+    && (value.status === "selected" ? typeof value.sourceToken === "string" && !!value.sourceToken : !value.sourceToken && !value.preflightRunning && !value.cleanupPending && !value.preview)
+    && (!value.preview || !value.preflightRunning && !value.cleanupPending && validRestorePreview(value.preview));
+}
 
 export function invalidRestoreOperation(op: Operation): boolean {
   if (op.kind !== "backup-restore") return false;

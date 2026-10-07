@@ -385,6 +385,12 @@ parseSnapshot 校验 format、schemaVersion、主要记录字段、Cookie 数组
 
 ### T17 完整恢复执行增量（本地源码，尚未运行验收）
 
+2026-10-07 后续修复合同（只使用 148 的桌面范围）：普通备份选择在发出前固定 `requestId`，服务记录该请求与真实 `sourceToken` 的关系。`Backup.ReadRestoreSource({ requestId })` 只读返回原选择、预检和清理状态；不调用会刷新持久观测的工作区查询，不扫描或认领其他来源。前端适配器保留原请求跨页面卸载和迟到回复；只有原 worker 结束且原暂存确实清理后，明确丢弃回执才释放该来源。完整前端会话丢失且无法提供原 requestId 时仍安全阻断。这不是跨版本迁移丢来源恢复已通过。
+
+桌面退出由 `OnBeforeClose` 等待同一次真实服务关闭。清理超时、原暂存占用或待保存观测失败时保留窗口，停止接受新业务，用户可解除原因后重试原清理。已持久的维护保护，以及已停止的存储关闭返回错误，另用明确的非成功退出保留原数据供重开核对；不能将重复 `sql.DB.Close()` 的空结果当成前次驱动错误已修复。等待时限不取消后台清理；SQLite 终结持久化仍遵循现有忙超时。实际检查与新程序结果另记验收，不能从合同推定通过。
+
+以下为本日较早 preview7/8 的保护与限制记录，保留当时来源：
+
 2026-10-07 桌面收口增量：`Backup.DiscardRestore` 的取消受理不等于原 worker 终结或暂存清理完成。原预检仍执行时返回可重试 `PROFILE_BUSY` 并保留原来源；已结束但原私有暂存清理失败时仍保留归属，只允许原 token 的明确清理或等待 worker 结束后的应用 Close 重试。新选文件、迁移回退来源及新预检不能接管未确认的旧暂存。缺 sourceToken 时同一会话不能安全恢复，不猜来源或制造标识；正常退出重开只有在旧进程结束、原暂存目录实核清空后才有恢复依据。`exit0` 本身不证明清理，因为当前桌面 shutdown 不将 Close 错误映射为进程退出码。实际结果见 [回收与迁移收口](verification/desktop-recycle-migration-closeout.md)。
 
 [`受理`](../internal/workspace/restore_accept.go)消费T16预览及原摘要，冻结包/环境/历史/凭据闭包；全局配置维护屏障、正常Stop及持久观测通过后，重新核对基线与精确内核文件。[`worker`](../internal/workspace/restore_worker.go)使用同卷incoming/previous、旧配置副本和[`稳定目录对象`](../internal/backup/switch_windows.go)，持久prepared计划先于首次rename；目录校验和移动只处理已知对象，未知目录保持保护。取消不自动重新打开已停止会话。

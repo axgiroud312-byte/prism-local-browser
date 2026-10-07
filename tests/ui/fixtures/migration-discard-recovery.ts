@@ -50,7 +50,7 @@ export async function migrationDiscardRecoveryBridge(page: Page, scenario: Migra
         if (request.method === "Migration.SelectRollback" && selectionBusy) return { ok: false, mode: "native", error: { code: "PROFILE_BUSY", message: "请先完成当前维护。", retryable: true } };
         // New explicit ordinary-source test support only. No allocation on the
         // busy selection branch; no hidden SelectRollback call or fallback.
-        if (request.method === "Backup.SelectRestoreSource" && ordinarySourceEnabled) { ordinarySourceActive = true; return { ok: true, mode: "native", data: { status: "selected", sourceToken: "synthetic-ordinary-supported-source", name: "synthetic-ordinary.prismbackup" } }; }
+        if (request.method === "Backup.SelectRestoreSource" && ordinarySourceEnabled) { ordinarySourceActive = true; return { ok: true, mode: "native", data: { mode: "native", requestId: (request.payload as { requestId: string }).requestId, preflightRunning: false, cleanupPending: false, status: "selected", sourceToken: "synthetic-ordinary-supported-source", name: "synthetic-ordinary.prismbackup" } }; }
         if (request.method === "Backup.DiscardRestore" && (request.payload as { sourceToken?: string }).sourceToken === "synthetic-ordinary-supported-source" && ordinarySourceActive) { ordinarySourceActive = false; return { ok: true, mode: "native", data: { status: "discarded" } }; }
         const index = holds.findIndex(h => h.method === request.method);
         if (index >= 0) {

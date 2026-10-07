@@ -125,6 +125,7 @@ func (s *Service) acceptRestore(input RestoreRequest) Result {
 	err = tx.Commit()
 	s.restoreTask = task
 	s.restorePreview = nil
+	s.consumeRestoreSource(d.sourceToken)
 	if err != nil {
 		task.acceptancePending = true
 		if err = s.confirmRestoreAcceptance(task, signature); err != nil {
@@ -190,7 +191,7 @@ func (s *Service) restoreUnconfirmed(task *restoreTask, err error) Result {
 	return r
 }
 func (s *Service) startRestore(task *restoreTask) {
-	if task.running {
+	if task.running || s.closed || s.closeRequested.Load() {
 		return
 	}
 	task.running = true

@@ -57,7 +57,7 @@ func (s *Service) observeRecycle(task *recycleTask, plan recyclePlan, phase stri
 	return nil
 }
 func (s *Service) startRecycle(task *recycleTask, recovering bool) {
-	if task.running {
+	if task.running || s.closed || s.closeRequested.Load() {
 		return
 	}
 	task.running = true

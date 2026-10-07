@@ -12,7 +12,6 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
-	"strings"
 	"time"
 
 	"github.com/axgiroud312-byte/prism-local-browser/internal/backup"
@@ -21,8 +20,11 @@ import (
 
 func (s *Service) restorePreviewCall(request Request) Result {
 	s.mu.Lock()
-	blocked, migrating, scratchPending := s.recycleTask != nil, s.migrationTask != nil, s.restoreScratch != ""
+	blocked, migrating := s.recycleTask != nil, s.migrationTask != nil
 	s.mu.Unlock()
+	if request.Method == "Backup.ReadRestoreSource" {
+		return s.readRestoreSource(request.Payload)
+	}
 	if migrating {
 		return failure("MIGRATION_INCOMPLETE", "迁移维护尚未收尾，请先核对原任务。", true)
 	}
@@ -31,41 +33,7 @@ func (s *Service) restorePreviewCall(request Request) Result {
 	}
 	switch request.Method {
 	case "Backup.SelectRestoreSource":
-		if scratchPending {
-			return failure("BACKUP_PREFLIGHT_FAILED", "原预检暂存清理尚未确认，请先重试原清理；未选择或替换来源。", true)
-		}
-		if decode(request.Payload, &struct{}{}) != nil {
-			return failure("VALIDATION_FAILED", "备份只能通过本机文件选择器读取。", false)
-		}
-		if s.options.ChooseBackupSource == nil {
-			return failure("CAPABILITY_UNSUPPORTED", "本机备份选择器不可用。", false)
-		}
-		path, err := s.options.ChooseBackupSource()
-		if err != nil {
-			return preflightFailure(err)
-		}
-		if path == "" {
-			return success(map[string]string{"status": "cancelled"}, "")
-		}
-		path, err = filepath.Abs(path)
-		if err != nil || strings.HasPrefix(path, `\\`) || !strings.EqualFold(filepath.Ext(path), backup.Extension) {
-			return failure("BACKUP_INVALID", "请选择本机 .prismbackup 完整备份；演示 JSON 不能恢复桌面数据。", false)
-		}
-		s.mu.Lock()
-		defer s.mu.Unlock()
-		if s.closed || s.closeRequested.Load() {
-			return failure("NATIVE_UNAVAILABLE", "应用正在退出。", true)
-		}
-		if s.restorePreflight != nil || s.recycleTask != nil || s.migrationTask != nil {
-			return failure("PROFILE_BUSY", "先取消或等待当前只读预检。", true)
-		}
-		if s.restoreScratch != "" {
-			return failure("BACKUP_PREFLIGHT_FAILED", "原预检暂存清理尚未确认，请先重试原清理；未替换来源。", true)
-		}
-		token := id()
-		s.restoreSources = map[string]restoreSource{token: {path: path, expires: time.Now().Add(30 * time.Minute)}}
-		s.restorePreview = nil
-		return success(map[string]string{"status": "selected", "sourceToken": token, "name": filepath.Base(path)}, "")
+		return s.selectRestoreSource(request.Payload)
 	case "Backup.PreviewRestore":
 		var input struct {
 			SourceToken string `json:"sourceToken"`
@@ -78,12 +46,27 @@ func (s *Service) restorePreviewCall(request Request) Result {
 		var input struct {
 			PreviewID   string `json:"previewId"`
 			SourceToken string `json:"sourceToken"`
+			RequestID   string `json:"requestId"`
 		}
 		if decode(request.Payload, &input) != nil {
 			return failure("VALIDATION_FAILED", "取消预检标识无效。", false)
 		}
 		s.mu.Lock()
 		defer s.mu.Unlock()
+		var selection *restoreSelection
+		if input.RequestID != "" {
+			selection = s.restoreSelections[input.RequestID]
+			if selection == nil {
+				return failure("RESTORE_SOURCE_UNCONFIRMED", "原选择所有权未核实，未清理任何来源。", true)
+			}
+			if selection.status == "selecting" {
+				return failure("PROFILE_BUSY", "原文件选择尚未结束，请等待并重试原清理。", true)
+			}
+			if input.SourceToken != "" && input.SourceToken != selection.token {
+				return failure("VALIDATION_FAILED", "来源不属于原选择请求，未清理。", false)
+			}
+			input.SourceToken = selection.token
+		}
 		if input.SourceToken != "" {
 			if s.restorePreflight != nil && s.restorePreflight.id == input.SourceToken {
 				s.restorePreflight.cancel()
@@ -103,9 +86,17 @@ func (s *Service) restorePreviewCall(request Request) Result {
 				return failure("BACKUP_PREFLIGHT_FAILED", "预检暂存清理尚未确认，不能用其他来源解除；请核对原预检。", true)
 			}
 			delete(s.restoreSources, input.SourceToken)
+			for _, owner := range s.restoreSelections {
+				if owner.token == input.SourceToken {
+					owner.status, owner.token = "discarded", ""
+				}
+			}
 		}
 		if s.restorePreview != nil && (s.restorePreview.preview.PreviewID == input.PreviewID || input.SourceToken != "" && s.restorePreview.sourceToken == input.SourceToken) {
 			s.restorePreview = nil
+		}
+		if selection != nil {
+			selection.status = "discarded"
 		}
 		return success(map[string]string{"status": "discarded"}, "")
 	case "Backup.ReadRestorePage":

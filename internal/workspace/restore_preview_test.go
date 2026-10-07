@@ -29,6 +29,11 @@ func restorePackageFixture(t *testing.T, s *Service, ids []string) string {
 }
 func previewPackageFixture(t *testing.T, s *Service, path string) Result {
 	t.Helper()
+	// A fixture selecting another package must release its exact old source,
+	// just as the desktop flow does; preview-only discard preserves that source.
+	for token := range s.restoreSources {
+		value[map[string]string](t, call(s, "Backup.DiscardRestore", map[string]string{"sourceToken": token}))
+	}
 	s.options.ChooseBackupSource = func() (string, error) { return path, nil }
 	selected := value[struct {
 		Token string `json:"sourceToken"`

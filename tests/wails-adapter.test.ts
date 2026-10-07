@@ -376,7 +376,7 @@ test("M22 definite SelectRollback PROFILE_BUSY releases only tokenless prealloca
     const { app, calls } = fixture(r => {
       if (r.method === "Operation.Read") return ok(task);
       if (r.method === "Migration.SelectRollback") return busy ? selectionBusy : ok({ sourceToken: "M22-supported-rollback-source", archiveSha256: "a".repeat(64) });
-      if (r.method === "Backup.SelectRestoreSource") return ok({ status: "selected", sourceToken: "M22-supported-ordinary-source", name: "synthetic.prismbackup" });
+      if (r.method === "Backup.SelectRestoreSource") return ok({ mode: "native", requestId: (r.payload as { requestId: string }).requestId, preflightRunning: false, cleanupPending: false, status: "selected", sourceToken: "M22-supported-ordinary-source", name: "synthetic.prismbackup" });
       if (r.method === "Backup.PreviewRestore") return ok(restorePreview());
       return ok({ status: "discarded" });
     });
@@ -395,7 +395,7 @@ test("M22 definite SelectRollback PROFILE_BUSY releases only tokenless prealloca
       assert.equal((await app.previewMigrationRollback(task.id)).ok, false, "the later live owner is not released by the old finalizer");
     } else {
       const selected = await app.selectRestoreSource(); assert.ok(selected.ok); assert.equal(selected.data.sourceToken, "M22-supported-ordinary-source");
-      assert.deepEqual(calls.find(c => c.method === "Backup.SelectRestoreSource")?.payload, {});
+      assert.equal(typeof (calls.find(c => c.method === "Backup.SelectRestoreSource")?.payload as { requestId: string }).requestId, "string");
       assert.equal(calls.filter(c => c.method === "Backup.PreviewRestore").length, 0);
       assert.ok((await app.previewRestore(selected.data.sourceToken!)).ok);
       assert.deepEqual(calls.find(c => c.method === "Backup.PreviewRestore")?.payload, { sourceToken: selected.data.sourceToken });
