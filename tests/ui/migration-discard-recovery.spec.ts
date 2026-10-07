@@ -72,10 +72,11 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1280, height: 800
     await ordinary.getByRole("button", { name: "选择本机备份包", exact: true }).click();
     await expect(ordinary).toContainText("synthetic-ordinary.prismbackup");
     await expect(ordinary.getByRole("button", { name: "完整校验并预览", exact: true })).toBeEnabled();
-    expect(await calls(page, "Backup.SelectRestoreSource")).toEqual([{ mode: "native", method: "Backup.SelectRestoreSource", payload: {} }]);
+    const ordinarySourceRequestId = "00000000-0000-4000-8000-000000000001";
+    expect(await calls(page, "Backup.SelectRestoreSource")).toEqual([{ mode: "native", method: "Backup.SelectRestoreSource", payload: { requestId: ordinarySourceRequestId } }]);
     expect(await calls(page, "Backup.PreviewRestore")).toHaveLength(0); expect(await calls(page, "Backup.ApplyRestore")).toHaveLength(0);
     await ordinary.getByRole("button", { name: "取消", exact: true }).click(); await expect(ordinary).toHaveCount(0);
-    expect(await calls(page, "Backup.DiscardRestore")).toEqual([{ mode: "native", method: "Backup.DiscardRestore", payload: { previewId: "", sourceToken: "synthetic-ordinary-supported-source" } }]);
+    expect(await calls(page, "Backup.DiscardRestore")).toEqual([{ mode: "native", method: "Backup.DiscardRestore", payload: { requestId: ordinarySourceRequestId, previewId: "", sourceToken: "synthetic-ordinary-supported-source" } }]);
     expect((await snapshot(page)).ordinarySourceActive).toBe(false);
     await page.getByRole("link", { name: "内核管理", exact: true }).click();
     await page.getByRole("button", { name: "选定环境迁移", exact: true }).click();

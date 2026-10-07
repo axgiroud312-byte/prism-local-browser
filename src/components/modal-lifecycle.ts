@@ -76,8 +76,8 @@ export function ownsTopModal(element: HTMLElement | null): boolean {
   return !!element && !!top && (element === top || element.contains(top));
 }
 
-/** Keep the owner's effective frame focused when React removes/disables a
- * focused control. Such blur can reset focus to body without firing focusin. */
+/** Keep the owner's effective frame focused when controls change or a backdrop
+ * click resets focus to body without firing focusin. */
 export function maintainModalFocus(owner: () => HTMLElement | null): () => void {
   const repair = () => {
     const element = owner(), top = topModalElement();
@@ -93,8 +93,12 @@ export function maintainModalFocus(owner: () => HTMLElement | null): () => void 
   changes.observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ["disabled", "inert"] });
   document.addEventListener("focusin", repair);
   let live = true;
+  // Wait until the browser finishes moving focus. A valid new target inside
+  // the top frame stays focused; a lower/stale owner cannot take focus back.
+  const afterBlur = () => queueMicrotask(() => { if (live) repair(); });
+  document.addEventListener("focusout", afterBlur);
   queueMicrotask(() => { if (live) repair(); });
-  return () => { live = false; changes.disconnect(); document.removeEventListener("focusin", repair); };
+  return () => { live = false; changes.disconnect(); document.removeEventListener("focusin", repair); document.removeEventListener("focusout", afterBlur); };
 }
 
 export function restoreModalFocus(target: HTMLElement | null): void {
