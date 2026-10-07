@@ -1,0 +1,1032 @@
+{
+  "schemaVersion": 1,
+  "kind": "append-only-independent-actual-frontier-finite-definition-continuation-not-whole-cell-or-native-acceptance",
+  "date": "2026-10-07",
+  "original47LedgerSHA256": "09295291c4a90dd33ab227d0956cbf8ad9d6e26cac13c01f28b5b520a72e3728",
+  "inheritedF13F15RepairLayerSHA256": "cfddcabf6b9d3a1824b4fa9863d3ca003772eb3eeeda7189cac1e437666b78d8",
+  "independentDecisionInputs": [
+    {
+      "role": "F07-F32-B08-independent-finite-decisions",
+      "SHA256": "312286eaef2b8ff09effe8d280877916790d7f15dd378da26f8e31a7af3b030b",
+      "bytes": 49316
+    },
+    {
+      "role": "H19-independent-first-loading-finite-decision",
+      "SHA256": "09127214777ae56748f0fe29407dc770834febabc1a43868fd8518e565d89ff6",
+      "bytes": 24164
+    },
+    {
+      "role": "F11-independent-demo-supported-subset",
+      "SHA256": "1d445c563d85d2e0ff2f8b4df5d8ba766dded7a98f0f80ff37509e91e1a125ef",
+      "bytes": 29659
+    },
+    {
+      "role": "P07-independent-repaired-byte-limit-finite-decision",
+      "SHA256": "dd292e50020b72538730d61e507ec9a9cb194a0d79edd286cf1bf0b8cbdcced3",
+      "bytes": 20288
+    },
+    {
+      "role": "M22-independent-original-discard-finite-decision",
+      "SHA256": "29355751ed176e1a77a75196a517a0cedb2d05af82d35ef676cd99b19fd13a3d",
+      "bytes": 31125
+    },
+    {
+      "role": "F26-independent-supported-create-batch-finite-decision",
+      "SHA256": "f18f3a2625959a4abcaea00226246414db22e7c7cd66a009ff7c291b33649741",
+      "bytes": 19574
+    },
+    {
+      "role": "H19-private-path-omission-independent-review",
+      "SHA256": "9e589d521e3cca7cfa3f79836874cc7a6aee0162041046e01fb6d3f9e3f5e19b",
+      "bytes": 16738
+    },
+    {
+      "role": "four-actual-reviewed-standalone-action-public-projection",
+      "SHA256": "030465e155d9c46dafbb0c5700f3fbbcb70d1b70ac2e251c4cfd65afd194a8e3",
+      "bytes": 149487
+    }
+  ],
+  "original274CoverageUnchanged": {
+    "covered": 113,
+    "partial": 60,
+    "missing": 101,
+    "denominator": 274
+  },
+  "originalDefinitionDenominator": 47,
+  "priorFiniteDefinitionsAddressed": 37,
+  "cellRelationUpdates": [
+    {
+      "id": "F07",
+      "originalDefinitionIndex": 12,
+      "originalDefinitionPointer": "docs/verification/issue37-supplementary-environment.json#/original47Definitions/12",
+      "originalDefinitionObjectSHA256": "0bc47590e9852620ac13b39d0b9b507627b079c77607701881ad1e9dcd397ed1",
+      "originalDefinition": {
+        "id": "F07",
+        "ticket": 34,
+        "mode": "native",
+        "historicalCoverage": "PARTIAL",
+        "historicalSupplementStatus": "unproven",
+        "originalRemainingSemanticGaps": [
+          "idle native create top/proxy/preferences/fingerprint/bottom and idle edit top require exact mode/content pairs; locked create/history are not those states"
+        ],
+        "predicateSourceQualifierRef": "/qualifications/untouched44",
+        "cellFullyCovered": false
+      },
+      "previousRelationPointer": "docs/verification/issue37-supplementary-environment.json#/cellRelationUpdates/12",
+      "previousRelationObjectSHA256": "6029fb2092051579dd8f5f294f488a64996516800ae347972cfa0522a97ea93a",
+      "statusBefore": "PARTIALLY_OBSERVED",
+      "inheritedObservedFiniteClauses": [
+        "Native idle create top/proxy/preferences/fingerprint and idle edit top have source-bound mode/content records; no locked-create/history substitution."
+      ],
+      "inheritedRemainingUnprovedClauses": [
+        "Exact idle-create bottom content/scroll clause is not independently established beyond capturedPosition=bottom: both bottom records share their fingerprint PNG hashes, and the accepted review expressly does not certify a separate bottom view."
+      ],
+      "status": "FINITE_ORIGINAL_GAP_DEFINITION_ADDRESSED",
+      "observedFiniteClauses": [
+        {
+          "clause": "Exact idle-create bottom content/scroll clause is not independently established beyond capturedPosition=bottom: both bottom records share their fingerprint PNG hashes, and the accepted review expressly does not certify a separate bottom view.",
+          "why": "Actual expanded idle native-mode create technical tail is separately visible at both viewports, wheel maxima and same synthetic preview identity are saved, final row/caveat/four footer controls independently visually read; not duplicate fingerprint, locked create or history substitution",
+          "addressed": true
+        }
+      ],
+      "remainingUnprovedFiniteClauses": [],
+      "evidence": [
+        {
+          "kind": "actual-image-with-own-callback-if-present",
+          "publicRef": "docs/screenshots/issue37-frontier-bottoms/manifest.json#/records/0",
+          "sourceHead": "b424b21f9881ded7c0c53314f9f70a8bdea78734",
+          "renderHash": "a83d927c931dd81b76656f98d6616aafe5f8e8df9b168d68953bab9d193537f2",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "imageSHA256": "a51c69d7406795ec39ffbe0f1bf5111395c1f2c614ec58cf0088da01e28b3aed",
+          "actualSavedManifestSHA256": "1dd678f213e8fe1a26d046b8a2e0b2d69f4118407d2200f148335d252a02c79d",
+          "publicStageManifestSHA256": "b335c40a9abe48442283e2ceeea5739112f264a2ab0efaac533e7764f4499bdc",
+          "immutableOriginalFullRecordObjectSHA256": "0f8b09970b3ac176e08323ae76010567171db44fdfec4b0610fcdd32e9fc5fd1",
+          "independentVisualVerdict": "ADAPTED",
+          "strictSameBusinessOriginalReference": false,
+          "actionProofSHA256": "5322af7891b33372f7223ed6000a67c617cb8202c8ee14ba5dc3c4b9e99c4fa6",
+          "sameImageCallbackSHA256": null,
+          "coldOriginalRequestRecoverySHA256": null,
+          "finalSafetySHA256": "df18c2146b181cdf7f0c6becb36a3551b5b9b88986c3603a8496d770dbd37746",
+          "anotherImageOrStandaloneContextClaimed": false
+        },
+        {
+          "kind": "actual-image-with-own-callback-if-present",
+          "publicRef": "docs/screenshots/issue37-frontier-bottoms/manifest.json#/records/2",
+          "sourceHead": "b424b21f9881ded7c0c53314f9f70a8bdea78734",
+          "renderHash": "a83d927c931dd81b76656f98d6616aafe5f8e8df9b168d68953bab9d193537f2",
+          "viewport": {
+            "width": 1280,
+            "height": 800
+          },
+          "imageSHA256": "204d1e71997b049fc2ee7d9a09d01af20d58491b0bf4b9d96e2cc57790a71a4b",
+          "actualSavedManifestSHA256": "1dd678f213e8fe1a26d046b8a2e0b2d69f4118407d2200f148335d252a02c79d",
+          "publicStageManifestSHA256": "b335c40a9abe48442283e2ceeea5739112f264a2ab0efaac533e7764f4499bdc",
+          "immutableOriginalFullRecordObjectSHA256": "3206438a7b9d5e39d4ffd65bdb27566f24472974c4b8f74ef0b32e756ab04356",
+          "independentVisualVerdict": "ADAPTED",
+          "strictSameBusinessOriginalReference": false,
+          "actionProofSHA256": "08ef4396c1e061c846c5d68ff768d894f1f49bb4a47f4c1a1a920ad5d5c214af",
+          "sameImageCallbackSHA256": null,
+          "coldOriginalRequestRecoverySHA256": null,
+          "finalSafetySHA256": "df18c2146b181cdf7f0c6becb36a3551b5b9b88986c3603a8496d770dbd37746",
+          "anotherImageOrStandaloneContextClaimed": false
+        }
+      ],
+      "qualifications": [
+        "Keep duplicate records and baseline FAILs, not six labels treated as six independently certified views. No new mandatory commercial hardware editors or extra photo per callback.",
+        "Carry all old top/proxy/preferences/fingerprint/edit mode/content observations and retained duplicate/FAIL verdicts with source340 bindings. This accounts new b424 bottom only, not repair of the old visual FAILs.",
+        "ADAPTED container/content qualification, direct native business-state comparator MISSING, no strict one-to-one or formal PNG acceptance.",
+        "Synthetic preview/profile/kernel/capability strings do not establish native creation, actual hardware/profile bytes/executable enforcement or desktop acceptance. No create success or extra callback result is invented."
+      ],
+      "cellFullyCovered": false,
+      "wholeCellPassesAdded": 0,
+      "strictVisualPass": false,
+      "realDesktopAcceptance": false
+    },
+    {
+      "id": "F32",
+      "originalDefinitionIndex": 23,
+      "originalDefinitionPointer": "docs/verification/issue37-supplementary-environment.json#/original47Definitions/23",
+      "originalDefinitionObjectSHA256": "1aa94e8b5a44cb2fb47030d6c0c203a7243cac18ac8dcfb66a8a8493f7f24be8",
+      "originalDefinition": {
+        "id": "F32",
+        "ticket": 34,
+        "mode": "native",
+        "historicalCoverage": "PARTIAL",
+        "historicalSupplementStatus": "partly-supplemented",
+        "originalRemainingSemanticGaps": [
+          "Owned/control-lost force warning and zero-dispatch stack are pictured. This accounting has no raw exact positive ForceStop payload or fresh negative-target payload proof in the 62-case summary; its test titles do not certify the whole revalidation cell."
+        ],
+        "predicateSourceQualifierRef": "/qualifications/untouched44",
+        "cellFullyCovered": false
+      },
+      "previousRelationPointer": "docs/verification/issue37-supplementary-environment.json#/cellRelationUpdates/23",
+      "previousRelationObjectSHA256": "addb77db73cbc3f7efe0da1196c9e9b9525cdd7129bdae330adf6ef2580ba914",
+      "statusBefore": "PARTIALLY_OBSERVED",
+      "inheritedObservedFiniteClauses": [
+        "Each viewport has five genuine edit previews and four clean discards. Fresh cancel-button/original-candidate-absent/canForce-revoked/needsReconcile rounds dispatch0. Fifth exact original eligible session dispatches Runtime.ForceStop once with only environmentId/sessionId/requestId and receives definite synthetic VALIDATION_FAILED, not acceptance."
+      ],
+      "inheritedRemainingUnprovedClauses": [
+        "Whole revalidation is not certified: replacement-current-session negative target is unobserved; absent original candidate with its original resource owner retained is not replacement-session proof.",
+        "Cancel Escape and double-confirm paths remain unobserved; an actual Cancel-button round is not either path."
+      ],
+      "status": "FINITE_ORIGINAL_GAP_DEFINITION_ADDRESSED",
+      "observedFiniteClauses": [
+        {
+          "clause": "Whole revalidation is not certified: replacement-current-session negative target is unobserved; absent original candidate with its original resource owner retained is not replacement-session proof.",
+          "why": "Present replacement session/resource owner and original highest warning target coexist; same original Confirm dispatches zero, consumes only warning, and restores same drawer controls/focus. New full candidate differs only in sessionId; not borrowed old absence/resource-owner proof or invented cleanup click",
+          "addressed": true
+        },
+        {
+          "clause": "Cancel Escape and double-confirm paths remain unobserved; an actual Cancel-button round is not either path.",
+          "why": "Actual highest Escape dismisses only warning with force0 and original drawer recovery; two real pointer inputs consume warning before pending reply, exactly one same-original payload/request survives held promise and one synthetic definite refusal, with parent controls/focus conserved. Not old Cancel button or two-confirm-handler executions",
+          "addressed": true
+        }
+      ],
+      "remainingUnprovedFiniteClauses": [],
+      "evidence": [
+        {
+          "kind": "reviewed-standalone-action-not-a-picture",
+          "publicRef": "docs/verification/issue37-frontier-actions.json#/records/0",
+          "sourceHead": "b424b21f9881ded7c0c53314f9f70a8bdea78734",
+          "renderHash": "a83d927c931dd81b76656f98d6616aafe5f8e8df9b168d68953bab9d193537f2",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "immutableOriginalFullRecordObjectSHA256": "bde83a455327294d75a385634b2ed49a2bc2431657699d8da515a7175d1fe2e5",
+          "actionProofSHA256": "8ffdd92b2b68a4f0cbbcb39999ceb89a1f08a8a93a65ebcf6c51370f8353a68a",
+          "finalSafetySHA256": "9119aadf9956e7c7a26f6d13017bcbbd94eda955a62bb1f8760b373ceec381be",
+          "realNativeEffectsProved": false
+        },
+        {
+          "kind": "reviewed-standalone-action-not-a-picture",
+          "publicRef": "docs/verification/issue37-frontier-actions.json#/records/2",
+          "sourceHead": "b424b21f9881ded7c0c53314f9f70a8bdea78734",
+          "renderHash": "a83d927c931dd81b76656f98d6616aafe5f8e8df9b168d68953bab9d193537f2",
+          "viewport": {
+            "width": 1280,
+            "height": 800
+          },
+          "immutableOriginalFullRecordObjectSHA256": "a43e27d0e2fca789ff7a81128ab520ad176de8107b1f7fc0fc13397b77e0a349",
+          "actionProofSHA256": "d6c4b6ac40ac34ef857235862ef3f2b4695e2f48a4b48722984aee2383f2bfd3",
+          "finalSafetySHA256": "614cff705cf6c81d20e3b1c65092c50a15fb06fca07a0a655d4c33defa1af896",
+          "realNativeEffectsProved": false
+        }
+      ],
+      "qualifications": [
+        "No direct drawer force control exists; do not invent it or a consent checkbox. Exact positive dispatch/refusal is not backend-accepted termination. Actual PID/Job/process/network/profile effects and Wails/UIA acceptance remain outside this finite claim. No activity/row-only/title evidence borrowed.",
+        "Preserve prior source340 cancel/absent/revoked/reconcile/positive and all original guards; new sourceb424 covers only formerly missing replacement/Escape/double-input clauses in separate contexts.",
+        "Native DTO mode and UI dispatch/refusal are synthetic bridge observations, not backend acceptance or real termination. Full raw requests do not establish PID/Job/process/network/profile-byte effects or Wails/UIA acceptance.",
+        "Original direct drawer force control is absent and consent checkbox is not invented. No test-title, Activity, row-only, PNG, real native or strict PASS substitution."
+      ],
+      "cellFullyCovered": false,
+      "wholeCellPassesAdded": 0,
+      "strictVisualPass": false,
+      "realDesktopAcceptance": false
+    },
+    {
+      "id": "B08",
+      "originalDefinitionIndex": 32,
+      "originalDefinitionPointer": "docs/verification/issue37-supplementary-environment.json#/original47Definitions/32",
+      "originalDefinitionObjectSHA256": "834d5a120661cd6d2fc06d059924e5d8a9c31ff1e4f93e8e0eee8be9db15d7c7",
+      "originalDefinition": {
+        "id": "B08",
+        "ticket": 34,
+        "mode": "native",
+        "historicalCoverage": "MISSING",
+        "historicalSupplementStatus": "unproven",
+        "originalRemainingSemanticGaps": [
+          "successful page two, dense table bottom, ID lookup empty/error and old/current handoff"
+        ],
+        "predicateSourceQualifierRef": "/qualifications/untouched44",
+        "cellFullyCovered": false
+      },
+      "previousRelationPointer": "docs/verification/issue37-supplementary-environment.json#/cellRelationUpdates/32",
+      "previousRelationObjectSHA256": "6a26cfc240424585a9c0633b6d0bd9f1256590e00fcc2cb7396dbd4ffd131652",
+      "statusBefore": "PARTIALLY_OBSERVED",
+      "inheritedObservedFiniteClauses": [
+        "Actual successful page2 read offset25/pageSize25 gives exact row26; dense25-row read/last ID25 and natural wheel are recorded. Read-only lookup/handoff case records Batch.ReadPage6/Operation.Read5 and explicit actual old/current UI handoff without mutating the old attempt."
+      ],
+      "inheritedRemainingUnprovedClauses": [
+        "Baseline340 dense table bottom/page-two captures have retained FAIL clipping; the finite fully visible dense-bottom state is not certified by read success or naturalWheelOnly metadata.",
+        "The ID-lookup empty/error outcomes are not individually serialized in the admitted reduced actionProof; case name and method counts alone do not certify these two original clauses. The completed bounded contract is retained, without reopening raw archives to manufacture outcome proof."
+      ],
+      "status": "FINITE_ORIGINAL_GAP_DEFINITION_ADDRESSED",
+      "observedFiniteClauses": [
+        {
+          "clause": "Baseline340 dense table bottom/page-two captures have retained FAIL clipping; the finite fully visible dense-bottom state is not certified by read success or naturalWheelOnly metadata.",
+          "why": "New b424 actual dense first-page bottom has full row25/five cells/pager/three footer controls independently readable, genuine bounded outer and inner scroll plus original plan/current identity; no rewriting old340 FAILs, page-two pixel certification, source03 rebind or full-body summary claim",
+          "addressed": true
+        },
+        {
+          "clause": "The ID-lookup empty/error outcomes are not individually serialized in the admitted reduced actionProof; case name and method counts alone do not certify these two original clauses. The completed bounded contract is retained, without reopening raw archives to manufacture outcome proof.",
+          "why": "Both original lookup UI states are now individually serialized in new admitted full proofs from own persistent-batch result/progress dialog: empty disabled read causes zero dispatch; exact NOT_FOUND Operation.Read once leaves original plan/current selection/25 rows unchanged and old attempt conserved, within original readonly range/ledger limits, not Activity/row or title/count-only inference",
+          "addressed": true
+        }
+      ],
+      "remainingUnprovedFiniteClauses": [],
+      "evidence": [
+        {
+          "kind": "actual-image-with-own-callback-if-present",
+          "publicRef": "docs/screenshots/issue37-frontier-bottoms/manifest.json#/records/1",
+          "sourceHead": "b424b21f9881ded7c0c53314f9f70a8bdea78734",
+          "renderHash": "a83d927c931dd81b76656f98d6616aafe5f8e8df9b168d68953bab9d193537f2",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "imageSHA256": "c64b3366d1af020fdf5939472443b7cdaa0845734baf453f5d85fc6f12e661dd",
+          "actualSavedManifestSHA256": "1dd678f213e8fe1a26d046b8a2e0b2d69f4118407d2200f148335d252a02c79d",
+          "publicStageManifestSHA256": "b335c40a9abe48442283e2ceeea5739112f264a2ab0efaac533e7764f4499bdc",
+          "immutableOriginalFullRecordObjectSHA256": "ddc1acdbbbd0f62263fde85dd9fe99771ebcd1da4878fb67de6e7cd85c4c65b3",
+          "independentVisualVerdict": "MAPPED",
+          "strictSameBusinessOriginalReference": false,
+          "actionProofSHA256": "9a2a38bbcf9dae20bd00f78f6d3b76102f9f9ca2f51d5eb95cc2cdcfb6edb961",
+          "sameImageCallbackSHA256": null,
+          "coldOriginalRequestRecoverySHA256": null,
+          "finalSafetySHA256": "cac8710a68cceee1be81313b42efed9e00e107a281a512b86808cf04975680a3",
+          "anotherImageOrStandaloneContextClaimed": false
+        },
+        {
+          "kind": "actual-image-with-own-callback-if-present",
+          "publicRef": "docs/screenshots/issue37-frontier-bottoms/manifest.json#/records/3",
+          "sourceHead": "b424b21f9881ded7c0c53314f9f70a8bdea78734",
+          "renderHash": "a83d927c931dd81b76656f98d6616aafe5f8e8df9b168d68953bab9d193537f2",
+          "viewport": {
+            "width": 1280,
+            "height": 800
+          },
+          "imageSHA256": "70449ab2661e9770d112a7314d472067e92759c3f82ca232e0d15425a6164eb3",
+          "actualSavedManifestSHA256": "1dd678f213e8fe1a26d046b8a2e0b2d69f4118407d2200f148335d252a02c79d",
+          "publicStageManifestSHA256": "b335c40a9abe48442283e2ceeea5739112f264a2ab0efaac533e7764f4499bdc",
+          "immutableOriginalFullRecordObjectSHA256": "721c05c3756d2ee05855a8d79e395e203b556d14788dc113f07171cde26d4c61",
+          "independentVisualVerdict": "MAPPED",
+          "strictSameBusinessOriginalReference": false,
+          "actionProofSHA256": "24e99f31b3603bb057b1ad6f09ac88fc5561cea0d0138687604d42861c6083bc",
+          "sameImageCallbackSHA256": null,
+          "coldOriginalRequestRecoverySHA256": null,
+          "finalSafetySHA256": "cac8710a68cceee1be81313b42efed9e00e107a281a512b86808cf04975680a3",
+          "anotherImageOrStandaloneContextClaimed": false
+        },
+        {
+          "kind": "reviewed-standalone-action-not-a-picture",
+          "publicRef": "docs/verification/issue37-frontier-actions.json#/records/1",
+          "sourceHead": "b424b21f9881ded7c0c53314f9f70a8bdea78734",
+          "renderHash": "a83d927c931dd81b76656f98d6616aafe5f8e8df9b168d68953bab9d193537f2",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "immutableOriginalFullRecordObjectSHA256": "fe7bbf1285360f0f13541cadb2b7937fc70f37dfa61e3b078cbfd48a7c5a5376",
+          "actionProofSHA256": "aa4e0913c5eea6db1348b8e6945dd9dc4b996e8b3d7897acec89e0f6ecfd24c6",
+          "finalSafetySHA256": "ec67de9babd746a4a51ab256ea6efb40f327ce0f34834972076c7ced970e031d",
+          "realNativeEffectsProved": false
+        },
+        {
+          "kind": "reviewed-standalone-action-not-a-picture",
+          "publicRef": "docs/verification/issue37-frontier-actions.json#/records/3",
+          "sourceHead": "b424b21f9881ded7c0c53314f9f70a8bdea78734",
+          "renderHash": "a83d927c931dd81b76656f98d6616aafe5f8e8df9b168d68953bab9d193537f2",
+          "viewport": {
+            "width": 1280,
+            "height": 800
+          },
+          "immutableOriginalFullRecordObjectSHA256": "f8915cd67b93e3fb1dd60c1715a579066da2f00f883d9ce18b02cc347e69c9c2",
+          "actionProofSHA256": "aa4e0913c5eea6db1348b8e6945dd9dc4b996e8b3d7897acec89e0f6ecfd24c6",
+          "finalSafetySHA256": "ec67de9babd746a4a51ab256ea6efb40f327ce0f34834972076c7ced970e031d",
+          "realNativeEffectsProved": false
+        }
+      ],
+      "qualifications": [
+        "Source03 repaired views are listed only in the separate correction appendix, not rebound onto baseline340 or used here to force this definition closed.",
+        "Preserve old340 page-two read/handoff and all FAILs/callbacks; new b424 images and standalone lookup outcomes retain separate source/context bindings. Source03 is not borrowed or relabelled.",
+        "MAPPED centered container/dense-tail state, direct native same-business comparator MISSING. Upper summary partly offscreen and old page-two pixel FAIL remain unaccepted; no strict/global no-clipping or formal PNG claim.",
+        "Operation.Read native DTOs and plan/task conservation are bounded UI/in-memory synthetic evidence, not actual native batch execution or backend state authority. Error retains prior rows as non-final detail authority, not NOT_FOUND task acceptance."
+      ],
+      "cellFullyCovered": false,
+      "wholeCellPassesAdded": 0,
+      "strictVisualPass": false,
+      "realDesktopAcceptance": false
+    },
+    {
+      "id": "H19",
+      "originalDefinitionIndex": 46,
+      "originalDefinitionPointer": "docs/verification/issue37-supplementary-environment.json#/original47Definitions/46",
+      "originalDefinitionObjectSHA256": "fd42efd19e3676c057a9d79e27b8e3b72ecdc6326399828c853f78dc75f28772",
+      "originalDefinition": {
+        "id": "H19",
+        "ticket": 36,
+        "mode": "both",
+        "historicalCoverage": "MISSING",
+        "historicalSupplementStatus": "reference-open",
+        "originalRemainingSemanticGaps": [
+          "Lazy recovery actions exist in both modes, but a stable first lazy-loading fallback snapshot is not acquired. Keep acquisition source-limited/undecidable; do not fabricate permanent loading UI."
+        ],
+        "predicateSourceQualifierRef": "/qualifications/H19",
+        "cellFullyCovered": false
+      },
+      "previousRelationPointer": "docs/verification/issue37-supplementary-environment.json#/cellRelationUpdates/46",
+      "previousRelationObjectSHA256": "a4e8ccb5783c74468f8dfc225475c1c40d9a5f2bc921a9c6c5fc42d09b731a90",
+      "statusBefore": "SOURCE_LIMIT",
+      "inheritedObservedFiniteClauses": [
+        "No new H19 evidence. Previously bounded optional lazy fallback/recovery actions do not acquire the stable first fallback image."
+      ],
+      "inheritedRemainingUnprovedClauses": [
+        "Lazy recovery actions exist in both modes, but a stable first lazy-loading fallback snapshot is not acquired. Keep acquisition source-limited/undecidable; do not fabricate permanent loading UI."
+      ],
+      "status": "FINITE_ORIGINAL_GAP_DEFINITION_ADDRESSED",
+      "observedFiniteClauses": [
+        "Each original mode/viewport has its own actual stable FIRST lazy-loading PNG, independently reviewed ADAPTED, not a fabricated permanent loading panel.",
+        "Each image is bracketed by first-fallback/no-first-H1 proofs in the same real panel.",
+        "Each exact original held lazy request continues and recovers the original source-selected document H1 in that same panel.",
+        "The preserved completed saved contract has 0 P1, 0 P2 and 0 mismatches; stage pairings bind those same image identities without raw-record rewriting."
+      ],
+      "remainingUnprovedFiniteClauses": [],
+      "evidence": [
+        {
+          "kind": "actual-image-with-own-callback-if-present",
+          "publicRef": "docs/screenshots/issue37-frontier-cold-help/manifest.json#/records/0",
+          "sourceHead": "b424b21f9881ded7c0c53314f9f70a8bdea78734",
+          "renderHash": "a83d927c931dd81b76656f98d6616aafe5f8e8df9b168d68953bab9d193537f2",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "imageSHA256": "96f5e45131ba5dcc656f1371aad5e13a4aab34ab063987aa034794fa0f38ceb7",
+          "actualSavedManifestSHA256": "488f03d35cf36fd014419cf3d1e637f98c7eae8a718326abeb1274cabf865413",
+          "publicStageManifestSHA256": "d3a80136f7ec0438e46b6127a53b5e04b01bc27dd738565d68852136e0bf48e1",
+          "immutableOriginalFullRecordObjectSHA256": "17433c94875e13f10e30362c670a9f26112af8b3c4d865d2ceadea1cb2c764ae",
+          "independentVisualVerdict": "ADAPTED",
+          "strictSameBusinessOriginalReference": false,
+          "actionProofSHA256": null,
+          "sameImageCallbackSHA256": null,
+          "coldOriginalRequestRecoverySHA256": "0356a6a82b08cebb1641ed94ef9afb3483081bda59a8666ae04c5d95c16e865a",
+          "finalSafetySHA256": null,
+          "anotherImageOrStandaloneContextClaimed": false
+        },
+        {
+          "kind": "actual-image-with-own-callback-if-present",
+          "publicRef": "docs/screenshots/issue37-frontier-cold-help/manifest.json#/records/1",
+          "sourceHead": "b424b21f9881ded7c0c53314f9f70a8bdea78734",
+          "renderHash": "a83d927c931dd81b76656f98d6616aafe5f8e8df9b168d68953bab9d193537f2",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "imageSHA256": "34fd664be28a3a89ff81f93d7e95f1808674b640b7a137c1218340513fa76430",
+          "actualSavedManifestSHA256": "488f03d35cf36fd014419cf3d1e637f98c7eae8a718326abeb1274cabf865413",
+          "publicStageManifestSHA256": "d3a80136f7ec0438e46b6127a53b5e04b01bc27dd738565d68852136e0bf48e1",
+          "immutableOriginalFullRecordObjectSHA256": "24b8453cdd79e917bbfb215988dcc5605dab46eb6a01d3a3fd264085c80f65df",
+          "independentVisualVerdict": "ADAPTED",
+          "strictSameBusinessOriginalReference": false,
+          "actionProofSHA256": null,
+          "sameImageCallbackSHA256": null,
+          "coldOriginalRequestRecoverySHA256": "1476ddb92d7ff752b3ad28837b3bd87080b3c4abda6897c9bf694f038b703928",
+          "finalSafetySHA256": null,
+          "anotherImageOrStandaloneContextClaimed": false
+        },
+        {
+          "kind": "actual-image-with-own-callback-if-present",
+          "publicRef": "docs/screenshots/issue37-frontier-cold-help/manifest.json#/records/2",
+          "sourceHead": "b424b21f9881ded7c0c53314f9f70a8bdea78734",
+          "renderHash": "a83d927c931dd81b76656f98d6616aafe5f8e8df9b168d68953bab9d193537f2",
+          "viewport": {
+            "width": 1280,
+            "height": 800
+          },
+          "imageSHA256": "9d0a0fa4292d64715ce272f2a20939866b8399d79ad6569037a466e36b384be9",
+          "actualSavedManifestSHA256": "488f03d35cf36fd014419cf3d1e637f98c7eae8a718326abeb1274cabf865413",
+          "publicStageManifestSHA256": "d3a80136f7ec0438e46b6127a53b5e04b01bc27dd738565d68852136e0bf48e1",
+          "immutableOriginalFullRecordObjectSHA256": "c91abe165882c943f3d72ba325a4ee5b512c765a87e491ec6c28b8973181ece2",
+          "independentVisualVerdict": "ADAPTED",
+          "strictSameBusinessOriginalReference": false,
+          "actionProofSHA256": null,
+          "sameImageCallbackSHA256": null,
+          "coldOriginalRequestRecoverySHA256": "22626c53be9acb59e5d13c8ddd7286ea03d74629544331a63dbce83405ce81f9",
+          "finalSafetySHA256": null,
+          "anotherImageOrStandaloneContextClaimed": false
+        },
+        {
+          "kind": "actual-image-with-own-callback-if-present",
+          "publicRef": "docs/screenshots/issue37-frontier-cold-help/manifest.json#/records/3",
+          "sourceHead": "b424b21f9881ded7c0c53314f9f70a8bdea78734",
+          "renderHash": "a83d927c931dd81b76656f98d6616aafe5f8e8df9b168d68953bab9d193537f2",
+          "viewport": {
+            "width": 1280,
+            "height": 800
+          },
+          "imageSHA256": "194614294e0308435bddd4a2b44c33df93e984b99bacb1f3f4d1f91070f31e54",
+          "actualSavedManifestSHA256": "488f03d35cf36fd014419cf3d1e637f98c7eae8a718326abeb1274cabf865413",
+          "publicStageManifestSHA256": "d3a80136f7ec0438e46b6127a53b5e04b01bc27dd738565d68852136e0bf48e1",
+          "immutableOriginalFullRecordObjectSHA256": "58b200d4d934a13e53a1857fd69317d706fab1ed7fec340b22de1fd717be4093",
+          "independentVisualVerdict": "ADAPTED",
+          "strictSameBusinessOriginalReference": false,
+          "actionProofSHA256": null,
+          "sameImageCallbackSHA256": null,
+          "coldOriginalRequestRecoverySHA256": "64ce03641709749ddb32c2ff7bc62b4b245ed2c37a699c9848e0f1567ac6a74a",
+          "finalSafetySHA256": null,
+          "anotherImageOrStandaloneContextClaimed": false
+        }
+      ],
+      "qualifications": [
+        "All H01..H19 direct original guide references remain missing; no permanent loading UI, extra callback photo requirement or future fallback proof invented.",
+        "All direct original-help references remain MISSING_DIRECT_HELP; the four ADAPTED results are not strict same-business 1:1.",
+        "Synthetic native-local getter denial/source-selected Markdown recovery is not native storage/backend/kernel or desktop authority.",
+        "The supplied staged manifest has a separate private-path-value publication blocker. Evidence sufficiency does not grant public-safe publication.",
+        "Original missing-first-snapshot history remains literal and unchanged; this is an append-only new finite decision.",
+        "The historical first-stage private-path blocker remains in its unchanged accounting report; the separate new safe public-stage review resolves only that projection, not original help content or native authority."
+      ],
+      "cellFullyCovered": false,
+      "wholeCellPassesAdded": 0,
+      "strictVisualPass": false,
+      "realDesktopAcceptance": false
+    },
+    {
+      "id": "F11",
+      "originalDefinitionIndex": 15,
+      "originalDefinitionPointer": "docs/verification/issue37-supplementary-environment.json#/original47Definitions/15",
+      "originalDefinitionObjectSHA256": "b98e4bab82bc7b8dde200b4399aeea4a72502cfcc9eeb63a22a9ee6b1dd19017",
+      "originalDefinition": {
+        "id": "F11",
+        "ticket": 34,
+        "mode": "both",
+        "historicalCoverage": "MISSING",
+        "historicalSupplementStatus": "unproven",
+        "originalRemainingSemanticGaps": [
+          "automatic preview busy, stale device input and preview failure/retry are same drawer branches, not new windows"
+        ],
+        "predicateSourceQualifierRef": "/qualifications/untouched44",
+        "cellFullyCovered": false
+      },
+      "previousRelationPointer": "docs/verification/issue37-supplementary-environment.json#/cellRelationUpdates/15",
+      "previousRelationObjectSHA256": "a90d6fed65246a46fb6dcc9830e9de460f643385404a885a92884f22aee491c7",
+      "statusBefore": "PARTIALLY_OBSERVED",
+      "inheritedObservedFiniteClauses": [
+        "Native automatic busy reply held/released once without seed regeneration; retry preserves the complete Generate request and regenerate:false twice. Stale device input and genuinely discarded old preview owner reject late reply after a new owner."
+      ],
+      "inheritedRemainingUnprovedClauses": [
+        "The original mode=both definition has no independent demo busy/stale-device/failure-retry observations in this baseline. Native observations are not silently promoted to demo proof."
+      ],
+      "status": "PARTIALLY_OBSERVED",
+      "observedFiniteClauses": [
+        "Actual width0 changes only original width and produces the exact stale message in the same original drawer; failure/retry/stale are legible together in the two reviewed capture images.",
+        "Actual invalid width0 causes automatic validation failure, and one real retry while width remains0 preserves the same error/original identity; not injected service or persistence failure.",
+        "The original image-owned callback restores original width1280 and clicks actual recovery retry once; final fresh fields/profile facts/footer equal original with null error/errorMessage/stale and ready summary. Restore intermediate still had old error.",
+        "Each context retains/restores its original seed/core/direct-proxy/profile-summary/preferences and absent data ref; natural draft seeds differ legitimately across views.",
+        "Original twelve synthetic stored rows/proxy/kernel/backup/activity/key projections remain equal at failure/retry/fresh/final samples, with no newly saved IDs and no Create/Save UI action.",
+        "Both callbacks actually Cancel the original recovered draft; phase closes with no drawer/mask/top-modal/body-lock leak, no fabricated warning, and zero recorded Create/Save/runtime/native work."
+      ],
+      "remainingUnprovedFiniteClauses": [
+        {
+          "clause": "automatic preview busy",
+          "reason": "Synchronous demo generator/source-delay metadata and the width0 snapshots do not independently observe a busy branch; old native held/released evidence is not demo proof.",
+          "status": "SOURCE_LIMIT_NOT_OBSERVED"
+        },
+        {
+          "clause": "Demo late/replaced-owner preview reply behavior remains unobserved",
+          "reason": "Same-owner stale width0/failure/retry and recovery do not observe a late old-owner response. The native lineage remains separate.",
+          "status": "SOURCE_LIMIT_NOT_OBSERVED"
+        }
+      ],
+      "evidence": [
+        {
+          "kind": "actual-image-with-own-callback-if-present",
+          "publicRef": "docs/screenshots/issue37-frontier-demo-preview/manifest.json#/records/0",
+          "sourceHead": "b424b21f9881ded7c0c53314f9f70a8bdea78734",
+          "renderHash": "a83d927c931dd81b76656f98d6616aafe5f8e8df9b168d68953bab9d193537f2",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "imageSHA256": "8935018825a0e9fba5a38551b0aec7ddd6dce748d7043d93da7186c09ebe68c0",
+          "actualSavedManifestSHA256": "3e2767ed5467beb3c30b9efb8bf32f4d3b58c0caeb39dfd002d4b9bbbed5a385",
+          "publicStageManifestSHA256": "e22486de392e28d9f9ec8524b6c8c49a3244bbdd229ad6b60ae2aa40541078ef",
+          "immutableOriginalFullRecordObjectSHA256": "3253f1e82af2722a00c8c6a44262e343548fd2bb16c3abd0605253eada3faf05",
+          "independentVisualVerdict": "ADAPTED",
+          "strictSameBusinessOriginalReference": false,
+          "actionProofSHA256": "e9e9df1fcee444093a31ea0cd64fea008f13964e51028440fa8f2d19656c21e9",
+          "sameImageCallbackSHA256": "f4981358bfd7d48784291d11b286eb4a40633d8a2700bfe7cf2cd66a3a81320b",
+          "coldOriginalRequestRecoverySHA256": null,
+          "finalSafetySHA256": "24ba3bc1aa94f508a837f84c7b3b1c0d2e933fedf812c4e1c34c4432c6a97d11",
+          "anotherImageOrStandaloneContextClaimed": false
+        },
+        {
+          "kind": "actual-image-with-own-callback-if-present",
+          "publicRef": "docs/screenshots/issue37-frontier-demo-preview/manifest.json#/records/1",
+          "sourceHead": "b424b21f9881ded7c0c53314f9f70a8bdea78734",
+          "renderHash": "a83d927c931dd81b76656f98d6616aafe5f8e8df9b168d68953bab9d193537f2",
+          "viewport": {
+            "width": 1280,
+            "height": 800
+          },
+          "imageSHA256": "8fd811524365d649d278cfe9a83c6ed2edc822048a55cb5f5309d9ed8120f9db",
+          "actualSavedManifestSHA256": "3e2767ed5467beb3c30b9efb8bf32f4d3b58c0caeb39dfd002d4b9bbbed5a385",
+          "publicStageManifestSHA256": "e22486de392e28d9f9ec8524b6c8c49a3244bbdd229ad6b60ae2aa40541078ef",
+          "immutableOriginalFullRecordObjectSHA256": "f8cffb00857c453a0764fbd76991d0ef17c3a1ac03d04ae06ee71f9d2f91859b",
+          "independentVisualVerdict": "ADAPTED",
+          "strictSameBusinessOriginalReference": false,
+          "actionProofSHA256": "8babe80f093e2af33e3fe9c280c9a343f3ef6eb66f47e8a293da5baabae690fe",
+          "sameImageCallbackSHA256": "a88a87d927f55b0554b877c2f578566f18f864362063a5f18104e42445e857ae",
+          "coldOriginalRequestRecoverySHA256": null,
+          "finalSafetySHA256": "52fbde2ea42094ffd954b6e39b454d3239ef39c32c1dff5ca5fe8ec7776e3d25",
+          "anotherImageOrStandaloneContextClaimed": false
+        }
+      ],
+      "qualifications": [
+        "Same-owner device typing while generating is SOURCE_LIMIT_DISABLED_INPUTS, not an invented required editable-input branch. No new window, timer or mandatory callback photo is specified.",
+        "Demo busy/late remain source-limited. Stored-row equality is sampled, not a transient-write audit. Both independent images remain MISSING_DIRECT; natural1280 caveat clipping remains.",
+        "No native held reply is borrowed as demo evidence; callbacks and sampled cancellation remain the same two image contexts."
+      ],
+      "cellFullyCovered": false,
+      "wholeCellPassesAdded": 0,
+      "strictVisualPass": false,
+      "realDesktopAcceptance": false
+    },
+    {
+      "id": "P07",
+      "originalDefinitionIndex": 44,
+      "originalDefinitionPointer": "docs/verification/issue37-supplementary-environment.json#/original47Definitions/44",
+      "originalDefinitionObjectSHA256": "bd3a8e1cbe4b3b94b4fa05ab6a25ea4931b648f3cd34acefb2eb5bbbb029f46f",
+      "originalDefinition": {
+        "id": "P07",
+        "ticket": 35,
+        "mode": "both",
+        "historicalCoverage": "MISSING",
+        "historicalSupplementStatus": "partly-supplemented",
+        "originalRemainingSemanticGaps": [
+          "Both modes have authenticated/invalid/existing-duplicate preview snapshots and native 256-byte SOCKS refusal. Demo byte-limit refusal and the selected single-row save outcome are not proved by zero-commit preview records; use bounded action evidence, not invented dialogs."
+        ],
+        "predicateSourceQualifierRef": "/qualifications/P07",
+        "cellFullyCovered": false
+      },
+      "previousRelationPointer": "docs/verification/issue37-supplementary-environment.json#/cellRelationUpdates/44",
+      "previousRelationObjectSHA256": "3c05518a48c86c6fce59fae22ff2c661e09739a91da197c457d7e4fe62a0b988",
+      "statusBefore": "UNSUPPORTED_CLAUSE",
+      "inheritedObservedFiniteClauses": [
+        "Historical context22 selected single-row255-byte demo gate/save and native selected-row behavior remain bounded; no new environment evidence for this ID."
+      ],
+      "inheritedRemainingUnprovedClauses": [
+        "Demo256-byte UTF-8 precommit/parser byte-limit refusal remains UNSUPPORTED_SOURCE_NO_BYTE_GATE and not passed."
+      ],
+      "status": "FINITE_ORIGINAL_GAP_DEFINITION_ADDRESSED",
+      "observedFiniteClauses": [
+        "Historical context22 selected single-row255-byte demo gate/save and native selected-row behavior remain bounded; no new environment evidence for this ID.",
+        "Actual demo editor at both viewports observes the 256-byte account and 255-byte password refusal with the real byte alert and submit guard. One invalid submit preserves the same form owner and original saved workspace; the single observed write belongs only to genuine prior authentication preparation.",
+        "Actual demo import at both viewports observes decoded 256-byte refusal at original row 3, with no valid configuration or duplicate candidate, disabled unchecked selection, disabled save and no write during parsing. It is demo evidence, not a borrowed native refusal.",
+        "Each original image owns one same-page/context 255-byte correction callback. Editor correction saves once into the original proxy ID/configuration with only replacement authentication and intentional demo check-state reset; one additional observed write completes it.",
+        "Each import callback retains original row 3, unchecks once to make save disabled, rechecks once to enable it and saves exactly one new node from that row. Existing proxies and non-selected comment/blank remainder stay exact; only the selected line is removed and one additional observed write completes the save.",
+        "Complete saved-state equality guards preserve environment/profile IDs, fixed seeds, revisions, histories, kernel/model references, proxy bindings, Cookies and backups apart from the expressly expected proxy/activity changes. These support the finite demo observations, not a new definition or native certificate.",
+        "The exact complete81 source binding and prior independent contract review bind the shared decoded-UTF-8 validator to the actual product refusal path. Source consistency is supporting evidence; the four actual image records and their saved callbacks supply the new finite behavioural observations."
+      ],
+      "remainingUnprovedFiniteClauses": [],
+      "evidence": [
+        {
+          "kind": "actual-image-with-own-callback-if-present",
+          "publicRef": "docs/screenshots/issue37-frontier-proxy-bytes/manifest.json#/records/0",
+          "sourceHead": "398314c7d4f300576850df78d2a0631c9fdc3b38",
+          "renderHash": "c6e6a49fee35afe42d1a3bf27e72e2fe200eddacf88c164e94eb04cae6bc65fc",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "imageSHA256": "66d3427b521471218394a2face7a084dac4165803e11e44185ab37de51d4ff5b",
+          "actualSavedManifestSHA256": "f3f0dc4540f8afb509c3d372f7cc1aa66b15b7e63a4d935b80d14e02b44f02b4",
+          "publicStageManifestSHA256": "26d2b6fe5eb59a4c527cf1ba777ef95c3ca5c4708e6d37c8cbab21be1f3eafe7",
+          "immutableOriginalFullRecordObjectSHA256": "3777fdfc8f6457ffaad6c6bf0471cb8421170113de86e15926a5c7f188afd236",
+          "independentVisualVerdict": "MAPPED",
+          "strictSameBusinessOriginalReference": false,
+          "actionProofSHA256": "31bfe6597aeef6223e58f9bc89b6f2b4eecedd157ef489dc21409b3037ca6ca5",
+          "sameImageCallbackSHA256": "ed5adb0b68065ad5367be4722d1791b66d4de703b72ff8309e01da1809076598",
+          "coldOriginalRequestRecoverySHA256": null,
+          "finalSafetySHA256": "0efbf81cabda30208e4aee116987d36b4861f587dce3655c2020cd8f70811acc",
+          "anotherImageOrStandaloneContextClaimed": false
+        },
+        {
+          "kind": "actual-image-with-own-callback-if-present",
+          "publicRef": "docs/screenshots/issue37-frontier-proxy-bytes/manifest.json#/records/1",
+          "sourceHead": "398314c7d4f300576850df78d2a0631c9fdc3b38",
+          "renderHash": "c6e6a49fee35afe42d1a3bf27e72e2fe200eddacf88c164e94eb04cae6bc65fc",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "imageSHA256": "71696929f7497caa78e1da35ffd377784eeb63c3156fbb94ed6cf9c3c8e335de",
+          "actualSavedManifestSHA256": "f3f0dc4540f8afb509c3d372f7cc1aa66b15b7e63a4d935b80d14e02b44f02b4",
+          "publicStageManifestSHA256": "26d2b6fe5eb59a4c527cf1ba777ef95c3ca5c4708e6d37c8cbab21be1f3eafe7",
+          "immutableOriginalFullRecordObjectSHA256": "4d62d6d62bdafa5eff15d112b7860be51ef3b4e18a5eff3116ce38231a46cc14",
+          "independentVisualVerdict": "MAPPED",
+          "strictSameBusinessOriginalReference": false,
+          "actionProofSHA256": "5f3f3bf4c889f2ba5d7b53a4c29ad5c5e622ef2ddd5b62e1672f442d0d9a2eb2",
+          "sameImageCallbackSHA256": "1037e73390c2a3694b20a57aeac7bf27017f6a1109f1fec46d600ca032e33feb",
+          "coldOriginalRequestRecoverySHA256": null,
+          "finalSafetySHA256": "4d5b9a6819c340ab8eb3dac34f35ab9f184c3b74da57af299679034162f4de5c",
+          "anotherImageOrStandaloneContextClaimed": false
+        },
+        {
+          "kind": "actual-image-with-own-callback-if-present",
+          "publicRef": "docs/screenshots/issue37-frontier-proxy-bytes/manifest.json#/records/2",
+          "sourceHead": "398314c7d4f300576850df78d2a0631c9fdc3b38",
+          "renderHash": "c6e6a49fee35afe42d1a3bf27e72e2fe200eddacf88c164e94eb04cae6bc65fc",
+          "viewport": {
+            "width": 1280,
+            "height": 800
+          },
+          "imageSHA256": "222df6cfbb18a43fb575278d61e6fedda533b74f8cb842e5d2321feddff7d56b",
+          "actualSavedManifestSHA256": "f3f0dc4540f8afb509c3d372f7cc1aa66b15b7e63a4d935b80d14e02b44f02b4",
+          "publicStageManifestSHA256": "26d2b6fe5eb59a4c527cf1ba777ef95c3ca5c4708e6d37c8cbab21be1f3eafe7",
+          "immutableOriginalFullRecordObjectSHA256": "41e545bd8bf84d5d9321b874d01956ea1839bcb5ddd7883310bd6513d765a942",
+          "independentVisualVerdict": "MAPPED",
+          "strictSameBusinessOriginalReference": false,
+          "actionProofSHA256": "31bfe6597aeef6223e58f9bc89b6f2b4eecedd157ef489dc21409b3037ca6ca5",
+          "sameImageCallbackSHA256": "ed5adb0b68065ad5367be4722d1791b66d4de703b72ff8309e01da1809076598",
+          "coldOriginalRequestRecoverySHA256": null,
+          "finalSafetySHA256": "0efbf81cabda30208e4aee116987d36b4861f587dce3655c2020cd8f70811acc",
+          "anotherImageOrStandaloneContextClaimed": false
+        },
+        {
+          "kind": "actual-image-with-own-callback-if-present",
+          "publicRef": "docs/screenshots/issue37-frontier-proxy-bytes/manifest.json#/records/3",
+          "sourceHead": "398314c7d4f300576850df78d2a0631c9fdc3b38",
+          "renderHash": "c6e6a49fee35afe42d1a3bf27e72e2fe200eddacf88c164e94eb04cae6bc65fc",
+          "viewport": {
+            "width": 1280,
+            "height": 800
+          },
+          "imageSHA256": "6765ae6bdbd60e960f92fb2e55703ac36e6ee4549f25f8a7dff4f044e0cb7edb",
+          "actualSavedManifestSHA256": "f3f0dc4540f8afb509c3d372f7cc1aa66b15b7e63a4d935b80d14e02b44f02b4",
+          "publicStageManifestSHA256": "26d2b6fe5eb59a4c527cf1ba777ef95c3ca5c4708e6d37c8cbab21be1f3eafe7",
+          "immutableOriginalFullRecordObjectSHA256": "7ff3a135daf250294969a87c89338683352b2a652c22fc95c2c65f9ef970b7c7",
+          "independentVisualVerdict": "MAPPED",
+          "strictSameBusinessOriginalReference": false,
+          "actionProofSHA256": "5f3f3bf4c889f2ba5d7b53a4c29ad5c5e622ef2ddd5b62e1672f442d0d9a2eb2",
+          "sameImageCallbackSHA256": "5cf664da87729a1c655d706681754820cd10b7c4b1e49aa50b21aca620beb9dc",
+          "coldOriginalRequestRecoverySHA256": null,
+          "finalSafetySHA256": "4d5b9a6819c340ab8eb3dac34f35ab9f184c3b74da57af299679034162f4de5c",
+          "anotherImageOrStandaloneContextClaimed": false
+        }
+      ],
+      "qualifications": [
+        "No new mandatory byte gate, dialog, capture or feature is invented. Native256-byte refusal is not demo proof.",
+        "Limited original-definition closure only. The historical definition, previous unsupported relation, inherited source qualifier and their observed/remaining strings are preserved literally, not relabelled as earlier success.",
+        "The original authenticated/invalid/existing-duplicate previews, native256 refusal and context22 selected-row observations remain inherited bounded history. No old native refusal is converted into demo proof and no new native byte probe is performed.",
+        "All four actual image verdicts remain MAPPED with directBusinessReferenceVerdict MISSING and qualification MISSING_DIRECT. Direct byte-error references are absent; finite behavioural closure does not clear that visual/reference gap.",
+        "Callbacks remain image-owned same-context recoveries, not additional PNGs, standalone actions or new contexts. There are four existing image records and four saved callbacks, with zero failures.",
+        "One genuine preparation write and one correction write are distinguished per context. No storage-fault injection, fabricated retry or App/service substitution is counted. Demo service dispatch counts remain uninstrumented; no native RPC occurs.",
+        "Seed/build/proxy/configuration/data-reference/Cookie assertions are finite UI/demo-storage/model guards, not real profile bytes, executable verification, OS persistence, DNS/traffic enforcement or native/desktop acceptance.",
+        "Eventual public proof references are PLANNED_NOT_PUBLISHED. This shard creates or approves no public packet and grants no whole-cell, strict-visual or source-family closure.",
+        "The first GLOBAL refusal remains zero admitted records with its original raw diagnostic binding retained; it is never promoted or absorbed into the successful attempt.",
+        "Only P07 is assessed. Aggregate47 status/counters and public projection remain MAIN's separate responsibility; historical FAIL/MISSING, original40/80, desktop4/21 and OPEN/DRAFT scopes remain unchanged."
+      ],
+      "cellFullyCovered": false,
+      "wholeCellPassesAdded": 0,
+      "strictVisualPass": false,
+      "realDesktopAcceptance": false
+    },
+    {
+      "id": "M22",
+      "originalDefinitionIndex": 45,
+      "originalDefinitionPointer": "docs/verification/issue37-supplementary-environment.json#/original47Definitions/45",
+      "originalDefinitionObjectSHA256": "3946617877659fa1ef6940328e38c5123ab0af7171e74bdf3cf1b204d3c7f852",
+      "originalDefinition": {
+        "id": "M22",
+        "ticket": 35,
+        "mode": "native",
+        "historicalCoverage": "MISSING",
+        "historicalSupplementStatus": "partly-supplemented",
+        "originalRemainingSemanticGaps": [
+          "SOURCE_LIMIT: an exact Backup.DiscardRestore attempt returns ok=false while original source/preview stay active. Frozen evidence says migration has no observable unknown-discard receipt/retry entry. Keep the cleanup outcome unconfirmed; do not certify safety or invent a required recovery screen.",
+          "Hide/reopen, known discard, expired/count/hash refusal and accepted/unknown restore authority are separately bounded or pending. None removes the unknown-cleanup limit."
+        ],
+        "predicateSourceQualifierRef": "/qualifications/M22",
+        "cellFullyCovered": false
+      },
+      "previousRelationPointer": "docs/verification/issue37-supplementary-environment.json#/cellRelationUpdates/45",
+      "previousRelationObjectSHA256": "b1a393b47f4cff3ce4e10cbb8a30b7cc77782ea021b9d5da3c6c22826d083efa",
+      "statusBefore": "SOURCE_LIMIT",
+      "inheritedObservedFiniteClauses": [
+        "No new M22 evidence. Exact historical DiscardRestore ok=false with original source/preview active remains the admitted cleanup limitation; M20/M21 same-original-operation historical controls are not substituted."
+      ],
+      "inheritedRemainingUnprovedClauses": [
+        "SOURCE_LIMIT: an exact Backup.DiscardRestore attempt returns ok=false while original source/preview stay active. Frozen evidence says migration has no observable unknown-discard receipt/retry entry. Keep the cleanup outcome unconfirmed; do not certify safety or invent a required recovery screen.",
+        "Hide/reopen, known discard, expired/count/hash refusal and accepted/unknown restore authority are separately bounded or pending. None removes the unknown-cleanup limit."
+      ],
+      "status": "FINITE_ORIGINAL_GAP_DEFINITION_ADDRESSED",
+      "observedFiniteClauses": [
+        "新冻结源码的正式页面已实际记录原清理待核实入口、原迁移与预检身份，以及明确保留、重试原清理和等待回应的可观察反馈。",
+        "首次原清理回应尚未确认时，原来源与预检对继续受保护；未知回应没有被当作清理成功或资源已经释放。",
+        "隐藏窗口、离开后重新进入及再次打开清理入口均保留同一原来源与预检对，原任务、工作区与修订未改变，也未创建替代来源、预检或恢复任务。",
+        "双击原清理重试仅新增一次清理调用，等待期间保持唯一原请求；已知有效回应到达前没有原重试的成功收据，也没有新来源或恢复动作。",
+        "四次图后回调均保留原页面与上下文，每次只释放一次已注册的原等待请求；后置恢复不计为另一张图或另一项独立动作证据。",
+        "只有有效的原清理完成回应后才解除原来源与预检对，原清理入口消失，环境选择与预检控件重新可用；普通来源许可仅据已审源码分支解释，未实际选择第二个来源。",
+        "本次使用四个新的原始 M22 记录及各自同图回调补证原可观察性缺口，没有借旧 M20 或 M21 的其他操作替代新的未知清理证据。"
+      ],
+      "remainingUnprovedFiniteClauses": [],
+      "evidence": [
+        {
+          "kind": "actual-image-with-own-callback-if-present",
+          "publicRef": "docs/screenshots/issue37-frontier-migration-cleanup/manifest.json#/records/0",
+          "sourceHead": "398314c7d4f300576850df78d2a0631c9fdc3b38",
+          "renderHash": "c6e6a49fee35afe42d1a3bf27e72e2fe200eddacf88c164e94eb04cae6bc65fc",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "imageSHA256": "c0a4802b5e83e56fa7c0649c5b949af4162ea6d34275a62fd86375805c498a68",
+          "actualSavedManifestSHA256": "521e5eacdbe9220b0e9c70cb8193a3185f710e3815c26ae7226a548ede2d8cca",
+          "publicStageManifestSHA256": "aa66ecc64503b83064dee1c545b905cfa3403120656e4d6138849b243498caee",
+          "immutableOriginalFullRecordObjectSHA256": "b767409a81ccb2c9c5eabb07904d7455c1e6ff72d0a1e7151bd0cfa055b565a2",
+          "independentVisualVerdict": "MAPPED",
+          "strictSameBusinessOriginalReference": false,
+          "actionProofSHA256": "0083e35a6de32cc4eeecdd701b42a103995cc89717308bbcc7e602bc3ee768b4",
+          "sameImageCallbackSHA256": "819d156f07b12ff3d844784927d2dd87365bf2ae39b634b96525e74b7f2285e4",
+          "coldOriginalRequestRecoverySHA256": null,
+          "finalSafetySHA256": "3dd9ccbccdd83234e4d169b0de7df68fd2cea54b7421e7a200296bd3ba7c80e7",
+          "anotherImageOrStandaloneContextClaimed": false
+        },
+        {
+          "kind": "actual-image-with-own-callback-if-present",
+          "publicRef": "docs/screenshots/issue37-frontier-migration-cleanup/manifest.json#/records/1",
+          "sourceHead": "398314c7d4f300576850df78d2a0631c9fdc3b38",
+          "renderHash": "c6e6a49fee35afe42d1a3bf27e72e2fe200eddacf88c164e94eb04cae6bc65fc",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "imageSHA256": "50575421053bd2d808a66c1522dd612eabe5c70bf7b0978503f7807eb9057674",
+          "actualSavedManifestSHA256": "521e5eacdbe9220b0e9c70cb8193a3185f710e3815c26ae7226a548ede2d8cca",
+          "publicStageManifestSHA256": "aa66ecc64503b83064dee1c545b905cfa3403120656e4d6138849b243498caee",
+          "immutableOriginalFullRecordObjectSHA256": "f7c19c1703c324b7ba863f23582a59d230d13c57d291398480fd8754d30591f8",
+          "independentVisualVerdict": "MAPPED",
+          "strictSameBusinessOriginalReference": false,
+          "actionProofSHA256": "85a7499f6a6751a1a2c48c783233fc5c9c8fb34253aad321fc32cca0c9448698",
+          "sameImageCallbackSHA256": "b4edd9251796e8b1d7e4d8c7ce7cbbd06e8f853ae790673199f92d54e5040e8a",
+          "coldOriginalRequestRecoverySHA256": null,
+          "finalSafetySHA256": "ce121cc052a4ea5a78ff5259e59ce79c9f63b874551d1d1e83f6e148d018fba8",
+          "anotherImageOrStandaloneContextClaimed": false
+        },
+        {
+          "kind": "actual-image-with-own-callback-if-present",
+          "publicRef": "docs/screenshots/issue37-frontier-migration-cleanup/manifest.json#/records/2",
+          "sourceHead": "398314c7d4f300576850df78d2a0631c9fdc3b38",
+          "renderHash": "c6e6a49fee35afe42d1a3bf27e72e2fe200eddacf88c164e94eb04cae6bc65fc",
+          "viewport": {
+            "width": 1280,
+            "height": 800
+          },
+          "imageSHA256": "b6f0ed0d4cdac0d9c7f33e2fa02a7a2488102d8146f021be3f2e514f4eae4d8e",
+          "actualSavedManifestSHA256": "521e5eacdbe9220b0e9c70cb8193a3185f710e3815c26ae7226a548ede2d8cca",
+          "publicStageManifestSHA256": "aa66ecc64503b83064dee1c545b905cfa3403120656e4d6138849b243498caee",
+          "immutableOriginalFullRecordObjectSHA256": "7476be4159fe1ae37ae11e5bba2fd8c59c516cb29519ee50971503b21af5f8ee",
+          "independentVisualVerdict": "MAPPED",
+          "strictSameBusinessOriginalReference": false,
+          "actionProofSHA256": "0083e35a6de32cc4eeecdd701b42a103995cc89717308bbcc7e602bc3ee768b4",
+          "sameImageCallbackSHA256": "819d156f07b12ff3d844784927d2dd87365bf2ae39b634b96525e74b7f2285e4",
+          "coldOriginalRequestRecoverySHA256": null,
+          "finalSafetySHA256": "3dd9ccbccdd83234e4d169b0de7df68fd2cea54b7421e7a200296bd3ba7c80e7",
+          "anotherImageOrStandaloneContextClaimed": false
+        },
+        {
+          "kind": "actual-image-with-own-callback-if-present",
+          "publicRef": "docs/screenshots/issue37-frontier-migration-cleanup/manifest.json#/records/3",
+          "sourceHead": "398314c7d4f300576850df78d2a0631c9fdc3b38",
+          "renderHash": "c6e6a49fee35afe42d1a3bf27e72e2fe200eddacf88c164e94eb04cae6bc65fc",
+          "viewport": {
+            "width": 1280,
+            "height": 800
+          },
+          "imageSHA256": "6793f913ec9fb2b6697affecf29587d8d1acb88599866843fe6dc54585cd2b06",
+          "actualSavedManifestSHA256": "521e5eacdbe9220b0e9c70cb8193a3185f710e3815c26ae7226a548ede2d8cca",
+          "publicStageManifestSHA256": "aa66ecc64503b83064dee1c545b905cfa3403120656e4d6138849b243498caee",
+          "immutableOriginalFullRecordObjectSHA256": "4b210cc9ccd6dbbdfdcc18d90f5c71fde9379d7ba178eddc2abe0d3fef277c39",
+          "independentVisualVerdict": "MAPPED",
+          "strictSameBusinessOriginalReference": false,
+          "actionProofSHA256": "85a7499f6a6751a1a2c48c783233fc5c9c8fb34253aad321fc32cca0c9448698",
+          "sameImageCallbackSHA256": "b4edd9251796e8b1d7e4d8c7ce7cbbd06e8f853ae790673199f92d54e5040e8a",
+          "coldOriginalRequestRecoverySHA256": null,
+          "finalSafetySHA256": "ce121cc052a4ea5a78ff5259e59ce79c9f63b874551d1d1e83f6e148d018fba8",
+          "anotherImageOrStandaloneContextClaimed": false
+        }
+      ],
+      "qualifications": [
+        "Unknown discard remains unconfirmed/source-limited, not a passed native cleanup or mandatory invented recovery screen.",
+        "本决定仅补证原定义中缺乏可观察原清理待核实入口及有界重试路径的有限缺口，不表示整个单元或源码家族已通过。",
+        "未知清理及无效、失败或丢失的回应仍不等于资源已经释放；原未知清理事实与来源限制继续保留，不作真实清理或安全认证。",
+        "当前上下文实际执行首次未知清理、唯一等待重试及已知回应后的解除保留；未独立执行一次重试后再次失败，失败分支的原对保留仅维持已审源码资格。",
+        "普通来源路径在原清理有效确认后不再受原保留状态阻断，但本批只观察到选择与预检控件重新可用；没有实际普通新来源选择、第二次预检或恢复执行。",
+        "过期、数量和原包校验拒绝，以及待受理或已受理恢复的原请求权限，仍是分别有界或待证明的来源资格；本次没有新增这些范围的运行证明或验收。",
+        "原来源标识未返回或丢失时仍保持阻断，不猜测标识、不重选替代来源；该来源限制没有被四张图或其回调消除。",
+        "合成桥接的原对保留、回应与守卫计数不能证明真实本机清理、目录状态、后台资源保留或原生安全。",
+        "四张图仍只作容器映射并保留缺少同业务直接参考的限制；不新增严格视觉通过，也不虚构原参考必须包含某个恢复页面。",
+        "两次旧取证各自的四项失败和零图片仍保留历史身份；旧工具问题的精确修复与私有首次原因说明不改写旧结果，不表示所有宿主原因或产品故障已经闭合。",
+        "没有计算全体定义或关系状态的总数，没有修改旧定义、来源资格、公共证据或正式桌面验收范围。"
+      ],
+      "cellFullyCovered": false,
+      "wholeCellPassesAdded": 0,
+      "strictVisualPass": false,
+      "realDesktopAcceptance": false
+    },
+    {
+      "id": "F26",
+      "originalDefinitionIndex": 21,
+      "originalDefinitionPointer": "docs/verification/issue37-supplementary-environment.json#/original47Definitions/21",
+      "originalDefinitionObjectSHA256": "9a97217745fc1a226baa7a191e8751bb03407941fdd39432f3e2c4d1bd2ce7d8",
+      "originalDefinition": {
+        "id": "F26",
+        "ticket": 34,
+        "mode": "both",
+        "historicalCoverage": "MISSING",
+        "historicalSupplementStatus": "unproven",
+        "originalRemainingSemanticGaps": [
+          "create terminal no-completed-IDs returns editable draft; partial completion retains created IDs; persistence pending cannot prematurely close as success"
+        ],
+        "predicateSourceQualifierRef": "/qualifications/untouched44",
+        "cellFullyCovered": false
+      },
+      "previousRelationPointer": "docs/verification/issue37-supplementary-environment.json#/cellRelationUpdates/21",
+      "previousRelationObjectSHA256": "04c6c98ee8c4e0fdcf1aa7d670d7556753eebdcd268fdec46fb6609d641a5203",
+      "statusBefore": "PARTIALLY_OBSERVED",
+      "inheritedObservedFiniteClauses": [
+        "Native terminal-zero returns actual mutable draft; demo first write failure retains original seed/draft. Demo partial creates25 distinct saved IDs and next-slot refusal. Native persistence-pending retains one created ID and closes as success only after original operation confirmation, with no browser open."
+      ],
+      "inheritedRemainingUnprovedClauses": [
+        "Native partial-completion retention is not separately observed for this original mode=both definition; the25 actual demo-created IDs do not certify that native branch."
+      ],
+      "status": "FINITE_ORIGINAL_GAP_DEFINITION_ADDRESSED",
+      "observedFiniteClauses": [
+        "Existing terminal-zero editable-draft/demo first-write/25-ID and native pending-confirmation observations are retained only at their original accepted relation/source, not counted as new native evidence.",
+        "New native-reference quantity2 Create UI hands the original preview/config/hash/request owner to the supported NativeBatchDialog plan with2 ordered/direct slots and actual whole-plan consent, without a multi-create Environment.Create RPC.",
+        "One synthetic Batch.Commit retains the exact first created ID/seed/profile/revision/build/relative dataRef after the second reserved identity fails before saving; original task stays failed/finished with1 completed,0 failed,1 not-executed and completedIds[].",
+        "Each image-owned callback actually closes the outer Batch owner, refreshes the UI to the same first row/profile/ref/original task, and reopens the original recent-task result with both unchanged ID/state rows; no retry/new commit/preview/identity/task/reload."
+      ],
+      "remainingUnprovedFiniteClauses": [],
+      "evidence": [
+        {
+          "kind": "actual-image-with-own-callback-if-present",
+          "publicRef": "docs/screenshots/issue37-frontier-partial-create/manifest.json#/records/0",
+          "sourceHead": "398314c7d4f300576850df78d2a0631c9fdc3b38",
+          "renderHash": "c6e6a49fee35afe42d1a3bf27e72e2fe200eddacf88c164e94eb04cae6bc65fc",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "imageSHA256": "25e6826f94201fdc551be288de63c9bec2a24bc9bc7814955e191ada5c445ee0",
+          "actualSavedManifestSHA256": "8f8b8eb60742fca64fb7dd74b64bec5037f1a1fa724c3c250454ca8979e543f9",
+          "publicStageManifestSHA256": "e8cb13d4482c946b3bf3b41beae8d4622a6b1ef7ffc4c910a3cec13ecf9e31c2",
+          "immutableOriginalFullRecordObjectSHA256": "9f8af288b07062869862b3359dc5ea2fab841898d7787e636708d5349788e5cd",
+          "independentVisualVerdict": "ADAPTED",
+          "strictSameBusinessOriginalReference": false,
+          "actionProofSHA256": "396509218ffd767562e51f0eb54dc972f1f30150a778e3747dcf4d7300c60ca3",
+          "sameImageCallbackSHA256": "c5ad417accc662804ac23525ae2fe1a5687b407f2b15722dde96064e57070b88",
+          "coldOriginalRequestRecoverySHA256": null,
+          "finalSafetySHA256": "8a4ce223ad4e8c0fd19d4c192bc273a55adca3ce992b0b7e3da798454bb87dc7",
+          "anotherImageOrStandaloneContextClaimed": false
+        },
+        {
+          "kind": "actual-image-with-own-callback-if-present",
+          "publicRef": "docs/screenshots/issue37-frontier-partial-create/manifest.json#/records/1",
+          "sourceHead": "398314c7d4f300576850df78d2a0631c9fdc3b38",
+          "renderHash": "c6e6a49fee35afe42d1a3bf27e72e2fe200eddacf88c164e94eb04cae6bc65fc",
+          "viewport": {
+            "width": 1280,
+            "height": 800
+          },
+          "imageSHA256": "66698bd856784e8a9f425ee324ce28005bfa1cc00fa1474da29ffac31840bcac",
+          "actualSavedManifestSHA256": "8f8b8eb60742fca64fb7dd74b64bec5037f1a1fa724c3c250454ca8979e543f9",
+          "publicStageManifestSHA256": "e8cb13d4482c946b3bf3b41beae8d4622a6b1ef7ffc4c910a3cec13ecf9e31c2",
+          "immutableOriginalFullRecordObjectSHA256": "458d852cfa576813aa5139774ddd5ca6918bec12cbb3290b2b38c2d7c016a0f1",
+          "independentVisualVerdict": "ADAPTED",
+          "strictSameBusinessOriginalReference": false,
+          "actionProofSHA256": "9b6583ed0df533f0c90c00e0c034868d10ed1132576cbba8617ed2c70b0ba146",
+          "sameImageCallbackSHA256": "cf3d346bf444caa2151cb4622ae8290c6cd28927d58ac24a186cb9580591feea",
+          "coldOriginalRequestRecoverySHA256": null,
+          "finalSafetySHA256": "8a4ce223ad4e8c0fd19d4c192bc273a55adca3ce992b0b7e3da798454bb87dc7",
+          "anotherImageOrStandaloneContextClaimed": false
+        }
+      ],
+      "qualifications": [
+        "No instance quota, native partial success or native persistence proof is inferred. Demo/native reachable subsets remain distinct; no future drawer evidence counted.",
+        "UNSUPPORTED_SOURCE unchanged: Environment.Create count!=1 is refused and the sole environment/completed operation share one transaction. Current App single-drawer partial completedIds else/launch branch is not exercised or certified.",
+        "Native partial is separately observed only as finite synthetic native-adapter Batch boundary evidence; no actual Go/native provider/backend success or persistence acceptance.",
+        "Created identity is retained via BatchPage/Workspace/profile/dataRef; completedIds remains[] throughout. No fake partial Environment.Create reply, drawer recovery or unsupported stock-success response is invented.",
+        "No physical profile directory/SQLite journal/disk-full/kernel/network/cold restart is observed; directory-prepared and relative dataRefs are model metadata. These are authority qualifications, not new finite original clauses.",
+        "Original mode both and historical MISSING/unproven fields are unchanged. The old25 demo-created IDs are not borrowed as native proof; prior native terminal-empty/pending and demo observations keep their original source labels.",
+        "Same original operation is reopened through recent-task auto-adoption, not a typed task-ID query. No new blank create drawer, resubmit, retry or future continuing-operation behavior is counted.",
+        "Two viewport contexts each observe one assigned synthetic outcome; matching resource IDs/seeds across fresh contexts do not create a durable-count claim or deduplicate either PNG.",
+        "Direct same-business original is MISSING; ADAPTED container pixels do not prove strict1:1, unpictured owners, all F26 behavior or a whole-cell PASS.",
+        "Bootstrap/later callback raw transport bodies unavailable from the saved interface are not reconstructed; observed final safety and exactly saved objects retain their scope.",
+        "Actual398/c6/complete81 and exact runner/case/tool/Go pins are preserved; original79 recipe/old images are not rebound. Node native-type-stripping availability does not mean F26 imported the TS migration fixtures.",
+        "Only a private append-only F26 finite decision is made. Frozen37/47 base, original47 definitions, old FAILs/274 counts and native4/21 remain unedited; no full47/current public projection."
+      ],
+      "cellFullyCovered": false,
+      "wholeCellPassesAdded": 0,
+      "strictVisualPass": false,
+      "realDesktopAcceptance": false
+    }
+  ],
+  "carriedUnsupportedOrSourceLimitedDefinitions": [
+    {
+      "id": "E18",
+      "previousStatus": "UNSUPPORTED_CLAUSE",
+      "originalDefinitionPointer": "docs/verification/issue37-supplementary-environment.json#/original47Definitions/3",
+      "priorRelationPointer": "docs/verification/issue37-supplementary-environment.json#/cellRelationUpdates/3",
+      "remainingUnprovedClauses": [
+        "The original mixed-outcome definition's native skipped assignment is UNSUPPORTED_SOURCE_NATIVE_BRANCH_HAS_NO_SKIPPED_ASSIGNMENT. The admitted branches do not establish all five native outcome classes."
+      ],
+      "newEvidenceOrNativeBranchInvented": false
+    },
+    {
+      "id": "R09",
+      "previousStatus": "SOURCE_LIMIT",
+      "originalDefinitionPointer": "docs/verification/issue37-supplementary-environment.json#/original47Definitions/40",
+      "priorRelationPointer": "docs/verification/issue37-supplementary-environment.json#/cellRelationUpdates/40",
+      "remainingUnprovedClauses": [
+        "The independently retained historical-operation Operation.Read clause is UNPROVEN_SOURCE:R09-HISTORICAL-OPERATION-READ; actual historical read is Recycle.ReadPage and Operation.Read count is0."
+      ],
+      "newEvidenceOrNativeBranchInvented": false
+    }
+  ],
+  "summary": {
+    "baselineAddressed": 37,
+    "newlyAddressedDefinitionIDs": [
+      "F07",
+      "F32",
+      "B08",
+      "H19",
+      "P07",
+      "M22",
+      "F26"
+    ],
+    "newlyAddressedDefinitions": 7,
+    "derivedAddressed": 44,
+    "denominator": 47,
+    "derivedRemaining": 3,
+    "remainingOriginalDefinitionIDs": [
+      "E18",
+      "F11",
+      "R09"
+    ],
+    "derivedStatusCounts": {
+      "FINITE_ORIGINAL_GAP_DEFINITION_ADDRESSED": 44,
+      "PARTIALLY_OBSERVED": 1,
+      "SOURCE_LIMIT": 1,
+      "UNSUPPORTED_CLAUSE": 1,
+      "UNPROVEN": 0
+    },
+    "originalDefinitionsRewritten": 0,
+    "wholeCellPassesAdded": 0,
+    "strictVisualPass": false,
+    "realDesktopAcceptance": false,
+    "formalDesktopCountUnchanged": "4/21",
+    "currentWholeProductStrictAcceptance": false
+  },
+  "publicProjectionPolicy": "Incoming literal copy/index/pointer/full-object digest are required before normalization. Only declared prose clauses and qualifications are copied, with rejecting schema/privacy checks. Private shard locations, opaque token/credential fields, raw exceptions/source/script bodies and arbitrary nested proof containers are intentionally excluded; their immutable shard digests remain bound. Exact original definitions, independent decisions and actual original-record signatures are separate authorities. No old PNG or native probe is repeated.",
+  "hashRecipe": "Raw metadata SHA-256 is distinct from UTF8(JSON.stringify(full parsed object)) insertion-order signatures. Only pairedVisualReview is restored when comparing captured records to their public projections.",
+  "originalFailuresSourcesAndAllPriorLedgersPreserved": true,
+  "allDirectGuideReferencesRemainMissing": true,
+  "wholeCellPassesAdded": 0,
+  "strictVisualPass": false,
+  "realDesktopAcceptance": false
+}

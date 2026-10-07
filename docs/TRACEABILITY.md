@@ -18,6 +18,10 @@ ENV-001 / ENV-003 / CK-001 / FP-002 / UX-001的[环境窗口细分补证](verifi
 
 原47剩余定义另经[环境层](verification/issue37-supplementary-environment.json)35个有限缺口及[F13/F15续层](verification/issue37-supplementary-environment-repairs.json)2个有限来源说明补证，派生37/47、剩10，whole-cell PASS新增0；原274、600/32/22/2、旧35层与全部失败保留。[最终审计](verification/issue37-final-evidence.json)只证明准确来源与公开材料一致，不代替后台/native、像素或完整原指南。
 
+PRX-001 / CORE-001 / DATA-001 / UX-001：P07与M22候选普通合入 `4eadba4`、`398314c`。[源码与检查](verification/issue37-frontier-code.json)分别绑定十责任路径及作者/MAIN结果：SOCKS5替换认证和解码导入行共用1–255 UTF-8字节，超限保留草稿、修正后只保存原所选行；迁移清理未确认时保留原来源/原预检，隐藏重开仍仅核实原对，有效discarded回执才释放。tokenless丢失来源仍阻断，代理失败不直连回退。MAIN398两项noEmit成功，不重标作者候选检查或681的唯一196全套。
+
+[本轮20图](verification/issue37-frontier-evidence.md)独立10 ADAPTED / 10 MAPPED，另4独立动作与16同图恢复链；[保存合同索引](verification/issue37-frontier-contracts.json)限定一致、0P1/P2。新[有限续层](verification/issue37-frontier-finite.json)按原定义追加7个独立决定，实际派生44/47、剩E18/F11/R09；继承37/47层、原274、历史FAIL/MISSING均不改，whole-cell PASS新增0。F26只证明合成Create→Batch移交与保留，H19直接原指南仍缺；不认证单Create多项部分完成、native持久化或正式桌面能力。
+
 ENV-001 / PRX-001 / CORE-001 / UX-001所涉83→340九文件组合已有[独立固定源码复核](verification/issue37-final-source-review.json)，无可证明P1/P2；不将源码推导代替逐图、键盘或真实桌面结果。75/340的28/4图独立MAPPED保持各自来源，历史FAIL不倒改。
 
 UX-001 / DOC-001另绑定340来源[七路由与指南冷加载动作](verification/issue37-native-route340-actions.json)：双视口2份有限合成记录、0PNG、每份精确5次Workspace.Read。拒绝getter0→1→1但不给Storage，原严格0合同及6条工具失败保留；S02/H19局部行为不提升为整项或原指南内容/真实桌面验收。

@@ -1,0 +1,174 @@
+{
+  "schemaVersion": 1,
+  "kind": "seven-independent-saved-frontier-contract-review-index-not-runtime-or-pixel-acceptance",
+  "date": "2026-10-07",
+  "reports": [
+    {
+      "role": "F07-B08-four-image-guards",
+      "sourceHead": "b424b21f9881ded7c0c53314f9f70a8bdea78734",
+      "renderHash": "a83d927c931dd81b76656f98d6616aafe5f8e8df9b168d68953bab9d193537f2",
+      "actualSavedManifestSHA256": "1dd678f213e8fe1a26d046b8a2e0b2d69f4118407d2200f148335d252a02c79d",
+      "independentSavedContractReportSHA256": "ec042960e27e5bb5af69f71c14fe93bf47c6afe75082a4f778e71edae9054c80",
+      "supplementalFiniteBindingSHA256": null,
+      "verdict": "SCOPED_CONTRACT_CONSISTENT",
+      "findings": {
+        "P1": 0,
+        "P2": 0
+      },
+      "reviewedRecords": 4,
+      "sameImageRecoveryChains": 0,
+      "scope": "Actual independent idle-native create technical bottom and Batch dense-bottom images; raw saved signatures only, no native creation or persistence.",
+      "fullOriginalSavedRecordObjectSHA256s": [
+        "0f8b09970b3ac176e08323ae76010567171db44fdfec4b0610fcdd32e9fc5fd1",
+        "ddc1acdbbbd0f62263fde85dd9fe99771ebcd1da4878fb67de6e7cd85c4c65b3",
+        "3206438a7b9d5e39d4ffd65bdb27566f24472974c4b8f74ef0b32e756ab04356",
+        "721c05c3756d2ee05855a8d79e395e203b556d14788dc113f07171cde26d4c61"
+      ],
+      "responseAuthority": "Synthetic frontend saved objects and source/model contracts only; no real native/backend/kernel/storage or desktop execution claimed."
+    },
+    {
+      "role": "F32-B08-four-original-owner-actions",
+      "sourceHead": "b424b21f9881ded7c0c53314f9f70a8bdea78734",
+      "renderHash": "a83d927c931dd81b76656f98d6616aafe5f8e8df9b168d68953bab9d193537f2",
+      "actualSavedManifestSHA256": "8d0ad0583ef953a5f899d51a276cd6972ce6f2fbc83bb83dbf8a20cdb5778129",
+      "independentSavedContractReportSHA256": "8d66cc050c48e6a4b76c309577cf5060a818850df7b7f38a959d305c248ce3fc",
+      "supplementalFiniteBindingSHA256": null,
+      "verdict": "SCOPED_CONTRACT_CONSISTENT",
+      "findings": {
+        "P1": 0,
+        "P2": 0
+      },
+      "reviewedRecords": 4,
+      "sameImageRecoveryChains": 0,
+      "scope": "Replacement-session/Escape/double-confirm original ForceStop refusal and Batch-owned lookup outcomes. Synthetic VALIDATION_FAILED is not native termination.",
+      "fullOriginalSavedRecordObjectSHA256s": [
+        "bde83a455327294d75a385634b2ed49a2bc2431657699d8da515a7175d1fe2e5",
+        "fe7bbf1285360f0f13541cadb2b7937fc70f37dfa61e3b078cbfd48a7c5a5376",
+        "a43e27d0e2fca789ff7a81128ab520ad176de8107b1f7fc0fc13397b77e0a349",
+        "f8915cd67b93e3fb1dd60c1715a579066da2f00f883d9ce18b02cc347e69c9c2"
+      ],
+      "responseAuthority": "Synthetic frontend saved objects and source/model contracts only; no real native/backend/kernel/storage or desktop execution claimed."
+    },
+    {
+      "role": "F11-two-demo-error-and-retry-chains",
+      "sourceHead": "b424b21f9881ded7c0c53314f9f70a8bdea78734",
+      "renderHash": "a83d927c931dd81b76656f98d6616aafe5f8e8df9b168d68953bab9d193537f2",
+      "actualSavedManifestSHA256": "3e2767ed5467beb3c30b9efb8bf32f4d3b58c0caeb39dfd002d4b9bbbed5a385",
+      "independentSavedContractReportSHA256": "1bd162c77549ad8238e227149cac3fa29dfcadb334b6c29f232c22ced9279417",
+      "supplementalFiniteBindingSHA256": "1d445c563d85d2e0ff2f8b4df5d8ba766dded7a98f0f80ff37509e91e1a125ef",
+      "verdict": "SCOPED_CONTRACT_CONSISTENT",
+      "findings": {
+        "P1": 0,
+        "P2": 0
+      },
+      "reviewedRecords": 2,
+      "sameImageRecoveryChains": 2,
+      "scope": "Real width0 validation failure and original-width retry in the same drawer; same sampled identity/storage. No demo busy/late or transient-write audit.",
+      "fullOriginalSavedRecordObjectSHA256s": [
+        "3253f1e82af2722a00c8c6a44262e343548fd2bb16c3abd0605253eada3faf05",
+        "f8cffb00857c453a0764fbd76991d0ef17c3a1ac03d04ae06ee71f9d2f91859b"
+      ],
+      "responseAuthority": "Synthetic frontend saved objects and source/model contracts only; no real native/backend/kernel/storage or desktop execution claimed."
+    },
+    {
+      "role": "H19-four-first-cold-original-request-recoveries",
+      "sourceHead": "b424b21f9881ded7c0c53314f9f70a8bdea78734",
+      "renderHash": "a83d927c931dd81b76656f98d6616aafe5f8e8df9b168d68953bab9d193537f2",
+      "actualSavedManifestSHA256": "488f03d35cf36fd014419cf3d1e637f98c7eae8a718326abeb1274cabf865413",
+      "independentSavedContractReportSHA256": "e698f88e768d0a5413de6be5aa3ec9704c212bee1a3a8318ec22bbe2e61d2a57",
+      "supplementalFiniteBindingSHA256": null,
+      "verdict": "SCOPED_CONTRACT_CONSISTENT",
+      "findings": {
+        "P1": 0,
+        "P2": 0
+      },
+      "reviewedRecords": 4,
+      "sameImageRecoveryChains": 4,
+      "scope": "First true lazy fallback then release the same original request/same-panel source-selected H1. Known getter0→1→1 always throws; strict historical zero-getter failures and missing original guide remain.",
+      "fullOriginalSavedRecordObjectSHA256s": [
+        "17433c94875e13f10e30362c670a9f26112af8b3c4d865d2ceadea1cb2c764ae",
+        "24b8453cdd79e917bbfb215988dcc5605dab46eb6a01d3a3fd264085c80f65df",
+        "c91abe165882c943f3d72ba325a4ee5b512c765a87e491ec6c28b8973181ece2",
+        "58b200d4d934a13e53a1857fd69317d706fab1ed7fec340b22de1fd717be4093"
+      ],
+      "responseAuthority": "Synthetic frontend saved objects and source/model contracts only; no real native/backend/kernel/storage or desktop execution claimed."
+    },
+    {
+      "role": "P07-four-repaired-byte-limit-and-single-save-chains",
+      "sourceHead": "398314c7d4f300576850df78d2a0631c9fdc3b38",
+      "renderHash": "c6e6a49fee35afe42d1a3bf27e72e2fe200eddacf88c164e94eb04cae6bc65fc",
+      "actualSavedManifestSHA256": "f3f0dc4540f8afb509c3d372f7cc1aa66b15b7e63a4d935b80d14e02b44f02b4",
+      "independentSavedContractReportSHA256": "df1695102aec18ff783994ce7fdf63a30f9af5dea58005dbe329c70ccec14c50",
+      "supplementalFiniteBindingSHA256": null,
+      "verdict": "SCOPED_CONTRACT_CONSISTENT",
+      "findings": {
+        "P1": 0,
+        "P2": 0
+      },
+      "reviewedRecords": 4,
+      "sameImageRecoveryChains": 4,
+      "scope": "Actual256 decoded UTF-8 refusal, masked original drafts, corrected255 same-context single save with exact row/configuration/identity retention. No native authority or invented storage failure.",
+      "fullOriginalSavedRecordObjectSHA256s": [
+        "3777fdfc8f6457ffaad6c6bf0471cb8421170113de86e15926a5c7f188afd236",
+        "4d62d6d62bdafa5eff15d112b7860be51ef3b4e18a5eff3116ce38231a46cc14",
+        "41e545bd8bf84d5d9321b874d01956ea1839bcb5ddd7883310bd6513d765a942",
+        "7ff3a135daf250294969a87c89338683352b2a652c22fc95c2c65f9ef970b7c7"
+      ],
+      "responseAuthority": "Synthetic frontend saved objects and source/model contracts only; no real native/backend/kernel/storage or desktop execution claimed."
+    },
+    {
+      "role": "M22-four-original-cleanup-owner-and-known-release-chains",
+      "sourceHead": "398314c7d4f300576850df78d2a0631c9fdc3b38",
+      "renderHash": "c6e6a49fee35afe42d1a3bf27e72e2fe200eddacf88c164e94eb04cae6bc65fc",
+      "actualSavedManifestSHA256": "521e5eacdbe9220b0e9c70cb8193a3185f710e3815c26ae7226a548ede2d8cca",
+      "independentSavedContractReportSHA256": "0da34441ebbaba0ba2ebbcff40b094efb9b408ba7515f537eb00369b929d0c3f",
+      "supplementalFiniteBindingSHA256": null,
+      "verdict": "SCOPED_CONTRACT_CONSISTENT",
+      "findings": {
+        "P1": 0,
+        "P2": 0
+      },
+      "reviewedRecords": 4,
+      "sameImageRecoveryChains": 4,
+      "scope": "Original unknown discard/held retry owner retained through hide/remount. Only valid original discarded response unlocks. No source-token reconstruction, actual restore or native file effect.",
+      "fullOriginalSavedRecordObjectSHA256s": [
+        "b767409a81ccb2c9c5eabb07904d7455c1e6ff72d0a1e7151bd0cfa055b565a2",
+        "f7c19c1703c324b7ba863f23582a59d230d13c57d291398480fd8754d30591f8",
+        "7476be4159fe1ae37ae11e5bba2fd8c59c516cb29519ee50971503b21af5f8ee",
+        "4b210cc9ccd6dbbdfdcc18d90f5c71fde9379d7ba178eddc2abe0d3fef277c39"
+      ],
+      "responseAuthority": "Synthetic frontend saved objects and source/model contracts only; no real native/backend/kernel/storage or desktop execution claimed."
+    },
+    {
+      "role": "F26-two-supported-create-to-batch-partial-retention-chains",
+      "sourceHead": "398314c7d4f300576850df78d2a0631c9fdc3b38",
+      "renderHash": "c6e6a49fee35afe42d1a3bf27e72e2fe200eddacf88c164e94eb04cae6bc65fc",
+      "actualSavedManifestSHA256": "8f8b8eb60742fca64fb7dd74b64bec5037f1a1fa724c3c250454ca8979e543f9",
+      "independentSavedContractReportSHA256": "b5de0caf2482a9874bcc8b4e4ea4b0d542978658317820c8fafa55f74c1b9004",
+      "supplementalFiniteBindingSHA256": null,
+      "verdict": "SCOPED_CONTRACT_CONSISTENT",
+      "findings": {
+        "P1": 0,
+        "P2": 0
+      },
+      "reviewedRecords": 2,
+      "sameImageRecoveryChains": 2,
+      "scope": "Bounded actual frontend Create→Batch handoff over independently pinned ten-Go synthetic model. Not multi-ID single-Create completedIds, native persistence or directory authority.",
+      "fullOriginalSavedRecordObjectSHA256s": [
+        "9f8af288b07062869862b3359dc5ea2fab841898d7787e636708d5349788e5cd",
+        "458d852cfa576813aa5139774ddd5ca6918bec12cbb3290b2b38c2d7c016a0f1"
+      ],
+      "responseAuthority": "Synthetic frontend saved objects and source/model contracts only; no real native/backend/kernel/storage or desktop execution claimed."
+    }
+  ],
+  "actualNewImageRecords": 20,
+  "reviewedNewStandaloneActionRecords": 4,
+  "sameImageRecoveryChains": 16,
+  "sameImageRecoveryChainsAreNotExtraImagesOrStandaloneActions": true,
+  "privateReviewArtifactLocationsRawTokensScriptsAndDiagnosticsOmitted": true,
+  "originalFailedAttemptAndToolReportHistoryRetained": true,
+  "wholeCellPassesAdded": 0,
+  "strictVisualPass": false,
+  "realDesktopAcceptance": false,
+  "formalDesktopCountUnchanged": "4/21"
+}

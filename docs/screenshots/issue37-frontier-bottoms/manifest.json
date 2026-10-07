@@ -1,0 +1,3157 @@
+{
+  "schemaVersion": 1,
+  "phase": "continuation3-original-frontier-images",
+  "sourceHead": "b424b21f9881ded7c0c53314f9f70a8bdea78734",
+  "renderHash": "a83d927c931dd81b76656f98d6616aafe5f8e8df9b168d68953bab9d193537f2",
+  "mainRunnerVersion": "continuation3-immutable-v2-atomic-admission",
+  "archivedInputsVerifiedBeforeManifest": true,
+  "refusalArtifactAlwaysOverridesManifest": true,
+  "pairFailuresRetainedOnGlobalRefusal": true,
+  "baseRenderHash": "e988efcf211ffa781655c99c6e7db6aa187c133b8e1ab4e9aed9e9bb725ea0a0",
+  "sourceFiles": {
+    "docs/DEVELOPMENT.md": "8aff5b7a1b09585e1265c0825d9a6e675f6496fcf947224ee11022e2e2c7a1e5",
+    "docs/KERNEL.md": "66147484ef2e4dafc9524764ed0ef9208ee7ecd52a34968a5f2d28bbe3e14a5c",
+    "docs/PRD.md": "75439a71b3f0c765025a3cecb1d5947276bc6eda37b1dc40cd7557e2558c03d5",
+    "docs/USER_GUIDE.md": "37eb8232d0eecac3225fd873c6879e9737ce025e79ba60b2036753437109e1bb",
+    "index.html": "ff4b055871e50c1af442dbb20f40ac19e260145f4aba33b02d1ff675276cedd0",
+    "package-lock.json": "bda783ae056a528b887456117abddc0d3b5a968b6546d28ac21dbcf65c7949ef",
+    "package.json": "8d38d1ab2c2577a0e8d5a2a1fdee9367f14e86d054a16494e60d86a9bde319ef",
+    "src/App.tsx": "4869c8a3174d97ec64482033a9da58f71a9436182df0b200401ea2ef2bbf1bb1",
+    "src/application/backup-model.ts": "526d7abbafa51b07284bfb311c108dac189d421863c54b00e79717995db223fb",
+    "src/application/batch-model.ts": "e081bd33a85ce085cd0635b4a32206b426b4f425d40e40041705d53995c94629",
+    "src/application/contract.ts": "7049e5297f2a3f3616c75af840d1f9a80b9c5eeb6667ccf608aacdf8c74ef190",
+    "src/application/cookie-import.ts": "da8f908edee0ac1822ee3ac0a4ec0c77556c4adea72d8b1e9b04767e16aa9835",
+    "src/application/demo-adapter.ts": "fabcc9c8ef658b05ff38e5167e23ea9283089eea02b5ee34f0c6eb52073b9a57",
+    "src/application/diagnostics-client.ts": "40eaafda6fdabf9c20406e2a77eb350042c1a8e5a9c0456ba0a613bfa7ae857d",
+    "src/application/fingerprint-model.ts": "f828927686197f722ec5bcc14a94a02434d3742641808a137a89eb38f113c08c",
+    "src/application/migration-model.ts": "dd5350e0862da983ca6400f007c0ea3e3972e0ffe1398ba2030fbd9c1334f7d4",
+    "src/application/proxy-network.ts": "bbcb7ccd693f772c8ea30a191a83b4a04a0886d87a8909b1b47d5e167e1cc42f",
+    "src/application/recycle-model.ts": "1e03b67523e1987a4e6f71d3632b3d157b1536c6e6bc73cc50862aefb0421709",
+    "src/application/restore-model.ts": "2bce938e7c0b678348ab4b82e22d129a12ec2913a1d07fe40275da2d3e9ad89c",
+    "src/application/runtime-start-plan.ts": "cbfbaba2a483c98eb1f2d98079165b79f654ad836f3ed23a9c354a8a9c8caee9",
+    "src/application/wails-adapter.ts": "bbd93c6ff83ee53a32d4339e3389ed64ed3cb0921d8a292cc6f14d60fc891c28",
+    "src/components/ActivityPage.tsx": "c233b15beb0fbd03f5563eec3e4a52a422377d864c2f21b11d5635a13660c4b1",
+    "src/components/BackupManagementPage.tsx": "3d29b3e05e48a703daba101f6f983dfb7c6622c8e18b0a76fbfc2b8f1330ca3c",
+    "src/components/DemoBackupPage.tsx": "3eb0beafcb8d019cd8eafca5422d34856de7e94b2955ec2c25beb25e356b3f88",
+    "src/components/DemoEnvironmentWindows.tsx": "1640e695d2c8d2187ebec4cdf824d8979ca050594afff3eddecf5d20cb6b1d26",
+    "src/components/DemoKernelManager.tsx": "1bbd54dc7fee1a591dfdce0c966d29f520edefd3cd3d1a1d085dbdc25887216e",
+    "src/components/DemoProxyManager.tsx": "f6c7a34d018261974ec01bff58c125ceb04a084980347a44787e4cb12f5d5018",
+    "src/components/environment-batch.css": "f09a4b81eba6497f8533c013595784692d2d6cb65c9d3d3424ded09e302a7f12",
+    "src/components/environment-recycle.css": "2684625b0769222347a9441203a2cde121c4bd7a561e992865473e78109dc8af",
+    "src/components/environment-windows.css": "409f083d515d8c16eba38698953fc0cd9dafebf64e0a4737a1cf05120a1174c4",
+    "src/components/EnvironmentDialogParts.tsx": "7b1b6f28f2b5d269b0b1fcfd4e5dedfad8a29ba06d279135024be96013c7a132",
+    "src/components/EnvironmentEditorWindow.tsx": "b63767c8c1525eb90c5b677d46a20aebb6150f66811d43706420acf47eb10a88",
+    "src/components/EnvironmentFilters.tsx": "702dd9b9ec23c526c9d218039676aa05c3fd41947528e310b5327028b9e2f59e",
+    "src/components/EnvironmentForm.tsx": "bc4d114344d824b310eb1f27da0f2baabd910b43cc7ff9e4a7b0f64dc9d55bf4",
+    "src/components/EnvironmentGroups.tsx": "308972bc385019dbe25aa45eb97dffb877a5c941401777b755e8ff5b0fc7b53f",
+    "src/components/EnvironmentKernelSelect.tsx": "6b5f64ceaa173915096cb20220f1d997c59a1c750cf945665aff92e94897108f",
+    "src/components/EnvironmentRuntimeDetails.tsx": "2f10e316efcb2036aa7bb1dae9fc6df36bc42bd569d7ce7009b2301b2da66ab6",
+    "src/components/fingerprint-revision.css": "058fe1b1fe786856ae34d0cb1e3771a92b0bd236fc1701e6729fa9ec0ceb4798",
+    "src/components/FingerprintRevisionPanel.tsx": "dfef4b0d307a8ff8771e50f1585b4a5ba01a290e923f7ebef66f9b6aa5e75fd0",
+    "src/components/HelpPage.tsx": "6d086315b3caea3d44f6f38949d3ed100d8b138ac47cec67c2302689f7b359ed",
+    "src/components/kernel-task-owner.ts": "091d9dd704485f22cd9c366d8e4c6d7d42ccaebf3ec5165013c1f7f0efc779ea",
+    "src/components/KernelDetailsWindow.tsx": "127fb3a0ed0430bc2e901b32016aa3e4d32cd2d3b9500762e70e15de960b0f3c",
+    "src/components/KernelManagementPage.tsx": "82e1ae97e787c7a1f6c83ceeb5ec0df49bf367a7e9a0c145283d6093e9872c9d",
+    "src/components/local-pages.css": "78885cc0bbc277e53b2845fd1f229a498bfb79f7d0b4e6c47605b8ab634390df",
+    "src/components/LocalPageUi.tsx": "2558a796440937db11885f8f906755557ea2c542306f3218ff062ee7d1752126",
+    "src/components/modal-lifecycle.ts": "6602c27c8d9c8cc5655660ab2068a8fbc76b0c8bef5876c1b0969d47ae453f95",
+    "src/components/native-cookie.css": "75f19ec41019bdb5a8926ce0036b79c3ad1a12b084b815e7e7bf3e4a7e32aab0",
+    "src/components/native-kernel.css": "4a1759b99e2a92cc7a7e223e3155b5c42e30cebc52e8503907e51d09bb22e451",
+    "src/components/native-proxy-actions.ts": "cfca81ed8a18708263b30c277f872c1a8a483cf2f38fdab2d436a8cad73fc94b",
+    "src/components/native-proxy.css": "4d6c5bd5c581575446c739611baef133de27b57203da0e35e07425ab6452f130",
+    "src/components/NativeBackupManager.tsx": "b3150b38422d322e7f3ab6a0db354de8c6a1ef3e31ec6ad27a9270a4ca9aea8d",
+    "src/components/NativeBatchDialog.tsx": "c10a7a435bd2dbd5726c23cd33e84b7d859a3b82a334c911e826f3e4b7e97a9a",
+    "src/components/NativeCookieImport.tsx": "21befa795aa19945ce3ad4e1d4030291bb034baa8c662e65805dea3706f8c5cc",
+    "src/components/NativeDiagnostics.tsx": "e259891f4e15af46cf11f885b100ca10ea4cb37e988411628e099067c4c07c1a",
+    "src/components/NativeKernelManager.tsx": "df5c1c9810808d072e06faeadf2170a71044e57ab05dc78f9410c92ecab51294",
+    "src/components/NativeMigrationManager.tsx": "db58e6216bd3b94f82bc398ead50fdd08033aef8927f02e3c8e113adc8156287",
+    "src/components/NativeProxyManager.tsx": "b965643192e6d79afb6e67f8deac41696cbff0d67d36a9046a142c5fac3e6b39",
+    "src/components/NativeRecycleManager.tsx": "b85fd7bb2dd8c05a6192fe9e51520c74ae83d2c363cbebcf3bb1ad911e10c3c7",
+    "src/components/NativeRestoreExecution.tsx": "f9a1206be679d1d05b4706aba943b7d0cf084901521a9433337c0d522aff8f9e",
+    "src/components/NativeRestoreManager.tsx": "86fea624634114fdee443104aac01884991a8570eb96508ec344e3123ea4d91a",
+    "src/components/NativeRuntimeNetwork.tsx": "f0bac6499941ad63ab9ed5546838baa96c5bf0f1549bc5db93de8b0d10f588be",
+    "src/components/proxy-import-session.ts": "58ec5023b99820c75e5b2a639e4004222f7989e1b216f882f0bf09a23ba6dfa5",
+    "src/components/proxy-kernel35.css": "76d84072fc3bcdf70ebe190a360dcd01e7560284ff2bc61fca4eb3ac8d12d0be",
+    "src/components/ProxyEditWindow.tsx": "c2d1b7c7cbf619428bfc30e7023c6ffd64b4d2e75eff537ea849603267517d45",
+    "src/components/ProxyImportWindow.tsx": "4b93fabb64afb6234ce716564425040a64cace1b238422f3e0a281aa828c61d7",
+    "src/components/ProxyKernelModal.tsx": "94548f9e41f3e31271bca4e72813b630c67cbf790aba05fe07d84015aafdb1de",
+    "src/components/ProxyManagementPage.tsx": "258808d2cedbe1f8791c8d5d4e9df080ad9412fc34afe12665fd6ca5fd33b52d",
+    "src/components/ProxyUsageWindow.tsx": "137a7b47a3554f4d52cc28cf69ab6dba60c9e5e4b8f8b2406ff68c017a9b8d33",
+    "src/components/reference-ui.css": "7881bbde4ec66b22d09636cd997edcbc2989e2598d58ebca64be766473dcc868",
+    "src/components/ReferenceUi.tsx": "018b22a969be74f523d2a8e1afb5c9b9000063765f4da69ef796e0eeec87f0db",
+    "src/domain.ts": "2e74955428e1a972e4b8fa244e0a55f43a2c31dd2f42f3509c952efcd8791388",
+    "src/main.tsx": "969366aee8c17066872713d8b04494591242d693ae03f158d8b3aae3d048fd62",
+    "src/styles.css": "fc116997b3f04db3e8521b25332d1ea712be523292aaf16df8df2ea90ea2ae88",
+    "tests/ui/fixtures/local-pages-native-bridge.ts": "e75ba7e491967eb6db7ca26c74a397ae739b8a8e5aa6e53f6e8ba5ab1daee535",
+    "tests/ui/fixtures/migration-workflow-bridge.ts": "9c988e5c81e7cccb6326254c2e6487666c91ac7dd62b939e1d1ab4839f7513a9",
+    "tests/ui/fixtures/native-reference-bridge.ts": "47900c94883a5cbaa868824f7e8d3bacc37b7004faa131de4d3c9e7fafb7dc58",
+    "tests/ui/fixtures/proxy-kernel.ts": "6738fa17eadffc5eda4fac1d6e2b9fe83f7998054d36e58553a3840fd26a1085",
+    "tests/ui/fixtures/reference-workspace.ts": "c8fbd298224685c59e384babbcbfb42f2ea3ffc85c136c0efb8c34f52fc2b2f1",
+    "vite.config.ts": "7a8a276050969f78e1761e03438bd9d10a2d85ae29aa1baee22fcacc24c6ac8f"
+  },
+  "renderer": {
+    "origin": "http://127.0.0.1:5173",
+    "entry": "src/main.tsx",
+    "app": "src/App.tsx",
+    "rawSourceSha256": "4869c8a3174d97ec64482033a9da58f71a9436182df0b200401ea2ef2bbf1bb1",
+    "servedAppSourceVerified": true,
+    "sourceTransforms": false,
+    "componentHarness": false
+  },
+  "toolingHash": "956a5e0abc93c1eaa1bebfbd7ab10259762ecefff1bbacc78e018d4ffae45f1f",
+  "toolingFiles": {
+    "native-fixtures/bridge.mjs": "eea69c9a7397b4a46c2eb6d8d45f7f1db71e6fd12399de60356b51349de88e33",
+    "native-fixtures/scenarios.mjs": "eb2fc0699a5c7bfcb839e64d02d94960bad1df2c3392e14c848191f07e0870bb",
+    "notes/continuation1/capture-authored-environment-gaps-atomic.mjs": "ec11cddfa5dfcf3d088c61579ba5446e2aeda77d0be0c1bac21f326bbc5c4ca0",
+    "notes/continuation1/environment-batch-gap-cases.mjs": "a7fab737a01182dd0b0199a91e0beafafb31e3c28c25700444aeb1737d801fdf",
+    "notes/continuation1/environment-drawer-capacity-original-cases.mjs": "3277a39d7d5e2711122b5d97449d6317b3f4cdf76b72582f1ea1918edaf3300d",
+    "notes/continuation1/environment-drawer-force-label-gap-cases.mjs": "9488f054cf7e152a50edbea912080156d702c3bb0e1da77e6a12033ec440000c",
+    "notes/continuation1/environment-main-runner-atomic-plan.md": "0488b9373dccca5941a138a8fb655dc7bc7d1b34db792c3c0c2a1d11f62a115d",
+    "notes/continuation1/local-gap-cases.mjs": "f9da12e3c2cd95f6b4cc91f6796bb9c6c95f4dbe972372c5e7083ad883478d9a",
+    "notes/continuation1/migration-evidence-page.mjs": "4432d09a4239dfef810c1d5bf0c7b722242f01f26d2d190940bfcd04b84ea047",
+    "notes/continuation3/capture-frontier-original-gaps.mjs": "42a86aaf17611defe66cecaf2eb089d7ff897968a92a08dd8ed2731838c7b435",
+    "notes/continuation3/environment-frontier-cases.mjs": "547d5a48bdf0cf3f1db3e38e55e45eb68fd74d88e11ab68ab44faa9cd7dddcbe",
+    "notes/continuation3/environment-frontier-plan.json": "8e5d9af802d3aa1c50782bb38a0ff17bfe4201d7c981da23183a4eaf2ef10c8b",
+    "notes/continuation3/environment-frontier-plan.md": "77930f0e8c0a808f36375974b05464063b1aee47ce63e35b3c5ace2709ae7624",
+    "notes/continuation3/frontier-main-runner-plan.md": "3f0252f0f3d0bb296b3f75761c3ba19ef56f1ac196578a9f8c15752aa1e43bb1",
+    "notes/issue37-evidence-helpers.mjs": "bb05cc0ca4769671b93c2e8e08144ddf514016e22058b1657fd1ef97ff9e43c7"
+  },
+  "baseToolingHash": "d733c501af669663052f2eca5557581d850a3a1117fff6abf608a90d47247022",
+  "originalReferenceUnchanged": true,
+  "originalReferenceStateCount": 40,
+  "originalReferenceImageCount": 80,
+  "referenceIndexSha256": "be7e0db8c107fb3079ac8ee2d4444821866247ec71390333629db1c9bbf7a3d1",
+  "startedAt": "2026-10-06T20:40:39.291Z",
+  "finishedAt": "2026-10-06T20:40:53.371Z",
+  "plannedStates": 2,
+  "plannedStateIds": [
+    "env-frontier-f07-native-idle-create-bottom",
+    "env-frontier-b08-native-dense-bottom"
+  ],
+  "plannedViewports": [
+    {
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "width": 1280,
+      "height": 800
+    }
+  ],
+  "explicitFailedPairRetryViewport": null,
+  "capturedImages": 4,
+  "successfulActions": 0,
+  "failedImages": 0,
+  "failedActions": 0,
+  "complete": true,
+  "strictVisualPass": false,
+  "realDesktopAcceptance": false,
+  "records": [
+    {
+      "id": "env-frontier-f07-native-idle-create-bottom",
+      "cells": [
+        "F07"
+      ],
+      "ticket": 34,
+      "route": "environments",
+      "mode": "native-proxy-kernel",
+      "referenceId": "environment-create-bottom",
+      "relation": "original-40-state-container-mapping-only-not-direct-original-not-accepted",
+      "scrollRule": "real App section rail callbacks and finite genuine wheel events; no DOM/presentation writes",
+      "authoringStatus": "AUTHORED_NOT_EXECUTED",
+      "sourceHead": "b424b21f9881ded7c0c53314f9f70a8bdea78734",
+      "renderHash": "a83d927c931dd81b76656f98d6616aafe5f8e8df9b168d68953bab9d193537f2",
+      "actualProductionAppOnly": true,
+      "viewports": [
+        {
+          "width": 1440,
+          "height": 900
+        },
+        {
+          "width": 1280,
+          "height": 800
+        }
+      ],
+      "allowedMethods": [
+        "Workspace.Read",
+        "Environment.Preview"
+      ],
+      "methodLimits": {
+        "Workspace.Read": 10,
+        "Environment.Preview": 1
+      },
+      "effectLimits": {
+        "Environment.Create": 0,
+        "Environment.Update": 0,
+        "Fingerprint.CommitRevision": 0,
+        "Runtime.Start": 0,
+        "Runtime.ForceStop": 0,
+        "Runtime.Stop": 0,
+        "Runtime.Reconcile": 0,
+        "Batch.Commit": 0,
+        "Batch.Retry": 0,
+        "Proxy.CommitImport": 0,
+        "Kernel.Install": 0,
+        "Kernel.Verify": 0,
+        "Kernel.Delete": 0
+      },
+      "maximumNativeCalls": 11,
+      "actionOnly": false,
+      "options": {
+        "actionOnly": false
+      },
+      "kind": "images",
+      "originalCaseId": "env-drawer-native-idle-create-bottom",
+      "originalAuthorSourceHead": "340a22c1e8489fad2db091a25bb14bb7d2e66984",
+      "originalAuthorRenderHash": "0df5a445b4a16f1984f2944ac7367d1202322b892876f2d31b9e853d9a8708ce",
+      "originalRecipeSourceLimits": [],
+      "sourceLimits": [
+        "Original recipe source qualifications are retained separately, not relabeled as current observations",
+        "Only the declared remaining-clause continuation; not whole-cell/direct-original/native acceptance",
+        "Actual image and independent visual inspection are still required; rectangles alone do not certify visible pixels"
+      ],
+      "syntheticOnly": true,
+      "nativeIO": false,
+      "strictVisualPass": false,
+      "cellFullyCovered": false,
+      "realDesktopAcceptance": false,
+      "targetedRemainingClauseOnly": true,
+      "postImageCallbacks": 0,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "toolingHash": "956a5e0abc93c1eaa1bebfbd7ab10259762ecefff1bbacc78e018d4ffae45f1f",
+      "actualRoute": "environments",
+      "actualApp": true,
+      "actionProof": {
+        "originalProof": {
+          "status": "AUTHORED_NOT_EXECUTED",
+          "executedByAuthor": false,
+          "syntheticServiceOnly": true,
+          "realDesktopAcceptance": false,
+          "nativeStorageGetterAttempts": 0,
+          "methodCounts": {
+            "Workspace.Read": 3,
+            "Environment.Preview": 1
+          },
+          "capturedPosition": "bottom",
+          "idleCreateNotLockedOrHistory": true,
+          "fourRealSections": true,
+          "createDispatched": false
+        },
+        "independentIdleNativeCreateBottom": {
+          "before": {
+            "previewId": "env-drawer-preview-1",
+            "seed": "180800001",
+            "coreId": "synthetic-build-a",
+            "proxyId": "",
+            "profile": {
+              "mode": "native",
+              "previewProfile": {
+                "schemaVersion": 1,
+                "configRevision": 1,
+                "seed": "180800001",
+                "templateId": "windows-desktop-v1",
+                "templateVersion": "windows-desktop-v1",
+                "generatorVersion": "synthetic-only",
+                "platform": "windows",
+                "platformVersion": "15.0.0",
+                "brand": "Chrome",
+                "brandVersion": "148.0.7778.215",
+                "kernelId": "synthetic-build-a",
+                "coreActualVersion": "148.0.7778.215",
+                "coreExecutableSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                "adapterVersion": "synthetic-only",
+                "capabilityVersion": "synthetic-only",
+                "language": "en-US",
+                "acceptLanguages": [
+                  "en-US"
+                ],
+                "uiLanguage": "system",
+                "timezone": "America/New_York",
+                "regionPreset": "synthetic-only",
+                "cpu": "auto",
+                "width": 1280,
+                "height": 800,
+                "parameters": [],
+                "configHash": "b3d2ab61fe7e6f5b23667fbe1718c42707d58f623dc24699e317251ab94fa64c"
+              },
+              "action": "preview",
+              "changes": [],
+              "capabilityReport": {
+                "kernelId": "synthetic-build-a",
+                "evidenceStatus": "synthetic-only",
+                "capabilities": [
+                  {
+                    "field": "cpu",
+                    "status": "configurable",
+                    "source": "observed",
+                    "note": "合成字段，不是真实观测"
+                  },
+                  {
+                    "field": "gpu",
+                    "status": "seed-generated",
+                    "source": "source-derived",
+                    "note": "合成源码推导"
+                  },
+                  {
+                    "field": "screen/location/webgpu/tls/mac",
+                    "status": "unverified",
+                    "source": "not-probed",
+                    "note": "未探测，不开放编辑"
+                  }
+                ],
+                "observedFingerprint": null,
+                "canLaunchNative": false
+              }
+            },
+            "userDataRef": null,
+            "actualSeed": "180800001",
+            "technicalOpen": false
+          },
+          "scroll": {
+            "before": {
+              "top": 709,
+              "height": 741,
+              "total": 2150,
+              "maximum": 1409,
+              "remaining": 700
+            },
+            "steps": [
+              {
+                "top": 1309,
+                "height": 741,
+                "total": 2150,
+                "maximum": 1409,
+                "remaining": 100
+              },
+              {
+                "top": 1409,
+                "height": 741,
+                "total": 2150,
+                "maximum": 1409,
+                "remaining": 0
+              }
+            ],
+            "after": {
+              "top": 1409,
+              "height": 741,
+              "total": 2150,
+              "maximum": 1409,
+              "remaining": 0
+            },
+            "maximumWheelEvents": 12,
+            "scrollAssignments": 0,
+            "focusAssignments": 0,
+            "presentationWrites": 0,
+            "timerOverrides": 0
+          },
+          "content": {
+            "viewport": {
+              "width": 1440,
+              "height": 900
+            },
+            "body": {
+              "top": 80,
+              "bottom": 821,
+              "left": 780,
+              "right": 1440,
+              "width": 660,
+              "height": 741
+            },
+            "actualScroll": {
+              "top": 1409,
+              "maximum": 1409,
+              "remaining": 0
+            },
+            "sections": [
+              {
+                "id": "basic",
+                "label": "基础设置"
+              },
+              {
+                "id": "proxy",
+                "label": "代理设置"
+              },
+              {
+                "id": "preferences",
+                "label": "常用设置"
+              },
+              {
+                "id": "fingerprint",
+                "label": "指纹设置"
+              }
+            ],
+            "technicalOpen": true,
+            "historyPresent": false,
+            "lastTechnicalRow": {
+              "text": "定位 / 其他未验收项未验证 · 不开放编辑应用策略或未探测未探测，不开放编辑",
+              "rect": {
+                "top": 700,
+                "bottom": 783,
+                "left": 831,
+                "right": 1400,
+                "width": 569,
+                "height": 83
+              },
+              "fullyInsideBody": true
+            },
+            "finalCapabilityCaveat": {
+              "text": "预览不启动浏览器，不编造 GPU、内存或字体读值。页面/合成 bridge 不能证明真实桌面能力已验收。",
+              "rect": {
+                "top": 783,
+                "bottom": 801,
+                "left": 831,
+                "right": 1400,
+                "width": 569,
+                "height": 18
+              },
+              "fullyInsideBody": true
+            },
+            "footer": {
+              "text": "换一套本机保存取消创建创建并打开",
+              "rect": {
+                "top": 821,
+                "bottom": 892,
+                "left": 780,
+                "right": 1440,
+                "width": 660,
+                "height": 71
+              },
+              "fullyInsideViewport": true,
+              "buttons": [
+                {
+                  "text": "换一套",
+                  "disabled": false,
+                  "rect": {
+                    "top": 841,
+                    "bottom": 872,
+                    "left": 800,
+                    "right": 890,
+                    "width": 90,
+                    "height": 31
+                  },
+                  "fullyInsideViewport": true
+                },
+                {
+                  "text": "取消",
+                  "disabled": false,
+                  "rect": {
+                    "top": 841,
+                    "bottom": 872,
+                    "left": 1150,
+                    "right": 1208,
+                    "width": 58,
+                    "height": 31
+                  },
+                  "fullyInsideViewport": true
+                },
+                {
+                  "text": "创建",
+                  "disabled": false,
+                  "rect": {
+                    "top": 841,
+                    "bottom": 872,
+                    "left": 1218,
+                    "right": 1296,
+                    "width": 78,
+                    "height": 31
+                  },
+                  "fullyInsideViewport": true
+                },
+                {
+                  "text": "创建并打开",
+                  "disabled": false,
+                  "rect": {
+                    "top": 841,
+                    "bottom": 872,
+                    "left": 1306,
+                    "right": 1420,
+                    "width": 114,
+                    "height": 31
+                  },
+                  "fullyInsideViewport": true
+                }
+              ]
+            },
+            "previewId": "env-drawer-preview-1",
+            "seed": "180800001",
+            "actualSeed": "180800001",
+            "coreId": "synthetic-build-a",
+            "proxyId": "",
+            "profile": {
+              "mode": "native",
+              "previewProfile": {
+                "schemaVersion": 1,
+                "configRevision": 1,
+                "seed": "180800001",
+                "templateId": "windows-desktop-v1",
+                "templateVersion": "windows-desktop-v1",
+                "generatorVersion": "synthetic-only",
+                "platform": "windows",
+                "platformVersion": "15.0.0",
+                "brand": "Chrome",
+                "brandVersion": "148.0.7778.215",
+                "kernelId": "synthetic-build-a",
+                "coreActualVersion": "148.0.7778.215",
+                "coreExecutableSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                "adapterVersion": "synthetic-only",
+                "capabilityVersion": "synthetic-only",
+                "language": "en-US",
+                "acceptLanguages": [
+                  "en-US"
+                ],
+                "uiLanguage": "system",
+                "timezone": "America/New_York",
+                "regionPreset": "synthetic-only",
+                "cpu": "auto",
+                "width": 1280,
+                "height": 800,
+                "parameters": [],
+                "configHash": "b3d2ab61fe7e6f5b23667fbe1718c42707d58f623dc24699e317251ab94fa64c"
+              },
+              "action": "preview",
+              "changes": [],
+              "capabilityReport": {
+                "kernelId": "synthetic-build-a",
+                "evidenceStatus": "synthetic-only",
+                "capabilities": [
+                  {
+                    "field": "cpu",
+                    "status": "configurable",
+                    "source": "observed",
+                    "note": "合成字段，不是真实观测"
+                  },
+                  {
+                    "field": "gpu",
+                    "status": "seed-generated",
+                    "source": "source-derived",
+                    "note": "合成源码推导"
+                  },
+                  {
+                    "field": "screen/location/webgpu/tls/mac",
+                    "status": "unverified",
+                    "source": "not-probed",
+                    "note": "未探测，不开放编辑"
+                  }
+                ],
+                "observedFingerprint": null,
+                "canLaunchNative": false
+              }
+            },
+            "userDataRef": null,
+            "mutations": []
+          }
+        },
+        "allFourSectionsSimultaneouslyVisibleClaimed": false,
+        "originalDuplicateImagesReclassified": false,
+        "expandedHistoryClaimed": false,
+        "imageAndIndependentVisualReviewRequired": true,
+        "nativeIO": false,
+        "strictVisualPass": false,
+        "cellFullyCovered": false,
+        "realDesktopAcceptance": false
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "visualScale": 1,
+          "documentZoom": "1",
+          "bodyZoom": "1"
+        },
+        "documentOverflow": false,
+        "documentScroll": {
+          "x": 0,
+          "y": 0
+        },
+        "bodyOverflow": "hidden",
+        "selectors": {
+          ".sidebar": {
+            "x": 0,
+            "y": 0,
+            "width": 200,
+            "height": 900,
+            "clientHeight": 900,
+            "scrollHeight": 900,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgb(47, 84, 235)",
+            "zIndex": "20",
+            "inert": true
+          },
+          ".brand": {
+            "x": 0,
+            "y": 0,
+            "width": 200,
+            "height": 96,
+            "clientHeight": 96,
+            "scrollHeight": 96,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgba(0, 0, 0, 0)",
+            "zIndex": "auto",
+            "inert": true
+          },
+          ".topbar": {
+            "x": 200,
+            "y": 0,
+            "width": 1240,
+            "height": 42,
+            "clientHeight": 42,
+            "scrollHeight": 42,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgb(255, 255, 255)",
+            "zIndex": "15",
+            "inert": true
+          },
+          ".main-shell": {
+            "x": 200,
+            "y": 0,
+            "width": 1240,
+            "height": 900,
+            "clientHeight": 900,
+            "scrollHeight": 900,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgba(0, 0, 0, 0)",
+            "zIndex": "auto",
+            "inert": true
+          },
+          "main": {
+            "x": 200,
+            "y": 0,
+            "width": 1240,
+            "height": 900,
+            "clientHeight": 900,
+            "scrollHeight": 900,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgba(0, 0, 0, 0)",
+            "zIndex": "auto",
+            "inert": true
+          },
+          ".environment-search-toolbar": {
+            "x": 210,
+            "y": 50,
+            "width": 1220,
+            "height": 52.859375,
+            "clientHeight": 53,
+            "scrollHeight": 53,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgb(255, 255, 255)",
+            "zIndex": "auto",
+            "inert": true
+          },
+          ".environment-list-toolbar": {
+            "x": 210,
+            "y": 112.859375,
+            "width": 1220,
+            "height": 50,
+            "clientHeight": 50,
+            "scrollHeight": 50,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgb(255, 255, 255)",
+            "zIndex": "auto",
+            "inert": true
+          },
+          ".environment-table thead": {
+            "x": 220,
+            "y": 162.859375,
+            "width": 1200,
+            "height": 40,
+            "clientHeight": 40,
+            "scrollHeight": 40,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgb(255, 255, 255)",
+            "zIndex": "1",
+            "inert": true
+          },
+          ".environment-table tbody": {
+            "x": 220,
+            "y": 202.859375,
+            "width": 1200,
+            "height": 582,
+            "clientHeight": 582,
+            "scrollHeight": 582,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgba(0, 0, 0, 0)",
+            "zIndex": "auto",
+            "inert": true
+          },
+          ".environment-table tbody tr": {
+            "x": 220,
+            "y": 212.859375,
+            "width": 1200,
+            "height": 48,
+            "clientHeight": 48,
+            "scrollHeight": 48,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgb(255, 255, 255)",
+            "zIndex": "auto",
+            "inert": true
+          },
+          ".environment-pagination": {
+            "x": 220,
+            "y": 794.859375,
+            "width": 1200,
+            "height": 30,
+            "clientHeight": 30,
+            "scrollHeight": 30,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgba(0, 0, 0, 0)",
+            "zIndex": "auto",
+            "inert": true
+          },
+          ".environment-row-menu": null,
+          ".environment-create-menu": null,
+          ".environment-advanced-search": null,
+          ".environment-group-popup": null,
+          ".group-modal": null,
+          ".env34-rail": {
+            "x": 739,
+            "y": 40,
+            "width": 40,
+            "height": 180,
+            "clientHeight": 180,
+            "scrollHeight": 180,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgb(255, 255, 255)",
+            "zIndex": "auto",
+            "inert": false
+          },
+          ".env34-kernel-menu": null,
+          ".pk35-tabs": null,
+          ".pk35-toolbar": null,
+          ".pk35-table thead": null,
+          ".pk35-table tbody tr": null,
+          ".pk35-pagination": null,
+          ".local-page-tabs": null,
+          ".local-page-toolbar": null,
+          ".local-page-table thead": null,
+          ".local-page-table tbody tr": null,
+          ".local-page-pagination": null,
+          ".local-page-help-frame": null,
+          "[role=\"tabpanel\"]": null
+        },
+        "additionalScroll": {
+          ".document-body": null,
+          ".local-page-backups .local-page-table-scroll": null,
+          ".local-page-preflight .local-page-table-scroll": null
+        },
+        "frames": [
+          {
+            "role": "dialog",
+            "title": "新建浏览器环境",
+            "frame": {
+              "x": 780,
+              "y": 40,
+              "width": 660,
+              "height": 852,
+              "clientHeight": 852,
+              "scrollHeight": 852,
+              "scrollTop": 0,
+              "scrollLeft": 0,
+              "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+              "fontSize": "12px",
+              "lineHeight": "18px",
+              "background": "rgb(255, 255, 255)",
+              "zIndex": "auto",
+              "inert": false
+            },
+            "header": {
+              "x": 780,
+              "y": 40,
+              "width": 660,
+              "height": 40,
+              "clientHeight": 40,
+              "scrollHeight": 40,
+              "scrollTop": 0,
+              "scrollLeft": 0,
+              "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+              "fontSize": "12px",
+              "lineHeight": "18px",
+              "background": "rgba(0, 0, 0, 0)",
+              "zIndex": "auto",
+              "inert": false
+            },
+            "body": {
+              "x": 780,
+              "y": 80,
+              "width": 660,
+              "height": 741,
+              "clientHeight": 741,
+              "scrollHeight": 2150,
+              "scrollTop": 1409,
+              "scrollLeft": 0,
+              "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+              "fontSize": "12px",
+              "lineHeight": "18px",
+              "background": "rgba(0, 0, 0, 0)",
+              "zIndex": "auto",
+              "inert": false
+            },
+            "footer": {
+              "x": 780,
+              "y": 821,
+              "width": 660,
+              "height": 71,
+              "clientHeight": 71,
+              "scrollHeight": 71,
+              "scrollTop": 0,
+              "scrollLeft": 0,
+              "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+              "fontSize": "12px",
+              "lineHeight": "18px",
+              "background": "rgba(0, 0, 0, 0)",
+              "zIndex": "auto",
+              "inert": false
+            },
+            "layer": 80
+          }
+        ],
+        "topModal": {
+          "role": "dialog",
+          "title": "新建浏览器环境",
+          "layer": 80,
+          "focusInside": true
+        },
+        "masks": [
+          {
+            "x": 0,
+            "y": 0,
+            "width": 1440,
+            "height": 900,
+            "clientHeight": 900,
+            "scrollHeight": 900,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgba(0, 0, 0, 0.4)",
+            "zIndex": "80",
+            "inert": false,
+            "dimMask": true,
+            "alpha": 0.4
+          }
+        ],
+        "effectiveMaskCount": 1,
+        "draft": {
+          "name": "",
+          "group": "工作环境",
+          "kernelId": "synthetic-build-a",
+          "proxyId": "",
+          "seedPresent": true,
+          "seedLength": 9,
+          "quantity": "1"
+        },
+        "nativeAudit": {
+          "storageBlocked": true,
+          "storageAttempts": 0,
+          "methodCounts": {
+            "Workspace.Read": 3
+          },
+          "unsupportedMethods": []
+        },
+        "secretMasks": [],
+        "animationCount": 0
+      },
+      "pageErrors": [],
+      "consoleErrors": [],
+      "deniedRequests": [],
+      "failedResponses": [],
+      "ignoredHmrConsoleErrors": 2,
+      "blockedWebSockets": 2,
+      "file": "1440x900/env-frontier-f07-native-idle-create-bottom.png",
+      "png": {
+        "sha256": "a51c69d7406795ec39ffbe0f1bf5111395c1f2c614ec58cf0088da01e28b3aed",
+        "bytes": 92296,
+        "width": 1440,
+        "height": 900
+      },
+      "pairedVisualReview": {
+        "verdict": "ADAPTED",
+        "notes": [
+          "Actual pixels show the expanded native technical table, not an expanded-history or locked-create substitute.",
+          "Final location/other-unverified capability row, unverified/not-editable text, and final preview/native-capability caveat are readable above the footer.",
+          "synthetic-build-a and actual-version text are readable; no kernel dropdown or second overlay obscures the body.",
+          "All four footer buttons are wholly visible: 换一套, 取消, 创建, 创建并打开.",
+          "Opened original preserves the corresponding right drawer/rail/header/footer container but contains editable commercial settings, not a direct native read-only technical-tail reference."
+        ],
+        "imageSha256": "a51c69d7406795ec39ffbe0f1bf5111395c1f2c614ec58cf0088da01e28b3aed",
+        "independentReviewSha256": "a499445da861e4f36ae40df10b8f26756f5b5b875ef12150a1a1e29133893371"
+      },
+      "finalSafety": {
+        "syntheticOnly": true,
+        "nativeStorageGetterAttempts": 0,
+        "allowedMethods": [
+          "Workspace.Read",
+          "Environment.Preview"
+        ],
+        "methodCounts": {
+          "Workspace.Read": 3,
+          "Environment.Preview": 1
+        },
+        "maximumNativeCalls": 11,
+        "originalGuardsUnmodified": true,
+        "unsupportedMethods": [],
+        "rawCredentialOrCredentialHashProof": false,
+        "realDesktopAcceptance": false,
+        "exactOriginalRecipeSafetyRetained": true,
+        "targetedContinuationOnly": true,
+        "strictVisualPass": false,
+        "cellFullyCovered": false
+      }
+    },
+    {
+      "id": "env-frontier-b08-native-dense-bottom",
+      "cells": [
+        "B08"
+      ],
+      "ticket": 34,
+      "route": "environments",
+      "mode": "native-reference",
+      "referenceId": "proxy-bound",
+      "relation": "native-existing-window-container-mapping; original-display-fixture-not-executed-batch-proof",
+      "scrollRule": "actual pointer wheel inside the 25-row table to its bottom; no scrollTop write",
+      "allowedMethods": [
+        "Workspace.Read",
+        "Batch.ReadPage",
+        "Operation.Read",
+        "Cookie.DiscardImport"
+      ],
+      "methodBudgets": {
+        "Workspace.Read": 12,
+        "Batch.ReadPage": 6,
+        "Operation.Read": 3,
+        "Cookie.DiscardImport": 2
+      },
+      "effectLimits": {
+        "Batch.Commit": 0,
+        "Batch.Retry": 0,
+        "Operation.Cancel": 0
+      },
+      "maximumNativeCalls": 23,
+      "maximumSyntheticEffects": 0,
+      "actionOnly": false,
+      "options": {
+        "actionOnly": false,
+        "batchVariant": "dense-table-bottom"
+      },
+      "sourceLimits": [
+        "Original recipe source qualifications are retained separately, not relabeled as current observations",
+        "Only the declared remaining-clause continuation; not whole-cell/direct-original/native acceptance",
+        "Actual image and independent visual inspection are still required; rectangles alone do not certify visible pixels"
+      ],
+      "sourceHead": "b424b21f9881ded7c0c53314f9f70a8bdea78734",
+      "renderHash": "a83d927c931dd81b76656f98d6616aafe5f8e8df9b168d68953bab9d193537f2",
+      "authoringStatus": "AUTHORED_NOT_EXECUTED",
+      "strictVisualPass": false,
+      "realDesktopAcceptance": false,
+      "kind": "images",
+      "viewports": [
+        {
+          "width": 1440,
+          "height": 900
+        },
+        {
+          "width": 1280,
+          "height": 800
+        }
+      ],
+      "originalCaseId": "env-batch-dense-table-bottom",
+      "originalAuthorSourceHead": "340a22c1e8489fad2db091a25bb14bb7d2e66984",
+      "originalAuthorRenderHash": "0df5a445b4a16f1984f2944ac7367d1202322b892876f2d31b9e853d9a8708ce",
+      "originalRecipeSourceLimits": [],
+      "actualProductionAppOnly": true,
+      "syntheticOnly": true,
+      "nativeIO": false,
+      "cellFullyCovered": false,
+      "targetedRemainingClauseOnly": true,
+      "postImageCallbacks": 0,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "toolingHash": "956a5e0abc93c1eaa1bebfbd7ab10259762ecefff1bbacc78e018d4ffae45f1f",
+      "actualRoute": "environments",
+      "actualApp": true,
+      "actionProof": {
+        "originalProof": {
+          "authoringStatus": "AUTHORED_NOT_EXECUTED",
+          "executedByAuthor": false,
+          "syntheticServiceOnly": true,
+          "nativeIO": false,
+          "nativeStorageGetterAttempts": 0,
+          "methodCounts": {
+            "Workspace.Read": 4,
+            "Batch.ReadPage": 2,
+            "Operation.Read": 1,
+            "Cookie.DiscardImport": 0
+          },
+          "syntheticEffectCount": 0,
+          "nativeIdentityConserved": true,
+          "stockInputConserved": true,
+          "oldAttemptConserved": true,
+          "originalPlan": "synthetic-env-batch-plan",
+          "operationId": "synthetic-env-batch-current",
+          "densePageRows": 25,
+          "bottomExactId": "synthetic-reference-25",
+          "naturalWheelOnly": true
+        },
+        "denseBottomViewportProof": {
+          "scroll": {
+            "before": {
+              "top": 0,
+              "height": 480,
+              "total": 637,
+              "maximum": 157,
+              "remaining": 157
+            },
+            "steps": [
+              {
+                "top": 157,
+                "height": 480,
+                "total": 637,
+                "maximum": 157,
+                "remaining": 0
+              }
+            ],
+            "after": {
+              "top": 157,
+              "height": 480,
+              "total": 637,
+              "maximum": 157,
+              "remaining": 0
+            },
+            "maximumWheelEvents": 12,
+            "scrollAssignments": 0,
+            "focusAssignments": 0,
+            "presentationWrites": 0,
+            "timerOverrides": 0
+          },
+          "content": {
+            "viewport": {
+              "width": 1440,
+              "height": 900
+            },
+            "body": {
+              "top": 201.875,
+              "bottom": 682.125,
+              "left": 200,
+              "right": 1240,
+              "width": 1040,
+              "height": 480.25
+            },
+            "table": {
+              "top": 250.875,
+              "bottom": 510.875,
+              "left": 226,
+              "right": 1214,
+              "width": 988,
+              "height": 260
+            },
+            "tableScroll": {
+              "top": 1149,
+              "maximum": 1150,
+              "remaining": 1
+            },
+            "rows": 25,
+            "lastRow": {
+              "text": "#25合成批次环境 25synthetic-reference-25保持seed/档案 · 原修订1不绑定代理不绑定代理未执行",
+              "rect": {
+                "top": 455.875,
+                "bottom": 509.875,
+                "left": 227,
+                "right": 1213,
+                "width": 986,
+                "height": 54
+              },
+              "fullyInsideTable": true,
+              "fullyInsideBody": true,
+              "fullyInsideViewport": true,
+              "cells": [
+                {
+                  "text": "#25",
+                  "rect": {
+                    "top": 455.875,
+                    "bottom": 509.875,
+                    "left": 227,
+                    "right": 287,
+                    "width": 60,
+                    "height": 54
+                  },
+                  "fullyInsideTable": true,
+                  "fullyInsideBody": true
+                },
+                {
+                  "text": "合成批次环境 25synthetic-reference-25",
+                  "rect": {
+                    "top": 455.875,
+                    "bottom": 509.875,
+                    "left": 287,
+                    "right": 518.5,
+                    "width": 231.5,
+                    "height": 54
+                  },
+                  "fullyInsideTable": true,
+                  "fullyInsideBody": true
+                },
+                {
+                  "text": "保持seed/档案 · 原修订1",
+                  "rect": {
+                    "top": 455.875,
+                    "bottom": 509.875,
+                    "left": 518.5,
+                    "right": 750,
+                    "width": 231.5,
+                    "height": 54
+                  },
+                  "fullyInsideTable": true,
+                  "fullyInsideBody": true
+                },
+                {
+                  "text": "不绑定代理不绑定代理",
+                  "rect": {
+                    "top": 455.875,
+                    "bottom": 509.875,
+                    "left": 750,
+                    "right": 981.5,
+                    "width": 231.5,
+                    "height": 54
+                  },
+                  "fullyInsideTable": true,
+                  "fullyInsideBody": true
+                },
+                {
+                  "text": "未执行",
+                  "rect": {
+                    "top": 455.875,
+                    "bottom": 509.875,
+                    "left": 981.5,
+                    "right": 1213,
+                    "width": 231.5,
+                    "height": 54
+                  },
+                  "fullyInsideTable": true,
+                  "fullyInsideBody": true
+                }
+              ]
+            },
+            "pager": {
+              "text": "上一页第 1 / 2 页下一页重新读取本页（不重新执行）",
+              "rect": {
+                "top": 510.875,
+                "bottom": 561.875,
+                "left": 226,
+                "right": 1214,
+                "width": 988,
+                "height": 51
+              },
+              "fullyInsideBody": true,
+              "fullyInsideViewport": true
+            },
+            "footer": {
+              "text": "关闭查看批次结果明确继续未完成项（不重复已完成项）",
+              "rect": {
+                "top": 682.125,
+                "bottom": 754.125,
+                "left": 200,
+                "right": 1240,
+                "width": 1040,
+                "height": 72
+              },
+              "fullyInsideViewport": true,
+              "buttons": [
+                {
+                  "text": "关闭",
+                  "disabled": false,
+                  "rect": {
+                    "top": 703.125,
+                    "bottom": 734.125,
+                    "left": 798,
+                    "right": 856,
+                    "width": 58,
+                    "height": 31
+                  },
+                  "fullyInsideViewport": true
+                },
+                {
+                  "text": "查看批次结果",
+                  "disabled": false,
+                  "rect": {
+                    "top": 703.125,
+                    "bottom": 734.125,
+                    "left": 866,
+                    "right": 972,
+                    "width": 106,
+                    "height": 31
+                  },
+                  "fullyInsideViewport": true
+                },
+                {
+                  "text": "明确继续未完成项（不重复已完成项）",
+                  "disabled": false,
+                  "rect": {
+                    "top": 703.125,
+                    "bottom": 734.125,
+                    "left": 982,
+                    "right": 1220,
+                    "width": 238,
+                    "height": 31
+                  },
+                  "fullyInsideViewport": true
+                }
+              ]
+            }
+          }
+        },
+        "originalPlan": "synthetic-env-batch-plan",
+        "operationId": "synthetic-env-batch-current",
+        "oldSource03CorrectionRebound": false,
+        "originalFAILsReclassified": false,
+        "imageAndIndependentVisualReviewRequired": true,
+        "nativeIO": false,
+        "strictVisualPass": false,
+        "cellFullyCovered": false,
+        "realDesktopAcceptance": false
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "visualScale": 1,
+          "documentZoom": "1",
+          "bodyZoom": "1"
+        },
+        "documentOverflow": false,
+        "documentScroll": {
+          "x": 0,
+          "y": 0
+        },
+        "bodyOverflow": "hidden",
+        "selectors": {
+          ".sidebar": {
+            "x": 0,
+            "y": 0,
+            "width": 200,
+            "height": 900,
+            "clientHeight": 900,
+            "scrollHeight": 900,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgb(47, 84, 235)",
+            "zIndex": "20",
+            "inert": true
+          },
+          ".brand": {
+            "x": 0,
+            "y": 0,
+            "width": 200,
+            "height": 96,
+            "clientHeight": 96,
+            "scrollHeight": 96,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgba(0, 0, 0, 0)",
+            "zIndex": "auto",
+            "inert": true
+          },
+          ".topbar": {
+            "x": 200,
+            "y": 0,
+            "width": 1240,
+            "height": 42,
+            "clientHeight": 42,
+            "scrollHeight": 42,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgb(255, 255, 255)",
+            "zIndex": "15",
+            "inert": true
+          },
+          ".main-shell": {
+            "x": 200,
+            "y": 0,
+            "width": 1240,
+            "height": 900,
+            "clientHeight": 900,
+            "scrollHeight": 900,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgba(0, 0, 0, 0)",
+            "zIndex": "auto",
+            "inert": true
+          },
+          "main": {
+            "x": 200,
+            "y": 0,
+            "width": 1240,
+            "height": 900,
+            "clientHeight": 900,
+            "scrollHeight": 900,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgba(0, 0, 0, 0)",
+            "zIndex": "auto",
+            "inert": true
+          },
+          ".environment-search-toolbar": {
+            "x": 210,
+            "y": 50,
+            "width": 1220,
+            "height": 52.859375,
+            "clientHeight": 53,
+            "scrollHeight": 53,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgb(255, 255, 255)",
+            "zIndex": "auto",
+            "inert": true
+          },
+          ".environment-list-toolbar": {
+            "x": 210,
+            "y": 112.859375,
+            "width": 1220,
+            "height": 50,
+            "clientHeight": 50,
+            "scrollHeight": 50,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgb(255, 255, 255)",
+            "zIndex": "auto",
+            "inert": true
+          },
+          ".environment-table thead": {
+            "x": 220,
+            "y": 162.859375,
+            "width": 1200,
+            "height": 40,
+            "clientHeight": 40,
+            "scrollHeight": 40,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgb(255, 255, 255)",
+            "zIndex": "1",
+            "inert": true
+          },
+          ".environment-table tbody": {
+            "x": 220,
+            "y": 202.859375,
+            "width": 1200,
+            "height": 582,
+            "clientHeight": 582,
+            "scrollHeight": 590,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgba(0, 0, 0, 0)",
+            "zIndex": "auto",
+            "inert": true
+          },
+          ".environment-table tbody tr": {
+            "x": 220,
+            "y": 212.859375,
+            "width": 1200,
+            "height": 48,
+            "clientHeight": 48,
+            "scrollHeight": 48,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgb(255, 255, 255)",
+            "zIndex": "auto",
+            "inert": true
+          },
+          ".environment-pagination": {
+            "x": 220,
+            "y": 794.859375,
+            "width": 1200,
+            "height": 30,
+            "clientHeight": 30,
+            "scrollHeight": 30,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgba(0, 0, 0, 0)",
+            "zIndex": "auto",
+            "inert": true
+          },
+          ".environment-row-menu": null,
+          ".environment-create-menu": null,
+          ".environment-advanced-search": null,
+          ".environment-group-popup": null,
+          ".group-modal": null,
+          ".env34-rail": null,
+          ".env34-kernel-menu": null,
+          ".pk35-tabs": null,
+          ".pk35-toolbar": null,
+          ".pk35-table thead": null,
+          ".pk35-table tbody tr": null,
+          ".pk35-pagination": null,
+          ".local-page-tabs": null,
+          ".local-page-toolbar": null,
+          ".local-page-table thead": null,
+          ".local-page-table tbody tr": null,
+          ".local-page-pagination": null,
+          ".local-page-help-frame": null,
+          "[role=\"tabpanel\"]": null
+        },
+        "additionalScroll": {
+          ".document-body": null,
+          ".local-page-backups .local-page-table-scroll": null,
+          ".local-page-preflight .local-page-table-scroll": null
+        },
+        "frames": [
+          {
+            "role": "dialog",
+            "title": "持久批次与逐项结果",
+            "frame": {
+              "x": 200,
+              "y": 161.875,
+              "width": 1040,
+              "height": 592.25,
+              "clientHeight": 592,
+              "scrollHeight": 592,
+              "scrollTop": 0,
+              "scrollLeft": 0,
+              "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+              "fontSize": "12px",
+              "lineHeight": "18px",
+              "background": "rgb(255, 255, 255)",
+              "zIndex": "auto",
+              "inert": false
+            },
+            "header": {
+              "x": 200,
+              "y": 161.875,
+              "width": 1040,
+              "height": 40,
+              "clientHeight": 40,
+              "scrollHeight": 40,
+              "scrollTop": 0,
+              "scrollLeft": 0,
+              "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+              "fontSize": "12px",
+              "lineHeight": "18px",
+              "background": "rgba(0, 0, 0, 0)",
+              "zIndex": "auto",
+              "inert": false
+            },
+            "body": {
+              "x": 200,
+              "y": 201.875,
+              "width": 1040,
+              "height": 480.25,
+              "clientHeight": 480,
+              "scrollHeight": 637,
+              "scrollTop": 157,
+              "scrollLeft": 0,
+              "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+              "fontSize": "12px",
+              "lineHeight": "18px",
+              "background": "rgba(0, 0, 0, 0)",
+              "zIndex": "auto",
+              "inert": false
+            },
+            "footer": {
+              "x": 200,
+              "y": 682.125,
+              "width": 1040,
+              "height": 72,
+              "clientHeight": 71,
+              "scrollHeight": 71,
+              "scrollTop": 0,
+              "scrollLeft": 0,
+              "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+              "fontSize": "12px",
+              "lineHeight": "18px",
+              "background": "rgba(0, 0, 0, 0)",
+              "zIndex": "auto",
+              "inert": false
+            },
+            "layer": 80
+          }
+        ],
+        "topModal": {
+          "role": "dialog",
+          "title": "持久批次与逐项结果",
+          "layer": 80,
+          "focusInside": true
+        },
+        "masks": [
+          {
+            "x": 0,
+            "y": 0,
+            "width": 1440,
+            "height": 900,
+            "clientHeight": 900,
+            "scrollHeight": 900,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgba(0, 0, 0, 0.4)",
+            "zIndex": "80",
+            "inert": false,
+            "dimMask": true,
+            "alpha": 0.4
+          }
+        ],
+        "effectiveMaskCount": 1,
+        "draft": null,
+        "nativeAudit": {
+          "storageBlocked": true,
+          "storageAttempts": 0,
+          "methodCounts": {
+            "Workspace.Read": 4,
+            "Batch.ReadPage": 2,
+            "Operation.Read": 1
+          },
+          "unsupportedMethods": []
+        },
+        "secretMasks": [],
+        "animationCount": 0
+      },
+      "pageErrors": [],
+      "consoleErrors": [],
+      "deniedRequests": [],
+      "failedResponses": [],
+      "ignoredHmrConsoleErrors": 2,
+      "blockedWebSockets": 2,
+      "file": "1440x900/env-frontier-b08-native-dense-bottom.png",
+      "png": {
+        "sha256": "c64b3366d1af020fdf5939472443b7cdaa0845734baf453f5d85fc6f12e661dd",
+        "bytes": 88571,
+        "width": 1440,
+        "height": 900
+      },
+      "pairedVisualReview": {
+        "verdict": "MAPPED",
+        "notes": [
+          "Actual pixels show rows #22 through #25 at the table bottom; the total 25-row qualification comes from the capture manifest, not a claim that every row is simultaneously pictured.",
+          "Row #25 is complete across all five cells, including the full synthetic-reference-25 ID/name, identity/revision, explicit proxy and result; no last-cell/footer clipping.",
+          "第 1 / 2 页 pager, reread control and all three fixed-footer controls are readable together.",
+          "The upper summary is partly outside the scrolled body's top edge and is not certified readable; this is not a full-body/no-clipping verdict.",
+          "Opened original is a centered binding-dialog/table/pagination container, not direct reference or execution evidence for this native dense batch/result workflow."
+        ],
+        "imageSha256": "c64b3366d1af020fdf5939472443b7cdaa0845734baf453f5d85fc6f12e661dd",
+        "independentReviewSha256": "a499445da861e4f36ae40df10b8f26756f5b5b875ef12150a1a1e29133893371"
+      },
+      "finalSafety": {
+        "authoringStatus": "AUTHORED_NOT_EXECUTED",
+        "nativeStorageGetterAttempts": 0,
+        "unexpectedCalls": 0,
+        "actualMethodCounts": {
+          "Workspace.Read": 4,
+          "Batch.ReadPage": 2,
+          "Operation.Read": 1,
+          "Cookie.DiscardImport": 0
+        },
+        "syntheticEffectCount": 0,
+        "identityConserved": true,
+        "originalStockConserved": true,
+        "independentExactCallLedger": true,
+        "nativeIO": false,
+        "strictVisualPass": false,
+        "realDesktopAcceptance": false,
+        "exactOriginalRecipeSafetyRetained": true,
+        "targetedContinuationOnly": true,
+        "cellFullyCovered": false
+      }
+    },
+    {
+      "id": "env-frontier-f07-native-idle-create-bottom",
+      "cells": [
+        "F07"
+      ],
+      "ticket": 34,
+      "route": "environments",
+      "mode": "native-proxy-kernel",
+      "referenceId": "environment-create-bottom",
+      "relation": "original-40-state-container-mapping-only-not-direct-original-not-accepted",
+      "scrollRule": "real App section rail callbacks and finite genuine wheel events; no DOM/presentation writes",
+      "authoringStatus": "AUTHORED_NOT_EXECUTED",
+      "sourceHead": "b424b21f9881ded7c0c53314f9f70a8bdea78734",
+      "renderHash": "a83d927c931dd81b76656f98d6616aafe5f8e8df9b168d68953bab9d193537f2",
+      "actualProductionAppOnly": true,
+      "viewports": [
+        {
+          "width": 1440,
+          "height": 900
+        },
+        {
+          "width": 1280,
+          "height": 800
+        }
+      ],
+      "allowedMethods": [
+        "Workspace.Read",
+        "Environment.Preview"
+      ],
+      "methodLimits": {
+        "Workspace.Read": 10,
+        "Environment.Preview": 1
+      },
+      "effectLimits": {
+        "Environment.Create": 0,
+        "Environment.Update": 0,
+        "Fingerprint.CommitRevision": 0,
+        "Runtime.Start": 0,
+        "Runtime.ForceStop": 0,
+        "Runtime.Stop": 0,
+        "Runtime.Reconcile": 0,
+        "Batch.Commit": 0,
+        "Batch.Retry": 0,
+        "Proxy.CommitImport": 0,
+        "Kernel.Install": 0,
+        "Kernel.Verify": 0,
+        "Kernel.Delete": 0
+      },
+      "maximumNativeCalls": 11,
+      "actionOnly": false,
+      "options": {
+        "actionOnly": false
+      },
+      "kind": "images",
+      "originalCaseId": "env-drawer-native-idle-create-bottom",
+      "originalAuthorSourceHead": "340a22c1e8489fad2db091a25bb14bb7d2e66984",
+      "originalAuthorRenderHash": "0df5a445b4a16f1984f2944ac7367d1202322b892876f2d31b9e853d9a8708ce",
+      "originalRecipeSourceLimits": [],
+      "sourceLimits": [
+        "Original recipe source qualifications are retained separately, not relabeled as current observations",
+        "Only the declared remaining-clause continuation; not whole-cell/direct-original/native acceptance",
+        "Actual image and independent visual inspection are still required; rectangles alone do not certify visible pixels"
+      ],
+      "syntheticOnly": true,
+      "nativeIO": false,
+      "strictVisualPass": false,
+      "cellFullyCovered": false,
+      "realDesktopAcceptance": false,
+      "targetedRemainingClauseOnly": true,
+      "postImageCallbacks": 0,
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "toolingHash": "956a5e0abc93c1eaa1bebfbd7ab10259762ecefff1bbacc78e018d4ffae45f1f",
+      "actualRoute": "environments",
+      "actualApp": true,
+      "actionProof": {
+        "originalProof": {
+          "status": "AUTHORED_NOT_EXECUTED",
+          "executedByAuthor": false,
+          "syntheticServiceOnly": true,
+          "realDesktopAcceptance": false,
+          "nativeStorageGetterAttempts": 0,
+          "methodCounts": {
+            "Workspace.Read": 3,
+            "Environment.Preview": 1
+          },
+          "capturedPosition": "bottom",
+          "idleCreateNotLockedOrHistory": true,
+          "fourRealSections": true,
+          "createDispatched": false
+        },
+        "independentIdleNativeCreateBottom": {
+          "before": {
+            "previewId": "env-drawer-preview-1",
+            "seed": "180800001",
+            "coreId": "synthetic-build-a",
+            "proxyId": "",
+            "profile": {
+              "mode": "native",
+              "previewProfile": {
+                "schemaVersion": 1,
+                "configRevision": 1,
+                "seed": "180800001",
+                "templateId": "windows-desktop-v1",
+                "templateVersion": "windows-desktop-v1",
+                "generatorVersion": "synthetic-only",
+                "platform": "windows",
+                "platformVersion": "15.0.0",
+                "brand": "Chrome",
+                "brandVersion": "148.0.7778.215",
+                "kernelId": "synthetic-build-a",
+                "coreActualVersion": "148.0.7778.215",
+                "coreExecutableSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                "adapterVersion": "synthetic-only",
+                "capabilityVersion": "synthetic-only",
+                "language": "en-US",
+                "acceptLanguages": [
+                  "en-US"
+                ],
+                "uiLanguage": "system",
+                "timezone": "America/New_York",
+                "regionPreset": "synthetic-only",
+                "cpu": "auto",
+                "width": 1280,
+                "height": 800,
+                "parameters": [],
+                "configHash": "b3d2ab61fe7e6f5b23667fbe1718c42707d58f623dc24699e317251ab94fa64c"
+              },
+              "action": "preview",
+              "changes": [],
+              "capabilityReport": {
+                "kernelId": "synthetic-build-a",
+                "evidenceStatus": "synthetic-only",
+                "capabilities": [
+                  {
+                    "field": "cpu",
+                    "status": "configurable",
+                    "source": "observed",
+                    "note": "合成字段，不是真实观测"
+                  },
+                  {
+                    "field": "gpu",
+                    "status": "seed-generated",
+                    "source": "source-derived",
+                    "note": "合成源码推导"
+                  },
+                  {
+                    "field": "screen/location/webgpu/tls/mac",
+                    "status": "unverified",
+                    "source": "not-probed",
+                    "note": "未探测，不开放编辑"
+                  }
+                ],
+                "observedFingerprint": null,
+                "canLaunchNative": false
+              }
+            },
+            "userDataRef": null,
+            "actualSeed": "180800001",
+            "technicalOpen": false
+          },
+          "scroll": {
+            "before": {
+              "top": 809,
+              "height": 641,
+              "total": 2150,
+              "maximum": 1509,
+              "remaining": 700
+            },
+            "steps": [
+              {
+                "top": 1409,
+                "height": 641,
+                "total": 2150,
+                "maximum": 1509,
+                "remaining": 100
+              },
+              {
+                "top": 1509,
+                "height": 641,
+                "total": 2150,
+                "maximum": 1509,
+                "remaining": 0
+              }
+            ],
+            "after": {
+              "top": 1509,
+              "height": 641,
+              "total": 2150,
+              "maximum": 1509,
+              "remaining": 0
+            },
+            "maximumWheelEvents": 12,
+            "scrollAssignments": 0,
+            "focusAssignments": 0,
+            "presentationWrites": 0,
+            "timerOverrides": 0
+          },
+          "content": {
+            "viewport": {
+              "width": 1280,
+              "height": 800
+            },
+            "body": {
+              "top": 80,
+              "bottom": 721,
+              "left": 620,
+              "right": 1280,
+              "width": 660,
+              "height": 641
+            },
+            "actualScroll": {
+              "top": 1509,
+              "maximum": 1509,
+              "remaining": 0
+            },
+            "sections": [
+              {
+                "id": "basic",
+                "label": "基础设置"
+              },
+              {
+                "id": "proxy",
+                "label": "代理设置"
+              },
+              {
+                "id": "preferences",
+                "label": "常用设置"
+              },
+              {
+                "id": "fingerprint",
+                "label": "指纹设置"
+              }
+            ],
+            "technicalOpen": true,
+            "historyPresent": false,
+            "lastTechnicalRow": {
+              "text": "定位 / 其他未验收项未验证 · 不开放编辑应用策略或未探测未探测，不开放编辑",
+              "rect": {
+                "top": 600,
+                "bottom": 683,
+                "left": 671,
+                "right": 1240,
+                "width": 569,
+                "height": 83
+              },
+              "fullyInsideBody": true
+            },
+            "finalCapabilityCaveat": {
+              "text": "预览不启动浏览器，不编造 GPU、内存或字体读值。页面/合成 bridge 不能证明真实桌面能力已验收。",
+              "rect": {
+                "top": 683,
+                "bottom": 701,
+                "left": 671,
+                "right": 1240,
+                "width": 569,
+                "height": 18
+              },
+              "fullyInsideBody": true
+            },
+            "footer": {
+              "text": "换一套本机保存取消创建创建并打开",
+              "rect": {
+                "top": 721,
+                "bottom": 792,
+                "left": 620,
+                "right": 1280,
+                "width": 660,
+                "height": 71
+              },
+              "fullyInsideViewport": true,
+              "buttons": [
+                {
+                  "text": "换一套",
+                  "disabled": false,
+                  "rect": {
+                    "top": 741,
+                    "bottom": 772,
+                    "left": 640,
+                    "right": 730,
+                    "width": 90,
+                    "height": 31
+                  },
+                  "fullyInsideViewport": true
+                },
+                {
+                  "text": "取消",
+                  "disabled": false,
+                  "rect": {
+                    "top": 741,
+                    "bottom": 772,
+                    "left": 990,
+                    "right": 1048,
+                    "width": 58,
+                    "height": 31
+                  },
+                  "fullyInsideViewport": true
+                },
+                {
+                  "text": "创建",
+                  "disabled": false,
+                  "rect": {
+                    "top": 741,
+                    "bottom": 772,
+                    "left": 1058,
+                    "right": 1136,
+                    "width": 78,
+                    "height": 31
+                  },
+                  "fullyInsideViewport": true
+                },
+                {
+                  "text": "创建并打开",
+                  "disabled": false,
+                  "rect": {
+                    "top": 741,
+                    "bottom": 772,
+                    "left": 1146,
+                    "right": 1260,
+                    "width": 114,
+                    "height": 31
+                  },
+                  "fullyInsideViewport": true
+                }
+              ]
+            },
+            "previewId": "env-drawer-preview-1",
+            "seed": "180800001",
+            "actualSeed": "180800001",
+            "coreId": "synthetic-build-a",
+            "proxyId": "",
+            "profile": {
+              "mode": "native",
+              "previewProfile": {
+                "schemaVersion": 1,
+                "configRevision": 1,
+                "seed": "180800001",
+                "templateId": "windows-desktop-v1",
+                "templateVersion": "windows-desktop-v1",
+                "generatorVersion": "synthetic-only",
+                "platform": "windows",
+                "platformVersion": "15.0.0",
+                "brand": "Chrome",
+                "brandVersion": "148.0.7778.215",
+                "kernelId": "synthetic-build-a",
+                "coreActualVersion": "148.0.7778.215",
+                "coreExecutableSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                "adapterVersion": "synthetic-only",
+                "capabilityVersion": "synthetic-only",
+                "language": "en-US",
+                "acceptLanguages": [
+                  "en-US"
+                ],
+                "uiLanguage": "system",
+                "timezone": "America/New_York",
+                "regionPreset": "synthetic-only",
+                "cpu": "auto",
+                "width": 1280,
+                "height": 800,
+                "parameters": [],
+                "configHash": "b3d2ab61fe7e6f5b23667fbe1718c42707d58f623dc24699e317251ab94fa64c"
+              },
+              "action": "preview",
+              "changes": [],
+              "capabilityReport": {
+                "kernelId": "synthetic-build-a",
+                "evidenceStatus": "synthetic-only",
+                "capabilities": [
+                  {
+                    "field": "cpu",
+                    "status": "configurable",
+                    "source": "observed",
+                    "note": "合成字段，不是真实观测"
+                  },
+                  {
+                    "field": "gpu",
+                    "status": "seed-generated",
+                    "source": "source-derived",
+                    "note": "合成源码推导"
+                  },
+                  {
+                    "field": "screen/location/webgpu/tls/mac",
+                    "status": "unverified",
+                    "source": "not-probed",
+                    "note": "未探测，不开放编辑"
+                  }
+                ],
+                "observedFingerprint": null,
+                "canLaunchNative": false
+              }
+            },
+            "userDataRef": null,
+            "mutations": []
+          }
+        },
+        "allFourSectionsSimultaneouslyVisibleClaimed": false,
+        "originalDuplicateImagesReclassified": false,
+        "expandedHistoryClaimed": false,
+        "imageAndIndependentVisualReviewRequired": true,
+        "nativeIO": false,
+        "strictVisualPass": false,
+        "cellFullyCovered": false,
+        "realDesktopAcceptance": false
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "visualScale": 1,
+          "documentZoom": "1",
+          "bodyZoom": "1"
+        },
+        "documentOverflow": false,
+        "documentScroll": {
+          "x": 0,
+          "y": 0
+        },
+        "bodyOverflow": "hidden",
+        "selectors": {
+          ".sidebar": {
+            "x": 0,
+            "y": 0,
+            "width": 200,
+            "height": 800,
+            "clientHeight": 800,
+            "scrollHeight": 800,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgb(47, 84, 235)",
+            "zIndex": "20",
+            "inert": true
+          },
+          ".brand": {
+            "x": 0,
+            "y": 0,
+            "width": 200,
+            "height": 96,
+            "clientHeight": 96,
+            "scrollHeight": 96,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgba(0, 0, 0, 0)",
+            "zIndex": "auto",
+            "inert": true
+          },
+          ".topbar": {
+            "x": 200,
+            "y": 0,
+            "width": 1080,
+            "height": 42,
+            "clientHeight": 42,
+            "scrollHeight": 42,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgb(255, 255, 255)",
+            "zIndex": "15",
+            "inert": true
+          },
+          ".main-shell": {
+            "x": 200,
+            "y": 0,
+            "width": 1080,
+            "height": 800,
+            "clientHeight": 800,
+            "scrollHeight": 800,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgba(0, 0, 0, 0)",
+            "zIndex": "auto",
+            "inert": true
+          },
+          "main": {
+            "x": 200,
+            "y": 0,
+            "width": 1080,
+            "height": 800,
+            "clientHeight": 800,
+            "scrollHeight": 800,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgba(0, 0, 0, 0)",
+            "zIndex": "auto",
+            "inert": true
+          },
+          ".environment-search-toolbar": {
+            "x": 210,
+            "y": 50,
+            "width": 1060,
+            "height": 52.859375,
+            "clientHeight": 53,
+            "scrollHeight": 53,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgb(255, 255, 255)",
+            "zIndex": "auto",
+            "inert": true
+          },
+          ".environment-list-toolbar": {
+            "x": 210,
+            "y": 112.859375,
+            "width": 1060,
+            "height": 50,
+            "clientHeight": 50,
+            "scrollHeight": 50,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgb(255, 255, 255)",
+            "zIndex": "auto",
+            "inert": true
+          },
+          ".environment-table thead": {
+            "x": 220,
+            "y": 162.859375,
+            "width": 1040,
+            "height": 40,
+            "clientHeight": 40,
+            "scrollHeight": 40,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgb(255, 255, 255)",
+            "zIndex": "1",
+            "inert": true
+          },
+          ".environment-table tbody": {
+            "x": 220,
+            "y": 202.859375,
+            "width": 1040,
+            "height": 482,
+            "clientHeight": 482,
+            "scrollHeight": 482,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgba(0, 0, 0, 0)",
+            "zIndex": "auto",
+            "inert": true
+          },
+          ".environment-table tbody tr": {
+            "x": 220,
+            "y": 212.859375,
+            "width": 1040,
+            "height": 48,
+            "clientHeight": 48,
+            "scrollHeight": 48,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgb(255, 255, 255)",
+            "zIndex": "auto",
+            "inert": true
+          },
+          ".environment-pagination": {
+            "x": 220,
+            "y": 694.859375,
+            "width": 1040,
+            "height": 30,
+            "clientHeight": 30,
+            "scrollHeight": 30,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgba(0, 0, 0, 0)",
+            "zIndex": "auto",
+            "inert": true
+          },
+          ".environment-row-menu": null,
+          ".environment-create-menu": null,
+          ".environment-advanced-search": null,
+          ".environment-group-popup": null,
+          ".group-modal": null,
+          ".env34-rail": {
+            "x": 579,
+            "y": 40,
+            "width": 40,
+            "height": 180,
+            "clientHeight": 180,
+            "scrollHeight": 180,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgb(255, 255, 255)",
+            "zIndex": "auto",
+            "inert": false
+          },
+          ".env34-kernel-menu": null,
+          ".pk35-tabs": null,
+          ".pk35-toolbar": null,
+          ".pk35-table thead": null,
+          ".pk35-table tbody tr": null,
+          ".pk35-pagination": null,
+          ".local-page-tabs": null,
+          ".local-page-toolbar": null,
+          ".local-page-table thead": null,
+          ".local-page-table tbody tr": null,
+          ".local-page-pagination": null,
+          ".local-page-help-frame": null,
+          "[role=\"tabpanel\"]": null
+        },
+        "additionalScroll": {
+          ".document-body": null,
+          ".local-page-backups .local-page-table-scroll": null,
+          ".local-page-preflight .local-page-table-scroll": null
+        },
+        "frames": [
+          {
+            "role": "dialog",
+            "title": "新建浏览器环境",
+            "frame": {
+              "x": 620,
+              "y": 40,
+              "width": 660,
+              "height": 752,
+              "clientHeight": 752,
+              "scrollHeight": 752,
+              "scrollTop": 0,
+              "scrollLeft": 0,
+              "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+              "fontSize": "12px",
+              "lineHeight": "18px",
+              "background": "rgb(255, 255, 255)",
+              "zIndex": "auto",
+              "inert": false
+            },
+            "header": {
+              "x": 620,
+              "y": 40,
+              "width": 660,
+              "height": 40,
+              "clientHeight": 40,
+              "scrollHeight": 40,
+              "scrollTop": 0,
+              "scrollLeft": 0,
+              "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+              "fontSize": "12px",
+              "lineHeight": "18px",
+              "background": "rgba(0, 0, 0, 0)",
+              "zIndex": "auto",
+              "inert": false
+            },
+            "body": {
+              "x": 620,
+              "y": 80,
+              "width": 660,
+              "height": 641,
+              "clientHeight": 641,
+              "scrollHeight": 2150,
+              "scrollTop": 1509,
+              "scrollLeft": 0,
+              "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+              "fontSize": "12px",
+              "lineHeight": "18px",
+              "background": "rgba(0, 0, 0, 0)",
+              "zIndex": "auto",
+              "inert": false
+            },
+            "footer": {
+              "x": 620,
+              "y": 721,
+              "width": 660,
+              "height": 71,
+              "clientHeight": 71,
+              "scrollHeight": 71,
+              "scrollTop": 0,
+              "scrollLeft": 0,
+              "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+              "fontSize": "12px",
+              "lineHeight": "18px",
+              "background": "rgba(0, 0, 0, 0)",
+              "zIndex": "auto",
+              "inert": false
+            },
+            "layer": 80
+          }
+        ],
+        "topModal": {
+          "role": "dialog",
+          "title": "新建浏览器环境",
+          "layer": 80,
+          "focusInside": true
+        },
+        "masks": [
+          {
+            "x": 0,
+            "y": 0,
+            "width": 1280,
+            "height": 800,
+            "clientHeight": 800,
+            "scrollHeight": 800,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgba(0, 0, 0, 0.4)",
+            "zIndex": "80",
+            "inert": false,
+            "dimMask": true,
+            "alpha": 0.4
+          }
+        ],
+        "effectiveMaskCount": 1,
+        "draft": {
+          "name": "",
+          "group": "工作环境",
+          "kernelId": "synthetic-build-a",
+          "proxyId": "",
+          "seedPresent": true,
+          "seedLength": 9,
+          "quantity": "1"
+        },
+        "nativeAudit": {
+          "storageBlocked": true,
+          "storageAttempts": 0,
+          "methodCounts": {
+            "Workspace.Read": 3
+          },
+          "unsupportedMethods": []
+        },
+        "secretMasks": [],
+        "animationCount": 0
+      },
+      "pageErrors": [],
+      "consoleErrors": [],
+      "deniedRequests": [],
+      "failedResponses": [],
+      "ignoredHmrConsoleErrors": 2,
+      "blockedWebSockets": 2,
+      "file": "1280x800/env-frontier-f07-native-idle-create-bottom.png",
+      "png": {
+        "sha256": "204d1e71997b049fc2ee7d9a09d01af20d58491b0bf4b9d96e2cc57790a71a4b",
+        "bytes": 75894,
+        "width": 1280,
+        "height": 800
+      },
+      "pairedVisualReview": {
+        "verdict": "ADAPTED",
+        "notes": [
+          "The technical heading and earlier content have scrolled above the body, while revision, exact build and actual-version rows remain readable.",
+          "The final location/other-unverified row and its complete caveat remain above, not behind, the fixed footer; no clipped kernel text or occluding overlay.",
+          "All four footer buttons fit; the four visible rail icons do not mean all four continuous form sections are simultaneously visible.",
+          "Opened original has the corresponding right drawer/container at this viewport, but commercial editable settings and footer actions differ from the native technical-capability adaptation."
+        ],
+        "imageSha256": "204d1e71997b049fc2ee7d9a09d01af20d58491b0bf4b9d96e2cc57790a71a4b",
+        "independentReviewSha256": "a499445da861e4f36ae40df10b8f26756f5b5b875ef12150a1a1e29133893371"
+      },
+      "finalSafety": {
+        "syntheticOnly": true,
+        "nativeStorageGetterAttempts": 0,
+        "allowedMethods": [
+          "Workspace.Read",
+          "Environment.Preview"
+        ],
+        "methodCounts": {
+          "Workspace.Read": 3,
+          "Environment.Preview": 1
+        },
+        "maximumNativeCalls": 11,
+        "originalGuardsUnmodified": true,
+        "unsupportedMethods": [],
+        "rawCredentialOrCredentialHashProof": false,
+        "realDesktopAcceptance": false,
+        "exactOriginalRecipeSafetyRetained": true,
+        "targetedContinuationOnly": true,
+        "strictVisualPass": false,
+        "cellFullyCovered": false
+      }
+    },
+    {
+      "id": "env-frontier-b08-native-dense-bottom",
+      "cells": [
+        "B08"
+      ],
+      "ticket": 34,
+      "route": "environments",
+      "mode": "native-reference",
+      "referenceId": "proxy-bound",
+      "relation": "native-existing-window-container-mapping; original-display-fixture-not-executed-batch-proof",
+      "scrollRule": "actual pointer wheel inside the 25-row table to its bottom; no scrollTop write",
+      "allowedMethods": [
+        "Workspace.Read",
+        "Batch.ReadPage",
+        "Operation.Read",
+        "Cookie.DiscardImport"
+      ],
+      "methodBudgets": {
+        "Workspace.Read": 12,
+        "Batch.ReadPage": 6,
+        "Operation.Read": 3,
+        "Cookie.DiscardImport": 2
+      },
+      "effectLimits": {
+        "Batch.Commit": 0,
+        "Batch.Retry": 0,
+        "Operation.Cancel": 0
+      },
+      "maximumNativeCalls": 23,
+      "maximumSyntheticEffects": 0,
+      "actionOnly": false,
+      "options": {
+        "actionOnly": false,
+        "batchVariant": "dense-table-bottom"
+      },
+      "sourceLimits": [
+        "Original recipe source qualifications are retained separately, not relabeled as current observations",
+        "Only the declared remaining-clause continuation; not whole-cell/direct-original/native acceptance",
+        "Actual image and independent visual inspection are still required; rectangles alone do not certify visible pixels"
+      ],
+      "sourceHead": "b424b21f9881ded7c0c53314f9f70a8bdea78734",
+      "renderHash": "a83d927c931dd81b76656f98d6616aafe5f8e8df9b168d68953bab9d193537f2",
+      "authoringStatus": "AUTHORED_NOT_EXECUTED",
+      "strictVisualPass": false,
+      "realDesktopAcceptance": false,
+      "kind": "images",
+      "viewports": [
+        {
+          "width": 1440,
+          "height": 900
+        },
+        {
+          "width": 1280,
+          "height": 800
+        }
+      ],
+      "originalCaseId": "env-batch-dense-table-bottom",
+      "originalAuthorSourceHead": "340a22c1e8489fad2db091a25bb14bb7d2e66984",
+      "originalAuthorRenderHash": "0df5a445b4a16f1984f2944ac7367d1202322b892876f2d31b9e853d9a8708ce",
+      "originalRecipeSourceLimits": [],
+      "actualProductionAppOnly": true,
+      "syntheticOnly": true,
+      "nativeIO": false,
+      "cellFullyCovered": false,
+      "targetedRemainingClauseOnly": true,
+      "postImageCallbacks": 0,
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "toolingHash": "956a5e0abc93c1eaa1bebfbd7ab10259762ecefff1bbacc78e018d4ffae45f1f",
+      "actualRoute": "environments",
+      "actualApp": true,
+      "actionProof": {
+        "originalProof": {
+          "authoringStatus": "AUTHORED_NOT_EXECUTED",
+          "executedByAuthor": false,
+          "syntheticServiceOnly": true,
+          "nativeIO": false,
+          "nativeStorageGetterAttempts": 0,
+          "methodCounts": {
+            "Workspace.Read": 4,
+            "Batch.ReadPage": 2,
+            "Operation.Read": 1,
+            "Cookie.DiscardImport": 0
+          },
+          "syntheticEffectCount": 0,
+          "nativeIdentityConserved": true,
+          "stockInputConserved": true,
+          "oldAttemptConserved": true,
+          "originalPlan": "synthetic-env-batch-plan",
+          "operationId": "synthetic-env-batch-current",
+          "densePageRows": 25,
+          "bottomExactId": "synthetic-reference-25",
+          "naturalWheelOnly": true
+        },
+        "denseBottomViewportProof": {
+          "scroll": {
+            "before": {
+              "top": 0,
+              "height": 480,
+              "total": 637,
+              "maximum": 157,
+              "remaining": 157
+            },
+            "steps": [
+              {
+                "top": 157,
+                "height": 480,
+                "total": 637,
+                "maximum": 157,
+                "remaining": 0
+              }
+            ],
+            "after": {
+              "top": 157,
+              "height": 480,
+              "total": 637,
+              "maximum": 157,
+              "remaining": 0
+            },
+            "maximumWheelEvents": 12,
+            "scrollAssignments": 0,
+            "focusAssignments": 0,
+            "presentationWrites": 0,
+            "timerOverrides": 0
+          },
+          "content": {
+            "viewport": {
+              "width": 1280,
+              "height": 800
+            },
+            "body": {
+              "top": 151.875,
+              "bottom": 632.125,
+              "left": 120,
+              "right": 1160,
+              "width": 1040,
+              "height": 480.25
+            },
+            "table": {
+              "top": 200.875,
+              "bottom": 460.875,
+              "left": 146,
+              "right": 1134,
+              "width": 988,
+              "height": 260
+            },
+            "tableScroll": {
+              "top": 1149,
+              "maximum": 1150,
+              "remaining": 1
+            },
+            "rows": 25,
+            "lastRow": {
+              "text": "#25合成批次环境 25synthetic-reference-25保持seed/档案 · 原修订1不绑定代理不绑定代理未执行",
+              "rect": {
+                "top": 405.875,
+                "bottom": 459.875,
+                "left": 147,
+                "right": 1133,
+                "width": 986,
+                "height": 54
+              },
+              "fullyInsideTable": true,
+              "fullyInsideBody": true,
+              "fullyInsideViewport": true,
+              "cells": [
+                {
+                  "text": "#25",
+                  "rect": {
+                    "top": 405.875,
+                    "bottom": 459.875,
+                    "left": 147,
+                    "right": 207,
+                    "width": 60,
+                    "height": 54
+                  },
+                  "fullyInsideTable": true,
+                  "fullyInsideBody": true
+                },
+                {
+                  "text": "合成批次环境 25synthetic-reference-25",
+                  "rect": {
+                    "top": 405.875,
+                    "bottom": 459.875,
+                    "left": 207,
+                    "right": 438.5,
+                    "width": 231.5,
+                    "height": 54
+                  },
+                  "fullyInsideTable": true,
+                  "fullyInsideBody": true
+                },
+                {
+                  "text": "保持seed/档案 · 原修订1",
+                  "rect": {
+                    "top": 405.875,
+                    "bottom": 459.875,
+                    "left": 438.5,
+                    "right": 670,
+                    "width": 231.5,
+                    "height": 54
+                  },
+                  "fullyInsideTable": true,
+                  "fullyInsideBody": true
+                },
+                {
+                  "text": "不绑定代理不绑定代理",
+                  "rect": {
+                    "top": 405.875,
+                    "bottom": 459.875,
+                    "left": 670,
+                    "right": 901.5,
+                    "width": 231.5,
+                    "height": 54
+                  },
+                  "fullyInsideTable": true,
+                  "fullyInsideBody": true
+                },
+                {
+                  "text": "未执行",
+                  "rect": {
+                    "top": 405.875,
+                    "bottom": 459.875,
+                    "left": 901.5,
+                    "right": 1133,
+                    "width": 231.5,
+                    "height": 54
+                  },
+                  "fullyInsideTable": true,
+                  "fullyInsideBody": true
+                }
+              ]
+            },
+            "pager": {
+              "text": "上一页第 1 / 2 页下一页重新读取本页（不重新执行）",
+              "rect": {
+                "top": 460.875,
+                "bottom": 511.875,
+                "left": 146,
+                "right": 1134,
+                "width": 988,
+                "height": 51
+              },
+              "fullyInsideBody": true,
+              "fullyInsideViewport": true
+            },
+            "footer": {
+              "text": "关闭查看批次结果明确继续未完成项（不重复已完成项）",
+              "rect": {
+                "top": 632.125,
+                "bottom": 704.125,
+                "left": 120,
+                "right": 1160,
+                "width": 1040,
+                "height": 72
+              },
+              "fullyInsideViewport": true,
+              "buttons": [
+                {
+                  "text": "关闭",
+                  "disabled": false,
+                  "rect": {
+                    "top": 653.125,
+                    "bottom": 684.125,
+                    "left": 718,
+                    "right": 776,
+                    "width": 58,
+                    "height": 31
+                  },
+                  "fullyInsideViewport": true
+                },
+                {
+                  "text": "查看批次结果",
+                  "disabled": false,
+                  "rect": {
+                    "top": 653.125,
+                    "bottom": 684.125,
+                    "left": 786,
+                    "right": 892,
+                    "width": 106,
+                    "height": 31
+                  },
+                  "fullyInsideViewport": true
+                },
+                {
+                  "text": "明确继续未完成项（不重复已完成项）",
+                  "disabled": false,
+                  "rect": {
+                    "top": 653.125,
+                    "bottom": 684.125,
+                    "left": 902,
+                    "right": 1140,
+                    "width": 238,
+                    "height": 31
+                  },
+                  "fullyInsideViewport": true
+                }
+              ]
+            }
+          }
+        },
+        "originalPlan": "synthetic-env-batch-plan",
+        "operationId": "synthetic-env-batch-current",
+        "oldSource03CorrectionRebound": false,
+        "originalFAILsReclassified": false,
+        "imageAndIndependentVisualReviewRequired": true,
+        "nativeIO": false,
+        "strictVisualPass": false,
+        "cellFullyCovered": false,
+        "realDesktopAcceptance": false
+      },
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "visualScale": 1,
+          "documentZoom": "1",
+          "bodyZoom": "1"
+        },
+        "documentOverflow": false,
+        "documentScroll": {
+          "x": 0,
+          "y": 0
+        },
+        "bodyOverflow": "hidden",
+        "selectors": {
+          ".sidebar": {
+            "x": 0,
+            "y": 0,
+            "width": 200,
+            "height": 800,
+            "clientHeight": 800,
+            "scrollHeight": 800,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgb(47, 84, 235)",
+            "zIndex": "20",
+            "inert": true
+          },
+          ".brand": {
+            "x": 0,
+            "y": 0,
+            "width": 200,
+            "height": 96,
+            "clientHeight": 96,
+            "scrollHeight": 96,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgba(0, 0, 0, 0)",
+            "zIndex": "auto",
+            "inert": true
+          },
+          ".topbar": {
+            "x": 200,
+            "y": 0,
+            "width": 1080,
+            "height": 42,
+            "clientHeight": 42,
+            "scrollHeight": 42,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgb(255, 255, 255)",
+            "zIndex": "15",
+            "inert": true
+          },
+          ".main-shell": {
+            "x": 200,
+            "y": 0,
+            "width": 1080,
+            "height": 800,
+            "clientHeight": 800,
+            "scrollHeight": 800,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgba(0, 0, 0, 0)",
+            "zIndex": "auto",
+            "inert": true
+          },
+          "main": {
+            "x": 200,
+            "y": 0,
+            "width": 1080,
+            "height": 800,
+            "clientHeight": 800,
+            "scrollHeight": 800,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgba(0, 0, 0, 0)",
+            "zIndex": "auto",
+            "inert": true
+          },
+          ".environment-search-toolbar": {
+            "x": 210,
+            "y": 50,
+            "width": 1060,
+            "height": 52.859375,
+            "clientHeight": 53,
+            "scrollHeight": 53,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgb(255, 255, 255)",
+            "zIndex": "auto",
+            "inert": true
+          },
+          ".environment-list-toolbar": {
+            "x": 210,
+            "y": 112.859375,
+            "width": 1060,
+            "height": 50,
+            "clientHeight": 50,
+            "scrollHeight": 50,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgb(255, 255, 255)",
+            "zIndex": "auto",
+            "inert": true
+          },
+          ".environment-table thead": {
+            "x": 220,
+            "y": 162.859375,
+            "width": 1040,
+            "height": 40,
+            "clientHeight": 40,
+            "scrollHeight": 40,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgb(255, 255, 255)",
+            "zIndex": "1",
+            "inert": true
+          },
+          ".environment-table tbody": {
+            "x": 220,
+            "y": 202.859375,
+            "width": 1040,
+            "height": 482,
+            "clientHeight": 482,
+            "scrollHeight": 590,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgba(0, 0, 0, 0)",
+            "zIndex": "auto",
+            "inert": true
+          },
+          ".environment-table tbody tr": {
+            "x": 220,
+            "y": 212.859375,
+            "width": 1040,
+            "height": 48,
+            "clientHeight": 48,
+            "scrollHeight": 48,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgb(255, 255, 255)",
+            "zIndex": "auto",
+            "inert": true
+          },
+          ".environment-pagination": {
+            "x": 220,
+            "y": 694.859375,
+            "width": 1040,
+            "height": 30,
+            "clientHeight": 30,
+            "scrollHeight": 30,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgba(0, 0, 0, 0)",
+            "zIndex": "auto",
+            "inert": true
+          },
+          ".environment-row-menu": null,
+          ".environment-create-menu": null,
+          ".environment-advanced-search": null,
+          ".environment-group-popup": null,
+          ".group-modal": null,
+          ".env34-rail": null,
+          ".env34-kernel-menu": null,
+          ".pk35-tabs": null,
+          ".pk35-toolbar": null,
+          ".pk35-table thead": null,
+          ".pk35-table tbody tr": null,
+          ".pk35-pagination": null,
+          ".local-page-tabs": null,
+          ".local-page-toolbar": null,
+          ".local-page-table thead": null,
+          ".local-page-table tbody tr": null,
+          ".local-page-pagination": null,
+          ".local-page-help-frame": null,
+          "[role=\"tabpanel\"]": null
+        },
+        "additionalScroll": {
+          ".document-body": null,
+          ".local-page-backups .local-page-table-scroll": null,
+          ".local-page-preflight .local-page-table-scroll": null
+        },
+        "frames": [
+          {
+            "role": "dialog",
+            "title": "持久批次与逐项结果",
+            "frame": {
+              "x": 120,
+              "y": 111.875,
+              "width": 1040,
+              "height": 592.25,
+              "clientHeight": 592,
+              "scrollHeight": 592,
+              "scrollTop": 0,
+              "scrollLeft": 0,
+              "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+              "fontSize": "12px",
+              "lineHeight": "18px",
+              "background": "rgb(255, 255, 255)",
+              "zIndex": "auto",
+              "inert": false
+            },
+            "header": {
+              "x": 120,
+              "y": 111.875,
+              "width": 1040,
+              "height": 40,
+              "clientHeight": 40,
+              "scrollHeight": 40,
+              "scrollTop": 0,
+              "scrollLeft": 0,
+              "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+              "fontSize": "12px",
+              "lineHeight": "18px",
+              "background": "rgba(0, 0, 0, 0)",
+              "zIndex": "auto",
+              "inert": false
+            },
+            "body": {
+              "x": 120,
+              "y": 151.875,
+              "width": 1040,
+              "height": 480.25,
+              "clientHeight": 480,
+              "scrollHeight": 637,
+              "scrollTop": 157,
+              "scrollLeft": 0,
+              "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+              "fontSize": "12px",
+              "lineHeight": "18px",
+              "background": "rgba(0, 0, 0, 0)",
+              "zIndex": "auto",
+              "inert": false
+            },
+            "footer": {
+              "x": 120,
+              "y": 632.125,
+              "width": 1040,
+              "height": 72,
+              "clientHeight": 71,
+              "scrollHeight": 71,
+              "scrollTop": 0,
+              "scrollLeft": 0,
+              "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+              "fontSize": "12px",
+              "lineHeight": "18px",
+              "background": "rgba(0, 0, 0, 0)",
+              "zIndex": "auto",
+              "inert": false
+            },
+            "layer": 80
+          }
+        ],
+        "topModal": {
+          "role": "dialog",
+          "title": "持久批次与逐项结果",
+          "layer": 80,
+          "focusInside": true
+        },
+        "masks": [
+          {
+            "x": 0,
+            "y": 0,
+            "width": 1280,
+            "height": 800,
+            "clientHeight": 800,
+            "scrollHeight": 800,
+            "scrollTop": 0,
+            "scrollLeft": 0,
+            "font": "\"Microsoft YaHei\", \"Segoe UI\", -apple-system, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+            "fontSize": "12px",
+            "lineHeight": "18px",
+            "background": "rgba(0, 0, 0, 0.4)",
+            "zIndex": "80",
+            "inert": false,
+            "dimMask": true,
+            "alpha": 0.4
+          }
+        ],
+        "effectiveMaskCount": 1,
+        "draft": null,
+        "nativeAudit": {
+          "storageBlocked": true,
+          "storageAttempts": 0,
+          "methodCounts": {
+            "Workspace.Read": 4,
+            "Batch.ReadPage": 2,
+            "Operation.Read": 1
+          },
+          "unsupportedMethods": []
+        },
+        "secretMasks": [],
+        "animationCount": 0
+      },
+      "pageErrors": [],
+      "consoleErrors": [],
+      "deniedRequests": [],
+      "failedResponses": [],
+      "ignoredHmrConsoleErrors": 2,
+      "blockedWebSockets": 2,
+      "file": "1280x800/env-frontier-b08-native-dense-bottom.png",
+      "png": {
+        "sha256": "70449ab2661e9770d112a7314d472067e92759c3f82ca232e0d15425a6164eb3",
+        "bytes": 78907,
+        "width": 1280,
+        "height": 800
+      },
+      "pairedVisualReview": {
+        "verdict": "MAPPED",
+        "notes": [
+          "Actual pixels show the table's #22-#25 tail; complete row #25 has its full synthetic-reference-25 ID/name without ellipsis or bottom-edge clipping.",
+          "All five last-row cells end before the visible first-page pager; partial-result warning, continuation caveat and all three fixed-footer controls are readable together.",
+          "The upper summary is partly outside the scrolled body and is not certified readable; no global full-body/no-clipping claim.",
+          "Opened original is the corresponding centered binding-dialog container; a direct native batch/dense-bottom business-state reference remains missing."
+        ],
+        "imageSha256": "70449ab2661e9770d112a7314d472067e92759c3f82ca232e0d15425a6164eb3",
+        "independentReviewSha256": "a499445da861e4f36ae40df10b8f26756f5b5b875ef12150a1a1e29133893371"
+      },
+      "finalSafety": {
+        "authoringStatus": "AUTHORED_NOT_EXECUTED",
+        "nativeStorageGetterAttempts": 0,
+        "unexpectedCalls": 0,
+        "actualMethodCounts": {
+          "Workspace.Read": 4,
+          "Batch.ReadPage": 2,
+          "Operation.Read": 1,
+          "Cookie.DiscardImport": 0
+        },
+        "syntheticEffectCount": 0,
+        "identityConserved": true,
+        "originalStockConserved": true,
+        "independentExactCallLedger": true,
+        "nativeIO": false,
+        "strictVisualPass": false,
+        "realDesktopAcceptance": false,
+        "exactOriginalRecipeSafetyRetained": true,
+        "targetedContinuationOnly": true,
+        "cellFullyCovered": false
+      }
+    }
+  ],
+  "failures": [],
+  "publicationKind": "new-frontier-hash-bound-independent-visual-packet-not-acceptance",
+  "captureManifestSha256": "1dd678f213e8fe1a26d046b8a2e0b2d69f4118407d2200f148335d252a02c79d",
+  "frozenCommittedRenderInputsSha256": "296854fb7ce9e616bdaa136e4e728cb740a00239d7e53f25052d9740699d5503",
+  "independentReviews": [
+    {
+      "name": "environment-frontier-visual-review.json",
+      "sha256": "a499445da861e4f36ae40df10b8f26756f5b5b875ef12150a1a1e29133893371"
+    }
+  ],
+  "reviewedImages": 4,
+  "verdictCounts": {
+    "ADAPTED": 2,
+    "MAPPED": 2,
+    "MISSING": 0,
+    "FAIL": 0
+  },
+  "missingImageSlots": [],
+  "unresolvedAcquisitionImageSlots": 0,
+  "historicalAcquisitionFailureCount": 0,
+  "sourceVerification": "Exact raw input hashes and committed blobs verified; a later documentation or integration HEAD does not rebind these images.",
+  "completeVisualAcceptance": false,
+  "wholeCellPassesAdded": 0,
+  "scope": "新补证仅覆盖所列合成状态。ADAPTED为明确适配，MAPPED为同类容器，MISSING为缺直接原参考，FAIL保留可见问题。动作、图片、整项与真实桌面分别记账；旧来源、旧失败、原274/47定义和正式4/21不回写。"
+}

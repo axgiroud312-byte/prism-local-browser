@@ -4,7 +4,9 @@
 
 **新版界面已整体接入可操作的 Vite 页面。** [#32–#37](docs/GOAL.md) 以「完整代码」冻结归档为唯一 [视觉基线](docs/UI_REFERENCE.md)，增量 [PR #38](https://github.com/axgiroud312-byte/prism-local-browser/pull/38) 保留 PR #31 的 `e170099` 成果与旧分支依赖，不自动合并。环境表/分组、连续环境窗口、唯一代理导入、内核/迁移、备份/恢复、记录/帮助/诊断均采用新界面。唯一共享 `npm run check` **196/196，4.7分钟** 属于 `681f823`；后续修复只做相关复验，不冒称全套跑在新提交。`70943b0` 的 **173状态×两视口＝346张** 实际App合成图保留历史来源，完整参考缺口与容器映射仍单列，**不是全产品1:1或桌面验收通过**。原阶段命令和逐项证据见 [整组记录](docs/verification/issue37.md)。
 
-后续修复已集成至 `8ca2e79`。[图库总入口](docs/screenshots/issue37-continuation/index.html)、[补核说明](docs/verification/issue37-continuation-evidence.md)与[环境窗口证据](docs/verification/issue37-environment-evidence.md)分别记录新图、定向检查、独立复核及旧FAIL/MISSING；六张票仍OPEN、PR保持草稿，完整原指南仍缺。开发入口为 `http://127.0.0.1:5173/#/environments`，没有重建桌面安装包。
+后续修复已集成至 `398314c`：SOCKS5 认证字节校验、迁移原预检清理保护及[本轮独立证据](docs/verification/issue37-frontier-evidence.md)已追加；20张新图为10 ADAPTED / 10 MAPPED。[图库总入口](docs/screenshots/issue37-continuation/index.html)现有20包/926记录，旧FAIL/MISSING不改。原47个有限缺口实际派生44已补证/3有剩余，**不是完整功能或严格1:1通过**。
+
+[较早补核](docs/verification/issue37-continuation-evidence.md)与[环境窗口证据](docs/verification/issue37-environment-evidence.md)保留各自来源。六张票仍OPEN、PR保持草稿，完整原指南仍缺。开发入口为 `http://127.0.0.1:5173/#/environments`，没有重建桌面安装包。
 
 此前 #28–#30 的 **21/21，45.2秒** 为 [历史页面验收](docs/verification/issue28-30.md)，不是本轮检查结果。日常 CI 仍只运行 Vite 浏览器点击，不构建或打包。
 

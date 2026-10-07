@@ -1,0 +1,194 @@
+{
+  "schemaVersion": 1,
+  "kind": "bounded-actual-frontier-publication-identity-audit-public-projection-not-pixel-runtime-or-acceptance-review",
+  "status": "IDENTITY_AUDIT_COMPLETE",
+  "auditRawSHA256": "516c87528aafe72d7c89653cb019833313081cefd90e3695a3f6b6211bfc1c8f",
+  "validatorRawSHA256": "2c390fbfa7b92b1c27c07ff9934482567c598d25e6238b6a0fdb7ee856ffcf8f",
+  "dataApprovalRawSHA256": "6b162127a7ee871f5ff2489193862728b7102912382eb3741f6f48a3b5cb98f9",
+  "graphPinsSHA256": "94cbc5aa58163ad2301cfb1d9902edeb6895848bf463dbb62ffa54282b608e76",
+  "imageIdentityScope": {
+    "newImageByteIdentityAuthority": "BOUND_EXISTING_IDENTITY_AUDIT",
+    "newPNGFilesReopenedForThisProjection": 0,
+    "oldPNGFilesRescannedByBoundAudit": 0,
+    "oldPNGFilesReopenedForThisProjection": 0,
+    "referenceOrCommercialImageBodiesReopenedForThisProjection": 0,
+    "totalImageCountIsManifestMetadataNotAnAllImageBodyAudit": true,
+    "pixelReviewRepeated": false
+  },
+  "publication": {
+    "status": "INSTALLED",
+    "newPackets": 6,
+    "actualNewImageRecords": 20,
+    "totalPackets": 20,
+    "totalManifestImageRecords": 926,
+    "packets": [
+      {
+        "folder": "issue37-frontier-bottoms",
+        "sourceHead": "b424b21f9881ded7c0c53314f9f70a8bdea78734",
+        "renderHash": "a83d927c931dd81b76656f98d6616aafe5f8e8df9b168d68953bab9d193537f2",
+        "sourceInputCount": 79,
+        "images": 4,
+        "manifestRawSHA256": "b335c40a9abe48442283e2ceeea5739112f264a2ab0efaac533e7764f4499bdc",
+        "publicationReceiptRawSHA256": "ac62b43b21efa2cb23392936670b6414af34f4a2ea25680ec5fc4fb6ed86bb98"
+      },
+      {
+        "folder": "issue37-frontier-demo-preview",
+        "sourceHead": "b424b21f9881ded7c0c53314f9f70a8bdea78734",
+        "renderHash": "a83d927c931dd81b76656f98d6616aafe5f8e8df9b168d68953bab9d193537f2",
+        "sourceInputCount": 79,
+        "images": 2,
+        "manifestRawSHA256": "e22486de392e28d9f9ec8524b6c8c49a3244bbdd229ad6b60ae2aa40541078ef",
+        "publicationReceiptRawSHA256": "576177003e4d9d2cca17f68038c6532c07a8f243d9fee773dab74f5b3e06a523"
+      },
+      {
+        "folder": "issue37-frontier-proxy-bytes",
+        "sourceHead": "398314c7d4f300576850df78d2a0631c9fdc3b38",
+        "renderHash": "c6e6a49fee35afe42d1a3bf27e72e2fe200eddacf88c164e94eb04cae6bc65fc",
+        "sourceInputCount": 81,
+        "images": 4,
+        "manifestRawSHA256": "26d2b6fe5eb59a4c527cf1ba777ef95c3ca5c4708e6d37c8cbab21be1f3eafe7",
+        "publicationReceiptRawSHA256": "388ef2af7e602ff7cd804c22f697fb3669d11f3f6b1ed85be13a981a4703437f"
+      },
+      {
+        "folder": "issue37-frontier-migration-cleanup",
+        "sourceHead": "398314c7d4f300576850df78d2a0631c9fdc3b38",
+        "renderHash": "c6e6a49fee35afe42d1a3bf27e72e2fe200eddacf88c164e94eb04cae6bc65fc",
+        "sourceInputCount": 81,
+        "images": 4,
+        "manifestRawSHA256": "aa66ecc64503b83064dee1c545b905cfa3403120656e4d6138849b243498caee",
+        "publicationReceiptRawSHA256": "eab83decf8557f9d1e750de2a5771995695ae391673a8307aad9be8a20c697d2"
+      },
+      {
+        "folder": "issue37-frontier-partial-create",
+        "sourceHead": "398314c7d4f300576850df78d2a0631c9fdc3b38",
+        "renderHash": "c6e6a49fee35afe42d1a3bf27e72e2fe200eddacf88c164e94eb04cae6bc65fc",
+        "sourceInputCount": 81,
+        "images": 2,
+        "manifestRawSHA256": "e8cb13d4482c946b3bf3b41beae8d4622a6b1ef7ffc4c910a3cec13ecf9e31c2",
+        "publicationReceiptRawSHA256": "155919d700387c2ad93ab7bd31648e8a5ddee592176f7be0499ac9320fb5415b"
+      },
+      {
+        "folder": "issue37-frontier-cold-help",
+        "sourceHead": "b424b21f9881ded7c0c53314f9f70a8bdea78734",
+        "renderHash": "a83d927c931dd81b76656f98d6616aafe5f8e8df9b168d68953bab9d193537f2",
+        "sourceInputCount": 79,
+        "images": 4,
+        "manifestRawSHA256": "d3a80136f7ec0438e46b6127a53b5e04b01bc27dd738565d68852136e0bf48e1",
+        "publicationReceiptRawSHA256": "f750636dc0739f9a957e4342c6594f01b9a27b2c4db7929fcc7cc5fb071a4cb9"
+      }
+    ]
+  },
+  "additionalArtifacts": {
+    "status": "COMPLETE",
+    "metadataFiles": 4,
+    "humanDocuments": 1,
+    "writtenFiles": 5,
+    "allInstalledBytesMatchExactPriorApproval": true,
+    "files": [
+      {
+        "target": "docs/verification/issue37-frontier-code.json",
+        "sha256": "2bba88594e545033db46f1afd6f94553aa1d38026b468d597d95bd78dda7e37b",
+        "bytes": 10094
+      },
+      {
+        "target": "docs/verification/issue37-frontier-actions.json",
+        "sha256": "030465e155d9c46dafbb0c5700f3fbbcb70d1b70ac2e251c4cfd65afd194a8e3",
+        "bytes": 149487
+      },
+      {
+        "target": "docs/verification/issue37-frontier-finite.json",
+        "sha256": "72d56b329ae691c11fc53f517a960dda75a95da188cbf2f0389fdad38f345bc6",
+        "bytes": 72494
+      },
+      {
+        "target": "docs/verification/issue37-frontier-contracts.json",
+        "sha256": "8bbd1ae5090932468d44dcafe3b03b0b091247c27e0c6984b96486c454c8b43d",
+        "bytes": 10038
+      },
+      {
+        "target": "docs/verification/issue37-frontier-evidence.md",
+        "sha256": "c38f5abbf1e91922828a98f191a5af4de2e6fd9a352ce0577953aeb55590eaa3",
+        "bytes": 5313
+      }
+    ]
+  },
+  "navigation": {
+    "status": "APPENDED",
+    "previousPackets": 14,
+    "previousManifestImageRecords": 906,
+    "appendedPackets": 6,
+    "appendedImageRecords": 20,
+    "totalPackets": 20,
+    "totalManifestImageRecords": 926,
+    "old14RowsExactlyPreservedFromBackup": true,
+    "currentNavigationRawSHA256": "d473de33960a768b7579e45e42783cf9301418c699cedcd13fbc5d831a10ce2a"
+  },
+  "comparison": {
+    "status": "APPENDED",
+    "originalObjects": 1280,
+    "originalObjectsExactlyPreserved": true,
+    "coldHelpFirstAppendEntries": 4,
+    "otherFiveAppendedEntries": 16,
+    "totalPrivateCompare": 1300,
+    "validatedAppendReceipts": 6,
+    "allSequentialBackupPrefixesMatchFinalIndex": true,
+    "entryIdentityAndPrefixMismatches": 0,
+    "measurementAndEntryMismatchesReportedByBoundFiveValidator": 0,
+    "comparisonMeasurementBodiesReopenedForThisProjection": 0,
+    "currentIndexRawSHA256": "2eccc75951b52233d6252b6a8275d54e94aed3345761c47a5f32523f6c45049c"
+  },
+  "contracts": {
+    "actualNewImageRecords": 20,
+    "standaloneActionRecords": 4,
+    "sameImageRecoveryChains": 16,
+    "sameImageRecoveryChainsAreNotExtraImagesOrStandaloneActions": true
+  },
+  "finite": {
+    "baselineAddressed": 37,
+    "newlyAddressedDefinitions": 7,
+    "derivedAddressed": 44,
+    "denominator": 47,
+    "remainingOriginalDefinitionIDs": [
+      "E18",
+      "F11",
+      "R09"
+    ]
+  },
+  "retainedMainOrderRefusal": {
+    "phase": "BEFORE_FIRST_COMPARISON_WRITE",
+    "entriesBefore": 1280,
+    "writtenFiles": 0,
+    "retainedFailureRawSHA256": "a2ee3515c9016fca2a87c8e9a8a015e31a013638515ac179f2d7c5d4c12cf31b",
+    "laterSequentialAppendCompleted": true
+  },
+  "preservation": {
+    "oldLedgersHashCheckedByBoundAudit": 9,
+    "oldPacketManifestsHashCheckedByBoundAudit": 14,
+    "oldNineLedgersUnchangedAccordingToBoundAudit": true,
+    "oldFourteenManifestsUnchangedAccordingToBoundAudit": true,
+    "original274": {
+      "covered": 113,
+      "partial": 60,
+      "missing": 101
+    },
+    "original274Or47Edited": false,
+    "old47And37LayerRewritten": false,
+    "oldFailOrMissingReclassified": false,
+    "wholeCellPassesAdded": 0,
+    "formalDesktopCountUnchanged": "4/21"
+  },
+  "acceptanceLimits": {
+    "directHelpStatus": "MISSING_DIRECT_HELP",
+    "fullOriginalGuideRecovered": false,
+    "strictVisualPass": false,
+    "strict1To1Acceptance": false,
+    "currentWholeProductStrictAcceptance": false,
+    "realDesktopAcceptance": false,
+    "nativeStorageSecurityAcceptance": false,
+    "issues": "OPEN",
+    "PR": "DRAFT",
+    "trackerStateIsSavedScopeNotFreshRemoteObservation": true,
+    "trackerRefreshed": false,
+    "priorSourceOrFinalDataApprovalScopeExpanded": false
+  }
+}

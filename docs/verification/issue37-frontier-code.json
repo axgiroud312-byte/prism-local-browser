@@ -1,0 +1,239 @@
+{
+  "schemaVersion": 1,
+  "kind": "public-exact-reviewed-frontier-code-and-noemit-projection-not-native-or-visual-acceptance",
+  "date": "2026-10-07",
+  "sourceHead": "398314c7d4f300576850df78d2a0631c9fdc3b38",
+  "renderHash81": "c6e6a49fee35afe42d1a3bf27e72e2fe200eddacf88c164e94eb04cae6bc65fc",
+  "baseRendererHash79": "8d8319feff822940eea2cc838a68069c499fa5ed84b4a44c9c3e03eb6627dea7",
+  "completeAcquisitionInputCount": 81,
+  "original79ManifestSHA256": "296854fb7ce9e616bdaa136e4e728cb740a00239d7e53f25052d9740699d5503",
+  "frozenActual81ManifestSHA256": "85a6d9580990c5037ed208624004628161ee612d54beb4f035d49f473d3a48fd",
+  "protectedPr31ExactAncestor": "e170099bc25aa15ecb9a8456d782394a2139ec20",
+  "baselineBeforeRepairs": "b424b21f9881ded7c0c53314f9f70a8bdea78734",
+  "ordinaryMerges": [
+    {
+      "owner": "P07",
+      "command": "git merge --no-ff --no-edit b2dc7fe164097a903f5ac8220e0be57488bc2cb4",
+      "mergeCommit": "4eadba4f759d4a82d2a229e812c7c3513b14e76f",
+      "parents": [
+        "b424b21f9881ded7c0c53314f9f70a8bdea78734",
+        "b2dc7fe164097a903f5ac8220e0be57488bc2cb4"
+      ],
+      "exitCode": 0,
+      "conflicts": false
+    },
+    {
+      "owner": "M22",
+      "command": "git merge --no-ff --no-edit 3845bc048a0bbf565645fb6785fe7410e5e69504",
+      "mergeCommit": "398314c7d4f300576850df78d2a0631c9fdc3b38",
+      "parents": [
+        "4eadba4f759d4a82d2a229e812c7c3513b14e76f",
+        "3845bc048a0bbf565645fb6785fe7410e5e69504"
+      ],
+      "exitCode": 0,
+      "conflicts": false
+    }
+  ],
+  "independentFixedSourceReview": {
+    "P07": {
+      "candidate": "b2dc7fe164097a903f5ac8220e0be57488bc2cb4",
+      "verdict": "SCOPED_SOURCE_CONSISTENT",
+      "findingCounts": {
+        "P1": 0,
+        "P2": 0
+      },
+      "reportSHA256": "13fed0879edb553b7095ab12b5dece2c6bbab3dd9700f0c23006e3f3315b04ff"
+    },
+    "M22": {
+      "candidate": "3845bc048a0bbf565645fb6785fe7410e5e69504",
+      "originalCandidateWithRetainedP2": "32ec3b34f018c17a967aa4f6ab5b409c002a4c65",
+      "verdict": "SCOPED_SOURCE_CONSISTENT",
+      "findingCounts": {
+        "P1": 0,
+        "P2": 0
+      },
+      "reportSHA256": "13d6e890b24227736f0e159b5db8f95e55d9abe4bc37336987a1e81ee7ba8af3",
+      "resolvedOriginalP2": "Only definite native SelectRollback PROFILE_BUSY before source allocation releases the matching tokenless frontend owner; ambiguous replies and known-source cleanup failures remain blocked."
+    }
+  },
+  "reviewedCandidateBlobsAndActualRawSource": [
+    {
+      "id": "P07",
+      "file": "src/components/ProxyEditWindow.tsx",
+      "committedBlob": "4bba1d549cfccf1bed04bcbc10ef42671fdef414",
+      "reviewedCandidateBlob": "4bba1d549cfccf1bed04bcbc10ef42671fdef414",
+      "rawCheckoutSHA256": "97385e7292da0248701bc68962e278b1fd83c85c7b6607b477d668cb7a3d669b"
+    },
+    {
+      "id": "P07",
+      "file": "src/components/proxy-credential-validation.ts",
+      "committedBlob": "0ce2fa0629782439d84210898cdd6a150dcba45d",
+      "reviewedCandidateBlob": "0ce2fa0629782439d84210898cdd6a150dcba45d",
+      "rawCheckoutSHA256": "01eb18fe62387bc1bc1ff61ef2815350659022979968b6cc4bc4150c3a495c53"
+    },
+    {
+      "id": "P07",
+      "file": "src/components/proxy-import-session.ts",
+      "committedBlob": "6a27c643223983458dad47760d8e8d2bd82ae951",
+      "reviewedCandidateBlob": "6a27c643223983458dad47760d8e8d2bd82ae951",
+      "rawCheckoutSHA256": "9c46f047208cb9bad665d4827c7bc6440f3956757b94a1ffbdcaae6f76252535"
+    },
+    {
+      "id": "P07",
+      "file": "tests/ui/proxy-credential-byte-boundary.spec.ts",
+      "committedBlob": "ff2c450f96a2b722260ca774b728f8fcc9f1e617",
+      "reviewedCandidateBlob": "ff2c450f96a2b722260ca774b728f8fcc9f1e617",
+      "rawCheckoutSHA256": "b43d5ffdd6679973468352d77e72fb3ca49a75d818edc8824d4735ab05f1786d"
+    },
+    {
+      "id": "M22",
+      "file": "src/application/contract.ts",
+      "committedBlob": "961e3c1c55a80eb0d63583c58ad0af6f72e558f4",
+      "reviewedCandidateBlob": "961e3c1c55a80eb0d63583c58ad0af6f72e558f4",
+      "rawCheckoutSHA256": "ddc60bc60230413212fe087f01f39c8eb50ea702e75c188575d7d3ac17d4b079"
+    },
+    {
+      "id": "M22",
+      "file": "src/application/wails-adapter.ts",
+      "committedBlob": "ad1b2b83bfe135d92fab42c0c9a9cc3856a33d2f",
+      "reviewedCandidateBlob": "ad1b2b83bfe135d92fab42c0c9a9cc3856a33d2f",
+      "rawCheckoutSHA256": "6dc2c9c2db4d15e1edad0c71dae257af93f6c3663132ef0fda8bc1b374aaff91"
+    },
+    {
+      "id": "M22",
+      "file": "src/components/NativeMigrationManager.tsx",
+      "committedBlob": "69b42e30764ebd1c0fdb1d9026a3d6fdb3a7090c",
+      "reviewedCandidateBlob": "69b42e30764ebd1c0fdb1d9026a3d6fdb3a7090c",
+      "rawCheckoutSHA256": "2521ebd8123824b1e0048624d1beb5e7aa22379fa0349810c1749ec315d12862"
+    },
+    {
+      "id": "M22",
+      "file": "tests/ui/fixtures/migration-discard-recovery.ts",
+      "committedBlob": "45ccae1ead7f1c86c4d6a6dc06c2107208e14931",
+      "reviewedCandidateBlob": "45ccae1ead7f1c86c4d6a6dc06c2107208e14931",
+      "rawCheckoutSHA256": "c72db5fcc88331cea8b470ad0e0f85e1f5c6a5b3b4b7304f8cfe1cb3476cc744"
+    },
+    {
+      "id": "M22",
+      "file": "tests/ui/migration-discard-recovery.spec.ts",
+      "committedBlob": "47d4ce84e8857ff19f11c78366fa648263ee2ae9",
+      "reviewedCandidateBlob": "47d4ce84e8857ff19f11c78366fa648263ee2ae9",
+      "rawCheckoutSHA256": "b31ed4f92fcc0596dbb7f236caf0694ccba4e8b7e20ad27777ba8ed289916da1"
+    },
+    {
+      "id": "M22",
+      "file": "tests/wails-adapter.test.ts",
+      "committedBlob": "4ed869da048f817581b26c7ad5f4d01de5692e1e",
+      "reviewedCandidateBlob": "4ed869da048f817581b26c7ad5f4d01de5692e1e",
+      "rawCheckoutSHA256": "d3ce57fa4caa18074bd7112a2f81911719440c722940210425ef456da52dd4d5"
+    }
+  ],
+  "disjointOwnership": true,
+  "currentIntegratedCandidateBlobsExactlyPreserved": true,
+  "actualIntegratedNoEmit": [
+    {
+      "command": "node node_modules/typescript/bin/tsc -p tsconfig.json --noEmit",
+      "sourceHead": "398314c7d4f300576850df78d2a0631c9fdc3b38",
+      "exitCode": 0,
+      "executions": 1,
+      "elapsedMilliseconds": 293.8114,
+      "outputLines": []
+    },
+    {
+      "command": "node node_modules/typescript/bin/tsc -p tsconfig.tests.json --noEmit",
+      "sourceHead": "398314c7d4f300576850df78d2a0631c9fdc3b38",
+      "exitCode": 0,
+      "executions": 1,
+      "elapsedMilliseconds": 234.9493,
+      "outputLines": []
+    }
+  ],
+  "authorTargetedResultsReportedSeparatelyNotRerunAtIntegratedHead": {
+    "P07": {
+      "candidate": "b2dc7fe164097a903f5ac8220e0be57488bc2cb4",
+      "uiPassed": 21,
+      "viewport": "1440x900",
+      "authorPNGs": 0
+    },
+    "M22Initial": {
+      "candidate": "32ec3b34f018c17a967aa4f6ab5b409c002a4c65",
+      "adapterPassed": 92,
+      "uniqueTargetedUIPassed": 91,
+      "authorPNGs": 0
+    },
+    "M22FixedSubset": {
+      "candidate": "3845bc048a0bbf565645fb6785fe7410e5e69504",
+      "adapterPassed": 14,
+      "uniqueTargetedUIPassed": 18,
+      "focusedTwoCasesIncludedIn18NotAddedAgain": true,
+      "authorPNGs": 0
+    }
+  },
+  "behavior": {
+    "P07": "Demo SOCKS5 replace authentication and decoded import rows require each username/password to be 1–255 UTF-8 bytes; illegal rows/drafts remain recoverable. HTTP/HTTPS, keep/clear, native authority and original unknown-request replay are unchanged.",
+    "M22": "Original rollback source/preview owner stays until actual valid discarded receipt. Retry/hide/remount retain the original pair and serialize cleanup; pending/accepted Restore authority is unchanged.",
+    "remainingM22SourceLimit": "Lost selection reply without a usable original token remains blocked; no new source, empty-token discard or invented receipt RPC is used."
+  },
+  "backendRPCSchemaDomainDependenciesStylesBuildAndCIChangedByThisRepair": false,
+  "frontendServiceChange": "Two-line optional volatile cleanup projection in ApplicationService plus WailsAdapter frontend owner/retry handling; not a backend rewrite.",
+  "preservedHistoricalLedgerHashesVerified": 9,
+  "soleSharedUiSuite": {
+    "sourceHead": "681f823",
+    "passed": 196,
+    "repeatedAtNewHead": false
+  },
+  "fullUiSuiteRepeated": false,
+  "productionBuildPackagingGoWailsUIAInstallKernelNetworkDirectoryProbesRun": false,
+  "pixelReviewPerformedByThisProjection": false,
+  "wholeCellPassesAdded": 0,
+  "formalDesktopCountUnchanged": "4/21",
+  "realDesktopAcceptance": false,
+  "issuesRemainOpen": [
+    32,
+    33,
+    34,
+    35,
+    36,
+    37
+  ],
+  "pullRequest": {
+    "number": 38,
+    "draft": true,
+    "autoMergePerformed": false
+  },
+  "privateSourceReportBindings": [
+    {
+      "artifactRole": "merger-handoff",
+      "sha256": "6afad69c5606ed23d6dc7bd1376b15bc24fbb35d544483b462ec2fc6c44839ef",
+      "bytes": 14829,
+      "privateArtifactLocationOmitted": true
+    },
+    {
+      "artifactRole": "integrated-candidate-and-history-audit",
+      "sha256": "e24070e276635d6db2c1df698e861a4f86f99f8d4456da51777d92de65480832",
+      "bytes": 4248,
+      "privateArtifactLocationOmitted": true
+    },
+    {
+      "artifactRole": "P07-fixed-source-review",
+      "sha256": "13fed0879edb553b7095ab12b5dece2c6bbab3dd9700f0c23006e3f3315b04ff",
+      "bytes": 10605,
+      "privateArtifactLocationOmitted": true
+    },
+    {
+      "artifactRole": "M22-fixed-source-review",
+      "sha256": "13d6e890b24227736f0e159b5db8f95e55d9abe4bc37336987a1e81ee7ba8af3",
+      "bytes": 14374,
+      "privateArtifactLocationOmitted": true
+    },
+    {
+      "artifactRole": "actual81-input-manifest",
+      "sha256": "85a6d9580990c5037ed208624004628161ee612d54beb4f035d49f473d3a48fd",
+      "bytes": 34225,
+      "privateArtifactLocationOmitted": true
+    }
+  ],
+  "qualification": "Private source review/merger bindings establish only the exact scoped code and actual integrated noEmit commands. Source reviews, author tests, new pictures, saved callbacks, finite clauses and real desktop acceptance remain separate.",
+  "originalPrivateCodeStageSHA256": "fde416265b29d8b321f84caf414052417e1db7edc37df8365b302fa82677658b",
+  "publicProjectionOnlyPrivateArtifactLocationOmission": true
+}

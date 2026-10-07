@@ -4,6 +4,12 @@
 
 ## 完整目标继续复查（2026-10-06；原结果保留，缺口恢复OPEN）
 
+2026-10-07本轮：[字节校验/迁移清理与增量证据](verification/issue37-frontier-evidence.md)的两个修复普通合入398；新增6包20张实际图独立10 ADAPTED / 10 MAPPED，另4条独立动作、16条同图恢复链，[七份保存合同](verification/issue37-frontier-contracts.json)限定一致、0P1/P2。最终实际数据独立批准后按精确字节发布，图库实际20包/926记录；新20图与历史9账本/14包元数据限定后审计通过，不重扫旧906图。私有对照实际1300项，原1280对象保留；一次MAIN前置顺序误并行在对照写前拒绝、0半写文件，记录后按顺序完成，旧失败不覆盖。
+
+原47定义的继承37/47层保持不变；新[有限汇总](verification/issue37-frontier-finite.json)实际追加7项为44/47、剩E18/F11/R09，不是44项正式验收。P07/M22的[准确源码与检查](verification/issue37-frontier-code.json)、原79/当前81输入、图片、合同与有限决定分别绑定；F26仅限Create→Batch合成移交，M22未知清理不认证原生安全，MISSING_DIRECT/HELP保留。原274/47、whole-cell PASS新增0、唯一681的196全套、六票OPEN/PR草稿及正式4/21不变；本轮没有重跑全套、构建/打包/Wails/UIA或真实内核/网络/目录恢复探针。
+
+[本轮公开写入后审计](verification/issue37-frontier-publication-audit.json)记录六包实际回执、20张新图字节身份、旧9账本/14包元数据保留、原1280个私有对照对象及全部6个追加回执。四份元数据与说明文档均按独立批准的原字节写入；这份审计不重复像素检查，不证明真实桌面或整个产品1:1通过。
+
 2026-10-07增量：[环境窗口补证](verification/issue37-environment-evidence.md)的184图全部独立逐图，70 ADAPTED / 34 MAPPED / 18 MISSING / 62 FAIL；38份动作、66份图后回调和8条原采集失败的[保存合同](verification/issue37-environment-contract-review.json)独立限定一致、0问题。批次编号/环境表容量与详情分页边界CSS两候选普通合入 `03d0f68`，新34图独立34 ADAPTED / 0 FAIL、14图后回调保存合同限定一致。drawer截字/浮层遮挡最小修复另合入 `8ca2e79`，MAIN两项noEmit通过，新34图独立34 ADAPTED / 0 FAIL，[34记录/16回调保存合同](verification/issue37-environment-drawer-contract-review.json)限定一致、15份实际工具身份匹配、0问题；首轮工具排序误拒的0图/0动作记录另留。旧62 FAIL不撤销，本段不增加正式4/21、当前HEAD共享全套或真实桌面通过数。
 
 [环境层](verification/issue37-supplementary-environment.json)与[单独来源续层](verification/issue37-supplementary-environment-repairs.json)按原47个有限缺口派生37已补证/10有剩余子句，不是37项正式验收。原113/60/101与whole-cell PASS新增0不改；[最终图/来源/导航审计](verification/issue37-final-evidence.json)和纯文本闭合检查不证明完整原指南、实际Wails/WebView或真实终止/恢复，正式仍4/21。
