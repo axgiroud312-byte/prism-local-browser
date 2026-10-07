@@ -10,7 +10,7 @@ const stageLabels: Record<string, string> = {
   completed: "已完成", failed: "失败，查看具体原因", cancelled: "已取消", interrupted: "上次任务被中断",
 };
 const fieldLabels: Record<string, string> = { identity: "品牌和真实版本", seed: "固定种子", cpu: "CPU", acceptLanguages: "网页/请求语言", timezone: "时区", uiLanguage: "浏览器菜单语言", memory: "内存", gpu: "GPU/WebGL", "font/canvas/audio/clientrects": "字体 / 绘图 / 音频", "screen/location/webgpu/tls/mac": "屏幕 / 定位 / 其他", "proxy/webrtc": "代理 / WebRTC" };
-const statusLabels = { configurable: "可配置 · 已实测", "seed-generated": "由固定内核按 seed 生成", unverified: "未验证 · 不开放编辑" };
+const statusLabels = { configurable: "可配置 · 已实测", "seed-generated": "由固定内核按 seed 生成", system: "跟随真实环境", unverified: "未验证 · 不开放编辑" };
 
 export function NativeKernelManager({ application, workspace }: { application: ApplicationService; workspace: WorkspaceView }) {
   const [source, setSource] = useState<"official" | "local">("official");
@@ -22,14 +22,16 @@ export function NativeKernelManager({ application, workspace }: { application: A
   const [operation, setOperation] = useState<Operation>();
   const [message, setMessage] = useState("");
   const [confirmDelete, setConfirmDelete] = useState("");
+  const [defaultRequest, setDefaultRequest] = useState(() => application.getPendingKernelDefault?.());
   const ongoing = workspace.kernelOperations?.find(item => !operationIsTerminal(item));
   const currentId = useRef(ongoing?.id);
   const alive = useRef(true);
   const generation = useRef(0);
   const activeId = operation && !operationIsTerminal(operation) ? operation.id : ongoing?.id;
-  const waiting = busy || !!activeId;
+  const waiting = busy || !!activeId || !!defaultRequest;
   const records = workspace.kernelRecords ?? [];
   useEffect(() => { alive.current = true; return () => { alive.current = false; generation.current++; }; }, []);
+  useEffect(() => { setDefaultRequest(application.getPendingKernelDefault?.()); }, [workspace]);
   function applyOperation(next: Operation, expectedId: string) {
     if (!alive.current || next.id !== expectedId || currentId.current !== expectedId) return;
     setOperation(previous => mergeOperation(previous, next));
@@ -74,9 +76,25 @@ export function NativeKernelManager({ application, workspace }: { application: A
     } finally { if (alive.current && generation.current === requestGeneration) setBusy(false); }
   }
 
+  async function selectDefault(kernelId: string) {
+    if (!workspace.defaultKernel || !application.setDefaultKernel) return;
+    const request = application.getPendingKernelDefault?.() ?? { kernelId, expectedRevision: workspace.defaultKernel.revision, requestId: crypto.randomUUID() };
+    setDefaultRequest(request); setBusy(true);
+    try {
+      const result = await application.setDefaultKernel(request);
+      if (!alive.current) return;
+      setDefaultRequest(application.getPendingKernelDefault?.());
+      if (result.ok) { setMessage("默认构建已保存，只影响之后新建的草稿；旧环境保持原构建。"); }
+      else {
+        setMessage(`${result.error.code}：${result.error.message}`);
+      }
+    } finally { if (alive.current) setBusy(false); }
+  }
+
   return <>
     <div className="info-strip"><ShieldCheck size={19} /><div><strong>真实精确构建，不跟随默认版本</strong><p>安装会执行所选内核的隔离诊断。SHA-256、程序版本和参数读回通过后，才登记新的 kernelId；不会替换旧构建或改写旧环境。诊断不代表正常环境已可启动。</p></div></div>
     <section className="work-card native-kernel-install" aria-label="安装精确内核">
+      {workspace.defaultKernel && <div className="native-kernel-actions"><p>后续新建默认：{records.find(record => record.id === workspace.defaultKernel?.kernelId)?.version ?? (workspace.defaultKernel.kernelId === "kernel-pending" ? "暂不绑定内核" : "精确构建不可用")}</p><button className="button" disabled={waiting || workspace.defaultKernel.kernelId === "kernel-pending"} onClick={() => void selectDefault("kernel-pending")}>新建时手动选择</button>{defaultRequest && <button className="button" disabled={busy} onClick={() => void selectDefault(defaultRequest.kernelId)}>核实原默认选择请求</button>}</div>}
       <h2>安装并核验 fingerprint-chromium</h2>
       <form onSubmit={event => { event.preventDefault(); void begin(() => application.installKernel?.({ source, version, expectedChecksum: checksum.trim().toLowerCase(), archiveToken: source === "local" ? archive?.token : undefined, trusted, requestId: crypto.randomUUID() })); }}>
         <div className="native-kernel-fields">
@@ -98,9 +116,9 @@ export function NativeKernelManager({ application, workspace }: { application: A
     <div className="kernel-grid">{records.map(record => <section className="kernel-card" key={record.id}>
       <div className="kernel-card-top"><div className="kernel-symbol"><Box size={28} /></div><span className={`tag ${record.status === "verified" ? "blue-tag" : "warning"}`}>{record.status === "verified" ? "真实诊断已核验" : "核验失败 · 不可用"}</span></div>
       <h2>Chromium {record.version.split(".")[0]}</h2><div className="kernel-version mono">{record.version}</div><p>{record.architecture} · {record.source.kind === "official" ? "官方发行" : "用户确认可信的本地归档"}</p>
-      <dl className="native-kernel-evidence"><dt>精确 ID</dt><dd className="mono">{record.id}</dd><dt>发行 tag</dt><dd>{record.source.tag}</dd><dt>来源</dt><dd>{record.source.location}</dd><dt>源码 commit</dt><dd className="mono">{record.source.commit ?? "未知（不从 main 推断）"}</dd><dt>归档 SHA-256</dt><dd className="mono">{record.archiveSha256}</dd><dt>主程序 SHA-256</dt><dd className="mono">{record.executableSha256}</dd><dt>内部安装位置</dt><dd className="mono">{record.installPath}</dd><dt>关联环境</dt><dd>{record.usedBy.length} 个{record.usedBy.length > 0 && <ul>{record.usedBy.map(id => <li key={id}>{workspace.state.environments.find(environment => environment.id === id)?.name ?? id}</li>)}</ul>}</dd></dl>
+      <dl className="native-kernel-evidence"><dt>精确 ID</dt><dd className="mono">{record.id}</dd><dt>发行 tag</dt><dd>{record.source.tag}</dd><dt>来源</dt><dd>{record.source.location}</dd><dt>源码 commit</dt><dd className="mono">{record.source.commit ?? "未知（不从 main 推断）"}</dd><dt>归档 SHA-256</dt><dd className="mono">{record.archiveSha256}</dd><dt>主程序 SHA-256</dt><dd className="mono">{record.executableSha256}</dd><dt>内部安装位置</dt><dd className="mono">{record.installPath}</dd><dt>关联环境</dt><dd>{record.usedCount ?? record.usedBy.length} 个（下方最多展示100个ID）{record.usedBy.length > 0 && <ul>{record.usedBy.map(id => <li key={id}>{workspace.state.environments.find(environment => environment.id === id)?.name ?? id}</li>)}</ul>}</dd></dl>
       <details className="native-kernel-report"><summary>查看该版本能力与实测读值</summary><p>{record.report.adapterVersion} · {record.report.version}<br />安装时采样 {record.report.sampledAt} · 私有 pipe · 沙箱保留</p>{record.report.capabilities.map(capability => <div className="native-kernel-capability" key={capability.field}><strong>{fieldLabels[capability.field] ?? capability.field}</strong><span>{statusLabels[capability.status]}</span><small>{capability.source === "observed" ? "真实观测" : capability.source === "source-derived" ? "源码推导，具体读值另列" : "未探测"}</small><p>{capability.note}</p></div>)}<div className="table-wrap"><table><thead><tr><th>诊断 seed</th><th>CPU</th><th>语言</th><th>时区</th><th>实际版本 / 正常退出</th></tr></thead><tbody>{record.report.observations.map((sample, index) => <tr key={index}><td>{sample.seed}</td><td>{sample.cpu}</td><td>{sample.language}</td><td>{sample.timezone}</td><td>{sample.browserVersion} / {sample.normalExit ? "是" : "否"}</td></tr>)}</tbody></table></div><p>浏览器菜单、字体/Canvas/音频等未验证字段不开放编辑；代理和正常环境运行仍属后续验收。</p></details>
-      <div className="native-kernel-actions"><button className="button" disabled={waiting} onClick={() => void begin(() => application.verifyKernel?.(record.id, crypto.randomUUID()))}><RefreshCw size={16} />重新核验</button><button className="button" disabled={waiting || !!record.usedBy.length} onClick={() => setConfirmDelete(record.id)}><Trash2 size={16} />移除此构建</button></div>
+      <div className="native-kernel-actions"><button className="button" disabled={waiting || record.status !== "verified" || workspace.defaultKernel?.kernelId === record.id} onClick={() => void selectDefault(record.id)}>{workspace.defaultKernel?.kernelId === record.id ? "后续新建默认构建" : "设为后续新建默认"}</button><button className="button" disabled={waiting} onClick={() => void begin(() => application.verifyKernel?.(record.id, crypto.randomUUID()))}><RefreshCw size={16} />重新核验</button><button className="button" disabled={waiting || !!(record.usedCount ?? record.usedBy.length) || workspace.defaultKernel?.kernelId === record.id} onClick={() => setConfirmDelete(record.id)}><Trash2 size={16} />移除此构建</button></div>
       {confirmDelete === record.id && <div className="native-kernel-confirm"><p>仅移除此精确构建，不能删除被引用内核，也不删除浏览数据。确认移除？</p><button className="button" onClick={() => setConfirmDelete("")}>保留构建</button><button className="button danger" disabled={waiting} onClick={() => { setConfirmDelete(""); void begin(() => application.deleteKernel?.(record.id, crypto.randomUUID())); }}>确认移除</button></div>}
     </section>)}</div>
     {!!workspace.kernelOperations?.length && <details className="work-card native-kernel-history"><summary>最近内核任务（持久记录）</summary>{workspace.kernelOperations.map(item => <div key={item.id}><p><span className="mono">{item.id}</span> · {stageLabels[item.stage ?? item.state] ?? item.state}{item.error && ` · ${item.error.code}：${item.error.message}`}</p>{item.report && <details><summary>本次复验采样 {item.report.sampledAt}</summary><p>精确内核 ID：{item.kernelId} · {item.report.adapterVersion} · {item.report.version}</p>{item.report.observations.map((sample, index) => <p key={index}>seed {sample.seed} · CPU {sample.cpu} · {sample.language} · {sample.timezone} · 实际版本 {sample.browserVersion} · 正常退出 {sample.normalExit ? "是" : "否"}</p>)}</details>}</div>)}</details>}

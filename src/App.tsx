@@ -79,13 +79,28 @@ import {
   operationIsTerminal,
   type ApplicationService,
   type OperationEvent,
+  type EnvironmentPreview,
+  type FingerprintPreview,
+  type ProfileRevision,
 } from "./application/contract";
+import { applyFingerprint, fingerprintMatchesConfiguration } from "./application/fingerprint-model";
 import prdText from "../docs/PRD.md?raw";
 import developmentText from "../docs/DEVELOPMENT.md?raw";
 import kernelText from "../docs/KERNEL.md?raw";
+import userGuideText from "../docs/USER_GUIDE.md?raw";
 const Markdown = lazy(() => import("react-markdown"));
 import remarkGfm from "remark-gfm";
 import { NativeKernelManager } from "./components/NativeKernelManager";
+import { NativeMigrationManager } from "./components/NativeMigrationManager";
+import { NativeProxyManager } from "./components/NativeProxyManager";
+import { NativeRuntimeNetwork } from "./components/NativeRuntimeNetwork";
+import { NativeCookieImport } from "./components/NativeCookieImport";
+import { NativeBatchDialog, type NativeBatchDialogInput } from "./components/NativeBatchDialog";
+import { readRuntimeStartPlan } from "./application/runtime-start-plan";
+import { NativeBackupManager } from "./components/NativeBackupManager";
+import { NativeRecycleManager } from "./components/NativeRecycleManager";
+import { NativeDiagnostics } from "./components/NativeDiagnostics";
+import { FingerprintRevisionPanel } from "./components/FingerprintRevisionPanel";
 
 type Route =
   "environments" | "proxies" | "kernels" | "backups" | "activity" | "guide";
@@ -96,6 +111,9 @@ type Drawer = {
   previewId: string;
   requestId: string;
   expectedRevision?: number;
+  fingerprint?: FingerprintPreview;
+  history?: ProfileRevision[];
+  userDataRef?: string;
 };
 type Dialog =
   | { kind: "delete"; ids: string[] }
@@ -214,7 +232,7 @@ function Field({
 function docHref(href?: string) {
   if (!href) return "#/guide";
   if (/^(https?:|#|\/#)/.test(href)) return href;
-  if (/(?:PRD|DEVELOPMENT|KERNEL)\.md/.test(href)) return "#/guide";
+  if (/(?:PRD|DEVELOPMENT|KERNEL|USER_GUIDE)\.md/.test(href)) return "#/guide";
   if (href.includes("README.md"))
     return "https://github.com/axgiroud312-byte/prism-local-browser";
   return (
@@ -235,6 +253,7 @@ export default function App({ application }: { application: ApplicationService }
   const workspace = useSyncExternalStore(application.subscribe, application.getSnapshot);
   const state = workspace.state;
   const nativeMode = application.mode === "native";
+  const environmentTotal = nativeMode ? workspace.environmentPage?.total ?? state.environments.length : state.environments.length;
   const storageIssue = workspace.issue?.message || "";
   const current = useRef(state);
   current.current = state;
@@ -248,9 +267,22 @@ export default function App({ application }: { application: ApplicationService }
   const [selected, setSelected] = useState<string[]>([]);
   const [page, setPage] = useState(1);
   const [drawer, setDrawer] = useState<Drawer | null>(null);
+  const drawerRef = useRef(drawer);
+  drawerRef.current = drawer;
+  const drawerRuntime = drawer?.kind === "edit" ? workspace.runtimeSessions?.[drawer.environment.id] : undefined;
+  const profileBusy = nativeMode && !!drawerRuntime && (["starting", "running", "stopping"].includes(drawerRuntime.state) || !!drawerRuntime.pid || drawerRuntime.resourcesPending || drawerRuntime.needsReconcile || drawerRuntime.persistencePending);
+  const previewOpenSequence = useRef(0);
+  const fingerprintBusy = useRef(false);
   const [dialog, setDialog] = useState<Dialog | null>(null);
+  const [nativeProxyImportOpen, setNativeProxyImportOpen] = useState(false);
+  const [nativeCookieEnvironment, setNativeCookieEnvironment] = useState<Environment | null>(null);
+  const [nativeBatchInput, setNativeBatchInput] = useState<NativeBatchDialogInput | null>(null);
+  const [nativeBackupSelection, setNativeBackupSelection] = useState<string[]>([]);
+  const [nativeRecycleSelection, setNativeRecycleSelection] = useState<string[] | null>(null);
+  const [environmentQueryBusy, setEnvironmentQueryBusy] = useState(false);
   const [formError, setFormError] = useState("");
   const [generating, setGenerating] = useState(false);
+  const [savePending, setSavePending] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [toast, setToast] = useState<{ text: string; error?: boolean } | null>(
     null,
@@ -268,7 +300,7 @@ export default function App({ application }: { application: ApplicationService }
   > | null>(null);
   const [groupName, setGroupName] = useState("");
   const [deleteData, setDeleteData] = useState(false);
-  const [docTab, setDocTab] = useState<"prd" | "development" | "kernel">("prd");
+  const [docTab, setDocTab] = useState<"user" | "prd" | "development" | "kernel">(nativeMode ? "user" : "prd");
   const [batch, setBatch] = useState<{
     label: string;
     done: number;
@@ -280,7 +312,10 @@ export default function App({ application }: { application: ApplicationService }
   const creationOperation = useRef<string | null>(null);
   const latestOperationEvent = useRef<OperationEvent | undefined>(undefined);
   const checkingBusy = useRef(false);
+  const runtimeActions = useRef(new Set<string>());
+  const [runtimeActionIds, setRuntimeActionIds] = useState<string[]>([]);
   const initialDraft = useRef("");
+  const initialFingerprintHash = useRef("");
   const backupFile = useRef<HTMLInputElement>(null);
   const cookieFile = useRef<HTMLInputElement>(null);
   const proxyFile = useRef<HTMLInputElement>(null);
@@ -317,6 +352,31 @@ export default function App({ application }: { application: ApplicationService }
     latestOperationEvent.current = event;
     if (event) setBatch({ label: "创建环境", done: event.operation.completedIds.length, total: event.operation.total });
   }), [application]);
+  const nativeRuntimeActive = nativeMode && (Object.keys(workspace.networkResources ?? {}).length > 0 || !!workspace.migrationMaintenance || !!workspace.maintenance || !!workspace.recycleMaintenance || (workspace.restoreOperations ?? []).some(operation => !operationIsTerminal(operation)) || Object.values(workspace.runtimeSessions ?? {}).some(session => ["starting", "running", "stopping"].includes(session.state) || !!session.pid || session.resourcesPending || session.needsReconcile || session.persistencePending) || (workspace.batchOperations ?? []).some(operation => !operationIsTerminal(operation)));
+  useEffect(() => {
+    if (!nativeRuntimeActive || !application.refresh) return;
+    let cancelled = false;
+    let timer: ReturnType<typeof setTimeout>;
+    const poll = async () => {
+      if (cancelled) return;
+      await application.refresh?.();
+      if (!cancelled) timer = setTimeout(() => void poll(), 1000);
+    };
+    timer = setTimeout(() => void poll(), 1000);
+    return () => { cancelled = true; clearTimeout(timer); };
+  }, [application, nativeRuntimeActive]);
+  useEffect(() => {
+    if (!nativeMode || !application.queryEnvironments) return;
+    let cancelled = false;
+    setEnvironmentQueryBusy(true);
+    const timer = setTimeout(() => {
+      void application.queryEnvironments!({ page, pageSize: 8, search, group: group === "全部分组" ? "" : group, status }).then(result => {
+        if (cancelled) return; setEnvironmentQueryBusy(false);
+        if (!result.ok) notify(result.error.message, true);
+      });
+    }, 180);
+    return () => { cancelled = true; clearTimeout(timer); };
+  }, [application, nativeMode, page, search, group, status]);
   useEffect(() => {
     const change = () => {
       const r = location.hash.replace("#/", "") as Route;
@@ -330,18 +390,23 @@ export default function App({ application }: { application: ApplicationService }
     return () => window.removeEventListener("hashchange", change);
   }, []);
   const closeDrawer = () => {
-    if (generating) return;
+    if (generating || saving.current) return;
     if (
       drawer &&
-      JSON.stringify(drawer.environment) !== initialDraft.current &&
+      (JSON.stringify(drawer.environment) !== initialDraft.current || (drawer.fingerprint?.previewProfile.configHash ?? "") !== initialFingerprintHash.current) &&
       !window.confirm("配置尚未保存。确定放弃本次编辑吗？")
     )
       return;
+    previewOpenSequence.current++;
     if (drawer) void application.discardPreview(drawer.previewId);
     setDrawer(null);
   };
   useEffect(() => {
     const key = (e: KeyboardEvent) => {
+      if (nativeBatchInput || nativeCookieEnvironment || nativeRecycleSelection) {
+        if ((e.ctrlKey || e.metaKey) && e.key === "k") e.preventDefault();
+        return;
+      }
       if ((e.ctrlKey || e.metaKey) && e.key === "k") {
         e.preventDefault();
         searchRef.current?.focus();
@@ -356,7 +421,7 @@ export default function App({ application }: { application: ApplicationService }
     };
     window.addEventListener("keydown", key);
     return () => window.removeEventListener("keydown", key);
-  }, [generating, drawer]);
+  }, [generating, drawer, nativeBatchInput, nativeCookieEnvironment, nativeRecycleSelection]);
   useEffect(() => {
     if (!drawer && !dialog) return;
     const oldOverflow = document.body.style.overflow;
@@ -397,10 +462,10 @@ export default function App({ application }: { application: ApplicationService }
   const navigate = (r: Route) => {
     location.hash = `/${r}`;
   };
-  const groups = [
+  const groups = nativeMode && workspace.environmentPage ? workspace.environmentPage.groups : [
     ...new Set(state.environments.map((e) => e.group).filter(Boolean)),
   ];
-  const visible = state.environments.filter(
+  const visible = nativeMode ? state.environments : state.environments.filter(
     (e) =>
       (!search ||
         `${e.name} ${e.code} ${e.note}`
@@ -409,64 +474,110 @@ export default function App({ application }: { application: ApplicationService }
       (group === "全部分组" || e.group === group) &&
       (status === "all" || e.status === status),
   );
-  const pageCount = Math.max(1, Math.ceil(visible.length / 8));
-  const pageItems = visible.slice(
+  const filteredTotal = nativeMode ? workspace.environmentPage?.filteredTotal ?? visible.length : visible.length;
+  const pageCount = Math.max(1, Math.ceil(filteredTotal / 8));
+  const pageItems = nativeMode ? visible : visible.slice(
     (Math.min(page, pageCount) - 1) * 8,
     Math.min(page, pageCount) * 8,
   );
-  const running = state.environments.filter(
+  const running = nativeMode ? workspace.environmentPage?.runningCount ?? 0 : state.environments.filter(
     (e) => e.status === "running",
   ).length;
-  const errors = state.environments.filter((e) => e.status === "error").length;
+  const errors = nativeMode ? workspace.environmentPage?.errorCount ?? 0 : state.environments.filter((e) => e.status === "error").length;
   const patchDraft = (value: Partial<Environment>) => {
+    if (saving.current) return;
+    if (profileBusy && Object.keys(value).some(key => !["name", "group", "note"].includes(key))) return;
     setFormError("");
     setDrawer((d) =>
-      d ? { ...d, environment: { ...d.environment, ...value } } : d,
+      d ? { ...d, requestId: uid("request"), environment: { ...d.environment, ...value } } : d,
     );
   };
   async function openCreate(template?: Environment) {
+    const sequence = ++previewOpenSequence.current;
     const result = await application.previewEnvironment({ kind: "create", sourceId: template?.id });
+    if (sequence !== previewOpenSequence.current) { if (result.ok) void application.discardPreview(result.data.previewId); return; }
     if (!result.ok) { notify(result.error.message, true); return; }
     const preview = result.data;
     initialDraft.current = JSON.stringify(preview.environment);
+    initialFingerprintHash.current = preview.fingerprint?.previewProfile.configHash ?? "";
     setDrawer({ kind: "create", ...preview, requestId: uid("request"), tab: "basic" });
     setFormError("");
     setQuantity(1);
     setMenu(null);
   }
   async function openEdit(e: Environment) {
+    const sequence = ++previewOpenSequence.current;
     const result = await application.previewEnvironment({ kind: "edit", sourceId: e.id });
+    if (sequence !== previewOpenSequence.current) { if (result.ok) void application.discardPreview(result.data.previewId); return; }
     if (!result.ok) { notify(result.error.message, true); return; }
     const preview = result.data;
     initialDraft.current = JSON.stringify(preview.environment);
+    initialFingerprintHash.current = preview.fingerprint?.previewProfile.configHash ?? "";
     setDrawer({ kind: "edit", ...preview, requestId: uid("request"), tab: "basic" });
     setQuantity(1);
     setFormError("");
     setMenu(null);
+    const history = await application.listFingerprintRevisions(e.id);
+    setDrawer(current => current?.previewId === preview.previewId ? { ...current, history: history.ok ? history.data : undefined } : current);
+    if (!history.ok && drawerRef.current?.previewId === preview.previewId) setFormError(history.error.message);
   }
-  async function regenerate() {
-    if (!drawer) return;
+  function applyProfilePreview(previewId: string, preview: EnvironmentPreview) {
+    setDrawer(current => {
+      if (!current || current.previewId !== previewId || !preview.fingerprint) return current;
+      return { ...current, requestId: uid("request"), fingerprint: preview.fingerprint, userDataRef: preview.userDataRef ?? current.userDataRef, environment: applyFingerprint(current.environment, preview.fingerprint.previewProfile) };
+    });
+  }
+  async function generateProfile(regenerate = false) {
+    if (!drawer || fingerprintBusy.current || saving.current || profileBusy) return;
+    const target = drawer.previewId;
+    fingerprintBusy.current = true;
     setGenerating(true);
-    await sleep(500);
-    const result = await application.regeneratePreview(drawer.previewId);
-    if (result.ok) patchDraft({ seed: result.data.environment.seed });
-    else setFormError(result.error.message);
-    setGenerating(false);
-    if (result.ok) notify("新的指纹种子已生成，保存后生效；浏览器数据不变。");
+    setFormError("");
+    try {
+      const result = await application.generateFingerprint({ previewId: target, kernelId: drawer.environment.coreId, templateId: drawer.environment.fingerprintVersion, overrides: drawer.environment, regenerate });
+      if (drawerRef.current?.previewId !== target) return;
+      if (result.ok) { applyProfilePreview(target, result.data); notify(regenerate ? "新的种子只在预览中；查看变更后保存才生效。" : "档案预览已更新，没有保存或启动浏览器。"); }
+      else setFormError(result.error.message);
+    } finally { fingerprintBusy.current = false; setGenerating(false); }
+  }
+  async function previewProfileRestore(revision: number) {
+    if (!drawer || fingerprintBusy.current || saving.current || profileBusy) return;
+    const target = drawer.previewId;
+    fingerprintBusy.current = true; setGenerating(true); setFormError("");
+    try {
+      const result = await application.previewFingerprintRestore(target, revision);
+      if (drawerRef.current?.previewId !== target) return;
+      if (result.ok) { applyProfilePreview(target, result.data); notify("旧档案已加载为回滚预览；保存才生效，名称、代理和数据保持不变。"); }
+      else setFormError(result.error.message);
+    } finally { fingerprintBusy.current = false; setGenerating(false); }
   }
   async function saveEnvironment() {
-    if (batchBusy.current || saving.current || !drawer) return;
+    if (batchBusy.current || saving.current || fingerprintBusy.current || !drawer) return;
+    const target = drawer.previewId;
     saving.current = true;
+    setSavePending(true);
     try {
-      const request = { previewId: drawer.previewId, configuration: drawer.environment, requestId: drawer.requestId };
+      const request = { previewId: drawer.previewId, configuration: drawer.environment, requestId: drawer.requestId, profileHash: drawer.fingerprint?.previewProfile.configHash };
       if (drawer.kind === "edit") {
-        const result = await application.updateEnvironment({ ...request, expectedRevision: drawer.expectedRevision! });
+        const result = drawer.fingerprint && (!nativeMode || drawer.environment.coreId !== "kernel-pending")
+          ? await application.commitFingerprintRevision({ ...request, expectedRevision: drawer.expectedRevision!, environmentId: drawer.environment.id, profileHash: drawer.fingerprint.previewProfile.configHash })
+          : await application.updateEnvironment({ ...request, expectedRevision: drawer.expectedRevision! });
+        if (drawerRef.current?.previewId !== target) return;
         if (!result.ok) { setFormError(result.error.message); return; }
         notify("环境配置已保存");
         setDrawer(null);
         return;
       }
+      if (nativeMode) {
+        if (!Number.isSafeInteger(quantity) || quantity < 1) { setFormError("数量必须是可精确表示的正整数；没有保存总数产品配额。"); return; }
+        const planned = await application.previewBatch?.({ kind: "create", create: { ...request, count: quantity } });
+        if (drawerRef.current?.previewId !== target) return;
+        if (!planned?.ok) { setFormError(planned && !planned.ok ? planned.error.message : "当前桌面服务未提供持久批次。"); return; }
+        setNativeBatchInput({ kind: "create", initialPage: planned.data }); setDrawer(null); void application.discardPreview(target);
+        return;
+      }
       const accepted = await application.createBatch({ ...request, count: quantity });
+      if (drawerRef.current?.previewId !== target) return;
       if (!accepted.ok) { setFormError(accepted.error.message); return; }
       batchBusy.current = true;
       creationOperation.current = accepted.data.operation.id;
@@ -487,6 +598,7 @@ export default function App({ application }: { application: ApplicationService }
       setGroup("全部分组"); setStatus("all"); setSearch(""); setPage(1);
     } finally {
       saving.current = false;
+      setSavePending(false);
       if (creationOperation.current) {
         batchBusy.current = false;
         creationOperation.current = null;
@@ -494,8 +606,38 @@ export default function App({ application }: { application: ApplicationService }
       }
     }
   }
+  function beginRuntimeAction(id: string) {
+    if (runtimeActions.current.has(id)) return false;
+    runtimeActions.current.add(id);
+    setRuntimeActionIds([...runtimeActions.current]);
+    return true;
+  }
+  function endRuntimeAction(id: string) {
+    runtimeActions.current.delete(id);
+    setRuntimeActionIds([...runtimeActions.current]);
+  }
   async function launch(ids: string[]) {
-    if (nativeMode) { notify("真实浏览器启动尚未接入，未安装内核时不能启动。", true); return; }
+    if (nativeMode) {
+      if (!application.startRuntime) { notify("当前桌面版本未接入真实启停。", true); return; }
+      const targets = [...new Set(ids)].filter(id => !runtimeActions.current.has(id));
+      if (!targets.length) return;
+      targets.forEach(beginRuntimeAction);
+      try {
+        const planned = await readRuntimeStartPlan(application, targets);
+        if (!planned.ok) { notify(planned.error.message, true); return; }
+        const directCount = planned.data.filter(item => item.networkPolicy === "direct").length;
+        const proxyCount = planned.data.length - directCount;
+        const confirmation = directCount ? `所选${directCount}个未绑定代理的环境将使用本机直连，网站可看到本机出口。${proxyCount ? `另外${proxyCount}个代理环境须通过逐会话隔离及前检，不会改为直连。` : ""}确认按刚读取的ID/修订/策略排队启动？` : "所选环境均绑定代理；各项通过实际隔离和前检后才能启动，失败不改直连。确认按读取的ID/修订排队启动？";
+        if (!window.confirm(confirmation)) return;
+        for (const item of planned.data) {
+          const result = await application.startRuntime({ environmentId: item.environmentId, requestId: uid("request"), networkPolicy: item.networkPolicy, expectedRevision: item.expectedRevision });
+          if (!result.ok) { notify(result.error.message, true); continue; }
+          notify("启动任务已受理；内核和控制通道就绪后才显示运行中。");
+        }
+      } finally { targets.forEach(endRuntimeAction); }
+      setMenu(null);
+      return;
+    }
     if (batchBusy.current) {
       notify("请等待当前批次完成，或先取消剩余任务。", true);
       return;
@@ -551,7 +693,20 @@ export default function App({ application }: { application: ApplicationService }
     setBatch(null);
   }
   async function stop(ids: string[]) {
-    if (nativeMode) { notify("真实浏览器进程尚未接入，没有执行模拟关闭。", true); return; }
+    if (nativeMode) {
+      if (!application.stopRuntime) { notify("当前桌面版本未接入真实停止。", true); return; }
+      for (const id of [...new Set(ids)]) {
+        if (application.getSnapshot().runtimeSessions?.[id]?.needsReconcile) { notify("此环境的会话仍待核对；批量关闭不会自动按PID结束或升级成强制结束。", true); continue; }
+        if (!beginRuntimeAction(id)) continue;
+        try {
+          const result = await application.stopRuntime({ environmentId: id, requestId: uid("request") });
+          if (!result.ok) notify(result.error.message, true);
+          else notify("停止任务已受理；等待本次会话退出，不会清除浏览数据。");
+        } finally { endRuntimeAction(id); }
+      }
+      setMenu(null);
+      return;
+    }
     batchCancelled.current = true;
     for (const id of ids) {
       const e = current.current.environments.find((i) => i.id === id);
@@ -570,6 +725,31 @@ export default function App({ application }: { application: ApplicationService }
         ),
       }), log("模拟关闭", e.name, "固定指纹和示例 Cookie 已保留。"))) return;
     }
+  }
+  async function handleRuntimeSessionAction(id: string, expectedSessionId: string, action: "force" | "reconcile") {
+    if (!nativeMode) return;
+    const session = application.getSnapshot().runtimeSessions?.[id];
+    const networkSession = application.getSnapshot().networkResources?.[id];
+    if (action === "force" ? !session || session.sessionId !== expectedSessionId : networkSession !== expectedSessionId && session?.sessionId !== expectedSessionId) { notify("这条记录属于旧会话，未操作现在的浏览器；请重新读取状态。", true); return; }
+    if (action === "force") {
+      if (!application.forceStopRuntime || !session?.canForce || session.needsReconcile) { notify("尚未满足指定会话强制结束条件。请先正常关闭；不会按PID结束进程。", true); return; }
+      if (!window.confirm("仅强制结束这份已确认会话，可能丢失尚未保存的网页内容。不会结束其他环境，也不会清空浏览数据。确认强制结束？")) return;
+    } else if (!application.reconcileRuntime) { notify("当前桌面版本未提供会话核对。", true); return; }
+    if (!beginRuntimeAction(id)) return;
+    try {
+      const request = { environmentId: id, sessionId: expectedSessionId, requestId: uid("request") };
+      const result = action === "force" ? await application.forceStopRuntime!(request) : await application.reconcileRuntime!(request);
+      if (!result.ok) notify(result.error.message, true);
+      else notify(action === "force" ? "指定会话结束任务已受理；确认本次Job全部退出后才显示已停止。" : "核对任务已受理；以实际进程身份和目录锁结果为准。");
+    } finally { endRuntimeAction(id); }
+  }
+  async function cancelQueuedRuntime() {
+    const queued = Object.values(application.getSnapshot().runtimeSessions ?? {}).filter(session => session.state === "starting" && session.launchStage === "queued");
+    for (const session of queued) {
+      const result = await application.cancelOperation(session.operationId);
+      if (!result.ok) notify(result.error.message, true);
+    }
+    await application.refresh?.();
   }
   async function checkProxy(ids: string[]) {
     if (nativeMode) { notify("真实代理检查尚未接入，不会返回模拟检测结果。", true); return; }
@@ -641,7 +821,7 @@ export default function App({ application }: { application: ApplicationService }
     }
   }
   function openCookies(e: Environment) {
-    if (nativeMode) { notify("真实 Cookie 写入尚未接入，不会写入示例记录。", true); return; }
+    if (nativeMode) { setNativeCookieEnvironment(e); setMenu(null); return; }
     setDialog({ kind: "cookies", id: e.id });
     setCookieText("");
     setCookieResult(null);
@@ -649,7 +829,7 @@ export default function App({ application }: { application: ApplicationService }
     setMenu(null);
   }
   function openProxyImport() {
-    if (nativeMode) { notify("真实代理导入与凭据保护尚未接入，请勿填写真实凭据。", true); return; }
+    if (nativeMode) { setNativeProxyImportOpen(true); return; }
     setDialog({ kind: "proxy" });
     setProxyText("");
     setProxyRows([]);
@@ -657,6 +837,7 @@ export default function App({ application }: { application: ApplicationService }
   }
   function removeEnvironments() {
     if (dialog?.kind !== "delete") return;
+    if (nativeMode) { setNativeRecycleSelection([...dialog.ids]); setDialog(null); return; }
     if (
       state.environments.some(
         (e) =>
@@ -682,11 +863,19 @@ export default function App({ application }: { application: ApplicationService }
     notify("环境已从工作区移除");
   }
   const summary = routeInfo[route];
+  const selectedKernelRecord = workspace.kernelRecords?.find(record => record.id === drawer?.environment.coreId);
+  const canGenerateProfile = !nativeMode || selectedKernelRecord?.status === "verified";
+  const profileIsFresh = !!drawer?.fingerprint && fingerprintMatchesConfiguration(drawer.fingerprint.previewProfile, drawer.environment);
+  // Preserve T02's explicit, non-launchable pending configuration workflow.
+  // Selecting an installed build still requires a complete matching preview.
+  const pendingConfiguration = nativeMode && drawer?.environment.coreId === "kernel-pending";
+  const canSaveProfile = pendingConfiguration || profileIsFresh;
+  const canConfigureProfileField = (field: string) => !profileBusy && (!nativeMode || !!selectedKernelRecord?.report.capabilities.some(capability => capability.field === field && capability.status === "configurable" && capability.source === "observed"));
   return (
     <div className="app-shell">
       <aside
         className="sidebar"
-        inert={Boolean(drawer || dialog || storageIssue)}
+        inert={Boolean(drawer || dialog || nativeBatchInput || nativeCookieEnvironment || nativeRecycleSelection || storageIssue)}
       >
         <a className="brand" href="#/environments">
           <div className="brand-mark">
@@ -722,7 +911,7 @@ export default function App({ application }: { application: ApplicationService }
                   <span>{routeInfo[r].label}</span>
                   {r === "environments" && (
                     <span className="nav-count">
-                      {state.environments.length}
+                      {environmentTotal}
                     </span>
                   )}
                 </a>
@@ -766,7 +955,7 @@ export default function App({ application }: { application: ApplicationService }
       </aside>
       <div
         className="main-shell"
-        inert={Boolean(drawer || dialog || storageIssue)}
+        inert={Boolean(drawer || dialog || nativeBatchInput || nativeCookieEnvironment || nativeRecycleSelection || storageIssue)}
       >
         <header className="topbar">
           <div className="breadcrumb">
@@ -799,6 +988,8 @@ export default function App({ application }: { application: ApplicationService }
           </div>
         </header>
         <main>
+          {nativeMode && workspace.maintenance && <div className="prototype-notice" role="status">完整恢复正在维护保护中，配置修改与新启动暂不可用。<Button onClick={() => navigate("backups")}>查看恢复任务</Button></div>}
+          {nativeMode && workspace.migrationMaintenance && <div className="prototype-notice" role="status">内核迁移维护中，原环境保持停止。<Button onClick={() => navigate("kernels")}>查看试用与迁移</Button></div>}
           <div className="page-heading">
             <div>
               <div className="eyebrow">
@@ -810,7 +1001,7 @@ export default function App({ application }: { application: ApplicationService }
                 {summary.label}
                 {route === "environments" && (
                   <span className="heading-count">
-                    {state.environments.length}
+                    {environmentTotal}
                   </span>
                 )}
               </h1>
@@ -838,7 +1029,7 @@ export default function App({ application }: { application: ApplicationService }
                   添加代理
                 </Button>
               ) : route === "backups" ? (
-                <>
+                nativeMode ? <span className="subtle-text">原生完整包 · 恢复前只读预检与明确确认</span> : <>
                   <Button onClick={() => backupFile.current?.click()}>
                     <ArrowUpFromLine size={16} />
                     导入快照
@@ -863,6 +1054,7 @@ export default function App({ application }: { application: ApplicationService }
           </div>
           {route === "environments" && (
             <>
+              {nativeMode && <div className="prototype-notice"><span>{workspace.recycleMaintenance ? "回收维护保护中，请查看原任务。" : "已移除环境可在本机回收区找回。"}</span><Button onClick={() => setNativeRecycleSelection([])}>打开回收区</Button></div>}
               <section className="stats-grid" aria-label="环境概览">
                 <div className="stat-card">
                   <div className="stat-icon blue">
@@ -871,7 +1063,7 @@ export default function App({ application }: { application: ApplicationService }
                   <div>
                     <span>全部环境</span>
                     <strong>
-                      {state.environments.length}
+                      {environmentTotal}
                       <small>个</small>
                     </strong>
                   </div>
@@ -890,7 +1082,7 @@ export default function App({ application }: { application: ApplicationService }
                   </div>
                   <span className="stat-foot">
                     <span className="status-dot green-dot" />
-                    {nativeMode ? "环境真实启停尚未接入" : "模拟运行状态"}
+                    {nativeMode ? "本机真实会话 · 代理逐会话保护 / 明确直连" : "模拟运行状态"}
                   </span>
                 </div>
                 <div className="stat-card">
@@ -944,7 +1136,7 @@ export default function App({ application }: { application: ApplicationService }
                       setPage(1);
                     }}
                   >
-                    全部环境<span>{state.environments.length}</span>
+                    全部环境<span>{environmentTotal}</span>
                   </button>
                   <button
                     className={status === "running" ? "selected" : ""}
@@ -1027,6 +1219,7 @@ export default function App({ application }: { application: ApplicationService }
                     {status === "ready" ? "显示全部状态" : "待启动环境"}
                   </Button>
                   <span className="filter-spacer" />
+                  {nativeMode && <Button onClick={() => setNativeBatchInput({ kind: "history" })}><History size={16} />批次与逐项结果</Button>}
                   <button
                     className="icon-button"
                     aria-label="分组管理"
@@ -1052,8 +1245,14 @@ export default function App({ application }: { application: ApplicationService }
                       <Square size={13} />
                       批量关闭
                     </Button>
+                    {nativeMode && <Button onClick={() => void launch(selected.filter(id => {
+                      const session = workspace.runtimeSessions?.[id];
+                      return session?.state === "error" && !session.pid && !session.resourcesPending && !session.needsReconcile && !session.persistencePending && !workspace.networkResources?.[id];
+                    }))}>仅重试已释放资源的失败项</Button>}
+                    {nativeMode && <><Button onClick={() => setNativeBatchInput({ kind: "clone", sourceIds: [...selected] })}><Copy size={14} />复制配置（新身份）</Button><Button onClick={() => setNativeBatchInput({ kind: "assign", sourceIds: [...selected] })}><Network size={14} />明确分配代理</Button><Button onClick={() => { setNativeBackupSelection([...selected]); navigate("backups"); }}><HardDrive size={14} />完整备份所选</Button></>}
                     <Button
                       onClick={() => {
+                        if (nativeMode) { setNativeRecycleSelection([...selected]); return; }
                         setDialog({ kind: "delete", ids: selected });
                         setFormError("");
                         setDeleteData(false);
@@ -1070,6 +1269,10 @@ export default function App({ application }: { application: ApplicationService }
                     </button>
                   </div>
                 )}
+                {nativeMode && Object.values(workspace.runtimeSessions ?? {}).some(session => session.state === "starting") && <div className="selection-bar" role="status">
+                  <span>启动队列：{Object.values(workspace.runtimeSessions ?? {}).filter(session => session.state === "starting" && session.launchStage === "queued").length} 项等待，按受理顺序启动；已运行环境不占队列名额。</span>
+                  <Button onClick={() => void cancelQueuedRuntime()}>取消排队启动</Button>
+                </div>}
                 <div className="table-scroll">
                   <table className="environment-table">
                     <thead>
@@ -1078,6 +1281,7 @@ export default function App({ application }: { application: ApplicationService }
                           <input
                             type="checkbox"
                             aria-label="选择当前页全部环境"
+                            disabled={nativeMode && environmentQueryBusy}
                             checked={
                               pageItems.length > 0 &&
                               pageItems.every((e) => selected.includes(e.id))
@@ -1110,6 +1314,8 @@ export default function App({ application }: { application: ApplicationService }
                     <tbody>
                       {pageItems.map((e) => {
                         const p = state.proxies.find((p) => p.id === e.proxyId);
+                        const runtimeSession = nativeMode ? workspace.runtimeSessions?.[e.id] : undefined;
+                        const runtimeActionPending = runtimeActionIds.includes(e.id);
                         const core = state.kernels.find(
                           (k) => k.id === e.coreId,
                         );
@@ -1179,10 +1385,11 @@ export default function App({ application }: { application: ApplicationService }
                                     已明确选择直连
                                   </div>
                                 </>
-                              )}
-                            </td>
-                            <td>
-                              <span className="device-line">
+                               )}
+                               {nativeMode && runtimeSession && <NativeRuntimeNetwork session={runtimeSession} />}
+                             </td>
+                             <td>
+                               <span className="device-line">
                                 <Monitor size={14} />
                                 Windows · Chromium{" "}
                                 {core?.version.split(".")[0] || "—"}
@@ -1206,8 +1413,12 @@ export default function App({ application }: { application: ApplicationService }
                                 ) : (
                                   <span className="status-dot" />
                                 )}
-                                {nativeMode && !state.kernels.find(k => k.id === e.coreId)?.available ? "未就绪" : statusLabels[e.status]}
-                              </span>
+                                 {runtimeSession?.needsReconcile ? "待核对" : nativeMode && !core?.available ? "未就绪" : statusLabels[e.status]}
+                               </span>
+                               {nativeMode && e.error && <div className="cell-secondary runtime-recovery-note" role="status">{e.error}</div>}
+                               {runtimeSession?.nextAction && <div className="cell-secondary runtime-recovery-note">{runtimeSession.nextAction}</div>}
+                               {runtimeSession?.lastExitCode !== undefined && <div className="cell-secondary">上次退出码：{runtimeSession.lastExitCode}</div>}
+                               {runtimeSession?.reconciledAt && <div className="cell-secondary">核对：{time(runtimeSession.reconciledAt)}</div>}
                             </td>
                             <td>
                               <span className="last-open">
@@ -1216,18 +1427,30 @@ export default function App({ application }: { application: ApplicationService }
                             </td>
                             <td>
                               <div className="row-actions">
-                                {e.status === "running" ? (
+                                {runtimeSession?.persistencePending ? (
+                                  <span className="cell-secondary runtime-recovery-note" role="status">结果待保存 · 修复存储后自动核对</span>
+                                ) : workspace.networkResources?.[e.id] ? (
+                                  <Button className="soft-primary compact" disabled={runtimeActionPending} onClick={() => void handleRuntimeSessionAction(e.id, workspace.networkResources![e.id], "reconcile")}>重试资源清理</Button>
+                                ) : runtimeSession?.needsReconcile ? (
+                                  <Button className="soft-primary compact" disabled={runtimeActionPending} onClick={() => void handleRuntimeSessionAction(e.id, runtimeSession.sessionId, "reconcile")}>核对会话</Button>
+                                 ) : runtimeSession?.canForce ? (
+                                   <>
+                                     <Button className="stop-button compact" disabled={runtimeActionPending || e.status === "stopping"} onClick={() => void stop([e.id])}>重试关闭</Button>
+                                     <Button className="danger compact" disabled={runtimeActionPending || e.status === "stopping"} onClick={() => void handleRuntimeSessionAction(e.id, runtimeSession.sessionId, "force")}>强制结束</Button>
+                                   </>
+                                ) : e.status === "running" || (nativeMode && (e.status === "starting" || !!runtimeSession?.pid || runtimeSession?.resourcesPending)) ? (
                                   <Button
-                                    className="stop-button compact"
+                                     className="stop-button compact"
+                                     disabled={e.status === "stopping" || runtimeActionPending}
                                     onClick={() => stop([e.id])}
                                   >
                                     <Square size={12} />
-                                    关闭
+                                     {e.status === "starting" ? "取消启动" : runtimeSession?.resourcesPending && e.status === "error" ? "重试关闭" : "关闭"}
                                   </Button>
                                 ) : (
                                   <Button
                                     className="launch-button compact"
-                                    disabled={["starting", "stopping"].includes(
+                                    disabled={runtimeActionPending || ["starting", "stopping"].includes(
                                       e.status,
                                     )}
                                     onClick={() => launch([e.id])}
@@ -1261,7 +1484,7 @@ export default function App({ application }: { application: ApplicationService }
                                         <Settings2 size={15} />
                                         编辑环境
                                       </button>
-                                      <button onClick={() => openCreate(e)}>
+                                      <button onClick={() => nativeMode ? setNativeBatchInput({ kind: "clone", sourceIds: [e.id] }) : openCreate(e)}>
                                         <Copy size={15} />
                                         按模板新建
                                       </button>
@@ -1272,6 +1495,7 @@ export default function App({ application }: { application: ApplicationService }
                                       <button
                                         className="danger-text"
                                         onClick={() => {
+                                          if (nativeMode) { setNativeRecycleSelection([e.id]); setMenu(null); return; }
                                           setDialog({
                                             kind: "delete",
                                             ids: [e.id],
@@ -1314,14 +1538,14 @@ export default function App({ application }: { application: ApplicationService }
                 )}
                 <div className="table-footer">
                   <span>
-                    共 {visible.length} 个环境
+                    共 {filteredTotal} 个环境{nativeMode && environmentQueryBusy ? " · 正在读取分页…" : ""}
                     <span className="footer-separator">·</span>每页 8 条
                   </span>
                   <div className="pagination">
                     <button
                       className="icon-button"
                       aria-label="上一页"
-                      disabled={page <= 1}
+                      disabled={page <= 1 || environmentQueryBusy}
                       onClick={() => setPage((p) => p - 1)}
                     >
                       <ChevronLeft size={16} />
@@ -1331,7 +1555,7 @@ export default function App({ application }: { application: ApplicationService }
                     <button
                       className="icon-button"
                       aria-label="下一页"
-                      disabled={page >= pageCount}
+                      disabled={page >= pageCount || environmentQueryBusy}
                       onClick={() => setPage((p) => p + 1)}
                     >
                       <ChevronRight size={16} />
@@ -1351,7 +1575,8 @@ export default function App({ application }: { application: ApplicationService }
               </div>
             </>
           )}
-          {route === "proxies" && (
+          {route === "proxies" && nativeMode && <NativeProxyManager application={application} workspace={workspace} importOpen={nativeProxyImportOpen} onImportOpenChange={setNativeProxyImportOpen} />}
+          {route === "proxies" && !nativeMode && (
             <>
               <div className="info-strip">
                 <Info size={18} />
@@ -1534,7 +1759,7 @@ export default function App({ application }: { application: ApplicationService }
               </section>
             </>
           )}
-          {route === "kernels" && nativeMode && <NativeKernelManager application={application} workspace={workspace} />}
+          {route === "kernels" && nativeMode && <><NativeKernelManager application={application} workspace={workspace} /><NativeMigrationManager application={application} workspace={workspace} /></>}
           {route === "kernels" && !nativeMode && (
             <>
               <div className="info-strip">
@@ -1617,7 +1842,7 @@ export default function App({ application }: { application: ApplicationService }
             </>
           )}
           {route === "backups" && (
-            <>
+            nativeMode ? <NativeBackupManager key={nativeBackupSelection.join(",")} application={application} workspace={workspace} selectedIds={nativeBackupSelection} /> : <>
               <input
                 ref={backupFile}
                 type="file"
@@ -1738,10 +1963,10 @@ export default function App({ application }: { application: ApplicationService }
             </>
           )}
           {route === "activity" && (
-            <section className="work-card">
+            <>{nativeMode && <NativeDiagnostics application={application} />}<section className="work-card">
               <div className="section-toolbar">
                 <h2>最近操作</h2>
-                <Button
+                {!nativeMode && <Button
                   onClick={() =>
                     download(
                       "prism-activity.json",
@@ -1751,10 +1976,13 @@ export default function App({ application }: { application: ApplicationService }
                 >
                   <Download size={15} />
                   导出记录
-                </Button>
+                </Button>}
               </div>
               <div className="activity-list">
-                {state.activities.map((a) => (
+                {state.activities.map((a) => {
+                  const session = a.environmentId ? workspace.runtimeSessions?.[a.environmentId] : undefined;
+                  const currentSession = nativeMode && !!session && session.sessionId === a.sessionId;
+                  return (
                   <div className="activity-item" key={a.id}>
                     <span className={`activity-symbol ${a.result}`}>
                       {a.result === "error" ? (
@@ -1765,18 +1993,22 @@ export default function App({ application }: { application: ApplicationService }
                         <Info size={17} />
                       )}
                     </span>
-                    <div>
+                    <div className="activity-content">
                       <strong>
                         {a.action}
                         <span>{a.target}</span>
                       </strong>
                       <p>{a.detail}</p>
+                      {a.errorCode && <p className="mono">原因：{a.errorCode}</p>}
+                      {a.nextAction && <p>{a.nextAction}</p>}
+                      {currentSession && session.needsReconcile && <Button className="compact" disabled={runtimeActionIds.includes(a.environmentId!)} onClick={() => void handleRuntimeSessionAction(a.environmentId!, session.sessionId, "reconcile")}>核对会话</Button>}
+                      {currentSession && session.canForce && !session.needsReconcile && <Button className="danger compact" disabled={runtimeActionIds.includes(a.environmentId!)} onClick={() => void handleRuntimeSessionAction(a.environmentId!, session.sessionId, "force")}>强制结束此会话</Button>}
                     </div>
                     <time>{time(a.time)}</time>
                   </div>
-                ))}
+                ); })}
               </div>
-            </section>
+            </section></>
           )}
           {route === "guide" && (
             <>
@@ -1785,9 +2017,9 @@ export default function App({ application }: { application: ApplicationService }
                   <BookOpen size={28} />
                 </div>
                 <div>
-                  <h2>从产品需求，走到可实现的页面</h2>
+                  <h2>{nativeMode ? "本机使用指南与排错" : "从产品需求，走到可实现的页面"}</h2>
                   <p>
-                    {nativeMode ? "环境配置由本机 SQLite 持久保存。真实内核、代理、Cookie 和完整恢复按后续任务接入；未接入功能不会使用模拟成功。" : "需求编号贯穿页面、数据模型与验收项。当前交互原型全部使用本地示例数据。"}
+                    {nativeMode ? "首版候选仅用于合成数据检查：代理逐会话保护已接入，本机受控能力已有证据；独立远端、人工流程及干净Windows验收仍待完成。按指南查看步骤与限制。" : "需求编号贯穿页面、数据模型与验收项。当前交互原型全部使用本地示例数据。"}
                   </p>
                 </div>
                 <Tag kind="blue-tag">v1.0 交付规格</Tag>
@@ -1829,6 +2061,7 @@ export default function App({ application }: { application: ApplicationService }
                 <div className="list-tabs">
                   {(
                     [
+                      { id: "user", text: "本机使用指南" },
                       { id: "prd", text: "产品需求 PRD" },
                       { id: "development", text: "开发与验收" },
                       { id: "kernel", text: "内核适配合同" },
@@ -1847,12 +2080,12 @@ export default function App({ application }: { application: ApplicationService }
                       className="compact"
                       onClick={() =>
                         download(
-                          docTab === "prd"
+                          docTab === "user" ? "USER_GUIDE.md" : docTab === "prd"
                             ? "PRD.md"
                             : docTab === "kernel"
                               ? "KERNEL.md"
                               : "DEVELOPMENT.md",
-                          docTab === "prd"
+                          docTab === "user" ? userGuideText : docTab === "prd"
                             ? prdText
                             : docTab === "kernel"
                               ? kernelText
@@ -1883,11 +2116,11 @@ export default function App({ application }: { application: ApplicationService }
                             onClick={(ev) => {
                               if (
                                 href &&
-                                /(?:PRD|DEVELOPMENT|KERNEL)\.md/.test(href)
+                                /(?:PRD|DEVELOPMENT|KERNEL|USER_GUIDE)\.md/.test(href)
                               ) {
                                 ev.preventDefault();
                                 setDocTab(
-                                  href.includes("KERNEL")
+                                  href.includes("USER_GUIDE") ? "user" : href.includes("KERNEL")
                                     ? "kernel"
                                     : href.includes("DEVELOPMENT")
                                       ? "development"
@@ -1904,7 +2137,7 @@ export default function App({ application }: { application: ApplicationService }
                         ),
                       }}
                     >
-                      {docTab === "prd"
+                      {docTab === "user" ? userGuideText : docTab === "prd"
                         ? prdText
                         : docTab === "kernel"
                           ? kernelText
@@ -1919,7 +2152,7 @@ export default function App({ application }: { application: ApplicationService }
             <span>
               <Monitor size={13} />
               Windows 本地版<span className="footer-separator">·</span>
-              {nativeMode ? "SQLite 本机持久化 · 精确内核可核验，环境启停待接入" : "仅供交互验收，请勿输入真实凭据"}
+              {nativeMode ? "SQLite 本机持久化 · 直连/独立认证代理代码已接 · 实机验收待补" : "仅供交互验收，请勿输入真实凭据"}
             </span>
             <button
               onClick={() => {
@@ -2020,7 +2253,7 @@ export default function App({ application }: { application: ApplicationService }
                     {drawer.kind === "create" && (
                       <Field
                         label="创建数量"
-                        hint={nativeMode ? "目前仅接入单条创建；持久批量任务待接入，不是总数配额。" : "每个实例生成独立种子与数据记录"}
+                        hint={nativeMode ? "先查看分页计划，再明确执行；取消/重开保留已完成项，不设保存总数配额。" : "每个实例生成独立种子与数据记录"}
                       >
                         <input
                           aria-label="创建数量"
@@ -2051,6 +2284,7 @@ export default function App({ application }: { application: ApplicationService }
                   >
                     <select
                       aria-label="绑定代理"
+                      disabled={profileBusy || savePending}
                       value={drawer.environment.proxyId}
                       onChange={(e) => patchDraft({ proxyId: e.target.value })}
                     >
@@ -2081,6 +2315,8 @@ export default function App({ application }: { application: ApplicationService }
                   </div>
                   <Field label="固定内核版本">
                     <select
+                      aria-label="固定内核版本"
+                      disabled={generating || savePending || profileBusy || (drawer.kind === "edit" && (!nativeMode || state.environments.find(environment => environment.id === drawer.environment.id)?.coreId !== "kernel-pending"))}
                       value={drawer.environment.coreId}
                       onChange={(e) => patchDraft({ coreId: e.target.value })}
                     >
@@ -2092,7 +2328,7 @@ export default function App({ application }: { application: ApplicationService }
                     </select>
                   </Field>
                   <p className="field-hint">
-                    {nativeMode ? "先在内核页安装并核验 fingerprint-chromium，再显式选择精确构建。旧档案不会自动重绑定；保存引用不代表环境已可启动。" : "实际内核：fingerprint-chromium。当前仅演示配置绑定，未安装浏览器内核。"}
+                    {nativeMode ? "先在内核页安装核验，再显式选择并生成档案预览。普通编辑不能切换已有精确构建；旧档案不自动重绑定，保存不代表已可启动。" : "实际内核：fingerprint-chromium。当前仅演示配置绑定，未安装浏览器内核。"}
                   </p>
                 </>
               )}
@@ -2109,8 +2345,8 @@ export default function App({ application }: { application: ApplicationService }
                     </div>
                     <Button
                       className="soft-primary"
-                      disabled={generating}
-                      onClick={regenerate}
+                      disabled={generating || savePending || profileBusy || !canGenerateProfile}
+                      onClick={() => void generateProfile(true)}
                     >
                       {generating ? (
                         <LoaderCircle size={16} className="spin" />
@@ -2140,6 +2376,8 @@ export default function App({ application }: { application: ApplicationService }
                     </Field>
                     <Field label="CPU 线程数">
                       <select
+                        disabled={generating || savePending || !canConfigureProfileField("cpu")}
+                        aria-label="CPU线程偏好"
                         value={drawer.environment.cpu}
                         onChange={(e) => patchDraft({ cpu: e.target.value })}
                       >
@@ -2155,6 +2393,7 @@ export default function App({ application }: { application: ApplicationService }
                     <h3>语言与地区</h3>
                     <button
                       className="text-button"
+                      disabled={generating || savePending || !canConfigureProfileField("acceptLanguages") || !canConfigureProfileField("timezone")}
                       onClick={() => {
                         const p = state.proxies.find(
                           (p) => p.id === drawer.environment.proxyId,
@@ -2186,6 +2425,8 @@ export default function App({ application }: { application: ApplicationService }
                   <div className="field-row">
                     <Field label="网站语言">
                       <select
+                        disabled={generating || savePending || !canConfigureProfileField("acceptLanguages")}
+                        aria-label="网站语言"
                         value={drawer.environment.language}
                         onChange={(e) =>
                           patchDraft({ language: e.target.value })
@@ -2200,6 +2441,8 @@ export default function App({ application }: { application: ApplicationService }
                     </Field>
                     <Field label="时区">
                       <select
+                        disabled={generating || savePending || !canConfigureProfileField("timezone")}
+                        aria-label="设备时区"
                         value={drawer.environment.timezone}
                         onChange={(e) =>
                           patchDraft({ timezone: e.target.value })
@@ -2211,33 +2454,8 @@ export default function App({ application }: { application: ApplicationService }
                       </select>
                     </Field>
                   </div>
-                  <div className="form-section-title">
-                    <span>02</span>
-                    <h3>内核生成项</h3>
-                    <Tag>只读说明</Tag>
-                  </div>
-                  <div className="generated-fields">
-                    {[
-                      "GPU 与 WebGL 参数",
-                      "浏览器报告的内存",
-                      "Canvas / Audio / ClientRects",
-                      "字体相关输出",
-                    ].map((s) => (
-                      <div key={s}>
-                        <span>{s}</span>
-                        <span>
-                          按种子生成 · 待真实读取
-                          <LockKeyhole size={12} />
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="form-note">
-                    <Info size={17} />
-                    <span>
-                      这里展示生成规则，不伪造实际硬件读值。最终结果须由固定版本内核运行后核对。
-                    </span>
-                  </div>
+                  {profileBusy && <p className="field-hint">环境正在运行、停止或等待会话核对，只能保存名称、分组和备注；实际目录空闲确认前不能改设备、代理及启动偏好。</p>}
+                  <FingerprintRevisionPanel preview={drawer.fingerprint} history={drawer.history} native={nativeMode} stale={!profileIsFresh && !pendingConfiguration} busy={generating || savePending || profileBusy} canGenerate={canGenerateProfile} dataRef={drawer.userDataRef} onPreview={() => void generateProfile()} onRestore={revision => void previewProfileRestore(revision)} />
                 </>
               )}
               {drawer.tab === "preferences" && (
@@ -2253,6 +2471,7 @@ export default function App({ application }: { application: ApplicationService }
                     <textarea
                       rows={4}
                       aria-label="启动网址"
+                      disabled={profileBusy || savePending}
                       value={drawer.environment.urls}
                       onChange={(e) => patchDraft({ urls: e.target.value })}
                       placeholder="https://example.com"
@@ -2261,6 +2480,7 @@ export default function App({ application }: { application: ApplicationService }
                   <div className="field-row">
                     <Field label="窗口宽度">
                       <input
+                        disabled={generating || savePending || profileBusy}
                         type="number"
                         value={drawer.environment.width}
                         onChange={(e) =>
@@ -2270,6 +2490,7 @@ export default function App({ application }: { application: ApplicationService }
                     </Field>
                     <Field label="窗口高度">
                       <input
+                        disabled={generating || savePending || profileBusy}
                         type="number"
                         value={drawer.environment.height}
                         onChange={(e) =>
@@ -2292,6 +2513,7 @@ export default function App({ application }: { application: ApplicationService }
                     <input
                       type="checkbox"
                       checked={drawer.environment.restoreTabs}
+                      disabled={profileBusy || savePending}
                       onChange={(e) =>
                         patchDraft({ restoreTabs: e.target.checked })
                       }
@@ -2305,14 +2527,14 @@ export default function App({ application }: { application: ApplicationService }
                     <ShieldCheck size={19} />
                     <div>
                       <strong>独立数据目录</strong>
-                      <p>{nativeMode ? "真实浏览器目录将在首次受控启动时分配；当前未接入启动。" : "桌面版为此环境分配独立浏览器目录。"}</p>
+                      <p>{nativeMode ? "首次启动创建本环境独立目录；停止与档案修改保留数据，不与其他环境共享。" : "桌面版为此环境分配独立浏览器目录。"}</p>
                     </div>
                   </div>
                   <div className="policy-item">
                     <LockKeyhole size={19} />
                     <div>
                       <strong>保留登录数据</strong>
-                      <p>{nativeMode ? "当前只保存环境配置；尚无真实 Cookie 或登录数据。" : "关闭窗口和修改代理时保留原有 Cookie。"}</p>
+                      <p>{nativeMode ? "管理端Cookie使用指定会话私有通道写后核对；实际隔离与重开保留仍待统一验收。" : "关闭窗口和修改代理时保留原有 Cookie。"}</p>
                     </div>
                   </div>
                 </>
@@ -2327,20 +2549,20 @@ export default function App({ application }: { application: ApplicationService }
             <div className="drawer-footer">
               <span>
                 <ShieldCheck size={14} />
-                {nativeMode ? "保存到本机 SQLite · 提交成功才完成" : "仅保存在当前浏览器的演示数据"}
+                {pendingConfiguration ? "仅保存待绑定配置 · 未生成可用档案，不能启动" : !canSaveProfile ? "请在设备指纹页选择内核、生成并查看预览" : nativeMode ? "保存到本机 SQLite · 提交成功才完成" : "仅保存在当前浏览器的演示数据"}
               </span>
               <div>
-                <Button disabled={generating} onClick={closeDrawer}>
+                <Button disabled={generating || savePending} onClick={closeDrawer}>
                   取消
                 </Button>
                 <Button
                   className="primary"
-                  disabled={generating}
+                  disabled={generating || savePending || !canSaveProfile}
                   onClick={saveEnvironment}
                 >
                   <Check size={16} />
                   {drawer.kind === "create"
-                    ? `创建${quantity > 1 ? ` ${quantity} 个` : ""}环境`
+                    ? nativeMode ? `查看 ${quantity} 项创建计划` : `创建${quantity > 1 ? ` ${quantity} 个` : ""}环境`
                     : "保存配置"}
                 </Button>
               </div>
@@ -2348,6 +2570,9 @@ export default function App({ application }: { application: ApplicationService }
           </div>
         </div>
       )}
+      {nativeMode && nativeCookieEnvironment && <NativeCookieImport key={nativeCookieEnvironment.id} application={application} workspace={workspace} environment={nativeCookieEnvironment} onClose={() => setNativeCookieEnvironment(null)} />}
+      {nativeMode && nativeRecycleSelection && <NativeRecycleManager application={application} workspace={workspace} selectedIds={nativeRecycleSelection} onClose={() => { setNativeRecycleSelection(null); setSelected([]); void application.refresh?.(); }} />}
+      {nativeMode && nativeBatchInput && <NativeBatchDialog key={`${nativeBatchInput.kind}:${nativeBatchInput.initialPage?.planId ?? nativeBatchInput.sourceIds?.join(",") ?? "history"}`} application={application} workspace={workspace} input={nativeBatchInput} onClose={() => { setNativeBatchInput(null); setMenu(null); }} />}
       {dialog && (
         <div className="overlay modal-overlay">
           <div
@@ -3016,6 +3241,7 @@ export default function App({ application }: { application: ApplicationService }
             </div>
             <div className="modal-body">
               <p>{storageIssue}</p>
+              {nativeMode && workspace.issue?.code !== "WORKSPACE_LOADING" && <NativeDiagnostics application={application} />}
             </div>
             <div className="modal-footer">
               {workspace.damagedRecord !== undefined ? (

@@ -1,0 +1,53 @@
+{
+  "verifiedAt": "2026-10-06T03:36:03.428Z",
+  "diagnosticCommit": "eec3333ad35c4a27d8cd25f267079a00c629117c",
+  "freshCheckout": true,
+  "bothProductionPreviewBuildsPassed": true,
+  "bothManifestsSourceDirtyFalse": true,
+  "trackedAndUntrackedSourceRemainedClean": true,
+  "locksCheckoutAndRemainLF": true,
+  "sourceGuardScriptUnchangedFromCandidate6Source": true,
+  "genuineOwnedGoModContentChangeDetected": true,
+  "realGuardRejectedExit": 1,
+  "installerNeverExecutedDuringDirtySourceTest": true,
+  "restoredOnlyThisTestExactEditedBytes": true,
+  "cleanAfterRestore": true,
+  "goModSHA256": "1c7234bc2aab80ac84df77f0aa280b19149642610ed1954b3b6084ec6fb3f393",
+  "goSumSHA256": "655a7a3d7011183b73e0966c40750480fb455560a1e07da979188b2c76f67644",
+  "candidate6SourceAndBinariesChanged": false,
+  "automatedUIClicks": false,
+  "lockAttributeScope": [
+    "go.mod text eol=lf",
+    "go.sum text eol=lf"
+  ],
+  "normalizedDependencyContentsEqualCandidate6Source": true,
+  "rawHashBoundary": "The earlier Windows go.sum checkout used CRLF; the fixed fresh LF checkout has a different physical SHA-256 but identical canonical dependency content. Neither checksum was rewritten to disguise a change.",
+  "originalCandidate6GoSumRawSHA256": "2f7e9144531adab3b4b43b9b1e52e0a3b95850836b8bb6be07695099a3522fa8",
+  "resultBoundary": "Local fresh-checkout builds and an actual dirty-source rejection; remote product installation is recorded separately.",
+  "evidence": [
+    {
+      "path": "output/goal/V1-local-acceptance/ci-fixed-lock-eol.txt",
+      "sha256": "b2bf684ddf52273d5f48028476e7d3c1e5a11c674af96a592089514499cda18f"
+    },
+    {
+      "path": "output/goal/V1-local-acceptance/ci-fixed-before-build.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "output/goal/V1-local-acceptance/ci-fixed-build1.log",
+      "sha256": "ad7c9085aad08a0ffaa23823472980341fcabdfa55a9216be188b4bdb1664d9a"
+    },
+    {
+      "path": "output/goal/V1-local-acceptance/ci-fixed-build2.log",
+      "sha256": "3504d5d4611bca74001caa8a5dedbdab59f99c7e7da22353d9fa7dea8c8be50b"
+    },
+    {
+      "path": "output/goal/V1-local-acceptance/ci-fixed-after-build.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "output/goal/V1-local-acceptance/ci-fixed-real-change-rejection.log",
+      "sha256": "3722db58d87b41dbcc693261ff16084b5f594cc0625fa59d48e61d70928d6ade"
+    }
+  ]
+}

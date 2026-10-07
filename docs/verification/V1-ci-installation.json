@@ -1,0 +1,227 @@
+{
+  "sourceCommit": "fa5ade135f47111e6bb1bbada8762cba1f914245",
+  "unknownShortcutsAbsentAtStart": true,
+  "database": {
+    "schemaVersion": 10,
+    "id": "9f5f4076-7802-4564-bed4-224a29f329d3",
+    "name": "SYNTHETIC-INSTALLER-ONLY",
+    "revision": 2,
+    "kernelId": "kernel-pending",
+    "seed": "1817134575",
+    "configuration": {
+      "name": "SYNTHETIC-INSTALLER-ONLY",
+      "group": "SYNTHETIC",
+      "note": "SYNTHETIC-INSTALLER-ONLY",
+      "proxyId": "",
+      "coreId": "kernel-pending",
+      "seed": "1817134575",
+      "language": "en-US",
+      "timezone": "America/New_York",
+      "cpu": "auto",
+      "width": 1440,
+      "height": 900,
+      "urls": "",
+      "restoreTabs": true,
+      "fingerprintVersion": "windows-desktop-v1"
+    },
+    "fingerprint": {
+      "schemaVersion": 1,
+      "configRevision": 2,
+      "seed": "1817134575",
+      "templateId": "windows-desktop-v1",
+      "templateVersion": "windows-desktop-v1",
+      "generatorVersion": "native-initial-v1",
+      "platform": "windows",
+      "platformVersion": "15.0.0",
+      "brand": "Chrome",
+      "brandVersion": "",
+      "kernelId": "kernel-pending",
+      "coreActualVersion": "",
+      "coreExecutableSha256": "",
+      "adapterVersion": "",
+      "capabilityVersion": "",
+      "language": "en-US",
+      "acceptLanguages": [
+        "en-US",
+        "en"
+      ],
+      "uiLanguage": "system",
+      "timezone": "America/New_York",
+      "regionPreset": "US",
+      "cpu": "auto",
+      "width": 1440,
+      "height": 900,
+      "parameters": [],
+      "configHash": "63ec3a8934e73c4ba058489d91da423077284532e5d69b4c5c3b03f16d51546e"
+    },
+    "userDataRef": "environments/9f5f4076-7802-4564-bed4-224a29f329d3/user-data"
+  },
+  "checks": {
+    "defaultDataCheckboxUnchecked": false,
+    "firstAndSecondStart": true,
+    "upgradeIdentityPreserved": true,
+    "explicitRemoveData": true,
+    "downgradeRejected": true,
+    "reinstallFoundSameData": true,
+    "defaultUninstallRetained": true
+  },
+  "freshWindowsUser": false,
+  "uiClicks": false,
+  "actualDefaultKnownFolders": true,
+  "installerSteps": [
+    {
+      "expectedExit": 0,
+      "pid": 5628,
+      "actualExit": 0,
+      "wizard": false,
+      "executable": "prism-browser-0.3.0-preview.1-windows-amd64-setup.exe"
+    },
+    {
+      "expectedExit": 0,
+      "pid": 6568,
+      "actualExit": 0,
+      "wizard": false,
+      "executable": "prism-browser-0.3.0-preview.2-windows-amd64-setup.exe"
+    },
+    {
+      "expectedExit": 25,
+      "pid": 10008,
+      "actualExit": 25,
+      "wizard": false,
+      "executable": "prism-browser-0.3.0-preview.1-windows-amd64-setup.exe"
+    },
+    {
+      "expectedExit": 0,
+      "pid": 2108,
+      "actualExit": 0,
+      "wizard": false,
+      "executable": "uninstall.exe"
+    },
+    {
+      "expectedExit": 0,
+      "pid": 4004,
+      "actualExit": 0,
+      "wizard": false,
+      "executable": "prism-browser-0.3.0-preview.2-windows-amd64-setup.exe"
+    },
+    {
+      "expectedExit": 0,
+      "pid": 7216,
+      "actualExit": 0,
+      "wizard": false,
+      "executable": "uninstall.exe"
+    }
+  ],
+  "secondRevision": 2,
+  "candidateDigests": [
+    {
+      "peArchitecture": "i386",
+      "name": "prism-browser-0.3.0-preview.1-windows-amd64-setup.exe",
+      "bytes": 14764241,
+      "windowsPEVersion": "0.3.0.1",
+      "sha256": "b94e4a5eebf6cb1a71ab577d00fe248bbdbd2344567d5f8322bf354cedc61071",
+      "authenticode": "NotSigned"
+    },
+    {
+      "peArchitecture": "i386",
+      "name": "prism-browser-0.3.0-preview.2-windows-amd64-setup.exe",
+      "bytes": 14764192,
+      "windowsPEVersion": "0.3.0.2",
+      "sha256": "df3c60e465768334f0572d6d944f702e98a542b433cccf1aa9fbf27fcaaa47f9",
+      "authenticode": "NotSigned"
+    }
+  ],
+  "driver": "Actual NSIS + shortcut launches/normal window close + native API fixture/read-only SQLite; no UI clicks",
+  "platform": "windows/amd64",
+  "windows": "Microsoft Windows Server 2025 Datacenter",
+  "appProcesses": [
+    {
+      "exitCode": 0,
+      "uiClicks": false,
+      "pid": 9484,
+      "pageObservation": {
+        "workspaceError": false,
+        "recordRequired": false,
+        "readOnlyUIA": true,
+        "syntheticRecordVisible": false,
+        "nativeWorkspaceLoaded": true
+      },
+      "revision": 1,
+      "normalWindowClose": true
+    },
+    {
+      "exitCode": 0,
+      "uiClicks": false,
+      "pid": 9712,
+      "pageObservation": {
+        "workspaceError": false,
+        "recordRequired": true,
+        "readOnlyUIA": true,
+        "syntheticRecordVisible": true,
+        "nativeWorkspaceLoaded": true
+      },
+      "revision": 1,
+      "normalWindowClose": true
+    },
+    {
+      "exitCode": 0,
+      "uiClicks": false,
+      "pid": 5976,
+      "pageObservation": {
+        "workspaceError": false,
+        "recordRequired": true,
+        "readOnlyUIA": true,
+        "syntheticRecordVisible": true,
+        "nativeWorkspaceLoaded": true
+      },
+      "revision": 2,
+      "normalWindowClose": true
+    },
+    {
+      "exitCode": 0,
+      "uiClicks": false,
+      "pid": 7132,
+      "pageObservation": {
+        "workspaceError": false,
+        "recordRequired": true,
+        "readOnlyUIA": true,
+        "syntheticRecordVisible": true,
+        "nativeWorkspaceLoaded": true
+      },
+      "revision": 2,
+      "normalWindowClose": true
+    },
+    {
+      "exitCode": 0,
+      "uiClicks": false,
+      "pid": 2168,
+      "pageObservation": {
+        "workspaceError": false,
+        "recordRequired": true,
+        "readOnlyUIA": true,
+        "syntheticRecordVisible": true,
+        "nativeWorkspaceLoaded": true
+      },
+      "revision": 2,
+      "normalWindowClose": true
+    },
+    {
+      "exitCode": 0,
+      "uiClicks": false,
+      "pid": 4892,
+      "pageObservation": {
+        "workspaceError": false,
+        "recordRequired": true,
+        "readOnlyUIA": true,
+        "syntheticRecordVisible": true,
+        "nativeWorkspaceLoaded": true
+      },
+      "revision": 2,
+      "normalWindowClose": true
+    }
+  ],
+  "verifiedAt": "2026-10-06T03:40:24.5100393Z",
+  "freshProductStateAtStart": true,
+  "firstRevision": 1,
+  "environmentOverrides": false
+}

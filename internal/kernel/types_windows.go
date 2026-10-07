@@ -1,7 +1,7 @@
 //go:build windows
 
 // Package kernel installs immutable, exact Windows builds and performs isolated
-// diagnostics. It does not start environments or open their browser data.
+// diagnostics and managed native sessions with isolated persistent data.
 package kernel
 
 import (

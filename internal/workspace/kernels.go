@@ -57,6 +57,15 @@ func kernelFailure(err error) Result {
 	return storageFailure(err)
 }
 func (s *Service) selectKernelArchive() Result {
+	s.mu.Lock()
+	blocked, migrating := s.recycleTask != nil, s.migrationTask != nil
+	s.mu.Unlock()
+	if migrating {
+		return failure("MIGRATION_INCOMPLETE", "请先完成或取消原迁移任务。", true)
+	}
+	if blocked {
+		return failure("RECYCLE_INCOMPLETE", "请先完成原回收任务。", true)
+	}
 	if s.options.ChooseArchive == nil {
 		return failure("CAPABILITY_UNSUPPORTED", "本地文件选择器尚未就绪，请在Windows桌面使用。", true)
 	}
@@ -76,7 +85,7 @@ func (s *Service) selectKernelArchive() Result {
 	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	if s.closed {
+	if s.closed || s.recycleTask != nil || s.migrationTask != nil {
 		return failure("NATIVE_UNAVAILABLE", "工作区已关闭。", true)
 	}
 	token := id()
@@ -113,7 +122,10 @@ func (s *Service) listKernels() ([]KernelView, error) {
 		return nil, err
 	}
 	for index := range records {
-		rows, err = s.db.Query("SELECT id FROM environments WHERE kernel_id=? ORDER BY code", records[index].ID)
+		if err = s.db.QueryRow("SELECT COUNT(*) FROM environments WHERE kernel_id=?", records[index].ID).Scan(&records[index].UsedCount); err != nil {
+			return nil, err
+		}
+		rows, err = s.db.Query("SELECT id FROM environments WHERE kernel_id=? ORDER BY code LIMIT 100", records[index].ID)
 		if err != nil {
 			return nil, err
 		}
@@ -220,12 +232,12 @@ func (s *Service) kernelCall(request Request) Result {
 			return failure("KERNEL_MISSING", "所选精确内核记录不存在；未改用其他版本。", false)
 		}
 		if request.Method == "Kernel.Delete" {
-			var count int
-			if err = s.db.QueryRow("SELECT COUNT(*) FROM fingerprints WHERE kernel_id=?", target.KernelID).Scan(&count); err != nil {
+			count, err := s.kernelRetentionCount(target.KernelID)
+			if err != nil {
 				return storageFailure(err)
 			}
 			if count > 0 {
-				result := failure("PROFILE_BUSY", "该构建被设备档案引用，不能直接移除；请先查看受影响环境。", false)
+				result := failure("PROFILE_BUSY", "该构建被设备档案、默认选择或迁移备份引用，不能直接移除。", false)
 				result.Error.Details = map[string]any{"reason": "kernel-in-use", "kernelId": target.KernelID}
 				return result
 			}
@@ -446,8 +458,8 @@ func (s *Service) publishKernel(prepared *kernel.Prepared, operation *Operation)
 }
 
 func (s *Service) deleteKernel(record kernel.Record, operation *Operation) error {
-	var count int
-	if err := s.db.QueryRow("SELECT COUNT(*) FROM fingerprints WHERE kernel_id=?", record.ID).Scan(&count); err != nil {
+	count, err := s.kernelRetentionCount(record.ID)
+	if err != nil {
 		return err
 	}
 	if count > 0 {
@@ -482,7 +494,11 @@ func (s *Service) deleteKernel(record kernel.Record, operation *Operation) error
 }
 
 func (s *Service) recoverKernelOperations() error {
-	rows, err := s.db.Query("SELECT result_json FROM operations")
+	return s.recoverKernelOperationsContext(context.Background())
+}
+
+func (s *Service) recoverKernelOperationsContext(ctx context.Context) error {
+	rows, err := s.db.Query("SELECT result_json FROM operations WHERE json_extract(result_json,'$.kind') LIKE 'kernel-%'")
 	if err != nil {
 		return err
 	}
@@ -508,10 +524,13 @@ func (s *Service) recoverKernelOperations() error {
 		return err
 	}
 	for _, operation := range operations {
+		if err := ctx.Err(); err != nil {
+			return err
+		}
 		if parsed, err := uuid.Parse(operation.ResourceKey); err != nil || parsed.String() != operation.ResourceKey {
 			return errors.New("invalid internal staging resource key")
 		}
-		if err = kernel.RemoveOwnedTree(filepath.Join(s.root, "staging", "kernel-"+operation.ResourceKey)); err != nil {
+		if err = kernel.RemoveOwnedTreeContext(ctx, filepath.Join(s.root, "staging", "kernel-"+operation.ResourceKey)); err != nil {
 			return err
 		}
 		if operation.Kind == "kernel-install" && operation.KernelID != "" {
@@ -523,7 +542,7 @@ func (s *Service) recoverKernelOperations() error {
 				if parsed, err := uuid.Parse(operation.KernelID); err != nil || parsed.String() != operation.KernelID {
 					return errors.New("invalid recovery kernel ID")
 				}
-				if err = kernel.RemoveOwnedTree(filepath.Join(s.root, "kernels", operation.KernelID)); err != nil {
+				if err = kernel.RemoveOwnedTreeContext(ctx, filepath.Join(s.root, "kernels", operation.KernelID)); err != nil {
 					return err
 				}
 			}

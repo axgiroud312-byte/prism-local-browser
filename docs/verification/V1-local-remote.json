@@ -1,0 +1,290 @@
+{
+  "recordedAt": "2026-10-06T03:43:21.792Z",
+  "draftPullRequest": "https://github.com/axgiroud312-byte/prism-local-browser/pull/27",
+  "candidateSourceCI": {
+    "commit": "67c98dbe2a106976eb42e9d37a14cbde2b10f015",
+    "runID": 37406703053,
+    "url": "https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37406703053",
+    "status": "completed",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "name": "desktop",
+        "conclusion": "success",
+        "url": "https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37406703053/job/112085759669"
+      },
+      {
+        "name": "check (22.12.0)",
+        "conclusion": "success",
+        "url": "https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37406703053/job/112085759932"
+      },
+      {
+        "name": "check (24)",
+        "conclusion": "success",
+        "url": "https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37406703053/job/112085759960"
+      }
+    ],
+    "automatedUIClicks": false,
+    "productInstallerVerificationExecuted": false,
+    "artifactChannel": "development-preview",
+    "deliveredCandidate": "0.3.0-preview.6 was built and installed locally from this same source; remote preview artifacts are not its exact binaries"
+  },
+  "evidenceComments": [
+    {
+      "issue": 8,
+      "state": "OPEN",
+      "commentURL": "https://github.com/axgiroud312-byte/prism-local-browser/issues/8#issuecomment-6008431181",
+      "closed": false,
+      "action": "created"
+    },
+    {
+      "issue": 12,
+      "state": "OPEN",
+      "commentURL": "https://github.com/axgiroud312-byte/prism-local-browser/issues/12#issuecomment-6008431527",
+      "closed": false,
+      "action": "created"
+    },
+    {
+      "issue": 13,
+      "state": "OPEN",
+      "commentURL": "https://github.com/axgiroud312-byte/prism-local-browser/issues/13#issuecomment-6008431869",
+      "closed": false,
+      "action": "created"
+    },
+    {
+      "issue": 14,
+      "state": "OPEN",
+      "commentURL": "https://github.com/axgiroud312-byte/prism-local-browser/issues/14#issuecomment-6008432190",
+      "closed": false,
+      "action": "created"
+    },
+    {
+      "issue": 15,
+      "state": "OPEN",
+      "commentURL": "https://github.com/axgiroud312-byte/prism-local-browser/issues/15#issuecomment-6008432528",
+      "closed": false,
+      "action": "created"
+    },
+    {
+      "issue": 16,
+      "state": "OPEN",
+      "commentURL": "https://github.com/axgiroud312-byte/prism-local-browser/issues/16#issuecomment-6008432903",
+      "closed": false,
+      "action": "created"
+    },
+    {
+      "issue": 17,
+      "state": "OPEN",
+      "commentURL": "https://github.com/axgiroud312-byte/prism-local-browser/issues/17#issuecomment-6008433234",
+      "closed": false,
+      "action": "created"
+    },
+    {
+      "issue": 18,
+      "state": "OPEN",
+      "commentURL": "https://github.com/axgiroud312-byte/prism-local-browser/issues/18#issuecomment-6008433592",
+      "closed": false,
+      "action": "created"
+    },
+    {
+      "issue": 19,
+      "state": "OPEN",
+      "commentURL": "https://github.com/axgiroud312-byte/prism-local-browser/issues/19#issuecomment-6008433908",
+      "closed": false,
+      "action": "created"
+    },
+    {
+      "issue": 20,
+      "state": "OPEN",
+      "commentURL": "https://github.com/axgiroud312-byte/prism-local-browser/issues/20#issuecomment-6008434397",
+      "closed": false,
+      "action": "created"
+    }
+  ],
+  "nextNoClickRunnerInstallation": "Completed successfully after the approved LF-only build correction. Original failed attempt retained. Exact candidate.6 on Windows Home/new-user/VM and manual dialogs remain separate.",
+  "issuesClosed": false,
+  "formallyAcceptedTasks": 4,
+  "totalTasks": 21,
+  "noClickRunnerInstallationInitial": {
+    "commit": "3a5a4b0be43427bfc3bd1ad3bc2567ec14d2a1ca",
+    "runID": 37407497714,
+    "url": "https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37407497714",
+    "conclusion": "failure",
+    "actualCheckoutCommit": "4925c4cc2dca9af4ea01e4863e0f0e622eaba809",
+    "mergeCheckoutDistinctFromPRHead": true,
+    "sourceDirtyObservedInBuiltPreview": true,
+    "failure": "Clean committed-source guard rejected before installer execution; Wails CRLF-to-LF lock-file rewrite was subsequently reproduced and corrected with only two LF attributes.",
+    "installationStarted": false,
+    "previewRevisions": [
+      1,
+      2
+    ],
+    "candidate6Affected": false,
+    "jobs": [
+      {
+        "name": "desktop",
+        "conclusion": "failure",
+        "url": "https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37407497714/job/112088193829"
+      },
+      {
+        "name": "check (22.12.0)",
+        "conclusion": "success",
+        "url": "https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37407497714/job/112088193967"
+      },
+      {
+        "name": "check (24)",
+        "conclusion": "success",
+        "url": "https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37407497714/job/112088193977"
+      }
+    ],
+    "steps": [
+      {
+        "name": "Run npm run test:desktop",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run npm run build:installer",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run npm run build:installer -- -PreviewRevision 2",
+        "conclusion": "success"
+      },
+      {
+        "name": "Real install, native reopen, upgrade and removal without UI clicking",
+        "conclusion": "failure"
+      },
+      {
+        "name": "Real selected kernel private-pipe probe without UI clicking",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Real saved fingerprint regenerate, restore and reopen without UI clicking",
+        "conclusion": "skipped"
+      }
+    ],
+    "protectedSourceGuardRetained": true,
+    "automatedUIClicks": false,
+    "reproducedRootCause": {
+      "freshWindowsCheckout": true,
+      "changedPath": "go.mod",
+      "mechanism": "Windows core.autocrlf checkout writes CRLF; Wails go mod tidy writes LF. Git status remains modified despite an empty normalized diff.",
+      "normalizedTrackedDiffExit": 0,
+      "dependencyContentsUnchanged": true,
+      "goModSHA256": "1c7234bc2aab80ac84df77f0aa280b19149642610ed1954b3b6084ec6fb3f393",
+      "goSumSHA256": "2f7e9144531adab3b4b43b9b1e52e0a3b95850836b8bb6be07695099a3522fa8",
+      "rawEvidence": [
+        "output/goal/V1-local-acceptance/ci-repro-before-build.txt",
+        "output/goal/V1-local-acceptance/ci-repro-after-build.txt",
+        "output/goal/V1-local-acceptance/ci-repro-diff-stat.txt",
+        "output/goal/V1-local-acceptance/ci-repro-build.log"
+      ]
+    },
+    "approvedCorrectionScope": "User explicitly approved CI/build artifact management only; .gitattributes fixes LF for go.mod/go.sum. Do not skip tidy, dirty-source/hash checks or alter business/security policy."
+  },
+  "noClickRunnerInstallation": {
+    "recordedAt": "2026-10-06T03:43:21.790Z",
+    "commit": "eec3333ad35c4a27d8cd25f267079a00c629117c",
+    "runID": 37409611901,
+    "url": "https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37409611901",
+    "conclusion": "success",
+    "status": "completed",
+    "actualCheckoutCommit": "fa5ade135f47111e6bb1bbada8762cba1f914245",
+    "actualCheckoutTree": "c091b804a92ab65c7d69a8016c40fd53817a4565",
+    "mergeCheckoutDistinctFromPRHead": true,
+    "sourceDirty": false,
+    "jobs": [
+      {
+        "name": "desktop",
+        "conclusion": "success",
+        "url": "https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37409611901/job/112094854499"
+      },
+      {
+        "name": "check (22.12.0)",
+        "conclusion": "success",
+        "url": "https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37409611901/job/112094854614"
+      },
+      {
+        "name": "check (24)",
+        "conclusion": "success",
+        "url": "https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37409611901/job/112094854720"
+      }
+    ],
+    "steps": [
+      {
+        "name": "Run npm run test:desktop",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run npm run build:installer",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run npm run build:installer -- -PreviewRevision 2",
+        "conclusion": "success"
+      },
+      {
+        "name": "Real install, native reopen, upgrade and removal without UI clicking",
+        "conclusion": "success"
+      },
+      {
+        "name": "Retain a path-redacted no-click installation receipt",
+        "conclusion": "success"
+      },
+      {
+        "name": "Real selected kernel private-pipe probe without UI clicking",
+        "conclusion": "success"
+      },
+      {
+        "name": "Real saved fingerprint regenerate, restore and reopen without UI clicking",
+        "conclusion": "success"
+      }
+    ],
+    "windows": "Microsoft Windows Server 2025 Datacenter",
+    "scope": "Actual product installation and native configuration reopen/upgrade/uninstall on the disposable Windows Server 2025 GitHub host; not exact delivered candidate.6 or a new Windows Home user/VM acceptance.",
+    "productInstallerVerificationExecuted": true,
+    "automatedUIClicks": false,
+    "existingClickBranchesSkipped": 4,
+    "actualDefaultKnownFolders": true,
+    "environmentOverrides": false,
+    "freshProductStateAtStart": true,
+    "freshWindowsUserClaim": false,
+    "allSixApplicationProcessesNormalExitZero": true,
+    "allSixNativePagesReadOnlyVerified": true,
+    "allFiveRequiredSyntheticRecordReadsVisible": true,
+    "upgradeAndReinstallPreservedIdentity": true,
+    "downgradeRejectedExit25": true,
+    "retainUninstallAndExplicitOwnedDataRemoval": true,
+    "uninstallWizardDefaultCheckbox": "not-observed",
+    "previewRevisions": [
+      1,
+      2
+    ],
+    "artifactChannel": "development-preview",
+    "releaseInstallers": [
+      {
+        "peArchitecture": "i386",
+        "name": "prism-browser-0.3.0-preview.1-windows-amd64-setup.exe",
+        "bytes": 14764241,
+        "windowsPEVersion": "0.3.0.1",
+        "sha256": "b94e4a5eebf6cb1a71ab577d00fe248bbdbd2344567d5f8322bf354cedc61071",
+        "authenticode": "NotSigned"
+      },
+      {
+        "peArchitecture": "i386",
+        "name": "prism-browser-0.3.0-preview.2-windows-amd64-setup.exe",
+        "bytes": 14764192,
+        "windowsPEVersion": "0.3.0.2",
+        "sha256": "df3c60e465768334f0572d6d944f702e98a542b433cccf1aa9fbf27fcaaa47f9",
+        "authenticode": "NotSigned"
+      }
+    ],
+    "installerReceipt": {
+      "path": "docs/verification/V1-ci-installation.json",
+      "sha256": "27f7765beca0b97bd1ee943874fdcf9efc0cff6c5ee22ef8dfde5cf43ad67bcf",
+      "artifactOriginalSHA256": "f90627ffb0fea9adad8d5ec47adb6ca253373954bc6a4f3a3c3a203cc5bb601b"
+    },
+    "sourceGuardEvidence": "docs/verification/V1-ci-source-guard.json",
+    "candidate6SourceAndBinariesChanged": false
+  }
+}

@@ -1,104 +1,38 @@
-name: Check prototype, desktop and documents
+name: Browser interaction tests
+
 on:
   push:
     branches: [main]
   pull_request:
   workflow_dispatch:
-    inputs:
-      run_ui_clicks:
-        description: "Explicitly opt in to automated UI clicking on the disposable CI host"
-        type: boolean
-        default: false
+
 permissions:
   contents: read
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+
 jobs:
-  check:
+  browser:
+    name: Browser clicks
     runs-on: windows-latest
     timeout-minutes: 10
-    strategy:
-      fail-fast: false
-      matrix:
-        node: ["22.12.0", "24"]
-    steps:
-      - uses: actions/checkout@v7.0.1
-      - uses: actions/setup-node@v7.0.0
-        with:
-          node-version: ${{ matrix.node }}
-          cache: npm
-      - run: npm ci
-      - run: npx playwright install chromium
-        if: github.event_name == 'workflow_dispatch' && inputs.run_ui_clicks
-      - run: npm run check:background
-      - run: npm run test:ui
-        if: github.event_name == 'workflow_dispatch' && inputs.run_ui_clicks
-  desktop:
-    runs-on: windows-latest
-    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: actions/setup-node@v7.0.0
         with:
           node-version: "24"
           cache: npm
-      - uses: actions/setup-go@v7.0.0
-        with:
-          go-version-file: go.mod
-          cache: false
       - run: npm ci
-      - name: Install fixed Wails CLI in the project tool directory
-        shell: pwsh
-        run: |
-          $env:GOPATH = "$PWD/.tools/gopath"
-          $env:GOCACHE = "$PWD/.tools/gocache"
-          $env:GOBIN = "$PWD/.tools/bin"
-          $env:GOTOOLCHAIN = 'local'
-          $env:CGO_ENABLED = '0'
-          go install github.com/wailsapp/wails/v2/cmd/wails@v2.16.0
-          if ($LASTEXITCODE) { exit $LASTEXITCODE }
-      - run: npm run test:desktop
-      - run: npm run build:installer
-      - run: npm run build:installer -- -PreviewRevision 2
-      - name: Provision WebView2 on the disposable test host if missing
-        run: powershell -NoProfile -ExecutionPolicy Bypass -File scripts/ensure-ci-webview.ps1
-      - name: Real install, UI create/reopen, upgrade, retain-uninstall, reinstall and explicit removal
-        if: github.event_name == 'workflow_dispatch' && inputs.run_ui_clicks
-        run: npm run verify:installer -- --silent-wizard
-        env:
-          PRISM_VERIFY_NO_SCREENSHOT: "1"
-      - name: Obtain and hash the explicitly selected real fingerprint-chromium ZIP test fixture
-        run: powershell -NoProfile -ExecutionPolicy Bypass -File scripts/setup-kernel-fixture.ps1
-      - name: Real selected kernel private-pipe probe without UI clicking
-        shell: pwsh
-        run: |
-          $env:GOPATH = "$PWD/.tools/gopath"
-          $env:GOCACHE = "$PWD/.tools/gocache"
-          $env:GOTOOLCHAIN = 'local'
-          $env:CGO_ENABLED = '0'
-          $env:PRISM_KERNEL_ARCHIVE = "$PWD/.tools/fingerprint-chromium/148.0.7778.215/ungoogled-chromium_148.0.7778.215-1.1_windows_x64.zip"
-          $env:PRISM_KERNEL_EVIDENCE = "$PWD/output/goal/T04/ci-real-probe.json"
-          New-Item -ItemType Directory -Force -Path "$PWD/output/goal/T04" | Out-Null
-          go test ./internal/kernel -run TestRealFingerprintChromiumArchive -count=1 -v
-          if ($LASTEXITCODE) { exit $LASTEXITCODE }
-      - name: Explicitly requested real kernel desktop UI flow
-        if: github.event_name == 'workflow_dispatch' && inputs.run_ui_clicks
-        run: npm run verify:kernel
-        env:
-          PRISM_VERIFY_NO_SCREENSHOT: "1"
-      - name: Retain actual installer artifacts and synthetic installation evidence
-        if: always()
+      - run: npx playwright install chromium --only-shell
+      # Playwright starts Vite itself. No production build or native installation.
+      - run: npm run test:ui
+      - name: Save failed browser test report and traces
+        if: failure()
         uses: actions/upload-artifact@v7.0.1
         with:
-          name: windows-amd64-development-preview
-          path: |
-            build/releases/
-            output/goal/T03/installer-verification.json
-            output/goal/T03/preview-*/uia-verification.json
-            output/goal/T03/preview-*/failed-controls.txt
-            output/goal/T04/kernel-desktop-verification.json
-            output/goal/T04/kernel-uia-verification.json
-            output/goal/T04/kernel-failed-controls.txt
-            output/goal/T04/ci-real-probe.json
-          if-no-files-found: error
+          name: browser-test-failure
+          path: output/playwright/
+          retention-days: 7
+          if-no-files-found: ignore

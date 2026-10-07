@@ -9,7 +9,9 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"runtime"
 	"sync"
+	"sync/atomic"
 	"time"
 	"unsafe"
 
@@ -19,23 +21,44 @@ import (
 // Chromium on Windows adopts precisely these two inherited handles. No TCP
 // debugger or named/public control endpoint is created, including during probe.
 type pipeReply struct {
-	ID     int             `json:"id"`
-	Result json.RawMessage `json:"result"`
-	Error  json.RawMessage `json:"error"`
+	ID      int             `json:"id"`
+	Result  json.RawMessage `json:"result"`
+	Error   json.RawMessage `json:"error"`
+	Method  string          `json:"method"`
+	Params  json.RawMessage `json:"params"`
+	Session string          `json:"sessionId"`
 }
 type pipeProcess struct {
-	process     windows.Handle
-	job         windows.Handle
-	read, write *os.File
-	pid         uint32
-	createdAt   string
-	sequence    int
-	responses   chan pipeReply
-	stopped     chan struct{}
-	closeOnce   sync.Once
+	process        windows.Handle
+	job            windows.Handle
+	read, write    *os.File
+	pid            uint32
+	createdAt      string
+	sequence       int
+	responses      chan pipeReply
+	stopped        chan struct{}
+	closeOnce      sync.Once
+	closeWriteOnce sync.Once
+	commandGate    chan struct{}
+	writeLost      atomic.Bool
+	readEnded      chan struct{}
+	migrationRoute atomic.Pointer[migrationPipeRoute]
 }
 
 func startPipe(executable string, args []string) (_ *pipeProcess, resultErr error) {
+	return startPipeWithSession(executable, args, "")
+}
+
+func startPipeWithSession(executable string, args []string, sessionID string) (_ *pipeProcess, resultErr error) {
+	return startPipeWithBinding(executable, args, sessionID, nil)
+}
+
+func startPipeWithBinding(executable string, args []string, sessionID string, bindJob func(windows.Handle) error) (_ *pipeProcess, resultErr error) {
+	return startPipeWithSecurity(executable, args, sessionID, bindJob, nil)
+}
+
+func startPipeWithSecurity(executable string, args []string, sessionID string, bindJob func(windows.Handle) error, packageSID *windows.SID) (_ *pipeProcess, resultErr error) {
+	resourcesTransferred := false
 	childRead, parentWrite, err := os.Pipe()
 	if err != nil {
 		return nil, err
@@ -48,7 +71,7 @@ func startPipe(executable string, args []string) (_ *pipeProcess, resultErr erro
 	}
 	defer childWrite.Close()
 	defer func() {
-		if resultErr != nil {
+		if resultErr != nil && !resourcesTransferred {
 			parentWrite.Close()
 			parentRead.Close()
 		}
@@ -59,12 +82,12 @@ func startPipe(executable string, args []string) (_ *pipeProcess, resultErr erro
 			return nil, err
 		}
 	}
-	job, err := windows.CreateJobObject(nil, nil)
+	job, err := createManagedJob(sessionID)
 	if err != nil {
 		return nil, err
 	}
 	defer func() {
-		if resultErr != nil {
+		if resultErr != nil && !resourcesTransferred {
 			windows.CloseHandle(job)
 		}
 	}()
@@ -73,7 +96,16 @@ func startPipe(executable string, args []string) (_ *pipeProcess, resultErr erro
 	if _, err = windows.SetInformationJobObject(job, windows.JobObjectExtendedLimitInformation, uintptr(unsafe.Pointer(&limits)), uint32(unsafe.Sizeof(limits))); err != nil {
 		return nil, err
 	}
-	attributes, err := windows.NewProcThreadAttributeList(2)
+	if bindJob != nil {
+		if err = bindJob(job); err != nil {
+			return nil, err
+		}
+	}
+	count := uint32(2)
+	if packageSID != nil {
+		count++
+	}
+	attributes, err := windows.NewProcThreadAttributeList(count)
 	if err != nil {
 		return nil, err
 	}
@@ -86,6 +118,12 @@ func startPipe(executable string, args []string) (_ *pipeProcess, resultErr erro
 	if err = attributes.Update(0x0002000D, unsafe.Pointer(&job), unsafe.Sizeof(job)); err != nil {
 		return nil, err
 	}
+	capabilities := networkSecurityCapabilities{SID: packageSID}
+	if packageSID != nil {
+		if err = attributes.Update(0x00020009, unsafe.Pointer(&capabilities), unsafe.Sizeof(capabilities)); err != nil {
+			return nil, err
+		}
+	}
 	args = append([]string{executable}, args...)
 	args = append(args, "--remote-debugging-pipe", fmt.Sprintf("--remote-debugging-io-pipes=%d,%d", uint32(handles[0]), uint32(handles[1])))
 	command, err := windows.UTF16PtrFromString(windows.ComposeCommandLine(args))
@@ -95,31 +133,47 @@ func startPipe(executable string, args []string) (_ *pipeProcess, resultErr erro
 	image, _ := windows.UTF16PtrFromString(executable)
 	si := windows.StartupInfoEx{StartupInfo: windows.StartupInfo{Cb: uint32(unsafe.Sizeof(windows.StartupInfoEx{}))}, ProcThreadAttributeList: attributes.List()}
 	var info windows.ProcessInformation
-	if err = windows.CreateProcess(image, command, nil, nil, true, windows.EXTENDED_STARTUPINFO_PRESENT|windows.CREATE_UNICODE_ENVIRONMENT|windows.CREATE_NO_WINDOW, nil, nil, &si.StartupInfo, &info); err != nil {
+	err = windows.CreateProcess(image, command, nil, nil, true, windows.EXTENDED_STARTUPINFO_PRESENT|windows.CREATE_UNICODE_ENVIRONMENT|windows.CREATE_NO_WINDOW, nil, nil, &si.StartupInfo, &info)
+	runtime.KeepAlive(capabilities)
+	runtime.KeepAlive(packageSID)
+	if err != nil {
 		return nil, err
 	}
 	windows.CloseHandle(info.Thread)
+	p := &pipeProcess{process: info.Process, job: job, read: parentRead, write: parentWrite, pid: info.ProcessId, responses: make(chan pipeReply, 16), stopped: make(chan struct{}), commandGate: make(chan struct{}, 1), readEnded: make(chan struct{})}
+	// Once CreateProcess succeeds, transfer EVERY handle even if identity
+	// observation fails. The managed owner must confirm the whole Job exit;
+	// closing a Job handle is not synchronous resource-exit confirmation.
+	resourcesTransferred = true
+	go p.readLoop()
 	var created, exit, kernelTime, userTime windows.Filetime
 	if err = windows.GetProcessTimes(info.Process, &created, &exit, &kernelTime, &userTime); err != nil {
-		windows.CloseHandle(info.Process)
-		return nil, err
+		return p, problem("PROCESS_IDENTITY_UNAVAILABLE", "creation-time-unavailable", "进程已创建，但实际创建时间无法读取；仅清理本次Job，未释放仍占用的目录。")
 	}
-	p := &pipeProcess{process: info.Process, job: job, read: parentRead, write: parentWrite, pid: info.ProcessId, createdAt: time.Unix(0, created.Nanoseconds()).UTC().Format(time.RFC3339Nano), responses: make(chan pipeReply, 16), stopped: make(chan struct{})}
-	go p.readLoop()
+	p.createdAt = time.Unix(0, created.Nanoseconds()).UTC().Format(time.RFC3339Nano)
 	return p, nil
 }
 func (p *pipeProcess) close() {
 	p.closeOnce.Do(func() {
 		close(p.stopped)
 		windows.TerminateJobObject(p.job, 1)
-		p.write.Close()
+		p.closeWrite()
 		p.read.Close()
 		windows.CloseHandle(p.job)
 		windows.WaitForSingleObject(p.process, 5000)
 		windows.CloseHandle(p.process)
 	})
 }
+
+func (p *pipeProcess) closeWrite() {
+	p.closeWriteOnce.Do(func() {
+		p.writeLost.Store(true)
+		_ = windows.CancelIoEx(windows.Handle(p.write.Fd()), nil)
+		_ = p.write.Close()
+	})
+}
 func (p *pipeProcess) readLoop() {
+	defer close(p.readEnded)
 	defer close(p.responses)
 	reader := bufio.NewReader(p.read)
 	for {
@@ -143,7 +197,10 @@ func (p *pipeProcess) readLoop() {
 			return
 		}
 		if reply.ID == 0 {
-			continue
+			route := p.migrationRoute.Load()
+			if route == nil || reply.Method != "Fetch.requestPaused" || reply.Session != route.session {
+				continue
+			}
 		}
 		select {
 		case p.responses <- reply:
@@ -152,21 +209,84 @@ func (p *pipeProcess) readLoop() {
 		}
 	}
 }
-func (p *pipeProcess) send(method string, params any, session string) (int, error) {
+func (p *pipeProcess) packet(method string, params any, session string) (int, []byte, error) {
 	p.sequence++
-	request := map[string]any{"id": p.sequence, "method": method, "params": params}
+	id := p.sequence
+	request := map[string]any{"id": id, "method": method, "params": params}
 	if session != "" {
 		request["sessionId"] = session
 	}
 	bytes, err := json.Marshal(request)
 	if err != nil {
+		return 0, nil, err
+	}
+	return id, append(bytes, 0), nil
+}
+func (p *pipeProcess) send(method string, params any, session string) (int, error) {
+	id, packet, err := p.packet(method, params, session)
+	if err != nil {
 		return 0, err
 	}
-	_, err = p.write.Write(append(bytes, 0))
-	return p.sequence, err
+	_, err = p.write.Write(packet)
+	return id, err
+}
+func (p *pipeProcess) beginCommand(ctx context.Context) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+	if p.writeLost.Load() {
+		return controlWriteLost()
+	}
+	select {
+	case p.commandGate <- struct{}{}:
+		return nil
+	case <-ctx.Done():
+		return ctx.Err()
+	case <-p.stopped:
+		return errors.New("private pipe closed")
+	}
+}
+func (p *pipeProcess) sendContext(ctx context.Context, method string, params any, session string) (int, error) {
+	if err := ctx.Err(); err != nil {
+		return 0, err
+	}
+	if p.writeLost.Load() {
+		return 0, controlWriteLost()
+	}
+	id, packet, err := p.packet(method, params, session)
+	if err != nil {
+		return 0, err
+	}
+	completed := make(chan error, 1)
+	go func() { _, err := p.write.Write(packet); completed <- err }()
+	select {
+	case err := <-completed:
+		if err != nil {
+			p.writeLost.Store(true)
+			return 0, controlWriteLost()
+		}
+		return id, nil
+	case <-ctx.Done():
+		// A bounded command must not hang forever in a synchronous Windows pipe
+		// write. A lost control channel is not re-used or published as ready.
+		p.closeWrite()
+		return 0, errors.Join(ctx.Err(), controlWriteLost())
+	}
+}
+func controlWriteLost() error {
+	return &Problem{Code: "CONTROL_CHANNEL_LOST", Reason: "control-write-unavailable", Message: "本次私有控制通道已断开，不能重试正常关闭；仍保留会话和数据锁，没有结束其他进程。", Retryable: false}
 }
 func (p *pipeProcess) call(ctx context.Context, method string, params any, session string, output any) error {
-	id, err := p.send(method, params, session)
+	if err := p.beginCommand(ctx); err != nil {
+		return err
+	}
+	defer func() { <-p.commandGate }()
+	return p.callLocked(ctx, method, params, session, output)
+}
+
+// Caller owns commandGate for the entire typed read/write/readback sequence.
+func (p *pipeProcess) callLocked(ctx context.Context, method string, params any, session string, output any) error {
+	id, err := p.sendContext(ctx, method, params, session)
 	if err != nil {
 		return err
 	}
@@ -176,7 +296,15 @@ func (p *pipeProcess) call(ctx context.Context, method string, params any, sessi
 			return ctx.Err()
 		case reply, open := <-p.responses:
 			if !open {
-				return errors.New("diagnostic pipe closed")
+				return &Problem{Code: "CONTROL_CHANNEL_LOST", Reason: "control-read-ended", Message: "本次私有控制通道已断开，无法确认命令完成；仍保护原浏览数据。", Retryable: false}
+			}
+			if reply.ID == 0 {
+				if route := p.migrationRoute.Load(); route != nil && reply.Session == route.session && reply.Method == "Fetch.requestPaused" {
+					if err := route.fulfill(ctx, p, reply); err != nil {
+						return err
+					}
+				}
+				continue
 			}
 			if reply.ID != id {
 				continue
@@ -192,7 +320,13 @@ func (p *pipeProcess) call(ctx context.Context, method string, params any, sessi
 	}
 }
 func (p *pipeProcess) normalClose() bool {
-	if _, err := p.send("Browser.close", map[string]any{}, ""); err != nil {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := p.beginCommand(ctx); err != nil {
+		return false
+	}
+	defer func() { <-p.commandGate }()
+	if _, err := p.sendContext(ctx, "Browser.close", map[string]any{}, ""); err != nil {
 		return false
 	}
 	state, err := windows.WaitForSingleObject(p.process, 5000)

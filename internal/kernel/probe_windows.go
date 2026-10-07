@@ -51,9 +51,40 @@ func Probe(ctx context.Context, executable, version, staging string) (result Rep
 			resultErr = preserveProbeFailure(resultErr, ctx.Err())
 		}
 	}()
+	url, closePage, err := newProbePage()
+	if err != nil {
+		return Report{}, err
+	}
+	defer closePage()
+	report := Report{AdapterVersion: AdapterVersion, Version: CapabilityVersion, SampledAt: time.Now().UTC().Format(time.RFC3339Nano), Transport: "inherited-private-pipe", Sandbox: true, Observations: []Observation{}, Capabilities: []Capability{}}
+	for index, seed := range []int{1256789, 1256790, 1256789} {
+		language, timezone := "en-US,en", "America/New_York"
+		if index == 2 {
+			language, timezone = "de-DE,en", "Europe/Berlin"
+		}
+		observation, err := probeOne(ctx, executable, version, staging, url, seed, language, timezone, index == 2)
+		if err != nil {
+			return Report{}, err
+		}
+		if err = checkIdentity(observation, version); err != nil {
+			return Report{}, err
+		}
+		if observation.Language != strings.Split(language, ",")[0] || !strings.HasPrefix(observation.AcceptLanguage, observation.Language) || observation.Timezone != timezone || (index == 2 && observation.CPU != 8) {
+			return Report{}, problem("KERNEL_INTEGRITY_FAILED", "parameter-mismatch", "语言、时区或CPU参数未在网页/请求中生效，未验收该构建。")
+		}
+		report.Observations = append(report.Observations, observation)
+	}
+	if report.Observations[0].CPU == report.Observations[1].CPU {
+		return Report{}, problem("KERNEL_INTEGRITY_FAILED", "seed-entry-unverified", "不同种子的CPU诊断输出未显示指纹入口生效，未发布该构建。")
+	}
+	report.Capabilities = probeCapabilities(version)
+	return report, nil
+}
+
+func newProbePage() (string, func(), error) {
 	listener, err := net.Listen("tcp4", "127.0.0.1:0")
 	if err != nil {
-		return Report{}, problem("PROCESS_START_FAILED", "probe-server-unavailable", "本机诊断页面无法建立，未验收内核。")
+		return "", nil, problem("PROCESS_START_FAILED", "probe-server-unavailable", "本机诊断页面无法建立，未验收内核。")
 	}
 	token := uuid.NewString()
 	server := &http.Server{ReadHeaderTimeout: 5 * time.Second, Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -76,30 +107,12 @@ func Probe(ctx context.Context, executable, version, staging string) (result Rep
 		}
 	})}
 	go server.Serve(listener)
-	defer server.Close()
 	url := "http://" + listener.Addr().String() + "/" + token + "/"
-	report := Report{AdapterVersion: AdapterVersion, Version: CapabilityVersion, SampledAt: time.Now().UTC().Format(time.RFC3339Nano), Transport: "inherited-private-pipe", Sandbox: true, Observations: []Observation{}, Capabilities: []Capability{}}
-	for index, seed := range []int{1256789, 1256790, 1256789} {
-		language, timezone := "en-US,en", "America/New_York"
-		if index == 2 {
-			language, timezone = "de-DE,en", "Europe/Berlin"
-		}
-		observation, err := probeOne(ctx, executable, version, staging, url, seed, language, timezone, index == 2)
-		if err != nil {
-			return Report{}, err
-		}
-		if err = checkIdentity(observation, version); err != nil {
-			return Report{}, err
-		}
-		if observation.Language != strings.Split(language, ",")[0] || !strings.HasPrefix(observation.AcceptLanguage, observation.Language) || observation.Timezone != timezone || (index == 2 && observation.CPU != 8) {
-			return Report{}, problem("KERNEL_INTEGRITY_FAILED", "parameter-mismatch", "语言、时区或CPU参数未在网页/请求中生效，未验收该构建。")
-		}
-		report.Observations = append(report.Observations, observation)
-	}
-	if report.Observations[0].CPU == report.Observations[1].CPU {
-		return Report{}, problem("KERNEL_INTEGRITY_FAILED", "seed-entry-unverified", "不同种子的CPU诊断输出未显示指纹入口生效，未发布该构建。")
-	}
-	report.Capabilities = []Capability{
+	return url, func() { server.Close() }, nil
+}
+
+func probeCapabilities(version string) []Capability {
+	capabilities := []Capability{
 		{"identity", "configurable", "observed", "Windows/Chrome品牌与实际PE/CDP版本、HTTP UA、网页UA及UA-CH已核对；允许UA reduction/GREASE。"},
 		{"seed", "seed-generated", "observed", "两份固定测试种子使用隔离目录，自动CPU输出不同；只证明该诊断条件下入口生效。"},
 		{"cpu", "configurable", "observed", "显式8核心参数在独立诊断网页回读为8；自动值由固定内核和seed决定。"},
@@ -113,10 +126,10 @@ func Probe(ctx context.Context, executable, version, staging string) (result Rep
 		{"proxy/webrtc", "unverified", "not-probed", "本票诊断未验证代理或网络泄漏保护，留后续票。"},
 	}
 	if version == "148.0.7778.215" {
-		report.Capabilities[6] = Capability{"memory", "seed-generated", "source-derived", "148的021内存补丁按seed从8/16/32生成；具体观测列在本次诊断记录中，不开放任意内存设置。"}
-		report.Capabilities[7] = Capability{"gpu", "seed-generated", "source-derived", "148的011 GPU补丁按seed选配置池；具体WebGL读值另列，不推导跨机器一致性，不开放手填GPU。"}
+		capabilities[6] = Capability{"memory", "seed-generated", "source-derived", "148的021内存补丁按seed从8/16/32生成；具体观测列在本次诊断记录中，不开放任意内存设置。"}
+		capabilities[7] = Capability{"gpu", "seed-generated", "source-derived", "148的011 GPU补丁按seed选配置池；具体WebGL读值另列，不推导跨机器一致性，不开放手填GPU。"}
 	}
-	return report, nil
+	return capabilities
 }
 
 func preserveProbeFailure(failure, contextError error) error {
@@ -126,13 +139,21 @@ func preserveProbeFailure(failure, contextError error) error {
 }
 
 func probeOne(ctx context.Context, executable, version, staging, url string, seed int, language, timezone string, explicitCPU bool) (_ Observation, resultErr error) {
+	args := []string{"--fingerprint=" + fmt.Sprint(seed), "--fingerprint-platform=windows", "--fingerprint-platform-version=15.0.0", "--fingerprint-brand=Chrome", "--fingerprint-brand-version=" + version, "--lang=" + strings.Split(language, ",")[0], "--accept-lang=" + language, "--timezone=" + timezone}
+	if explicitCPU {
+		args = append(args, "--fingerprint-hardware-concurrency=8")
+	}
+	return probeOneArguments(ctx, executable, staging, url, seed, args)
+}
+
+func probeOneArguments(ctx context.Context, executable, staging, url string, seed int, fingerprintArguments []string) (_ Observation, resultErr error) {
 	directory, err := os.MkdirTemp(staging, "probe-")
 	if err != nil {
 		return Observation{}, err
 	}
 	defer func() {
 		if cleanupErr := RemoveOwnedTree(directory); cleanupErr != nil {
-			resultErr = problem("STORAGE_WRITE_FAILED", "probe-cleanup-failed", "本次诊断资源无法清理；内核未发布，旧数据未修改。")
+			resultErr = errors.Join(resultErr, problem("STORAGE_WRITE_FAILED", "probe-cleanup-failed", "本次诊断资源无法清理；内核未发布，旧数据未修改。"))
 		}
 	}()
 	releaseDirectory, err := desktopbase.PinDirectories(directory)
@@ -140,12 +161,14 @@ func probeOne(ctx context.Context, executable, version, staging, url string, see
 		return Observation{}, problem("PATH_OUTSIDE_ROOT", "reparse-point", "本次诊断目录无法安全固定，未启动内核。")
 	}
 	defer releaseDirectory()
-	args := []string{"--headless=new", "--no-first-run", "--no-default-browser-check", "--disable-background-networking", "--disable-component-update", "--disable-sync", "--disable-crash-reporter", "--user-data-dir=" + directory, "--fingerprint=" + fmt.Sprint(seed), "--fingerprint-platform=windows", "--fingerprint-platform-version=15.0.0", "--fingerprint-brand=Chrome", "--fingerprint-brand-version=" + version, "--lang=" + strings.Split(language, ",")[0], "--accept-lang=" + language, "--timezone=" + timezone, "--proxy-server=http://127.0.0.1:1", "--proxy-bypass-list=127.0.0.1", "about:blank"}
-	if explicitCPU {
-		args = append(args, "--fingerprint-hardware-concurrency=8")
-	}
+	args := []string{"--headless=new", "--no-first-run", "--no-default-browser-check", "--disable-background-networking", "--disable-component-update", "--disable-sync", "--disable-crash-reporter", "--user-data-dir=" + directory, "--proxy-server=http://127.0.0.1:1", "--proxy-bypass-list=127.0.0.1"}
+	args = append(args, fingerprintArguments...)
+	args = append(args, "about:blank")
 	p, err := startPipe(executable, args)
 	if err != nil {
+		if p != nil {
+			p.close()
+		}
 		return Observation{}, problem("PROCESS_START_FAILED", "diagnostic-start-failed", "隔离诊断进程无法启动；未关闭沙箱或尝试其他内核。")
 	}
 	defer p.close()

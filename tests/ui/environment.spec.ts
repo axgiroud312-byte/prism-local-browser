@@ -51,7 +51,7 @@ test("create, edit and reopen preserve the selected seed, kernel and proxy", asy
   expect(saved.cookies).toEqual([]);
   await expect(page.getByText("交互原型", { exact: false }).first()).toBeVisible();
   expect(errors).toEqual([]);
-  await page.screenshot({ path: "output/goal/T01/created-edited.png", fullPage: true });
+  await page.screenshot({ path: "output/playwright/created-edited.png", fullPage: true });
 });
 
 test("cancel regenerated edit leaves persistent state unchanged and restores focus", async ({ page }) => {

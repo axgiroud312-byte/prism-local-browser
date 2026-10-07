@@ -1,0 +1,18 @@
+.fingerprint-revision-panel { margin-top: 22px; padding-top: 20px; border-top: 1px solid var(--line, #e6eaf0); font-size: 13px; }
+.fingerprint-preview-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.fingerprint-preview-heading h3 { margin: 0; font-size: 15px; }
+.fingerprint-profile-facts { display: grid; grid-template-columns: 100px minmax(0, 1fr); gap: 9px 12px; padding: 14px; background: #f7f9fc; border-radius: 10px; }
+.fingerprint-profile-facts dt { color: #66748a; }
+.fingerprint-profile-facts dd { margin: 0; overflow-wrap: anywhere; }
+.fingerprint-stale { padding: 12px; color: #895a15; background: #fff7e8; border-radius: 8px; }
+.fingerprint-change-preview { padding: 14px; margin: 14px 0; background: #eef5ff; border-radius: 10px; }
+.fingerprint-change-preview ul { margin: 9px 0; padding-left: 20px; }
+.fingerprint-change-preview li { margin: 7px 0; overflow-wrap: anywhere; }
+.fingerprint-change-preview p, .fingerprint-history p { color: #66748a; line-height: 1.65; }
+.fingerprint-capabilities summary, .fingerprint-history summary { cursor: pointer; font-weight: 600; padding: 12px 0; }
+.fingerprint-capabilities > div { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 5px 10px; padding: 12px 0; border-top: 1px solid #e6eaf0; }
+.fingerprint-capabilities small, .fingerprint-capabilities p { grid-column: 1 / -1; color: #66748a; line-height: 1.65; margin: 0; }
+.fingerprint-capabilities span { color: #345b86; }
+.fingerprint-history > div { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; padding: 12px 0; border-top: 1px solid #e6eaf0; }
+.fingerprint-history small { display: block; margin-top: 6px; color: #66748a; overflow-wrap: anywhere; }
+@media (max-width: 480px) { .fingerprint-profile-facts { grid-template-columns: 1fr; gap: 5px; } .fingerprint-profile-facts dd { margin-bottom: 8px; } .fingerprint-capabilities > div { grid-template-columns: 1fr; } }

@@ -1,0 +1,320 @@
+{
+  "archiveSha256": "9ef3f471b7a6641b4224532522b29141ce3746e27d55788d88e2fd951f362579",
+  "boundary": "diagnostic temporary profiles only; normal environment launch, real Cookie storage and UI flow are not verified",
+  "diagnosticDirectoriesCleaned": true,
+  "environmentId": "fc002c41-6ebe-4696-aac9-f360a134030d",
+  "executableSha256": "1867319e56bcabbc4681d8575c002106ce7b61b5290dc5eb34a37676805f6915",
+  "kernelId": "1be91fef-e9eb-41d2-8ae7-29feb94ea2c0",
+  "kernelVersion": "148.0.7778.215",
+  "mode": "native",
+  "observations": [
+    {
+      "seed": 1055482829,
+      "browserVersion": "148.0.7778.215",
+      "httpUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+      "httpClientHints": {
+        "accept-language": "de-DE,de;q=0.9,en;q=0.8",
+        "sec-ch-ua": "\"Chromium\";v=\"148\", \"Google Chrome\";v=\"148\", \"Not/A)Brand\";v=\"99\"",
+        "sec-ch-ua-full-version-list": "\"Chromium\";v=\"148.0.7778.215\", \"Google Chrome\";v=\"148.0.7778.215\", \"Not/A)Brand\";v=\"99.0.0.0\"",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "sec-ch-ua-platform-version": "\"15.0.0\"",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36"
+      },
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+      "platform": "Windows",
+      "brands": [
+        {
+          "brand": "Chromium",
+          "version": "148"
+        },
+        {
+          "brand": "Google Chrome",
+          "version": "148"
+        },
+        {
+          "brand": "Not/A)Brand",
+          "version": "99"
+        }
+      ],
+      "fullVersionList": [
+        {
+          "brand": "Chromium",
+          "version": "148.0.7778.215"
+        },
+        {
+          "brand": "Google Chrome",
+          "version": "148.0.7778.215"
+        },
+        {
+          "brand": "Not/A)Brand",
+          "version": "99.0.0.0"
+        }
+      ],
+      "platformVersion": "15.0.0",
+      "language": "de-DE",
+      "languages": [
+        "de-DE",
+        "de",
+        "en"
+      ],
+      "acceptLanguage": "de-DE,de;q=0.9,en;q=0.8",
+      "timezone": "Europe/Berlin",
+      "cpu": 8,
+      "memory": 32,
+      "gpuVendor": "Google Inc. (NVIDIA)",
+      "gpuRenderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 4060 Laptop GPU (0x000028E0) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "pid": 64024,
+      "processCreatedAt": "2026-09-30T15:26:52.297176Z",
+      "normalExit": true
+    },
+    {
+      "seed": 546308099,
+      "browserVersion": "148.0.7778.215",
+      "httpUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+      "httpClientHints": {
+        "accept-language": "de-DE,de;q=0.9,en;q=0.8",
+        "sec-ch-ua": "\"Chromium\";v=\"148\", \"Google Chrome\";v=\"148\", \"Not/A)Brand\";v=\"99\"",
+        "sec-ch-ua-full-version-list": "\"Chromium\";v=\"148.0.7778.215\", \"Google Chrome\";v=\"148.0.7778.215\", \"Not/A)Brand\";v=\"99.0.0.0\"",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "sec-ch-ua-platform-version": "\"15.0.0\"",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36"
+      },
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+      "platform": "Windows",
+      "brands": [
+        {
+          "brand": "Chromium",
+          "version": "148"
+        },
+        {
+          "brand": "Google Chrome",
+          "version": "148"
+        },
+        {
+          "brand": "Not/A)Brand",
+          "version": "99"
+        }
+      ],
+      "fullVersionList": [
+        {
+          "brand": "Chromium",
+          "version": "148.0.7778.215"
+        },
+        {
+          "brand": "Google Chrome",
+          "version": "148.0.7778.215"
+        },
+        {
+          "brand": "Not/A)Brand",
+          "version": "99.0.0.0"
+        }
+      ],
+      "platformVersion": "15.0.0",
+      "language": "de-DE",
+      "languages": [
+        "de-DE",
+        "de",
+        "en"
+      ],
+      "acceptLanguage": "de-DE,de;q=0.9,en;q=0.8",
+      "timezone": "Europe/Berlin",
+      "cpu": 8,
+      "memory": 32,
+      "gpuVendor": "Google Inc. (Intel)",
+      "gpuRenderer": "ANGLE (Intel, Intel(R) UHD Graphics (0x0000A78B) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "pid": 69548,
+      "processCreatedAt": "2026-09-30T15:26:54.6984809Z",
+      "normalExit": true
+    },
+    {
+      "seed": 1055482829,
+      "browserVersion": "148.0.7778.215",
+      "httpUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+      "httpClientHints": {
+        "accept-language": "de-DE,de;q=0.9,en;q=0.8",
+        "sec-ch-ua": "\"Chromium\";v=\"148\", \"Google Chrome\";v=\"148\", \"Not/A)Brand\";v=\"99\"",
+        "sec-ch-ua-full-version-list": "\"Chromium\";v=\"148.0.7778.215\", \"Google Chrome\";v=\"148.0.7778.215\", \"Not/A)Brand\";v=\"99.0.0.0\"",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "sec-ch-ua-platform-version": "\"15.0.0\"",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36"
+      },
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+      "platform": "Windows",
+      "brands": [
+        {
+          "brand": "Chromium",
+          "version": "148"
+        },
+        {
+          "brand": "Google Chrome",
+          "version": "148"
+        },
+        {
+          "brand": "Not/A)Brand",
+          "version": "99"
+        }
+      ],
+      "fullVersionList": [
+        {
+          "brand": "Chromium",
+          "version": "148.0.7778.215"
+        },
+        {
+          "brand": "Google Chrome",
+          "version": "148.0.7778.215"
+        },
+        {
+          "brand": "Not/A)Brand",
+          "version": "99.0.0.0"
+        }
+      ],
+      "platformVersion": "15.0.0",
+      "language": "de-DE",
+      "languages": [
+        "de-DE",
+        "de",
+        "en"
+      ],
+      "acceptLanguage": "de-DE,de;q=0.9,en;q=0.8",
+      "timezone": "Europe/Berlin",
+      "cpu": 8,
+      "memory": 32,
+      "gpuVendor": "Google Inc. (NVIDIA)",
+      "gpuRenderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 4060 Laptop GPU (0x000028E0) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "pid": 10924,
+      "processCreatedAt": "2026-09-30T15:26:56.5015395Z",
+      "normalExit": true
+    }
+  ],
+  "platform": "windows/amd64",
+  "profiles": [
+    {
+      "schemaVersion": 1,
+      "configRevision": 1,
+      "seed": "1055482829",
+      "templateId": "windows-desktop-v1",
+      "templateVersion": "windows-desktop-v1",
+      "generatorVersion": "windows-local-v1",
+      "platform": "windows",
+      "platformVersion": "15.0.0",
+      "brand": "Chrome",
+      "brandVersion": "148.0.7778.215",
+      "kernelId": "1be91fef-e9eb-41d2-8ae7-29feb94ea2c0",
+      "coreActualVersion": "148.0.7778.215",
+      "coreExecutableSha256": "1867319e56bcabbc4681d8575c002106ce7b61b5290dc5eb34a37676805f6915",
+      "adapterVersion": "windows-kernel-v1",
+      "capabilityVersion": "fingerprint-capabilities-v1",
+      "language": "de-DE",
+      "acceptLanguages": [
+        "de-DE",
+        "de",
+        "en"
+      ],
+      "uiLanguage": "system",
+      "timezone": "Europe/Berlin",
+      "regionPreset": "DE",
+      "cpu": "8",
+      "width": 1280,
+      "height": 800,
+      "parameters": [
+        "--fingerprint=1055482829",
+        "--fingerprint-platform=windows",
+        "--fingerprint-platform-version=15.0.0",
+        "--fingerprint-brand=Chrome",
+        "--fingerprint-brand-version=148.0.7778.215",
+        "--accept-lang=de-DE,de,en",
+        "--timezone=Europe/Berlin",
+        "--fingerprint-hardware-concurrency=8"
+      ],
+      "configHash": "cb7ae1c81c08a4c9b2567d0fd7c4d7e6cf413d39ec02259bb576b1dee4e21be3"
+    },
+    {
+      "schemaVersion": 1,
+      "configRevision": 2,
+      "seed": "546308099",
+      "templateId": "windows-desktop-v1",
+      "templateVersion": "windows-desktop-v1",
+      "generatorVersion": "windows-local-v1",
+      "platform": "windows",
+      "platformVersion": "15.0.0",
+      "brand": "Chrome",
+      "brandVersion": "148.0.7778.215",
+      "kernelId": "1be91fef-e9eb-41d2-8ae7-29feb94ea2c0",
+      "coreActualVersion": "148.0.7778.215",
+      "coreExecutableSha256": "1867319e56bcabbc4681d8575c002106ce7b61b5290dc5eb34a37676805f6915",
+      "adapterVersion": "windows-kernel-v1",
+      "capabilityVersion": "fingerprint-capabilities-v1",
+      "language": "de-DE",
+      "acceptLanguages": [
+        "de-DE",
+        "de",
+        "en"
+      ],
+      "uiLanguage": "system",
+      "timezone": "Europe/Berlin",
+      "regionPreset": "DE",
+      "cpu": "8",
+      "width": 1280,
+      "height": 800,
+      "parameters": [
+        "--fingerprint=546308099",
+        "--fingerprint-platform=windows",
+        "--fingerprint-platform-version=15.0.0",
+        "--fingerprint-brand=Chrome",
+        "--fingerprint-brand-version=148.0.7778.215",
+        "--accept-lang=de-DE,de,en",
+        "--timezone=Europe/Berlin",
+        "--fingerprint-hardware-concurrency=8"
+      ],
+      "configHash": "741a748fa7e30cc49d2cd5ed93bd46164e2f924e41d70799fa48831b55881bde"
+    },
+    {
+      "schemaVersion": 1,
+      "configRevision": 3,
+      "seed": "1055482829",
+      "templateId": "windows-desktop-v1",
+      "templateVersion": "windows-desktop-v1",
+      "generatorVersion": "windows-local-v1",
+      "platform": "windows",
+      "platformVersion": "15.0.0",
+      "brand": "Chrome",
+      "brandVersion": "148.0.7778.215",
+      "kernelId": "1be91fef-e9eb-41d2-8ae7-29feb94ea2c0",
+      "coreActualVersion": "148.0.7778.215",
+      "coreExecutableSha256": "1867319e56bcabbc4681d8575c002106ce7b61b5290dc5eb34a37676805f6915",
+      "adapterVersion": "windows-kernel-v1",
+      "capabilityVersion": "fingerprint-capabilities-v1",
+      "language": "de-DE",
+      "acceptLanguages": [
+        "de-DE",
+        "de",
+        "en"
+      ],
+      "uiLanguage": "system",
+      "timezone": "Europe/Berlin",
+      "regionPreset": "DE",
+      "cpu": "8",
+      "width": 1280,
+      "height": 800,
+      "parameters": [
+        "--fingerprint=1055482829",
+        "--fingerprint-platform=windows",
+        "--fingerprint-platform-version=15.0.0",
+        "--fingerprint-brand=Chrome",
+        "--fingerprint-brand-version=148.0.7778.215",
+        "--accept-lang=de-DE,de,en",
+        "--timezone=Europe/Berlin",
+        "--fingerprint-hardware-concurrency=8"
+      ],
+      "configHash": "a0afd0d9357527a78cbeada9281467865d9e9b78e79518eb56139969f2b6074d"
+    }
+  ],
+  "sameDataReference": true,
+  "sameInputsAfterRestoreAndReopen": true,
+  "sandbox": true,
+  "schemaVersion": 3,
+  "syntheticDataUnchanged": true,
+  "transport": "inherited-private-pipe",
+  "uiClicks": "not-run",
+  "verifiedAt": "2026-09-30T15:26:57.6490834Z"
+}

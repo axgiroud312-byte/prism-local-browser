@@ -1,0 +1,101 @@
+{
+  "format": "prism-bfe-normal-stop-sanitized-v1",
+  "observedAt": "2026-10-05T07:51:39.3545116Z",
+  "assessment": "blocked-before-stop-no-fault-window",
+  "scope": "One explicitly authorized standard BFE stop experiment; synthetic loopback helpers only, no Chromium launch in this experiment.",
+  "executedBuild": {
+    "baseCommit": "1e16130",
+    "workingTreeExperimentSources": true,
+    "executableSha256": "a9a5fcfd99cca821906336494c8be7ccdfbb3d07c6682b5b637ed50f6609d734",
+    "sourceSha256": {
+      "cmd/network-feasibility/main_windows.go": "821df1d59c59321e8dd4efae31111a3898dc0c36668d63a6498bdab146df629b",
+      "cmd/network-feasibility/bfe_common_windows.go": "b26568ed9e1b6d589fc745a77fc923326a3724191892daa8020aaf38126cb153",
+      "cmd/network-feasibility/bfe_control_windows.go": "2acc054666c20e6d85ef962f806b0d17a2b878c9d12b7cf3fa5b56c7bc761eb3",
+      "cmd/network-feasibility/bfe_probe_windows.go": "0341eb5e8095b5f8224e2185f60e89485dc093ad0f4de9d47b11a84e23f34e03"
+    }
+  },
+  "control": {
+    "elevated": true,
+    "api": "OpenServiceW",
+    "service": "BFE",
+    "requestedRights": ["SERVICE_QUERY_STATUS", "SERVICE_START", "SERVICE_STOP"],
+    "requestedRightsValue": 52,
+    "errorCode": 5,
+    "errorName": "ERROR_ACCESS_DENIED",
+    "controlServiceStopCalls": 0,
+    "startServiceCalls": 0,
+    "controllerExitCode": 1,
+    "recoveryProcessStarted": false,
+    "stopAccepted": false,
+    "stoppedWindowObserved": false,
+    "faultWindowProbeRun": false,
+    "finalBFEState": "RUNNING",
+    "interpretation": "The combined service handle request was refused; this does not identify which individual access right was denied. The raw restored=true field denotes observed RUNNING, not a stop/restart that occurred."
+  },
+  "beforeAndAfter": {
+    "phases": ["baseline", "after-refusal"],
+    "sameResultsInBothPhases": true,
+    "BFEStateBeforeAndAfterEachPhase": "RUNNING",
+    "ordinary": {
+      "elevated": false,
+      "appContainer": false,
+      "integrityRID": 8192,
+      "tcp4": {"echo": true, "observerReceived": 1},
+      "tcp6": {"echo": true, "observerReceived": 1},
+      "udp4": {"echo": true, "observerReceived": 1},
+      "udp6": {"echo": true, "observerReceived": 1},
+      "dnsQueryExStatus": 0,
+      "dnsObserverQueries": 1,
+      "dnsSocketOwner": "dns-client-service"
+    },
+    "isolated": {
+      "role": "synthetic-network-helper",
+      "appContainer": true,
+      "exactJobMembershipConfirmed": true,
+      "samePackage": true,
+      "capabilityCount": 0,
+      "integrityRID": 4096,
+      "tcp4": {"echo": false, "observerReceived": 0},
+      "tcp6": {"echo": false, "observerReceived": 0},
+      "udp4": {"echo": false, "observerReceived": 0},
+      "udp6": {"echo": false, "observerReceived": 0},
+      "dnsQueryExStatus": 5,
+      "dnsObserverQueries": 0
+    },
+    "rawRoleClassifierNote": "The reused Chromium-oriented raw identity classifier wrote role=browser for the Go helper with no --type argument. No Chromium ran here. The follow-up source revision now labels this helper explicitly."
+  },
+  "cleanup": {
+    "probeFinishedAt": "2026-10-05T07:51:41.4505229Z",
+    "status": "complete",
+    "probeError": "",
+    "ownedJobsExited": true,
+    "temporaryContainerDeleted": true,
+    "syntheticDirectoryPresent": false,
+    "independentReadbackAt": "2026-10-05T15:53:11.3874581+08:00",
+    "ownedExperimentProcessCount": 0,
+    "containerMappingRootExists": true,
+    "temporaryContainerMappingPresent": false,
+    "remainingPrismFeasibilityMappings": 0,
+    "serviceStates": {"BFE": "Running", "MpsSvc": "Running", "Dnscache": "Running"}
+  },
+  "privateEvidenceSha256": {
+    "probe-ready.json": "a94d383e47a7803a922d773903b7ae62089d9274318f057d9957f633d6a1ad3c",
+    "probe-baseline.json": "13ee09dcc07d6488857319f7a6b2e5a68b01a887f9525d035932b9c7797eed90",
+    "probe-identity.json": "0c0278bd775af198c3d20b955ee8991033f8b9f7873dc842f1873ff72563e037",
+    "controller-report.json": "fa20b6c30f6a09322bc3d170738dfbfcdc03d3910e1396c8048a82b02896f50c",
+    "controller-claim.json": "f2e5c9d5d118136e4566b0e58e696e41371446b35ec931e254f51e4ce6834021",
+    "controller-finished.json": "3f2b137873adc5ac343924aaab71a1d07e6556bff142c4f1273f7e9328018751",
+    "probe-after.json": "b5aea0b3df3b15c4f03898024d6e56510971576b0b6cf1d1a3c85a86dc1d205f",
+    "probe-finished.json": "fa23937b116b5f1fbe3ed3bed0deffb1a5471cc8b6e351000ead78d30861dc88"
+  },
+  "postRunSourceChanges": [
+    "Recheck exact probe liveness and BFE RUNNING/PID after recovery ARM ACK immediately before the sole STOP call. This branch was never reached in the observed run, which failed at OpenService.",
+    "Label the identity observation synthetic-network-helper instead of the reused classifier's default browser role."
+  ],
+  "notEstablished": [
+    "BFE stop, crash, recovery or combined service fault isolation",
+    "Recovery watchdog execution or fault-window probe execution",
+    "External-interface, independent-remote-observer or all-protocol coverage",
+    "Production isolation provider readiness or T11 acceptance"
+  ]
+}

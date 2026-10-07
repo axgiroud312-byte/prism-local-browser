@@ -18,10 +18,12 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 	_ "time/tzdata"
 
 	"github.com/axgiroud312-byte/prism-local-browser/internal/kernel"
+	"github.com/axgiroud312-byte/prism-local-browser/internal/proxy"
 	"modernc.org/sqlite"
 )
 
@@ -33,21 +35,82 @@ type Options struct {
 	// Test seam only; the desktop always uses kernel.Prepare and a real probe.
 	PrepareKernel func(context.Context, string, kernel.InstallInput, string, kernel.ProbeFunc, kernel.ProgressFunc) (*kernel.Prepared, error)
 	VerifyKernel  func(context.Context, string, kernel.Record, string) (kernel.Report, error)
+	// Test seam only. The desktop always launches the verified real process.
+	LaunchRuntime  func(context.Context, RuntimeLaunch) (RuntimeProcess, error)
+	InspectRuntime func(RuntimeSession) (kernel.ManagedRecovery, error)
+	// Host-only seams. The desktop always uses Windows user DPAPI and TLS checks.
+	ProtectProxySecret   func(string, []byte) ([]byte, error)
+	UnprotectProxySecret func(string, []byte) ([]byte, error)
+	CheckProxy           func(context.Context, proxy.Configuration, *proxy.Credentials, func(proxy.Step)) proxy.Report
+	OpenProxyChannel     func(proxy.Configuration, *proxy.Credentials, proxy.BridgeOptions) (RuntimeProxyChannel, error)
+	// Host-only controlled HTTPS observer for real integration tests. Desktop
+	// leaves this empty; it cannot change container identity or caller guards.
+	ProtectedProxyCheck     proxy.CheckOptions
+	PrepareBatchDirectory   func(BatchDirectoryInput) (BatchDirectoryLease, error)
+	ChooseBackupDestination func() (string, error)
+	ChooseBackupSource      func() (string, error)
+	AppVersion              string
+	RestoreCheckpoint       func(string) error  // host-only failure injection, never RPC
+	RecycleCheckpoint       func(string) error  // host-only failure injection, never RPC
+	MigrationCheckpoint     func(string) error  // host-only failure injection, never RPC
+	CommitMigration         func(*sql.Tx) error // host-only COMMIT acknowledgement fault, never RPC
 }
 type draft struct {
-	Kind    string
-	Preview Preview
+	Kind        string
+	Preview     Preview
+	BaseProfile *DeviceProfile
 }
 type Service struct {
-	mu         sync.Mutex
-	db         *sql.DB
-	drafts     map[string]draft
-	options    Options
-	root       string
-	archives   map[string]string
-	kernelTask *kernelTask
-	workers    sync.WaitGroup
-	closed     bool
+	mu                 sync.Mutex
+	db                 *sql.DB
+	drafts             map[string]draft
+	options            Options
+	root               string
+	archives           map[string]string
+	kernelTask         *kernelTask
+	workers            sync.WaitGroup
+	closed             bool
+	profileUses        map[string]bool
+	runtimeSlots       map[string]*runtimeSlot
+	startQueue         []chan struct{}
+	closeDone          chan struct{}
+	closeError         error
+	closeOnce          sync.Once
+	closeRequested     atomic.Bool
+	closeRetryActive   atomic.Bool
+	runtimePending     map[string]*runtimePendingWrite
+	runtimeResults     map[string]Operation
+	proxyImport        *proxyImportDraft
+	proxyRequestKey    []byte
+	proxyChecks        map[string]*proxyCheckTask
+	proxyResults       map[string]Operation
+	proxyPending       map[string]*proxyCheckWrite
+	proxyCheckGate     chan struct{}
+	cookieImport       *cookieImportDraft
+	cookieGeneration   uint64
+	cookieTasks        map[string]*cookieImportTask
+	cookieResults      map[string]Operation
+	cookiePending      map[string]Operation
+	batchTasks         map[string]*batchTask
+	batchUses          map[string]*batchTask
+	batchAcceptances   map[string]*batchAcceptance
+	batchGate          chan struct{}
+	backupDestinations map[string]backupDestination
+	backupTasks        map[string]*backupTask
+	backupUses         map[string]*backupTask
+	backupGate         chan struct{}
+	restoreSources     map[string]restoreSource
+	restorePreview     *restoreDraft
+	restorePreflight   *restorePreflight
+	restoreScratch     string
+	restoreTask        *restoreTask
+	recycleDraft       *recycleDraft
+	recycleTask        *recycleTask
+	migrationDraft     *migrationDraft
+	migrationTask      *migrationTask
+	networkStore       *kernel.NetworkStore
+	networkPending     map[string]kernel.NetworkSessionIntent
+	networkRecoveries  map[string]*networkRecoveryTask
 }
 
 func failure(code, message string, retryable bool) Result {
@@ -97,49 +160,339 @@ func Open(root string, options Options) (*Service, error) {
 		return nil, err
 	}
 	db.SetMaxOpenConns(1)
-	s := &Service{db: db, root: absolute, drafts: map[string]draft{}, archives: map[string]string{}, options: options}
+	s := &Service{db: db, root: absolute, drafts: map[string]draft{}, archives: map[string]string{}, profileUses: map[string]bool{}, runtimeSlots: map[string]*runtimeSlot{}, closeDone: make(chan struct{}), runtimePending: map[string]*runtimePendingWrite{}, runtimeResults: map[string]Operation{}, options: options}
+	s.proxyChecks, s.proxyResults, s.proxyPending, s.proxyCheckGate = map[string]*proxyCheckTask{}, map[string]Operation{}, map[string]*proxyCheckWrite{}, make(chan struct{}, 4)
+	s.cookieTasks, s.cookieResults, s.cookiePending = map[string]*cookieImportTask{}, map[string]Operation{}, map[string]Operation{}
+	s.batchTasks, s.batchUses, s.batchGate = map[string]*batchTask{}, map[string]*batchTask{}, make(chan struct{}, 1)
+	s.batchAcceptances = map[string]*batchAcceptance{}
+	s.backupDestinations, s.backupTasks, s.backupUses, s.backupGate = map[string]backupDestination{}, map[string]*backupTask{}, map[string]*backupTask{}, make(chan struct{}, 1)
+	s.restoreSources = map[string]restoreSource{}
 	if err = s.initialize(); err != nil {
 		db.Close()
 		return nil, err
+	}
+	if err = s.openNetworkResources(); err != nil {
+		db.Close()
+		return nil, err
+	}
+	opened := false
+	defer func() {
+		if !opened {
+			_ = s.networkStore.Close()
+		}
+	}()
+	if err = s.loadInterruptedRestore(); err != nil {
+		db.Close()
+		var safe *Error
+		if errors.As(err, &safe) {
+			return nil, safe
+		}
+		return nil, &Error{Code: "RESTORE_INCOMPLETE", Message: "未完成恢复日志无法完整读取或匹配原请求，未自动移动目录；请保留全部数据与日志，核对存储和完整副本后重开。", Retryable: true}
+	}
+	if err = s.loadInterruptedRecycle(); err != nil {
+		db.Close()
+		return nil, &Error{Code: "RECYCLE_INCOMPLETE", Message: "回收日志不完整或存在多个目录维护任务；原目录与配置保留，请修复原日志后重开。", Retryable: true}
+	}
+	if err = s.loadInterruptedMigration(); err != nil {
+		db.Close()
+		return nil, &Error{Code: "MIGRATION_INCOMPLETE", Message: "迁移日志不完整或存在多个目录维护任务，请保留原数据、备份及日志后核对。", Retryable: true}
+	}
+	if s.migrationTask != nil {
+		opened = true
+		s.startMigrationWorker(s.migrationTask, s.recoverMigration)
+		return s, nil
+	}
+	if s.recycleTask != nil {
+		opened = true
+		s.startRecycle(s.recycleTask, true)
+		return s, nil
+	}
+	if s.restoreTask != nil {
+		opened = true
+		s.startInterruptedRestore(s.restoreTask)
+		return s, nil
 	}
 	if err = s.recoverKernelOperations(); err != nil {
 		db.Close()
 		return nil, err
 	}
+	if err = s.recoverRuntimeSessions(); err != nil {
+		db.Close()
+		return nil, err
+	}
+	if err = s.recoverProxyChecks(); err != nil {
+		db.Close()
+		return nil, err
+	}
+	if err = s.recoverCookieImports(); err != nil {
+		db.Close()
+		return nil, err
+	}
+	if err = s.recoverBatchTasks(); err != nil {
+		db.Close()
+		return nil, err
+	}
+	if err = s.recoverBackupExports(); err != nil {
+		db.Close()
+		return nil, err
+	}
+	opened = true
 	return s, nil
 }
 func (s *Service) Close() error {
-	s.mu.Lock()
-	if s.closed {
-		s.mu.Unlock()
-		return nil
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+	return s.CloseContext(ctx)
+}
+
+// Cancelling a waiter never abandons cleanup or claims the database is closed.
+// Every caller waits on the same completion; a timed-out close can be retried.
+func (s *Service) CloseContext(ctx context.Context) error {
+	started := false
+	s.closeOnce.Do(func() { started = true; s.closeRequested.Store(true); go s.beginShutdown() })
+	if !started && ctx.Err() == nil {
+		s.retryRuntimeShutdown()
 	}
+	finished := s.closeDone
+	select {
+	case <-finished:
+		s.mu.Lock()
+		defer s.mu.Unlock()
+		return s.closeError
+	case <-ctx.Done():
+		return errors.New("controlled sessions have not all exited; cleanup continues and its resources are retained")
+	}
+}
+
+// A later explicit application-close request retries the retained owners,
+// including a channel-only owner registered after the first shutdown scan.
+// It never launches a new session or replaces the original completion signal.
+func (s *Service) retryRuntimeShutdown() {
+	select {
+	case <-s.closeDone:
+		return
+	default:
+	}
+	if !s.closeRetryActive.CompareAndSwap(false, true) {
+		return
+	}
+	go func() {
+		defer s.closeRetryActive.Store(false)
+		s.mu.Lock()
+		processes := []RuntimeProcess{}
+		for _, slot := range s.runtimeSlots {
+			if slot.process != nil {
+				processes = append(processes, slot.process)
+			}
+		}
+		if task := s.migrationTask; task != nil && task.process != nil {
+			processes = append(processes, task.process)
+		}
+		s.mu.Unlock()
+		var retries sync.WaitGroup
+		for _, process := range processes {
+			retries.Add(1)
+			go func() { defer retries.Done(); _ = process.Close() }()
+		}
+		retries.Wait()
+	}()
+}
+
+func (s *Service) beginShutdown() {
+	s.mu.Lock()
 	s.closed = true
+	if s.restorePreflight != nil {
+		s.restorePreflight.cancel()
+	}
+	if s.restoreTask != nil && s.restoreTask.cancel != nil {
+		s.restoreTask.cancel()
+	}
+	if s.restoreTask != nil && s.restoreTask.bootstrapCancel != nil {
+		s.restoreTask.bootstrapCancel()
+	}
+	s.restorePreview = nil
+	if s.recycleTask != nil && s.recycleTask.cancel != nil {
+		s.recycleTask.cancel()
+	}
+	s.recycleDraft = nil
 	if s.kernelTask != nil {
 		s.kernelTask.cancel()
 	}
+	s.discardProxyImport()
+	s.discardCookieImport("")
+	for _, task := range s.cookieTasks {
+		task.cancel()
+	}
+	for _, task := range s.batchTasks {
+		if task.cancel != nil {
+			task.cancel()
+		}
+	}
+	for _, task := range s.backupTasks {
+		if task.cancel != nil {
+			task.cancel()
+		}
+	}
+	for _, task := range s.proxyChecks {
+		task.cancel()
+	}
+	processes := []RuntimeProcess{}
+	if task := s.migrationTask; task != nil {
+		if task.cancel != nil {
+			task.cancel()
+		}
+		if task.process != nil {
+			processes = append(processes, task.process)
+		}
+	}
+	for _, slot := range s.runtimeSlots {
+		if slot.cancel != nil {
+			slot.cancel()
+		}
+		if slot.process != nil {
+			processes = append(processes, slot.process)
+		}
+	}
 	s.mu.Unlock()
+	s.closeResources(processes, s.closeDone)
+}
+
+func (s *Service) closeResources(processes []RuntimeProcess, finished chan struct{}) {
+	var shutdown sync.WaitGroup
+	for _, process := range processes {
+		shutdown.Add(1)
+		go func(process RuntimeProcess) {
+			defer shutdown.Done()
+			ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
+			_ = process.Stop(ctx)
+			cancel()
+			// App shutdown releases only our owned Job tree, never a PID/name search.
+			_ = process.Close()
+		}(process)
+	}
+	shutdown.Wait()
 	s.workers.Wait()
+	// A failed migration trial can retain its owner after its worker ends.
+	// Keep shutdown and its explicit retry entrance alive until those resources
+	// really exit; worker completion alone is not release evidence.
+	s.mu.Lock()
+	retained := []RuntimeProcess{}
+	for _, slot := range s.runtimeSlots {
+		if slot.process != nil {
+			retained = append(retained, slot.process)
+		}
+	}
+	if task := s.migrationTask; task != nil && task.process != nil {
+		retained = append(retained, task.process)
+	}
+	s.mu.Unlock()
+	for _, process := range retained {
+		<-process.Done()
+	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	return s.db.Close()
+	s.flushRuntimePersistence()
+	s.flushProxyPersistence()
+	s.flushCookiePersistence()
+	s.flushBatchPersistence()
+	s.flushBackupPersistence()
+	s.flushRestorePersistence()
+	s.flushRecyclePersistence()
+	s.flushMigrationPersistence()
+	proxy.Wipe(s.proxyRequestKey)
+	s.proxyRequestKey = nil
+	s.closeError = s.db.Close()
+	if s.networkStore != nil {
+		s.closeError = errors.Join(s.closeError, s.networkStore.Close())
+	}
+	if len(s.runtimePending) != 0 {
+		s.closeError = errors.Join(s.closeError, errors.New("runtime observations could not all be persisted before shutdown"))
+	}
+	if len(s.networkRecoveries) != 0 {
+		s.closeError = errors.Join(s.closeError, errors.New("network cleanup results could not all be persisted before shutdown"))
+	}
+	if len(s.proxyPending) != 0 {
+		s.closeError = errors.Join(s.closeError, errors.New("proxy check results could not all be persisted before shutdown"))
+	}
+	if len(s.cookiePending) != 0 {
+		s.closeError = errors.Join(s.closeError, errors.New("cookie observations could not all be persisted"))
+	}
+	if len(s.batchTasks) != 0 || len(s.batchAcceptances) != 0 {
+		s.closeError = errors.Join(s.closeError, errors.New("batch journal observations could not all be persisted"))
+	}
+	if len(s.backupTasks) != 0 {
+		s.closeError = errors.Join(s.closeError, errors.New("backup observations could not all be persisted"))
+	}
+	if s.restoreTask != nil {
+		s.closeError = errors.Join(s.closeError, errors.New("restore outcome remains protected or could not be persisted"))
+	}
+	if s.recycleTask != nil {
+		s.closeError = errors.Join(s.closeError, errors.New("recycle outcome remains protected or could not be persisted"))
+	}
+	if s.migrationTask != nil {
+		s.closeError = errors.Join(s.closeError, errors.New("migration outcome remains protected for next startup"))
+	}
+	close(finished)
 }
 func (s *Service) initialize() error {
+	if err := s.initializeProfiles(); err != nil {
+		return err
+	}
 	var version int
 	if err := s.db.QueryRow("PRAGMA user_version").Scan(&version); err != nil {
 		return err
 	}
-	if version > 2 {
+	if version == 3 {
+		if err := s.migrateRuntimeSessions(); err != nil {
+			return err
+		}
+	}
+	if err := s.checkRuntimeSchema(); err != nil {
+		return err
+	}
+	if err := s.initializeProxies(); err != nil {
+		return err
+	}
+	if err := s.initializeBatches(); err != nil {
+		return err
+	}
+	if err := s.initializeBackups(); err != nil {
+		return err
+	}
+	if err := s.initializeRestores(); err != nil {
+		return err
+	}
+	if err := s.initializeRecycle(); err != nil {
+		return err
+	}
+	return s.initializeMigrations()
+}
+
+func (s *Service) initializeProfiles() error {
+	var version int
+	if err := s.db.QueryRow("PRAGMA user_version").Scan(&version); err != nil {
+		return err
+	}
+	if version > 10 {
 		return errors.New("unsupported workspace version")
 	}
-	if version == 2 {
+	if version >= 3 {
 		return s.checkSchema()
+	}
+	if version == 2 {
+		if err := s.checkKernelSchema(); err != nil {
+			return err
+		}
+		return s.migrateFingerprints()
 	}
 	if version == 1 {
 		if err := s.checkBaseSchema(); err != nil {
 			return err
 		}
-		return s.migrateKernels()
+		if err := s.migrateKernels(); err != nil {
+			return err
+		}
+		return s.migrateFingerprints()
 	}
 	var tables int
 	if err := s.db.QueryRow("SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'").Scan(&tables); err != nil {
@@ -175,9 +528,29 @@ func (s *Service) initialize() error {
 	if err = tx.Commit(); err != nil {
 		return err
 	}
-	return s.migrateKernels()
+	if err = s.migrateKernels(); err != nil {
+		return err
+	}
+	return s.migrateFingerprints()
 }
 func (s *Service) checkSchema() error {
+	if err := s.checkKernelSchema(); err != nil {
+		return err
+	}
+	for _, statement := range []string{
+		"SELECT config_revision FROM fingerprints LIMIT 0",
+		"SELECT user_data_ref FROM environments LIMIT 0",
+		"SELECT fingerprint_id,revision,kernel_id,profile_json,created_at,action,restored_from FROM fingerprint_revisions LIMIT 0",
+	} {
+		rows, err := s.db.Query(statement)
+		if err != nil {
+			return err
+		}
+		rows.Close()
+	}
+	return nil
+}
+func (s *Service) checkKernelSchema() error {
 	if err := s.checkBaseSchema(); err != nil {
 		return err
 	}
@@ -245,22 +618,138 @@ func (s *Service) Call(request Request) Result {
 	if request.Mode != "native" {
 		return failure("CAPABILITY_UNSUPPORTED", "演示输入不能写入真实工作区；请使用桌面原生流程。", false)
 	}
+	if s.closeRequested.Load() {
+		return failure("NATIVE_UNAVAILABLE", "工作区正在关闭，未接受新操作。", true)
+	}
 	if request.Method == "Kernel.SelectArchive" {
 		if decode(request.Payload, &struct{}{}) != nil {
 			return failure("VALIDATION_FAILED", "归档必须由桌面文件选择器选择，不接受客户端路径。", false)
 		}
 		return s.selectKernelArchive()
 	}
+	if request.Method == "Migration.SelectRollback" {
+		return s.selectMigrationRollback(request.Payload)
+	}
+	// Read-only preflight must bypass all recovery/persistence flush dispatch.
+	if request.Method == "Backup.SelectRestoreSource" || request.Method == "Backup.PreviewRestore" || request.Method == "Backup.ReadRestorePage" || request.Method == "Backup.DiscardRestore" {
+		return s.restorePreviewCall(request)
+	}
+	if request.Method == "Cookie.ParseImport" {
+		return s.parseCookieImport(request.Payload)
+	}
+	if request.Method == "Backup.SelectDestination" {
+		if decode(request.Payload, &struct{}{}) != nil {
+			return failure("VALIDATION_FAILED", "备份输出只由桌面保存对话框选择，不接受路径。", false)
+		}
+		return s.selectBackupDestination()
+	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	if s.closed {
+	if s.closed || s.closeRequested.Load() {
 		return failure("NATIVE_UNAVAILABLE", "工作区已关闭，请重新打开应用。", true)
 	}
+	if request.Method == "Workspace.Read" || request.Method == "Operation.Read" || strings.HasPrefix(request.Method, "Migration.") {
+		s.flushMigrationPersistence()
+	}
+	if s.migrationTask != nil && request.Method != "Workspace.Read" && request.Method != "Operation.Read" && request.Method != "Operation.Cancel" && request.Method != "Migration.Action" && request.Method != "Migration.Prepare" && request.Method != "Runtime.Stop" && request.Method != "Runtime.Inspect" {
+		return failure("MIGRATION_INCOMPLETE", "迁移维护中，原环境保持停止，请完成或取消原迁移任务。", true)
+	}
+	if t := s.migrationTask; t != nil && t.startup && !t.bootstrapReady && (request.Method == "Runtime.Stop" || request.Method == "Runtime.Inspect") {
+		return failure("MIGRATION_INCOMPLETE", "启动恢复尚未加载原会话，不能认定环境已经停止。", true)
+	}
+	if request.Method == "Workspace.Read" || request.Method == "Operation.Read" || request.Method == "Backup.ApplyRestore" || request.Method == "Backup.RecoverRestore" {
+		s.flushRestorePersistence()
+	}
+	if request.Method == "Workspace.Read" || request.Method == "Operation.Read" || strings.HasPrefix(request.Method, "Recycle.") {
+		s.flushRecyclePersistence()
+	}
+	if s.recycleTask != nil && request.Method != "Workspace.Read" && request.Method != "Operation.Read" && request.Method != "Operation.Cancel" && request.Method != "Recycle.ReadPage" && request.Method != "Recycle.Commit" && request.Method != "Recycle.Recover" && request.Method != "Runtime.Inspect" && request.Method != "Runtime.Stop" {
+		return failure("RECYCLE_INCOMPLETE", "回收维护中，配置与目录保持保护；请读取或核对原任务。", true)
+	}
+	if s.recycleTask != nil && s.recycleTask.startup && !s.recycleTask.bootstrapReady && (request.Method == "Runtime.Stop" || request.Method == "Runtime.Inspect") {
+		return failure("RECYCLE_INCOMPLETE", "启动恢复尚未加载原会话，不能认定环境已经停止；请先核对回收任务。", true)
+	}
+	if s.restoreTask != nil && request.Method != "Workspace.Read" && request.Method != "Operation.Read" && request.Method != "Operation.Cancel" && request.Method != "Runtime.Inspect" && request.Method != "Runtime.Stop" && request.Method != "Backup.ApplyRestore" && request.Method != "Backup.RecoverRestore" {
+		return failure("RESTORE_INCOMPLETE", "完整恢复维护中，配置与目录切换保持保护；请读取恢复任务结果。", true)
+	}
+	if request.Method == "Backup.ApplyRestore" {
+		var input RestoreRequest
+		if decode(request.Payload, &input) != nil {
+			return failure("VALIDATION_FAILED", "恢复请求不接受未知字段、路径或客户端档案。", false)
+		}
+		return s.acceptRestore(input)
+	}
+	if request.Method == "Backup.RecoverRestore" {
+		var input struct {
+			OperationID string `json:"operationId"`
+		}
+		if decode(request.Payload, &input) != nil || input.OperationID == "" {
+			return failure("VALIDATION_FAILED", "请选择原恢复任务。", false)
+		}
+		return s.retryRestoreFinalization(input.OperationID)
+	}
+	if strings.HasPrefix(request.Method, "Recycle.") {
+		return s.recycleCall(request)
+	}
+	if strings.HasPrefix(request.Method, "Migration.") {
+		return s.migrationCall(request)
+	}
+	if request.Method == "Workspace.Read" || request.Method == "Runtime.Inspect" || request.Method == "Operation.Read" || strings.HasPrefix(request.Method, "Runtime.") {
+		s.flushRuntimePersistence()
+	}
+	if request.Method == "Workspace.Read" || strings.HasPrefix(request.Method, "Operation.") || strings.HasPrefix(request.Method, "Proxy.") {
+		s.flushProxyPersistence()
+	}
+	if strings.HasPrefix(request.Method, "Proxy.") {
+		return s.proxyCall(request)
+	}
+	if request.Method == "Workspace.Read" || strings.HasPrefix(request.Method, "Operation.") || strings.HasPrefix(request.Method, "Cookie.") {
+		s.flushCookiePersistence()
+	}
+	if request.Method == "Cookie.CommitImport" || request.Method == "Cookie.DiscardImport" {
+		return s.cookieCall(request)
+	}
+	if request.Method == "Workspace.Read" || strings.HasPrefix(request.Method, "Operation.") || strings.HasPrefix(request.Method, "Batch.") {
+		s.flushBatchPersistence()
+	}
+	if strings.HasPrefix(request.Method, "Batch.") {
+		return s.batchCall(request)
+	}
+	if request.Method == "Workspace.Read" || strings.HasPrefix(request.Method, "Operation.") || strings.HasPrefix(request.Method, "Backup.") {
+		s.flushBackupPersistence()
+	}
+	if request.Method == "Backup.Export" {
+		var input BackupExportRequest
+		if decode(request.Payload, &input) != nil {
+			return failure("VALIDATION_FAILED", "备份请求含未知/无效字段，不接受路径、凭据或原型快照。", false)
+		}
+		return s.acceptBackup(input)
+	}
 	switch request.Method {
+	case "Runtime.Start", "Runtime.Stop", "Runtime.Inspect", "Runtime.ForceStop", "Runtime.Reconcile":
+		return s.runtimeCall(request)
+	case "Fingerprint.Generate", "Fingerprint.ListRevisions", "Fingerprint.PreviewRestore":
+		return s.fingerprintCall(request)
+	case "Kernel.SetDefault":
+		var input KernelDefaultRequest
+		if decode(request.Payload, &input) != nil {
+			return failure("VALIDATION_FAILED", "默认选择不接受未知字段。", false)
+		}
+		return s.setKernelDefault(input)
 	case "Kernel.Install", "Kernel.Verify", "Kernel.Delete", "Kernel.List":
 		return s.kernelCall(request)
 	case "Workspace.Read":
-		view, err := s.view()
+		var input struct {
+			EnvironmentQuery *EnvironmentQuery `json:"environmentQuery,omitempty"`
+		}
+		if decode(request.Payload, &input) != nil {
+			return failure("VALIDATION_FAILED", "工作区查询只接受环境分页/筛选，不接受路径或模式覆盖。", false)
+		}
+		query := EnvironmentQuery{Page: 1, PageSize: 8, Status: "all"}
+		if input.EnvironmentQuery != nil {
+			query = *input.EnvironmentQuery
+		}
+		view, err := s.viewPage(query)
 		if err != nil {
 			return failure("STORAGE_READ_FAILED", "本地档案读取失败。原数据保留，请检查数据库版本或磁盘。", true)
 		}
@@ -289,17 +778,38 @@ func (s *Service) Call(request Request) Result {
 		if !exists {
 			return failure("PREVIEW_EXPIRED", "预览已失效，请重新打开配置。", true)
 		}
+		if s.profileUses[d.Preview.Environment.ID] {
+			return failure("PROFILE_BUSY", "环境正被运行或维护使用，请停止后重新生成。", true)
+		}
+		if d.Preview.Environment.CoreID != PendingKernelID {
+			c := d.Preview.Environment.Configuration
+			return s.generateFingerprint(GenerateFingerprint{PreviewID: input.PreviewID, KernelID: c.CoreID, TemplateID: c.FingerprintVersion, Overrides: FingerprintOverrides{Language: c.Language, Timezone: c.Timezone, CPU: c.CPU, Width: c.Width, Height: c.Height}, Regenerate: true})
+		}
 		seed, err := s.newSeed(d.Preview.Environment.Seed)
 		if err != nil {
 			return storageFailure(err)
 		}
 		d.Preview.Environment.Seed = seed
+		if d.Preview.Fingerprint != nil {
+			revision := int64(1)
+			if d.BaseProfile != nil {
+				revision = d.BaseProfile.ConfigRevision + 1
+			}
+			profile, err := frozenProfile(d.Preview.Environment.Configuration, nil, "native-initial-v1", revision, true)
+			if err != nil {
+				return storageFailure(err)
+			}
+			d.Preview.Fingerprint = &FingerprintPreview{Mode: "native", PreviewProfile: profile, CapabilityReport: capabilityReport(profile, nil), Changes: profileChanges(d.BaseProfile, profile), Action: "regenerate"}
+		}
 		s.drafts[input.PreviewID] = d
 		return success(d.Preview, "")
-	case "Environment.Create", "Environment.Update":
+	case "Environment.Create", "Environment.Update", "Fingerprint.CommitRevision":
 		var input Mutation
 		if decode(request.Payload, &input) != nil {
 			return failure("VALIDATION_FAILED", "提交字段无效；不能导入原型快照、身份或浏览数据。", false)
+		}
+		if request.Method == "Fingerprint.CommitRevision" && (input.EnvironmentID == "" || input.ProfileHash == "") {
+			return failure("VALIDATION_FAILED", "提交完整档案需要环境标识和服务预览摘要。", false)
 		}
 		return s.mutate(request.Method, input)
 	case "Operation.Read", "Operation.Cancel":
@@ -308,6 +818,48 @@ func (s *Service) Call(request Request) Result {
 		}
 		if decode(request.Payload, &input) != nil {
 			return failure("VALIDATION_FAILED", "任务请求无效。", false)
+		}
+		if task := s.migrationTask; task != nil && task.plan.ID == input.OperationID {
+			if request.Method == "Operation.Cancel" {
+				return s.cancelMigration(task)
+			}
+			return success(copyMigrationOperation(task.operation), task.plan.ID)
+		}
+		if task := s.restoreTask; task != nil && task.operation.ID == input.OperationID {
+			if request.Method == "Operation.Cancel" {
+				return s.cancelRestore(task)
+			}
+			return success(copyRestoreOperation(task.operation), task.operation.ID)
+		}
+		if task := s.recycleTask; task != nil && task.operation.ID == input.OperationID {
+			if request.Method == "Operation.Cancel" {
+				return s.cancelRecycle(task)
+			}
+			return success(copyRecycleOperation(task.operation), task.operation.ID)
+		}
+		if task := s.backupTasks[input.OperationID]; task != nil {
+			if request.Method == "Operation.Cancel" {
+				return s.cancelBackupOperation(task)
+			}
+			return success(*s.pendingBackupOperation(input.OperationID), input.OperationID)
+		}
+		if pending, exists := s.proxyResults[input.OperationID]; exists {
+			if request.Method == "Operation.Cancel" {
+				return s.cancelProxyOperation(pending)
+			}
+			return success(pending, pending.ID)
+		}
+		if pending := s.pendingBatchOperation(input.OperationID); pending != nil {
+			return success(*pending, input.OperationID)
+		}
+		if pending, exists := s.cookieResults[input.OperationID]; exists {
+			if request.Method == "Operation.Cancel" {
+				return s.cancelCookieOperation(pending)
+			}
+			return success(pending, pending.ID)
+		}
+		if pending, exists := s.runtimeResults[input.OperationID]; exists {
+			return success(pending, input.OperationID)
 		}
 		var text string
 		if err := s.db.QueryRow("SELECT result_json FROM operations WHERE id=?", input.OperationID).Scan(&text); err != nil {
@@ -325,13 +877,25 @@ func (s *Service) Call(request Request) Result {
 				return storageFailure(err)
 			}
 		}
+		if request.Method == "Operation.Cancel" {
+			if strings.HasPrefix(operation.Kind, "batch-") {
+				return s.cancelBatchOperation(operation)
+			}
+			if operation.Kind == "cookie-import" {
+				return s.cancelCookieOperation(operation)
+			}
+			if operation.Kind == "proxy-check" {
+				return s.cancelProxyOperation(operation)
+			}
+			return s.cancelRuntimeOperation(operation)
+		}
 		return success(operation, operation.ID)
 	default:
 		return failure("CAPABILITY_UNSUPPORTED", "此功能尚未接入真实桌面服务，未修改本地数据。", false)
 	}
 }
 func (s *Service) newSeed(exclude string) (string, error) {
-	for {
+	for attempt := 0; attempt < 256; attempt++ {
 		value, err := rand.Int(rand.Reader, big.NewInt(2147483647))
 		if err != nil {
 			return "", err
@@ -340,21 +904,34 @@ func (s *Service) newSeed(exclude string) (string, error) {
 		if strconv.FormatInt(candidate, 10) == exclude {
 			continue
 		}
-		var count int
-		if err = s.db.QueryRow("SELECT COUNT(*) FROM fingerprints WHERE seed=?", candidate).Scan(&count); err != nil {
+		available, err := seedAvailable(s.db, strconv.FormatInt(candidate, 10), "", "")
+		if err != nil {
 			return "", err
 		}
-		if count == 0 {
+		if available {
 			return strconv.FormatInt(candidate, 10), nil
 		}
 	}
+	return "", &kernel.Problem{Code: "RESOURCE_EXHAUSTED", Reason: "seed-allocation-contention", Message: "独立seed分配暂时无法完成，已完成项保留；未复用旧身份，也不是实例产品配额。", Retryable: true}
 }
 func (s *Service) readEnvironment(environmentID string) (Environment, int64, string, error) {
+	var trashed bool
+	if err := s.db.QueryRow("SELECT EXISTS(SELECT 1 FROM environment_trash WHERE environment_id=?)", environmentID).Scan(&trashed); err != nil {
+		return Environment{}, 0, "", err
+	}
+	if trashed {
+		return Environment{}, 0, "", sql.ErrNoRows
+	}
+	return s.readStoredEnvironment(environmentID)
+}
+
+// Used only by validated schema7 packages and the managed recycle journal.
+func (s *Service) readStoredEnvironment(environmentID string) (Environment, int64, string, error) {
 	var e Environment
-	var configJSON, profileID, name, kernelID, profileKernelID, proxyID, seed string
+	var configJSON, profileID, name, kernelID, profileKernelID, proxyID, seed, dataRef string
 	var revision int64
 	var code int
-	err := s.db.QueryRow(`SELECT e.id,e.code,e.created_at,e.revision,e.fingerprint_id,f.config_json,e.name,e.kernel_id,f.kernel_id,COALESCE(e.proxy_id,''),CAST(f.seed AS TEXT) FROM environments e JOIN fingerprints f ON f.id=e.fingerprint_id WHERE e.id=?`, environmentID).Scan(&e.ID, &code, &e.CreatedAt, &revision, &profileID, &configJSON, &name, &kernelID, &profileKernelID, &proxyID, &seed)
+	err := s.db.QueryRow(`SELECT e.id,e.code,e.created_at,e.revision,e.fingerprint_id,f.config_json,e.name,e.kernel_id,f.kernel_id,COALESCE(e.proxy_id,''),CAST(f.seed AS TEXT),e.user_data_ref FROM environments e JOIN fingerprints f ON f.id=e.fingerprint_id WHERE e.id=?`, environmentID).Scan(&e.ID, &code, &e.CreatedAt, &revision, &profileID, &configJSON, &name, &kernelID, &profileKernelID, &proxyID, &seed, &dataRef)
 	if err != nil {
 		return e, 0, "", err
 	}
@@ -363,6 +940,14 @@ func (s *Service) readEnvironment(environmentID string) (Environment, int64, str
 	}
 	if validate(e.Configuration) != "" || e.Name != name || e.CoreID != kernelID || profileKernelID != kernelID || e.ProxyID != proxyID || e.Seed != seed {
 		return e, 0, "", errors.New("inconsistent saved configuration")
+	}
+	profile, err := readProfileFrom(s.db, profileID)
+	if err != nil {
+		return e, 0, "", err
+	}
+	ref, err := dataReference(e.ID)
+	if err != nil || dataRef != ref || !profileMatchesConfiguration(profile.Profile, e.Configuration) {
+		return e, 0, "", errors.New("inconsistent current profile or data reference")
 	}
 	e.Code = fmt.Sprintf("%03d", code)
 	e.Status = "ready"
@@ -389,6 +974,13 @@ func (s *Service) preview(kind, sourceID string) Result {
 			return storageFailure(err)
 		}
 		config := Configuration{Name: "", Group: "日常运营", CoreID: PendingKernelID, Seed: seed, Language: "en-US", Timezone: "America/New_York", CPU: "auto", Width: 1280, Height: 800, RestoreTabs: true, FingerprintVersion: "windows-desktop-v1"}
+		if sourceID == "" {
+			selected, err := s.readKernelDefault()
+			if err != nil {
+				return failure("STORAGE_READ_FAILED", "默认构建选择无法读取，未改用其他构建。", true)
+			}
+			config.CoreID = selected.KernelID
+		}
 		if sourceID != "" {
 			config = source.Configuration
 			config.Name = source.Name + " 副本"
@@ -399,7 +991,35 @@ func (s *Service) preview(kind, sourceID string) Result {
 		revision = 0
 	}
 	p := Preview{PreviewID: id(), Environment: e, ExpectedRevision: revision}
-	s.drafts[p.PreviewID] = draft{kind, p}
+	d := draft{Kind: kind, Preview: p}
+	if kind == "create" && e.CoreID != PendingKernelID {
+		record, err := savedKernelFrom(s.db, e.CoreID, true)
+		if err != nil {
+			return kernelFailure(err)
+		}
+		profile, err := frozenProfile(e.Configuration, &record, FingerprintGeneratorVersion, 1, false)
+		if err != nil {
+			return kernelFailure(err)
+		}
+		p.Fingerprint = &FingerprintPreview{Mode: "native", PreviewProfile: profile, CapabilityReport: capabilityReport(profile, &record), Changes: profileChanges(nil, profile), Action: "generate"}
+	}
+	if kind == "edit" {
+		if s.profileUses[e.ID] && !s.runtimeOwnsProfileUse(e.ID) {
+			return failure("PROFILE_BUSY", "请先停止该环境，再编辑关键配置。", true)
+		}
+		_, _, profileID, err := s.readEnvironment(e.ID)
+		if err != nil {
+			return failure("STORAGE_READ_FAILED", "本地档案无法读取。", true)
+		}
+		p.Fingerprint, p.UserDataRef, err = s.previewCurrentProfile(e.ID, profileID, e.Configuration)
+		if err != nil {
+			return failure("STORAGE_READ_FAILED", "本地完整档案无法读取。", true)
+		}
+		base := p.Fingerprint.PreviewProfile
+		d.BaseProfile = &base
+	}
+	d.Preview = p
+	s.drafts[p.PreviewID] = d
 	return success(p, "")
 }
 func validate(config Configuration) string {
@@ -413,7 +1033,7 @@ func validate(config Configuration) string {
 	if config.Width < 400 || config.Width > 7680 || config.Height < 400 || config.Height > 7680 {
 		return "窗口宽高应为 400 至 7680 的整数。"
 	}
-	if _, err = time.LoadLocation(config.Timezone); err != nil {
+	if !kernel.ValidTimezone(config.Timezone) {
 		return "请选择有效的 IANA 时区。"
 	}
 	if !map[string]bool{"auto": true, "4": true, "8": true, "12": true, "16": true}[config.CPU] {
@@ -466,8 +1086,25 @@ func (s *Service) mutate(method string, input Mutation) Result {
 	if (creating && d.Kind != "create") || (!creating && d.Kind != "edit") {
 		return failure("VALIDATION_FAILED", "预览与提交类型不一致。", false)
 	}
+	if !creating && s.profileUses[d.Preview.Environment.ID] {
+		current, _, _, err := s.readEnvironment(d.Preview.Environment.ID)
+		if err != nil {
+			return failure("STORAGE_READ_FAILED", "当前档案无法读取，未保存。", true)
+		}
+		safe := current.Configuration
+		safe.Name, safe.Group, safe.Note = input.Configuration.Name, input.Configuration.Group, input.Configuration.Note
+		if !s.runtimeOwnsProfileUse(current.ID) || safe != input.Configuration {
+			return failure("PROFILE_BUSY", "环境正在运行或维护；只能保存名称、分组和备注，关键配置未修改。", true)
+		}
+	}
+	if method == "Fingerprint.CommitRevision" && input.EnvironmentID != d.Preview.Environment.ID {
+		return failure("VALIDATION_FAILED", "预览不属于所选环境。", false)
+	}
+	if method == "Fingerprint.CommitRevision" && (d.Preview.Fingerprint == nil || d.Preview.Fingerprint.PreviewProfile.KernelID == PendingKernelID || input.ProfileHash != d.Preview.Fingerprint.PreviewProfile.ConfigHash) {
+		return failure("VALIDATION_FAILED", "请生成完整的精确内核档案，并按服务预览摘要提交。", false)
+	}
 	if creating && input.Count != 1 {
-		return failure("CAPABILITY_UNSUPPORTED", "持久批量任务尚未接入，请暂用单个创建；这不是产品数量配额。", false)
+		return failure("CAPABILITY_UNSUPPORTED", "此兼容接口只保存单个环境；批量请先查看Batch.Preview再明确Batch.Commit，不是总数产品配额。", false)
 	}
 	config := input.Configuration
 	config.Name = strings.TrimSpace(config.Name)
@@ -496,6 +1133,10 @@ func (s *Service) mutate(method string, input Mutation) Result {
 	if config.CoreID != PendingKernelID && kernelStatus != "verified" {
 		return failure("KERNEL_INTEGRITY_FAILED", "指定内核未通过核验，未保存；不会改用其他内核。", true)
 	}
+	profile, prepared := s.mutationProfile(tx, d, input, creating)
+	if !prepared.OK {
+		return prepared
+	}
 	if config.ProxyID != "" {
 		if err = tx.QueryRow("SELECT COUNT(*) FROM proxies WHERE id=?", config.ProxyID).Scan(&count); err != nil {
 			return storageFailure(err)
@@ -516,7 +1157,7 @@ func (s *Service) mutate(method string, input Mutation) Result {
 			return storageFailure(err)
 		}
 	} else {
-		if err = tx.QueryRow("SELECT fingerprint_id,revision,code FROM environments WHERE id=?", e.ID).Scan(&profileID, &revision, &code); err != nil {
+		if err = tx.QueryRow("SELECT fingerprint_id,revision,code FROM environments WHERE id=? AND NOT EXISTS(SELECT 1 FROM environment_trash WHERE environment_id=environments.id)", e.ID).Scan(&profileID, &revision, &code); err != nil {
 			return failure("NOT_FOUND", "环境已不存在，请重新读取。", true)
 		}
 		if input.ExpectedRevision != revision {
@@ -524,17 +1165,33 @@ func (s *Service) mutate(method string, input Mutation) Result {
 		}
 		revision++
 	}
+	if !creating {
+		current, err := readProfileFrom(tx, profileID)
+		if err != nil {
+			return failure("STORAGE_READ_FAILED", "当前完整档案无法读取，未保存。", true)
+		}
+		if d.BaseProfile == nil || current.Profile.ConfigHash != d.BaseProfile.ConfigHash {
+			return failure("REVISION_CONFLICT", "设备档案已改变，请重新打开最新记录。", true)
+		}
+		if profile.ConfigHash != current.Profile.ConfigHash && profile.ConfigRevision != current.Profile.ConfigRevision+1 {
+			return failure("REVISION_CONFLICT", "档案修订序号不连续，未保存。", true)
+		}
+		if s.profileUses[e.ID] && profile.ConfigHash != current.Profile.ConfigHash {
+			return failure("PROFILE_BUSY", "环境仍在使用当前设备档案，旧的生成或回滚预览不能追加新修订。请停止后重新预览。", true)
+		}
+	}
 	if err = tx.QueryRow("SELECT COUNT(*) FROM environments WHERE name=? AND id<>?", config.Name, e.ID).Scan(&count); err != nil {
 		return storageFailure(err)
 	}
 	if count > 0 {
 		return failure("VALIDATION_FAILED", "已有同名环境，请换一个名称。", false)
 	}
-	if err = tx.QueryRow("SELECT COUNT(*) FROM fingerprints WHERE seed=? AND id<>?", config.Seed, profileID).Scan(&count); err != nil {
-		return storageFailure(err)
+	available, seedErr := seedAvailable(tx, config.Seed, profileID, e.ID)
+	if seedErr != nil {
+		return storageFailure(seedErr)
 	}
-	if count > 0 {
-		return failure("VALIDATION_FAILED", "种子重复，请显式生成新档案。", false)
+	if !available {
+		return failure("SEED_CONFLICT", "seed已被其他身份保存、历史使用或批次预约；未占用该身份，请显式生成新档案。", false)
 	}
 	configJSON, _ := json.Marshal(config)
 	if creating {
@@ -542,20 +1199,55 @@ func (s *Service) mutate(method string, input Mutation) Result {
 		if err != nil {
 			return storageFailure(err)
 		}
-		_, err = tx.Exec(`INSERT INTO environments(id,code,name,kernel_id,proxy_id,fingerprint_id,revision,created_at) VALUES(?,?,?,?,?,?,?,?)`, e.ID, code, config.Name, config.CoreID, nullable(config.ProxyID), profileID, revision, e.CreatedAt)
+		ref, referenceErr := dataReference(e.ID)
+		if referenceErr != nil {
+			return storageFailure(referenceErr)
+		}
+		_, err = tx.Exec(`INSERT INTO environments(id,code,name,kernel_id,proxy_id,fingerprint_id,revision,created_at,user_data_ref) VALUES(?,?,?,?,?,?,?,?,?)`, e.ID, code, config.Name, config.CoreID, nullable(config.ProxyID), profileID, revision, e.CreatedAt, ref)
+		if err == nil {
+			err = insertDataState(tx, e.ID, dataNeverInitialized)
+		}
 	} else {
 		_, err = tx.Exec(`UPDATE fingerprints SET seed=?,kernel_id=?,config_json=? WHERE id=?`, config.Seed, config.CoreID, string(configJSON), profileID)
 		if err != nil {
 			return storageFailure(err)
 		}
-		_, err = tx.Exec(`UPDATE environments SET name=?,kernel_id=?,proxy_id=?,revision=? WHERE id=? AND revision=?`, config.Name, config.CoreID, nullable(config.ProxyID), revision, e.ID, input.ExpectedRevision)
+		var updated sql.Result
+		updated, err = tx.Exec(`UPDATE environments SET name=?,kernel_id=?,proxy_id=?,revision=? WHERE id=? AND revision=?`, config.Name, config.CoreID, nullable(config.ProxyID), revision, e.ID, input.ExpectedRevision)
+		if err == nil {
+			count, affectedErr := updated.RowsAffected()
+			if affectedErr != nil {
+				return storageFailure(affectedErr)
+			}
+			if count != 1 {
+				return failure("REVISION_CONFLICT", "环境已被修改，未覆盖较新的配置。", true)
+			}
+		}
 	}
 	if err != nil {
 		return storageFailure(err)
 	}
+	if creating || d.BaseProfile == nil || profile.ConfigHash != d.BaseProfile.ConfigHash {
+		action, restoredFrom := "legacy-edit", int64(0)
+		if d.Preview.Fingerprint != nil && config.CoreID != PendingKernelID {
+			action, restoredFrom = d.Preview.Fingerprint.Action, d.Preview.Fingerprint.RestoredFrom
+		}
+		if creating && config.CoreID == PendingKernelID {
+			action = "pending-create"
+		}
+		if err = appendProfile(tx, profileID, profile, action, restoredFrom); err != nil {
+			return storageFailure(err)
+		}
+	}
 	e.Configuration = config
 	e.Code = fmt.Sprintf("%03d", code)
 	e.Status = "ready"
+	if slot := s.runtimeSlots[e.ID]; slot != nil {
+		e.Status, e.LastOpened = slot.session.State, slot.session.StartedAt
+		if slot.session.Error != nil {
+			e.Error = slot.session.Error.Message
+		}
+	}
 	e.Cookies = []any{}
 	operation := Operation{ID: id(), Kind: map[bool]string{true: "create", false: "edit"}[creating], State: "completed", Total: 1, CompletedIDs: []string{e.ID}}
 	operationJSON, _ := json.Marshal(operation)
@@ -565,6 +1257,9 @@ func (s *Service) mutate(method string, input Mutation) Result {
 	result := success(map[string]any{"status": "completed", "environment": map[string]any{"record": e, "revision": revision}}, operation.ID)
 	if creating {
 		result = success(map[string]any{"status": "accepted", "operation": operation}, operation.ID)
+	}
+	if method == "Fingerprint.CommitRevision" {
+		result = success(map[string]any{"status": "completed", "environment": map[string]any{"record": e, "revision": revision}, "newRevision": revision, "fingerprintRevision": profile.ConfigRevision}, operation.ID)
 	}
 	resultJSON, _ := json.Marshal(result)
 	if _, err = tx.Exec("INSERT INTO requests(id,signature,result_json) VALUES(?,?,?)", input.RequestID, signature, string(resultJSON)); err != nil {
@@ -591,22 +1286,11 @@ func nullable(value string) any {
 	return value
 }
 func (s *Service) view() (View, error) {
+	return s.viewPage(EnvironmentQuery{Page: 1, PageSize: 8, Status: "all"})
+}
+func (s *Service) viewPage(query EnvironmentQuery) (View, error) {
 	state := State{SchemaVersion: 1, Environments: []Environment{}, Proxies: []any{}, Kernels: []Kernel{}, Backups: []any{}, Activities: []Activity{}}
-	rows, err := s.db.Query("SELECT id FROM environments ORDER BY code DESC")
-	if err != nil {
-		return View{}, err
-	}
-	ids := []string{}
-	for rows.Next() {
-		var value string
-		if err = rows.Scan(&value); err != nil {
-			rows.Close()
-			return View{}, err
-		}
-		ids = append(ids, value)
-	}
-	err = rows.Err()
-	rows.Close()
+	ids, page, err := s.environmentIDs(query)
 	if err != nil {
 		return View{}, err
 	}
@@ -617,7 +1301,7 @@ func (s *Service) view() (View, error) {
 		}
 		state.Environments = append(state.Environments, e)
 	}
-	rows, err = s.db.Query("SELECT id,version,source,status FROM kernels ORDER BY id")
+	rows, err := s.db.Query("SELECT id,version,source,status FROM kernels ORDER BY id")
 	if err != nil {
 		return View{}, err
 	}
@@ -644,17 +1328,25 @@ func (s *Service) view() (View, error) {
 	if err != nil {
 		return View{}, err
 	}
-	rows, err = s.db.Query("SELECT id,created_at,action,target,detail FROM activities ORDER BY rowid DESC")
+	rows, err = s.db.Query(`SELECT a.id,a.created_at,a.action,a.target,a.detail,
+		COALESCE(r.environment_id,CASE WHEN json_extract(o.result_json,'$.kind')='cookie-import' THEN json_extract(o.result_json,'$.environmentId') END,''),
+		COALESCE(r.session_id,CASE WHEN json_extract(o.result_json,'$.kind')='cookie-import' THEN json_extract(o.result_json,'$.sessionId') END,''),
+		COALESCE(r.error_code,CASE WHEN json_extract(o.result_json,'$.kind')='proxy-check' THEN json_extract(o.result_json,'$.error.code') WHEN json_extract(o.result_json,'$.kind')='cookie-import' AND json_extract(o.result_json,'$.state') IN ('failed','cancelled') THEN COALESCE(json_extract(o.result_json,'$.error.code'),'OPERATION_CANCELLED') WHEN json_extract(o.result_json,'$.kind') LIKE 'batch-%' AND json_extract(o.result_json,'$.state') IN ('failed','cancelled') THEN COALESCE(json_extract(o.result_json,'$.error.code'),'BATCH_PARTIAL_FAILED') WHEN json_extract(o.result_json,'$.kind')='backup-export' AND json_extract(o.result_json,'$.state') IN ('failed','cancelled') THEN COALESCE(json_extract(o.result_json,'$.error.code'),'BACKUP_EXPORT_FAILED') END,''),
+		COALESCE(r.next_action,CASE WHEN json_extract(o.result_json,'$.kind')='proxy-check' AND json_extract(o.result_json,'$.state') IN ('failed','cancelled') THEN '修正代理或凭据后重新检查；前检不代表浏览器通道或断线保护。' WHEN json_extract(o.result_json,'$.kind')='cookie-import' AND json_extract(o.result_json,'$.state') IN ('failed','cancelled') THEN '查看逐条结果；重新预览后先核对同键再合并重试，不自动清空。' WHEN json_extract(o.result_json,'$.kind') LIKE 'batch-%' AND json_extract(o.result_json,'$.state') IN ('failed','cancelled') THEN '按任务ID查看该次逐项结果；明确继续未完成项，修订冲突需重新预览，已完成项不重做。' WHEN json_extract(o.result_json,'$.kind')='backup-export' AND json_extract(o.result_json,'$.state') IN ('failed','cancelled') THEN '读取此导出任务；临时包不是成功备份，先核对停止/权限/空间与原发布摘要，不自动重做或覆盖。' END,'')
+		FROM activities a LEFT JOIN runtime_events r ON r.activity_id=a.id LEFT JOIN operations o ON o.id=a.id ORDER BY a.rowid DESC LIMIT 100`)
 	if err != nil {
 		return View{}, err
 	}
 	defer rows.Close()
 	for rows.Next() {
 		var a Activity
-		if err = rows.Scan(&a.ID, &a.Time, &a.Action, &a.Target, &a.Detail); err != nil {
+		if err = rows.Scan(&a.ID, &a.Time, &a.Action, &a.Target, &a.Detail, &a.EnvironmentID, &a.SessionID, &a.ErrorCode, &a.NextAction); err != nil {
 			return View{}, err
 		}
 		a.Result = "success"
+		if a.ErrorCode != "" {
+			a.Result = "error"
+		}
 		state.Activities = append(state.Activities, a)
 	}
 	if err = rows.Err(); err != nil {
@@ -668,5 +1360,78 @@ func (s *Service) view() (View, error) {
 	if err != nil {
 		return View{}, err
 	}
-	return View{Mode: "native", State: state, KernelRecords: installed, KernelOperations: operations}, nil
+	profiles, references, err := s.profileViews(ids)
+	if err != nil {
+		return View{}, err
+	}
+	proxyRecords, err := s.listProxies()
+	if err != nil {
+		return View{}, err
+	}
+	for _, record := range proxyRecords {
+		state.Proxies = append(state.Proxies, map[string]any{"id": record.ID, "name": record.Name, "type": record.Type, "host": record.Host, "port": record.Port, "country": record.Country, "status": record.Status, "username": "", "password": ""})
+	}
+	sessions := map[string]RuntimeSession{}
+	for _, environmentID := range ids {
+		if slot := s.runtimeSlots[environmentID]; slot != nil {
+			sessions[environmentID] = runtimeSessionView(slot)
+		}
+	}
+	for index := range state.Environments {
+		if session, ok := sessions[state.Environments[index].ID]; ok {
+			state.Environments[index].Status = session.State
+			state.Environments[index].LastOpened = session.StartedAt
+			if session.Error != nil {
+				state.Environments[index].Error = session.Error.Message
+			}
+		}
+	}
+	proxyOperations, err := s.listProxyOperations()
+	if err != nil {
+		return View{}, err
+	}
+	cookieOperations, err := s.listCookieOperations()
+	if err != nil {
+		return View{}, err
+	}
+	batchOperations, err := s.listBatchOperations()
+	if err != nil {
+		return View{}, err
+	}
+	backupOperations, backups, err := s.listBackupOperations()
+	if err != nil {
+		return View{}, err
+	}
+	restores, err := s.listRestoreOperations()
+	if err != nil {
+		return View{}, err
+	}
+	recycles, err := s.listRecycleOperations()
+	if err != nil {
+		return View{}, err
+	}
+	var recycleMaintenance *Operation
+	migrations, err := s.listMigrations()
+	if err != nil {
+		return View{}, err
+	}
+	var migrationMaintenance *Operation
+	if s.migrationTask != nil {
+		op := copyMigrationOperation(s.migrationTask.operation)
+		migrationMaintenance = &op
+	}
+	defaultKernel, err := s.readKernelDefault()
+	if err != nil {
+		return View{}, err
+	}
+	if s.recycleTask != nil {
+		op := copyRecycleOperation(s.recycleTask.operation)
+		recycleMaintenance = &op
+	}
+	var maintenance *Operation
+	if s.restoreTask != nil {
+		op := copyRestoreOperation(s.restoreTask.operation)
+		maintenance = &op
+	}
+	return View{Mode: "native", State: state, KernelRecords: installed, KernelOperations: operations, DefaultKernel: &defaultKernel, Fingerprints: profiles, DataReferences: references, RuntimeSessions: sessions, NetworkResources: s.networkResourceViews(), NativeProxyRecords: proxyRecords, ProxyOperations: proxyOperations, CookieOperations: cookieOperations, BatchOperations: batchOperations, BackupOperations: backupOperations, NativeBackups: backups, RestoreOperations: restores, Maintenance: maintenance, RecycleOperations: recycles, RecycleMaintenance: recycleMaintenance, MigrationOperations: migrations, MigrationMaintenance: migrationMaintenance, EnvironmentPage: &page}, nil
 }

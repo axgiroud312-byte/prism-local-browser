@@ -1,0 +1,383 @@
+{
+  "verifiedDate": "2026-10-06",
+  "previousHead": "a91045997cf457eda218ed348bf1ea74484620c4",
+  "sourceBinding": "Exact source-file SHA-256 values below were compiled into the recorded test binary; the production change is only the nil EmptyProfileLease interface conversion fix.",
+  "onlyProductionChange": "internal/workspace/batch_worker.go: normalize nil *EmptyProfileLease before returning BatchDirectoryLease",
+  "automatedUIClicks": false,
+  "externalIndependentEgressVerified": false,
+  "realUserDataUsed": false,
+  "formalAcceptance": {
+    "accepted": 4,
+    "total": 21,
+    "closedIssues": 0
+  },
+  "targeted": {
+    "passedTopLevel": 12,
+    "failedTopLevel": 0,
+    "explicitOptInTopLevel": 11,
+    "tests": [
+      {
+        "name": "TestRealLocalAcceptanceTwoRunningEnvironmentBackupAndRestore",
+        "elapsed": "20.57s"
+      },
+      {
+        "name": "TestBatchProductionPreparationFailureHasNoLease",
+        "elapsed": "0.00s"
+      },
+      {
+        "name": "TestRealLocalAcceptanceCookiePartitionsExpiryClearAndCancellation",
+        "elapsed": "4.31s"
+      },
+      {
+        "name": "TestRealLocalAcceptanceQueue12FIFOActualDirectoryFailureAndIndependentRetry",
+        "elapsed": "20.07s"
+      },
+      {
+        "name": "TestV1SafeGapRecycleActualDeleteACLRecoveryOnlyConfirmedTarget",
+        "elapsed": "0.12s"
+      },
+      {
+        "name": "TestV1SafeGapRestoreActualACLBlockedSwitchAndRollbackRecovery",
+        "elapsed": "0.16s"
+      },
+      {
+        "name": "TestV1SafeGapRestoreActualSQLiteFullTransactionAndDirectoryRollback",
+        "elapsed": "0.53s"
+      },
+      {
+        "name": "TestRealLocalAcceptanceForceStopAfterOrdinaryTimeout",
+        "elapsed": "22.95s"
+      },
+      {
+        "name": "TestV1SafeGapBatchProductionACLFailureNoTypedNil",
+        "elapsed": "0.07s"
+      },
+      {
+        "name": "TestV1SafeGapBatch257ActualACLRetry",
+        "elapsed": "1.34s"
+      },
+      {
+        "name": "TestV1SafeGapBackupActualACLFailures",
+        "elapsed": "0.27s"
+      },
+      {
+        "name": "TestV1SafeGapRestorePreviewActualACLReadFailure",
+        "elapsed": "0.07s"
+      }
+    ],
+    "log": "output\\goal\\V1-local-acceptance\\reviewed-final-suite.log",
+    "sha256": "5ce418481e4d207da0ff1b124b2ad59ad63b9166ad104169a100f4a715e819dd",
+    "binarySHA256": "5d1570ddb8244b3d4e1a85218aa60b1f8f934a63d969c166094775817ebee00e"
+  },
+  "readOnlyReview": {
+    "initialP2": "Exact root process handle must remain pinned throughout thread suspension to prevent PID reuse",
+    "corrected": true,
+    "focusedReReview": "No remaining credible P1/P2; root handle retained until after checked live-thread cleanup",
+    "testsReexecutedAfterCorrection": true
+  },
+  "frontend": {
+    "command": "npm run check:background",
+    "passed": 131,
+    "failed": 0,
+    "uiTestsRun": false,
+    "logSHA256": "11d1132b3d583c304b66e49effe88041005f0c643fa02571dc64157f6e8fa51f"
+  },
+  "go": {
+    "command": "go test -p 1 -count=1 -json ./...",
+    "exitCode": 0,
+    "passedTopLevel": 342,
+    "skippedTopLevel": 30,
+    "failedTopLevel": 0,
+    "logSHA256": "4a31d366a6c3914535d3e4f2f3469a6b2f4a594b7a84fc173aea1c934047feda",
+    "vet": {
+      "command": "go vet -p 1 ./...",
+      "exitCode": 0,
+      "logSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "completionEvidence": "Both shell completion exit codes were zero; empty vet log is not the sole evidence."
+    }
+  },
+  "sourceFiles": [
+    {
+      "path": "internal/workspace/batch_worker.go",
+      "sha256": "b9b439e730ec5c5292de0c373f0c7f438e87d21cdd60e8062e8d30325d66cb6b"
+    },
+    {
+      "path": "internal/workspace/batch_prepare_failure_test.go",
+      "sha256": "22c939e562e85c6f334ccd61f1b303658155943a769ad1397cd1ff9cc5b2ef6f"
+    },
+    {
+      "path": "internal/workspace/acceptance_acl_windows_test.go",
+      "sha256": "94f7290be046728077804ad0a155f278100dbdb3cba98b5247af25f42df10991"
+    },
+    {
+      "path": "internal/workspace/local_acceptance_real_windows_test.go",
+      "sha256": "923d58b0d53894e91647fa1dfae0e6a08f3784998687d88f3206a915403201ec"
+    },
+    {
+      "path": "internal/workspace/runtime_force_real_windows_test.go",
+      "sha256": "2d867853591f41a61a4324bb27fab64a028f56631289c2cc20bc4f287278fb99"
+    },
+    {
+      "path": "internal/workspace/cookie_boundaries_real_windows_test.go",
+      "sha256": "8c4589a3217f5427faad3019dad30ce1d6a44a1284d6cc2656e8511eff652018"
+    },
+    {
+      "path": "internal/workspace/backup_multi_real_windows_test.go",
+      "sha256": "a30013606516285cd8d7f7f9b4f6372b8c5c2ead94db332321c3c6c2db8b5370"
+    },
+    {
+      "path": "internal/workspace/queue_large_real_windows_test.go",
+      "sha256": "5ed376d64dbd4c86c2df637d88b4ee695f35781d2a6697e7581e2464dfbe4d83"
+    },
+    {
+      "path": "internal/workspace/safe_gap_windows_test.go",
+      "sha256": "f6cb035b64a39fff5af1b9035570c35ea88a946d14d4cae799f6e81d62327bf7"
+    },
+    {
+      "path": "internal/workspace/restore_acl_recovery_windows_test.go",
+      "sha256": "d2ee4a82bb1d11db036d10bbca3bc49027a1f0d88119843b91cfc2dbb641eb31"
+    },
+    {
+      "path": "internal/workspace/recycle_acl_recovery_windows_test.go",
+      "sha256": "e6c0f9472edd1d8e4cbd182eab2a112df8a73bf8de8d52f1e201719695dffde0"
+    },
+    {
+      "path": "internal/workspace/restore_capacity_windows_test.go",
+      "sha256": "0d9a66d2a57b68bfb5b32e78dae867432598c9b091be7d53e7dd26a52553763e"
+    }
+  ],
+  "observations": [
+    {
+      "name": "backup-acl-output-create.json",
+      "sha256": "39e73cf7c7b940eca9ade1789a7924b330c3c0d6f213c1f5ba290317ed3477e4",
+      "facts": {
+        "actualWin32AccessDenied": true,
+        "automatedUIClicks": false,
+        "newRequestExportAfterRepairCompleted": true,
+        "noPackagePublishedOnFailure": true,
+        "observedAt": "2026-10-06T02:56:10.9278865Z",
+        "ordinaryResponseRedacted": true,
+        "originalDACLRestoredAndCompared": true,
+        "scope": "actual Windows files/DACL and application services in newly owned temporary roots; synthetic kernel metadata, no Chromium/browser/UI/external-egress claim",
+        "sourceBytesUnchanged": true
+      }
+    },
+    {
+      "name": "backup-acl-source-read.json",
+      "sha256": "dda3146335cc02f73e3e2f492e0abbc5782c223c31e8785a450120e68f29f794",
+      "facts": {
+        "actualWin32AccessDenied": true,
+        "automatedUIClicks": false,
+        "newRequestExportAfterRepairCompleted": true,
+        "noPackagePublishedOnFailure": true,
+        "observedAt": "2026-10-06T02:56:10.793827Z",
+        "ordinaryResponseRedacted": true,
+        "originalDACLRestoredAndCompared": true,
+        "scope": "actual Windows files/DACL and application services in newly owned temporary roots; synthetic kernel metadata, no Chromium/browser/UI/external-egress claim",
+        "sourceBytesUnchanged": true
+      }
+    },
+    {
+      "name": "batch-257-acl.json",
+      "sha256": "31258a5eb076b09ce87df4b193ea29c016c9ecdc9648773e971a7da38036cd32",
+      "facts": {
+        "actualEmptyDirectories": 257,
+        "automatedUIClicks": false,
+        "completedBeforeActualWin32AccessDenied": 128,
+        "completedIdentitiesPreserved": true,
+        "distinctIDsAndSeeds": 257,
+        "failedPreparedIdentityPreserved": true,
+        "observedAt": "2026-10-06T02:56:10.5938963Z",
+        "originalDACLRestoredAndCompared": true,
+        "requestDeduplicated": true,
+        "resultPagesOf25AndEnvironmentPageOf8Checked": true,
+        "scope": "actual Windows files/DACL and application services in newly owned temporary roots; synthetic kernel metadata, no Chromium/browser/UI/external-egress claim"
+      }
+    },
+    {
+      "name": "batch-production-acl.json",
+      "sha256": "6555ee9bea25ebaeb15e576e85f170d3777848ba3faf479dba9f286aca8ba98b",
+      "facts": {
+        "actualWin32AccessDenied": true,
+        "automatedUIClicks": false,
+        "failedLeaseIsNilInterface": true,
+        "noCleanupPanic": true,
+        "noPrepareBatchDirectorySeam": true,
+        "observedAt": "2026-10-06T02:56:09.3119915Z",
+        "retryAfterOriginalDACLRestorationCompleted": true,
+        "safeFailureCode": "DIRECTORY_WRITE_FAILED",
+        "scope": "actual Windows files/DACL and application services in newly owned temporary roots; synthetic kernel metadata, no Chromium/browser/UI/external-egress claim"
+      }
+    },
+    {
+      "name": "cookie-boundaries.json",
+      "sha256": "490d99182ecebdfd3b91cf95e344d6effd50519ba8ed35b95d2a0232c238abec",
+      "facts": {
+        "alreadyMatchedWithoutRewrite": 3,
+        "automatedUIClicks": false,
+        "cancellationBoundary": "host-only scheduling barrier after first real write/readback; not an uncontrolled pipe interruption",
+        "cancellationVerifiedFirstAndSkippedSecond": true,
+        "clearRequestDeduplicated": true,
+        "defaultAndBothPartitionAncestorKeysReadBack": 3,
+        "existingConflictReportedAndMergedWithoutRemovingPartitions": true,
+        "expiredPreviewRejectedWithoutChangingSameKey": true,
+        "explicitClearActuallyRemovedAllPartitions": true,
+        "incompletePartitionRejected": true,
+        "kernelVersion": "148.0.7778.215",
+        "observedAt": "2026-10-06T02:55:25.4016376Z",
+        "ordinaryResponsesExcludeCookieValues": true,
+        "otherEnvironmentCookiesUnchanged": true,
+        "savedIdentityAndDataReferenceUnchanged": true,
+        "scope": "real production provider and exact 148; owned synthetic workspace and controlled local upstream; no UI clicks or independent external egress claim"
+      }
+    },
+    {
+      "name": "force-stop.json",
+      "sha256": "e8bce00901a0ff08294fe2d429910419ccba3b616c5f3a2e51ab0076ed4ee03c",
+      "facts": {
+        "automatedUIClicks": false,
+        "completeResourcesReleased": true,
+        "durableCookieBaselinePreservedAfterReopen": true,
+        "exactRootHandleRetainedThroughoutThreadSuspensionAndCleanup": true,
+        "forceStopActuallyUsed": true,
+        "observedAt": "2026-10-06T02:56:09.2378768Z",
+        "oldSessionForceRejected": true,
+        "ordinaryStopActuallyTimedOut": true,
+        "ordinaryStopError": "PROCESS_STOP_TIMEOUT",
+        "otherRootAliveBeforeAndAfterForce": true,
+        "ownedJobExitCode": 1,
+        "savedIdentityAndDataReferenceUnchanged": true,
+        "scope": "real production provider and exact 148; owned synthetic workspace and controlled local upstream; no UI clicks or independent external egress claim",
+        "suspendedOnlyExactOwnedRootThreads": 63
+      }
+    },
+    {
+      "name": "queue-12-real.json",
+      "sha256": "de7b621023d54398861454d0c9cef1aec1538cec1048a46c08663620ba7807a4",
+      "facts": {
+        "actualProtectedRunningSuccessesBeforeRetry": 10,
+        "actualRootCreationOrderFIFO": true,
+        "actualWin32DirectoryAccessDenialFailedOnlyOneItem": true,
+        "allOwnedTreesNormallyStopped": true,
+        "automatedUIClicks": false,
+        "cancelledWaiterNeverLaunched": true,
+        "failedItemReleasedAllResources": true,
+        "failureCode": "PROCESS_START_FAILED",
+        "observedAt": "2026-10-06T02:55:45.477301Z",
+        "originalDACLRestoredAndCompared": true,
+        "queuedBeforeFirstActualCheckReleased": 12,
+        "resourceBoundary": "actual directory access failure; not OS memory/process exhaustion",
+        "runningAfterIndependentRetry": 11,
+        "scope": "real production provider and exact 148; owned synthetic workspace and controlled local upstream; no UI clicks or independent external egress claim",
+        "singleFailureRetryStartedOnlyThatEnvironment": true,
+        "successesRetainedExactSessionsAndProcessesDuringRetry": true
+      }
+    },
+    {
+      "name": "recycle-delete-acl-recovery.json",
+      "sha256": "cf4e3e99fa9a54b7722b96a0ca100e0307bc0a0ed869e227c0ff6f0b612d4c0a",
+      "facts": {
+        "actualWin32DeleteAccessDenied": true,
+        "automatedUIClicks": false,
+        "checkpointReturnedNoSyntheticError": true,
+        "completeTargetInventoryRetainedBeforeRepair": true,
+        "historicalBackupDigestUnchanged": true,
+        "objectDeleteAndParentDeleteChildRoutesDenied": true,
+        "observedAt": "2026-10-06T02:55:45.5960163Z",
+        "onlyAuthorizedTargetDeleted": true,
+        "originalDACLsRestoredAndCompared": true,
+        "otherEnvironmentIdentityAndBytesUnchanged": true,
+        "sameConfirmedOperationCompleted": true,
+        "scope": "actual Windows files/DACL and application services in newly owned temporary roots; synthetic kernel metadata, no Chromium/browser/UI/external-egress claim",
+        "serviceReopenedAndProtectionRetained": true
+      }
+    },
+    {
+      "name": "restore-acl-recovery.json",
+      "sha256": "97fba3d2fdd9545535f277abb93c2f47d057af024d13e25c16afed0a147730e5",
+      "facts": {
+        "actualWin32ParentWriteAccessDenied": true,
+        "automatedUIClicks": false,
+        "bothCompleteSidesAndOriginalDirectoryIdentityRetained": true,
+        "checkpointReturnedNoSyntheticError": true,
+        "forwardSwitchAndRollbackBlockedByActualACL": true,
+        "identityUnchanged": true,
+        "observedAt": "2026-10-06T02:55:45.7595514Z",
+        "originalDACLRestoredAndCompared": true,
+        "originalTaskRecoveredExactOldObjectAndBytes": true,
+        "scope": "actual Windows files/DACL and application services in newly owned temporary roots; synthetic kernel metadata, no Chromium/browser/UI/external-egress claim",
+        "secondReopenIdempotent": true,
+        "serviceReopenRetainedProtection": true,
+        "sourceArchiveRemovedBeforeRecovery": true,
+        "startAndMutationRejectedWhileProtected": true
+      }
+    },
+    {
+      "name": "restore-preview-acl.json",
+      "sha256": "1d37bf78820aea60686acb58496a96f7de27f0ef454636ac3bad82cf6b074c1f",
+      "facts": {
+        "actualWin32ReadAccessDenied": true,
+        "automatedUIClicks": false,
+        "databaseWALSHMAndBrowserBytesUnchanged": true,
+        "observedAt": "2026-10-06T02:56:11.0026775Z",
+        "originalDACLRestoredAndCompared": true,
+        "preflightAfterRepairCanRestore": true,
+        "sameIdentityInPreview": true,
+        "scope": "actual Windows files/DACL and application services in newly owned temporary roots; synthetic kernel metadata, no Chromium/browser/UI/external-egress claim"
+      }
+    },
+    {
+      "name": "restore-sqlite-capacity.json",
+      "sha256": "3ac44d63be0f6cfd9d8880e9dd9cf24a7f113ee710775acd1e009dfa40cce207",
+      "facts": {
+        "actualConfigurationTransactionErrorCode": 13,
+        "actualWorkerRolledBackDirectoriesAndConfiguration": true,
+        "automatedUIClicks": false,
+        "capacityMechanism": "PRAGMA max_page_count in this fixture's real SQLite only; not NTFS disk full",
+        "capacityRestoredBeforeOriginalTaskFinalization": true,
+        "committedMarkerStayedZero": true,
+        "noPartialImportedEnvironmentOrLiveDirectory": true,
+        "observedAt": "2026-10-06T02:55:46.2863111Z",
+        "realSystemDiskFilled": false,
+        "scope": "actual Windows files/DACL and application services in newly owned temporary roots; synthetic kernel metadata, no Chromium/browser/UI/external-egress claim",
+        "unrelatedIdentityAndBrowserBytesUnchanged": true
+      }
+    },
+    {
+      "name": "two-environment-backup-restore.json",
+      "sha256": "44385a6f17dacac4669d116e3d61130e1a40a955904b8403aac79076015ccb95",
+      "facts": {
+        "allOriginalIDsProfilesAndDataReferencesPreserved": true,
+        "automatedUIClicks": false,
+        "bothCookieLocalStorageIndexedDBReadBackAfterRestore": true,
+        "bothRealDirectoriesAndConfigurationsRestored": true,
+        "bothRealThreeStorageMutationsObservedAfterBackup": true,
+        "fullPackageEnvironmentCount": 2,
+        "kernelBinariesIncluded": false,
+        "kernelVersion": "148.0.7778.215",
+        "normallyStoppedByBackupWithExit0": 2,
+        "observedAt": "2026-10-06T02:55:21.0910363Z",
+        "realRunningSelectedEnvironments": 2,
+        "requestDeduplicated": true,
+        "scope": "real production provider and exact 148; owned synthetic workspace and controlled local upstream; no UI clicks or independent external egress claim",
+        "serviceReopened": true,
+        "unselectedThirdEnvironmentAliveDuringBackupAndUnchangedAfterRestore": true,
+        "windowsUserContext": "same-user"
+      }
+    }
+  ],
+  "preservedFailures": [
+    "initial CLI argument quoting failure (no test run)",
+    "gap-1: production typed-nil cleanup panic on actual DACL denial",
+    "gap-2: tests treated intentional protected-close warnings as failures",
+    "gap-3/gap-4: tests incorrectly used an eight-row view for off-page sessions; checked recovery before its durable outcome; repaired without weakening assertions"
+  ],
+  "remaining": [
+    "independent external proxy/HTTPS/WSS/DNS/IPv4/IPv6/UDP/STUN observations",
+    "manual native workflows and file/uninstall dialogs",
+    "clean Windows/new-user/VM and missing-WebView2 installation",
+    "cross-Windows-login/reboot recovery",
+    "actual NTFS disk full and OS process/memory resource exhaustion",
+    "additional OS/kernel/site compatibility"
+  ]
+}

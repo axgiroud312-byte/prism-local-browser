@@ -24,11 +24,22 @@ var frontend embed.FS
 
 // Numeric PE version is 0.3.0.0; preview revision is recorded separately by the build.
 var applicationVersion = "0.3.0-preview.1"
+var applicationChannel = "development-preview"
 
-type DesktopApp struct{ service *workspace.Service }
+type DesktopApp struct {
+	service      *workspace.Service
+	startupError *workspace.Error
+	diagnostics  *workspace.DiagnosticHost
+}
 
 func (app *DesktopApp) Call(request workspace.Request) workspace.Result {
+	if app.diagnostics != nil && (request.Method == "Diagnostics.Preview" || request.Method == "Diagnostics.Export" || request.Method == "Diagnostics.EndVerification") {
+		return app.diagnostics.Call(request)
+	}
 	if app.service == nil {
+		if app.startupError != nil {
+			return workspace.Result{Mode: "native", Error: app.startupError}
+		}
 		return workspace.Result{Mode: "native", Error: &workspace.Error{Code: "STORAGE_READ_FAILED", Message: "本地数据库无法打开，原数据未重置。请检查磁盘权限或数据库版本后重新打开。", Retryable: true}}
 	}
 	return app.service.Call(request)
@@ -73,11 +84,21 @@ func main() {
 		return
 	}
 	var desktopContext context.Context
-	service, _ := workspace.Open(root, workspace.Options{ChooseArchive: func() (string, error) {
+	service, openErr := workspace.Open(root, workspace.Options{AppVersion: applicationVersion, ChooseArchive: func() (string, error) {
 		if desktopContext == nil {
 			return "", errors.New("desktop not ready")
 		}
 		return wailsruntime.OpenFileDialog(desktopContext, wailsruntime.OpenDialogOptions{Title: "选择可信 fingerprint-chromium ZIP", Filters: []wailsruntime.FileFilter{{DisplayName: "Windows内核ZIP", Pattern: "*.zip"}}})
+	}, ChooseBackupSource: func() (string, error) {
+		if desktopContext == nil {
+			return "", errors.New("desktop not ready")
+		}
+		return wailsruntime.OpenFileDialog(desktopContext, wailsruntime.OpenDialogOptions{Title: "选择完整本机备份（先只读预检）", Filters: []wailsruntime.FileFilter{{DisplayName: "完整本机备份", Pattern: "*.prismbackup"}}})
+	}, ChooseBackupDestination: func() (string, error) {
+		if desktopContext == nil {
+			return "", errors.New("desktop not ready")
+		}
+		return wailsruntime.SaveFileDialog(desktopContext, wailsruntime.SaveDialogOptions{Title: "导出完整本机备份（请选择新文件，不覆盖）", DefaultFilename: "prism-local-backup.prismbackup", Filters: []wailsruntime.FileFilter{{DisplayName: "完整本机备份", Pattern: "*.prismbackup"}}})
 	}})
 	if service != nil {
 		defer service.Close()
@@ -87,8 +108,25 @@ func main() {
 		return
 	}
 	app := &DesktopApp{service: service}
+	var safeOpenError *workspace.Error
+	if errors.As(openErr, &safeOpenError) {
+		app.startupError = safeOpenError
+	}
+	if openErr != nil && app.startupError == nil {
+		app.startupError = &workspace.Error{Code: "STORAGE_READ_FAILED", Message: "本地数据库无法打开，原数据未重置。", Retryable: true}
+	}
+	app.diagnostics = workspace.NewDiagnosticHost(root, applicationVersion, service, app.startupError, func() (string, error) {
+		if desktopContext == nil {
+			return "", errors.New("desktop not ready")
+		}
+		return wailsruntime.SaveFileDialog(desktopContext, wailsruntime.SaveDialogOptions{Title: "保存脱敏诊断（请选择新的 JSON 文件）", DefaultFilename: "prism-diagnostics.json", Filters: []wailsruntime.FileFilter{{DisplayName: "脱敏诊断 JSON", Pattern: "*.json"}}})
+	})
+	label := "开发预览"
+	if applicationChannel == "v1-candidate" {
+		label = "首版候选"
+	}
 	err = wails.Run(&options.App{
-		Title: "棱镜浏览器 · 开发预览 " + applicationVersion, Width: 1440, Height: 1000, MinWidth: 720, MinHeight: 600,
+		Title: "棱镜浏览器 · " + label + " " + applicationVersion, Width: 1440, Height: 1000, MinWidth: 720, MinHeight: 600,
 		AssetServer: &assetserver.Options{Assets: assets}, Bind: []interface{}{app},
 		OnStartup: func(ctx context.Context) { desktopContext = ctx },
 		OnShutdown: func(context.Context) {

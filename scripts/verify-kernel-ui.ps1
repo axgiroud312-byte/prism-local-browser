@@ -217,6 +217,7 @@ try {
   }
   Select-ExactKernel $officialRecord.id
   Invoke-Button '设备指纹'
+  Invoke-Button '生成并查看预览'
   $seed=Get-Value '固定指纹种子'
   if($resumeBound -and $original.configuration.name -ne '精确内核合成环境'){
     Invoke-Button '基础与代理'

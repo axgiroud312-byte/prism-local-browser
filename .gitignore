@@ -26,6 +26,8 @@ kernels/
 *.db
 *.sqlite
 *.zip
+*.prismbackup
+.prism-*.partial
 *.pem
 *.key
 backups/

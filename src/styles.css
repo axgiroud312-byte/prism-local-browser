@@ -394,7 +394,8 @@ h1 {
   gap: 10px;
   padding-top: 10px;
 }
-.button {
+.button,
+.native-proxy-manager .btn {
   display: inline-flex;
   justify-content: center;
   align-items: center;
@@ -410,18 +411,21 @@ h1 {
   font-weight: 500;
   line-height: 1;
 }
-.button:hover {
+.button:hover,
+.native-proxy-manager .btn:hover {
   background: #f6f9ff;
   border-color: #c8d6f4;
   color: #2e5fe1;
 }
-.button.primary {
+.button.primary,
+.native-proxy-manager .btn.primary {
   background: var(--blue);
   border-color: var(--blue);
   color: #fff;
   box-shadow: 0 3px 5px #3568ee16;
 }
-.button.primary:hover {
+.button.primary:hover,
+.native-proxy-manager .btn.primary:hover {
   background: #2454d4;
 }
 .button.soft-primary {
@@ -438,11 +442,17 @@ h1 {
 .button.wide {
   width: 100%;
 }
-.button.danger {
+.button.danger,
+.native-proxy-manager .btn.danger {
   background: #db5156;
   border-color: #db5156;
   color: #fff;
 }
+
+.native-runtime-network-details { white-space: normal; font-size: 12px; max-width: 420px; margin-top: 6px; }
+.native-runtime-network-details summary { cursor: pointer; color: var(--blue); }
+.native-runtime-network-details p { color: var(--muted); line-height: 1.6; overflow-wrap: anywhere; }
+.native-runtime-network-details ul { padding-left: 18px; line-height: 1.6; }
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -1251,6 +1261,20 @@ tbody tr.row-selected {
   font-size: 12px;
   margin-top: 8px;
   line-height: 1.7;
+}
+.activity-content {
+  min-width: 0;
+  flex: 1;
+  overflow-wrap: anywhere;
+}
+.activity-content .button {
+  margin-top: 8px;
+}
+.runtime-recovery-note {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  max-width: 320px;
+  line-height: 1.5;
 }
 .activity-item time {
   margin-left: auto;

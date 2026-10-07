@@ -68,8 +68,8 @@ for (const route of [
     `unmapped route ${route}`,
   );
 }
-for (const doc of ["PRD.md", "DEVELOPMENT.md", "KERNEL.md"])
+for (const doc of ["PRD.md", "DEVELOPMENT.md", "KERNEL.md", "USER_GUIDE.md"])
   assert(app.includes(`${doc}?raw`), `${doc} is not linked into the app`);
 console.log(
-  `PASS: ${docs.length} documents, local links, 12 requirements, 6 routes, 3 embedded documents.`,
+  `PASS: ${docs.length} documents, local links, 12 requirements, 6 routes, 4 embedded documents.`,
 );

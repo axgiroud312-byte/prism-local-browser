@@ -1,0 +1,8 @@
+.native-cookie-modal { max-height: calc(100vh - 64px); display: flex; flex-direction: column; }
+.native-cookie-body { min-height: 0; overflow-y: auto; }
+.native-cookie-table { overflow: auto; max-height: 320px; border: 1px solid var(--border); border-radius: 8px; }
+.native-cookie-table th, .native-cookie-table td { padding: 10px; white-space: normal; overflow-wrap: anywhere; vertical-align: top; font-size: 12px; }
+.native-cookie-table th { position: sticky; top: 0; background: var(--surface, #fff); }
+.native-cookie-error { color: #b42318 !important; }
+.native-cookie-start { display: grid; gap: 10px; }
+.native-cookie-body ul { padding-left: 20px; font-size: 12px; line-height: 1.7; overflow-wrap: anywhere; }

@@ -7,10 +7,12 @@ import {
   type ApplicationService, type ApplicationError, type ApplicationResult,
   type WorkspaceView, type EnvironmentPreview, type EnvironmentConfiguration,
   type Operation, type OperationEvent, type CreateBatchRequest, type UpdateEnvironmentRequest,
+  type GenerateFingerprintRequest, type CommitFingerprintRequest, type ProfileRevision, type DeviceProfile,
 } from "./contract.ts";
+import { applyFingerprint, demoFingerprint, demoProfile, fingerprintMatchesConfiguration } from "./fingerprint-model.ts";
 
 type StoragePort = Pick<Storage, "getItem" | "setItem" | "removeItem">;
-type Draft = { kind: "create" | "edit"; preview: EnvironmentPreview };
+type Draft = { kind: "create" | "edit"; preview: EnvironmentPreview; baseProfile?: DeviceProfile };
 const error = (code: string, message: string, retryable = false): ApplicationError => ({ code, message, retryable });
 const active = (record: Environment) => ["running", "starting", "stopping"].includes(record.status);
 const freeze = <T>(value: T): T => {
@@ -51,6 +53,7 @@ export class DemoAdapter implements ApplicationService {
   private view: WorkspaceView;
   private savedRaw: string | null = null;
   private revisions: Record<string, number> = Object.create(null);
+  private profileHistory: Record<string, ProfileRevision[]> = Object.create(null);
   private drafts = new Map<string, Draft>();
   private operations = new Map<string, Operation>();
   private requests = new Map<string, { signature: string; result: ApplicationResult<unknown> }>();
@@ -77,6 +80,21 @@ export class DemoAdapter implements ApplicationService {
             typeof metadata.revisions !== "object" || Array.isArray(metadata.revisions) ||
             Object.values(metadata.revisions).some(n => !Number.isSafeInteger(n) || Number(n) < 1)) throw new Error("invalid metadata");
           this.revisions = metadata.revisions;
+          if (metadata.fingerprintRevisions !== undefined) {
+            if (!metadata.fingerprintRevisions || typeof metadata.fingerprintRevisions !== "object" || Array.isArray(metadata.fingerprintRevisions)) throw new Error("invalid fingerprint history");
+            for (const [environmentId, history] of Object.entries(metadata.fingerprintRevisions)) {
+              if (!Array.isArray(history) || history.length === 0) throw new Error("invalid fingerprint history");
+              const environment = state.environments.find(e => e.id === environmentId);
+              if (!environment) continue;
+              history.forEach((item, index) => {
+                if (!item?.profile || item.profile.configRevision !== index + 1 || !Number.isFinite(Date.parse(item.createdAt)) || typeof item.action !== "string" || (item.restoredFrom !== undefined && (!Number.isSafeInteger(item.restoredFrom) || item.restoredFrom < 1 || item.restoredFrom > index))) throw new Error("invalid fingerprint revision");
+                const canonical = demoProfile(applyFingerprint(environment, item.profile), item.profile.configRevision);
+                if (JSON.stringify(canonical) !== JSON.stringify(item.profile)) throw new Error("invalid demo profile");
+              });
+              if (!fingerprintMatchesConfiguration(history.at(-1)!.profile, environment)) throw new Error("inconsistent current demo profile");
+              this.profileHistory[environmentId] = history;
+            }
+          }
         }
         state.environments = state.environments.map(e => ({ ...e, status: ["starting", "stopping"].includes(e.status) ? "ready" : e.status }));
       } catch {
@@ -85,7 +103,8 @@ export class DemoAdapter implements ApplicationService {
       }
     }
     for (const e of state.environments) if (!Object.hasOwn(this.revisions, e.id)) this.revisions[e.id] = 1;
-    this.view = freeze({ mode: this.mode, state, issue, damagedRecord });
+    this.profileHistory = this.synchroniseHistory(state, this.profileHistory);
+    this.view = freeze({ mode: this.mode, state, fingerprints: this.currentProfiles(this.profileHistory), issue, damagedRecord });
   }
 
   getSnapshot = () => this.view;
@@ -103,18 +122,30 @@ export class DemoAdapter implements ApplicationService {
     this.notify();
     return this.view.issue;
   }
-  private commit(state: State, revisions: Record<string, number>, reset = false): ApplicationResult<WorkspaceView> {
+  private currentProfiles(histories: Record<string, ProfileRevision[]>) { return Object.fromEntries(Object.entries(histories).map(([id, history]) => [id, history.at(-1)!])); }
+  private synchroniseHistory(state: State, histories: Record<string, ProfileRevision[]>) {
+    return Object.fromEntries(state.environments.map(environment => {
+      const history = histories[environment.id] ?? [];
+      const previous = history.at(-1)?.profile;
+      if (previous && fingerprintMatchesConfiguration(previous, environment)) return [environment.id, history];
+      const profile = demoProfile(environment, (previous?.configRevision ?? 0) + 1);
+      return [environment.id, [...history, { profile, createdAt: now(), action: previous ? "demo-edit" : "demo-created" }]];
+    }));
+  }
+  private commit(state: State, revisions: Record<string, number>, reset = false, histories = this.profileHistory): ApplicationResult<WorkspaceView> {
     const blocked = reset ? undefined : this.checkStorage();
     if (blocked) return this.failure(blocked);
     try { readState(JSON.stringify(state)); }
     catch { return this.failure(error("VALIDATION_FAILED", "工作区引用或记录无效，本次修改未保存，原记录仍在。")); }
+    const fingerprintRevisions = this.synchroniseHistory(state, reset ? {} : histories);
     try {
-      const serialized = JSON.stringify({ ...state, _application: { version: 1, revisions } });
+      const serialized = JSON.stringify({ ...state, _application: { version: 1, revisions, fingerprintRevisions } });
       this.storage.setItem(STORAGE_KEY, serialized);
       this.savedRaw = serialized;
     } catch { return this.failure(error("STORAGE_WRITE_FAILED", "浏览器存储写入失败，本次修改未保存，原记录仍在。请释放空间后重试。", true)); }
     this.revisions = revisions;
-    this.view = freeze({ mode: this.mode, state });
+    this.profileHistory = fingerprintRevisions;
+    this.view = freeze({ mode: this.mode, state, fingerprints: this.currentProfiles(fingerprintRevisions) });
     this.notify();
     return this.success(this.view);
   }
@@ -166,7 +197,9 @@ export class DemoAdapter implements ApplicationService {
     };
     const preview: EnvironmentPreview = { previewId: uid("preview"), environment,
       ...(request.kind === "edit" ? { expectedRevision: this.revisions[source!.id] } : {}) };
-    this.drafts.set(preview.previewId, { kind: request.kind, preview: structuredClone(preview) });
+    const baseProfile = request.kind === "edit" ? this.profileHistory[source!.id].at(-1)!.profile : undefined;
+    preview.fingerprint = demoFingerprint(baseProfile ?? demoProfile(environment, 1), baseProfile, request.kind === "create" ? "generate" : "edit");
+    this.drafts.set(preview.previewId, { kind: request.kind, preview: structuredClone(preview), baseProfile });
     return this.success(preview);
   }
   async regeneratePreview(previewId: string): Promise<ApplicationResult<EnvironmentPreview>> {
@@ -179,12 +212,65 @@ export class DemoAdapter implements ApplicationService {
       if (!current) return this.failure(error("PREVIEW_EXPIRED", "环境已移除，请关闭预览。", true));
       if (active(current)) return this.failure(error("PROFILE_BUSY", "环境正在运行，请停止后重新打开配置。", true));
     }
-    draft.preview.environment.seed = uniqueSeed([...this.view.state.environments.map(e => e.seed), draft.preview.environment.seed]);
-    return this.success(draft.preview);
+    return this.generateFingerprint({ previewId, kernelId: draft.preview.environment.coreId, templateId: "windows-desktop-v1", overrides: draft.preview.environment, regenerate: true });
   }
   async discardPreview(previewId: string): Promise<ApplicationResult<{ status: "discarded" }>> {
     this.drafts.delete(previewId);
     return this.success({ status: "discarded" });
+  }
+  async generateFingerprint(request: GenerateFingerprintRequest): Promise<ApplicationResult<EnvironmentPreview>> {
+    const blocked = this.checkStorage();
+    if (blocked) return this.failure(blocked);
+    const draft = this.drafts.get(request.previewId);
+    if (!draft) return this.failure(error("PREVIEW_EXPIRED", "预览已失效，请重新打开配置。", true));
+    const current = this.view.state.environments.find(e => e.id === draft.preview.environment.id);
+    if (draft.kind === "edit" && (!current || active(current))) return this.failure(error("PROFILE_BUSY", "请先停止环境，再生成档案。", true));
+    if (draft.baseProfile && request.kernelId !== draft.baseProfile.kernelId) return this.failure(error("CAPABILITY_UNSUPPORTED", "普通编辑不能跨内核切换档案。"));
+    if (request.templateId !== "windows-desktop-v1") return this.failure(error("VALIDATION_FAILED", "请选择Windows桌面模板。"));
+    const o = request.overrides;
+    const candidate = { ...draft.preview.environment, coreId: request.kernelId, fingerprintVersion: request.templateId, language: o.language, timezone: o.timezone, cpu: o.cpu, width: o.width, height: o.height };
+    if (request.regenerate) candidate.seed = uniqueSeed([...this.view.state.environments.map(e => e.seed), ...Object.values(this.profileHistory).flatMap(history => history.map(item => item.profile.seed)), candidate.seed]);
+    const invalid = this.validate({ ...candidate, name: "档案预览" }, candidate, current?.id, false);
+    if (invalid) return this.failure(invalid);
+    const profile = draft.baseProfile && fingerprintMatchesConfiguration(draft.baseProfile, candidate) ? draft.baseProfile : demoProfile(candidate, (draft.baseProfile?.configRevision ?? 0) + 1);
+    draft.preview.environment = candidate;
+    draft.preview.fingerprint = demoFingerprint(profile, draft.baseProfile, request.regenerate ? "regenerate" : draft.kind === "create" ? "generate" : "edit");
+    return this.success(draft.preview);
+  }
+  async listFingerprintRevisions(environmentId: string): Promise<ApplicationResult<ProfileRevision[]>> {
+    const blocked = this.checkStorage();
+    if (blocked) return this.failure(blocked);
+    const history = this.profileHistory[environmentId];
+    return history ? this.success([...history].reverse()) : this.failure(error("NOT_FOUND", "环境不存在。"));
+  }
+  async previewFingerprintRestore(previewId: string, revision: number): Promise<ApplicationResult<EnvironmentPreview>> {
+    const blocked = this.checkStorage();
+    if (blocked) return this.failure(blocked);
+    const draft = this.drafts.get(previewId);
+    if (!draft || draft.kind !== "edit" || !draft.baseProfile) return this.failure(error("PREVIEW_EXPIRED", "请重新打开已有环境配置。", true));
+    const current = this.view.state.environments.find(e => e.id === draft.preview.environment.id);
+    if (!current || active(current)) return this.failure(error("PROFILE_BUSY", "请先停止环境，再回滚档案。", true));
+    const original = this.profileHistory[current.id]?.find(item => item.profile.configRevision === revision)?.profile;
+    if (!original) return this.failure(error("NOT_FOUND", "历史档案不存在。"));
+    if (original.kernelId !== draft.baseProfile.kernelId) return this.failure(error("CAPABILITY_UNSUPPORTED", "只允许同内核档案回滚。"));
+    const candidate = applyFingerprint(draft.preview.environment, original);
+    const invalid = this.validate({ ...candidate, name: "回滚预览" }, candidate, current.id, false);
+    if (invalid) return this.failure(invalid);
+    const profile = demoProfile(candidate, draft.baseProfile.configRevision + 1);
+    draft.preview.environment = candidate;
+    draft.preview.fingerprint = demoFingerprint(profile, draft.baseProfile, "restore", revision);
+    return this.success(draft.preview);
+  }
+  async commitFingerprintRevision(request: CommitFingerprintRequest): Promise<ApplicationResult<{ status: "completed"; environment: { record: Environment; revision: number }; newRevision: number; fingerprintRevision: number }>> {
+    const cached = this.memo<{ status: "completed"; environment: { record: Environment; revision: number }; newRevision: number; fingerprintRevision: number }>("fingerprint-commit", request);
+    if (cached) return cached;
+    const draft = this.drafts.get(request.previewId);
+    if (!draft?.preview.fingerprint || request.environmentId !== draft.preview.environment.id || request.profileHash !== draft.preview.fingerprint.previewProfile.configHash) return this.failure(error("VALIDATION_FAILED", "档案预览标识或摘要不一致，未保存。"));
+    // The shared mutation is synchronous: only this public method owns its
+    // request signature/result. No await exposes a half-cached "update" result.
+    const result = this.updateEnvironmentRecord(request);
+    if (!result.ok) return result;
+    return this.remember("fingerprint-commit", request, this.success({ ...result.data, newRevision: result.data.environment.revision, fingerprintRevision: this.profileHistory[request.environmentId].at(-1)!.profile.configRevision }, result.operationId));
   }
   private memo<T>(method: string, request: { requestId: string }): ApplicationResult<T> | undefined {
     if (!request.requestId?.trim()) return this.failure(error("VALIDATION_FAILED", "缺少操作请求标识。"));
@@ -218,25 +304,35 @@ export class DemoAdapter implements ApplicationService {
   async updateEnvironment(request: UpdateEnvironmentRequest) {
     const cached = this.memo<{ status: "completed"; environment: { record: Environment; revision: number } }>("update", request);
     if (cached) return cached;
+    const result = this.updateEnvironmentRecord(request);
+    return result.ok ? this.remember("update", request, result) : result;
+  }
+  private updateEnvironmentRecord(request: UpdateEnvironmentRequest): ApplicationResult<{ status: "completed"; environment: { record: Environment; revision: number } }> {
     const blocked = this.checkStorage();
     if (blocked) return this.failure<{ status: "completed"; environment: { record: Environment; revision: number } }>(blocked);
     const draft = this.drafts.get(request.previewId);
     const old = draft && this.view.state.environments.find(e => e.id === draft.preview.environment.id);
     if (!draft || draft.kind !== "edit" || !old) return this.failure<{ status: "completed"; environment: { record: Environment; revision: number } }>(error("PREVIEW_EXPIRED", "预览已失效，请重新打开配置。", true));
     if (active(old)) return this.failure<{ status: "completed"; environment: { record: Environment; revision: number } }>(error("PROFILE_BUSY", "请先关闭该环境，再修改配置。", true));
-    if (request.expectedRevision !== this.revisions[old.id]) return this.failure<{ status: "completed"; environment: { record: Environment; revision: number } }>(error("REVISION_CONFLICT", "配置已被更新，请重新打开最新记录后重试。", true));
+    const currentProfile = this.profileHistory[old.id].at(-1)!.profile;
+    if (request.expectedRevision !== this.revisions[old.id] || request.expectedRevision !== draft.preview.expectedRevision || draft.baseProfile?.configHash !== currentProfile.configHash) return this.failure(error("REVISION_CONFLICT", "配置或预览基线已被更新，请重新打开最新记录后重试。", true));
     const invalid = this.validate(request.configuration, old, old.id);
     if (invalid) return this.failure<{ status: "completed"; environment: { record: Environment; revision: number } }>(invalid);
+    if (request.configuration.seed !== draft.preview.environment.seed || !draft.preview.fingerprint || !fingerprintMatchesConfiguration(draft.preview.fingerprint.previewProfile, request.configuration) || (request.profileHash && request.profileHash !== draft.preview.fingerprint.previewProfile.configHash)) return this.failure<{ status: "completed"; environment: { record: Environment; revision: number } }>(error("VALIDATION_FAILED", "设备字段与服务预览不一致，请先生成并查看预览。"));
     const record = { ...old, ...configuration(request.configuration), status: "ready" as const, error: undefined };
     const revision = this.revisions[old.id] + 1;
     const next = { ...this.view.state, environments: this.view.state.environments.map(e => e.id === old.id ? record : e),
       activities: [{ id: uid("log"), time: now(), action: "修改环境", target: record.name, detail: "配置已持久保存；仅显式编辑改变档案。", result: "success" as const }, ...this.view.state.activities] };
-    const committed = this.commit(next, { ...this.revisions, [old.id]: revision });
+    const fingerprint = draft.preview.fingerprint;
+    const history = this.profileHistory[old.id];
+    if (fingerprint.previewProfile.configHash !== currentProfile.configHash && fingerprint.previewProfile.configRevision !== currentProfile.configRevision + 1) return this.failure(error("REVISION_CONFLICT", "档案修订必须连续，旧预览不能覆盖当前有效档案。", true));
+    const histories = fingerprint.previewProfile.configHash === history.at(-1)!.profile.configHash ? this.profileHistory : { ...this.profileHistory, [old.id]: [...history, { profile: fingerprint.previewProfile, createdAt: now(), action: fingerprint.action, ...(fingerprint.restoredFrom ? { restoredFrom: fingerprint.restoredFrom } : {}) }] };
+    const committed = this.commit(next, { ...this.revisions, [old.id]: revision }, false, histories);
     if (!committed.ok) return committed;
     const operationId = uid("op");
     this.publishOperation({ id: operationId, kind: "edit", state: "completed", total: 1, completedIds: [old.id], cancelRequested: false });
     this.drafts.delete(request.previewId);
-    return this.remember("update", request, this.success({ status: "completed" as const, environment: { record, revision } }, operationId));
+    return this.success({ status: "completed" as const, environment: { record, revision } }, operationId);
   }
   async createBatch(request: CreateBatchRequest): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>> {
     const cached = this.memo<{ status: "accepted"; operation: Operation }>("create", request);
@@ -251,6 +347,7 @@ export class DemoAdapter implements ApplicationService {
       return this.failure(error("PROFILE_BUSY", "环境正在启动或关闭，请等待当前操作结束后重试创建。", true));
     const invalid = this.validate(request.configuration, draft.preview.environment, undefined, request.count === 1);
     if (invalid) return this.failure(invalid);
+    if (request.configuration.seed !== draft.preview.environment.seed || !draft.preview.fingerprint || !fingerprintMatchesConfiguration(draft.preview.fingerprint.previewProfile, request.configuration) || (request.profileHash && request.profileHash !== draft.preview.fingerprint.previewProfile.configHash)) return this.failure(error("VALIDATION_FAILED", "设备字段与创建预览不一致，请先生成完整预览。"));
     const operation: Operation = { id: uid("op"), kind: "create", state: "accepted", total: request.count, completedIds: [], cancelRequested: false };
     this.operations.set(operation.id, operation);
     this.activeOperation = operation.id;
