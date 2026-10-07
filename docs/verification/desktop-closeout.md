@@ -86,3 +86,9 @@
 ## 历史正式验收
 
 正式计数仍 **4/21**。本轮实际通过行已追加，T05–T21 的完整正式条件未全部满足；没有因为目标取消、模拟、局部真实通过或新构建预设整票通过。#32–#37 保持 OPEN、PR #38保持DRAFT及原base依赖；元数据按本轮真实结果更新，不自动合并。后续只推进具体阻塞，不恢复旧1:1任务或继续图库审计。
+
+## GitHub 发布回执
+
+已推送两项源码修复及验收记录到原 `codex/issue32-37-ui-integration`，没有改base或合并。已将[总规范 #32](https://github.com/axgiroud312-byte/prism-local-browser/issues/32)顶部目标和标题改为当前桌面收口，明确“用户取消1:1要求”，下方旧规范完整保留；[PR #38](https://github.com/axgiroud312-byte/prism-local-browser/pull/38)更新为原生保护修复与真实验收，仍 OPEN/DRAFT、base `codex/issue28-30-delivery`。首次发布 head `6c76c81` 的 Browser clicks 在回执核对时 IN_PROGRESS，没有记远端通过；它是浏览器点击检查，不能证明桌面收口。
+
+本轮新增回执均已成功发布：[范围 #32](https://github.com/axgiroud312-byte/prism-local-browser/issues/32#issuecomment-6031197051)、[批量 #33](https://github.com/axgiroud312-byte/prism-local-browser/issues/33#issuecomment-6031197352)、[指纹/回收 #34](https://github.com/axgiroud312-byte/prism-local-browser/issues/34#issuecomment-6031197658)、[内核/Clash/迁移 #35](https://github.com/axgiroud312-byte/prism-local-browser/issues/35#issuecomment-6031198018)、[备份/清理 #36](https://github.com/axgiroud312-byte/prism-local-browser/issues/36#issuecomment-6031198362)、[整体验收 #37](https://github.com/axgiroud312-byte/prism-local-browser/issues/37#issuecomment-6031198713)、[真实迁移阻塞 T20/#21](https://github.com/axgiroud312-byte/prism-local-browser/issues/21#issuecomment-6031199041)。未关闭旧失败票、未把取消的1:1要求勾成通过、未自动合并。
