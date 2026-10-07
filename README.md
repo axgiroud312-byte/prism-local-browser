@@ -2,6 +2,10 @@
 
 面向 Windows 本机多环境管理的桌面底座、独立前端原型及产品开发文档。
 
+**2026-10-07：用户取消1:1要求，本轮交付了新 Windows 桌面程序，但桌面可用性收口尚未完成。** `build/bin/prism-browser.exe` 为 **0.3.0-preview.8**，构建源码 `e349eeadaa92a83ce60d97ec2ef5b309fdf68d92`。本轮真实新程序验证了启动/正常退出/重开、148 环境和持久数据、真实批次部分失败后续做、Clash 本机 `7897` 代理的 HTTPS 访问、回收恢复与备份数据恢复等限定流程；preview7 与 preview8 的证据分别记录。**150 内核在普通打开和迁移试用时真实崩溃，根因尚未确认**；桌面在途取消、连续等待/迟到回复及丢失来源后的可靠恢复仍有缺口。通过、不适用和阻塞分别见 [桌面验收表](docs/verification/desktop-closeout.md)，程序来源和启动方式见 [桌面交付记录](docs/verification/desktop-release-closeout.md)。停止扩展视觉截图、参考恢复和图库审计；旧失败不改写成通过。正式计数仍 **4/21**，六票 OPEN、PR #38 草稿及原分支依赖保留。
+
+## 历史界面与桌面阶段记录（保留原结果与来源）
+
 **新版界面已整体接入可操作的 Vite 页面。** [#32–#37](docs/GOAL.md) 以「完整代码」冻结归档为唯一 [视觉基线](docs/UI_REFERENCE.md)，增量 [PR #38](https://github.com/axgiroud312-byte/prism-local-browser/pull/38) 保留 PR #31 的 `e170099` 成果与旧分支依赖，不自动合并。环境表/分组、连续环境窗口、唯一代理导入、内核/迁移、备份/恢复、记录/帮助/诊断均采用新界面。唯一共享 `npm run check` **196/196，4.7分钟** 属于 `681f823`；后续修复只做相关复验，不冒称全套跑在新提交。`70943b0` 的 **173状态×两视口＝346张** 实际App合成图保留历史来源，完整参考缺口与容器映射仍单列，**不是全产品1:1或桌面验收通过**。原阶段命令和逐项证据见 [整组记录](docs/verification/issue37.md)。
 
 后续修复已集成至 `398314c`：SOCKS5 认证字节校验、迁移原预检清理保护及[本轮独立证据](docs/verification/issue37-frontier-evidence.md)已追加；20张新图为10 ADAPTED / 10 MAPPED。[图库总入口](docs/screenshots/issue37-continuation/index.html)现有20包/926记录，旧FAIL/MISSING不改。原47个有限缺口实际派生44已补证/3有剩余，**不是完整功能或严格1:1通过**。

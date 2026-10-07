@@ -4,6 +4,8 @@
 
 版本：1.0 · 更新日期：2026-10-07
 
+本轮真实证据的边界：ENV-001/002 的 native 多项批次在 preview8 发生自然名称冲突，2 成功/1 失败后仅续做原失败项，所有预分配身份与旧成功项保持；ENV-003 的 148 启停和故障后重开通过，但 150 普通打开及原 ID 重试失败。FP-001/002 的保存身份、运行中关键字段保护实际核对，连续等待/迟到回复仍仅有定向自动化证据。DATA-001 的 `Recycle.ReadPage` 原回收历史、回收后恢复及三存储读回通过；BKP-001 的 preview7 完整恢复及 preview8 已知来源预检丢弃/73 项记录不变通过，丢失来源标识的可靠恢复仍阻塞。PRX-001 在 preview8 的 Clash 本机 `7897` 真实 HTTPS 访问通过，preview7 受控本机代理故障停止/原 ID 恢复范围通过；实际 Clash 节点链和全协议无旁路尚未证实。CORE-001 的精确内核/独立目录已核对，迁移原 148 身份和数据失败保护通过，真实 GUI 迁移至 150 仍崩溃。UX-001 的新程序退出重开和资源清理已实读。各项详见下方报告，不合并为完整需求或正式 T05–T21 全项通过；正式计数仍 4/21。
+
 当前指派转为桌面可用性收口，用户取消1:1要求。ENV-001/002/003、FP-001/002、DATA-001、BKP-001、CORE-001、PRX-001、CK-001、UX-001 的本轮新程序与实际流程另见 [桌面收口验收](verification/desktop-closeout.md)。批次精确执行范围见 [批次报告](verification/desktop-batch-closeout.md)，指纹请求归属见 [指纹报告](verification/desktop-fingerprint-closeout.md)，回收历史和迁移清理见 [回收与迁移报告](verification/desktop-recycle-migration-closeout.md)。旧视觉差异和来源保留；自动化服务、模拟 bridge、不适用条款及真实新桌面证据分开计数。
 
 当前流程：UX-001 / DOC-001 保留 [#28浏览器点击CI](https://github.com/axgiroud312-byte/prism-local-browser/issues/28) 的 `53ac883`；默认 `tests/ui` 由Vite提供页面，不构建或打包，报告在 `output/playwright/`。#29/#30的环境与统一窗口功能基线由PR #31精确 `e170099` 保留；旧 **21/21** 为 [历史逐票证据](verification/issue28-30.md)，不是本轮结果，不增加桌面验收计数。
