@@ -2,13 +2,27 @@
 
 # 当前交付验收记录
 
+## #28–#30 统一流程页面验收（2026-10-06；本地通过，待合并）
+
+[#30](https://github.com/axgiroud312-byte/prism-local-browser/issues/30) 实现环境表和统一创建/编辑窗口，[#29](https://github.com/axgiroud312-byte/prism-local-browser/issues/29) 六项整体流程分别核对；[#28](https://github.com/axgiroud312-byte/prism-local-browser/issues/28) 直接复用 `53ac883` 的单任务轻量检查，不重造 CI。实现 `9e5b819`、审查修复 `d039147` 集成到 `e1573ca`，普通编辑/重开保持 seed，创建确认后按原 ID 打开，失败不再创建、不回退直连。
+
+`npm run check` **21/21，45.2 秒**：14 条 demo、7 条合成 bridge。覆盖创建/编辑保存/取消/重载、分组搜索、服务内核及网络选择、换一套和稳定保存、单个及混合批量启停、创建后异步打开失败重试不重复创建、坏桥阻断、代理导入取消/失败/成功草稿及焦点恢复、存储失败逐项反馈、大批次取消、390px 窄窗口和低频 Cookie/备份入口。#29/#30 共用该整轮结果，不逐票重跑。首次基线 RED、整轮失败及修复后的定向结果如实见 [逐票矩阵](verification/issue28-30.md)，不是一路成功的声明。
+
+独立代码审查发现 2 个 P2，无 P1；与联调揭示的菜单遮挡一起修复并回归通过。非法数量不提交且草稿可恢复；真正未知提交继续保留原请求/幂等保护。demo 持久化失败明确失败/未执行，保留已成功项和原记录，完成写失败后恢复存储可重试。`npm run typecheck` 通过；`npm run check:docs` **52 文档/链接、12 需求、6 路由、4 内嵌文档通过**，首轮遗漏 `activity` 的失败修复保留，检查脚本未改。最新远程单 job/head/时间与待合并交付回填对应 PR/issue。
+
+[PR #31](https://github.com/axgiroud312-byte/prism-local-browser/pull/31) 向现有集成分支增量交付，待合并；PR #27 保持草稿及历史未验说明。[远程 CI 37424312735](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37424312735) 对交付 head `935cf5f` **21/21，57.2 秒**，仅一个 Browser clicks job、1 分 38 秒，步骤未包含构建或桌面测试。回执文档不改变源码/测试；最终最新 head/run 另核对并登记 PR/三票，不能把旧 head 结果冒称最终提交。
+
+已生成并核对：[环境表](screenshots/issue30-environments.png)、[新建窗口](screenshots/issue30-create.png)、[窄窗口](screenshots/issue30-narrow.png)，Vite 当前源码合成 demo 数据、页面错误 0。不是旧候选 exe、真实内核、SQLite 或流量证据。注入 bridge fixture 的 sessionStorage 仅证明模拟重载。未执行生产构建/打包、Go/Wails 全套、安装卸载、Windows UIA、真实内核/进程/网络验证；旧候选身份和下方历史事实不改写，正式 **4/21、T05–T21 / #6–#22 OPEN** 保持不变。
+
 ## 日常 CI 精简为浏览器点击（2026-10-06）
 
 [#28](https://github.com/axgiroud312-byte/prism-local-browser/issues/28)：默认 CI 从两版本前端检查和桌面安装任务缩为一个 Node.js 24 / Windows 的浏览器任务。仅安装 npm 依赖、Playwright Chromium headless shell 并运行 `test:ui`；Playwright 启动/关闭 Vite，失败附件保留 7 天。`npm run check` 同步为页面测试，不执行生产构建、Go/Wails、安装包或产品内核探测。
 
 本地首次因缺少 Playwright 对应浏览器而无法启动，补齐测试浏览器后，`npm run check` **13/13 通过（41.8 秒）**。现有创建/编辑/重载、取消、校验、失败重试、跨标签页、窄窗口及模拟 bridge 交互断言均保留。报告在 `output/playwright/report/`；远程执行结果回写 #28，不能由本地通过推定远程通过。本轮没有运行完整后台测试或构建。
 
-验证范围为 demo 和模拟 bridge 的页面行为，不增加原生能力验收计数。当前规则已移除旧六页布局约束、禁止浏览器点击及自动续跑旧路线；[#29 Ant Browser 主流程](https://github.com/axgiroud312-byte/prism-local-browser/issues/29) 仅创建任务，界面尚未修改。下方保留原候选交付的历史结果。
+#28 远程实际结果已核对：[37419040709](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37419040709)，保留的 `53ac883` 提交只有 Browser clicks 一个 job，1 分 27 秒完成，13/13 浏览器用例通过（34.1 秒）。没有生产构建/Go/Wails/安装或产品内核探测；成功 run 的失败附件上传按条件跳过，仅配置存在，不冒称实际上传已验。该旧结果不能作为 #29/#30 新用例通过的证据。
+
+该次 #28 检查只覆盖 demo 和模拟 bridge，不增加原生能力验收计数。当时已移除旧六页布局约束、禁止浏览器点击及自动续跑旧路线，#29 仅建票、界面尚未修改；后续 #29/#30 的新结果见本页上方，不倒改原记录。下方继续保留原候选交付的历史结果。
 
 ## 本机缺口补验与批次失败修复（2026-10-06）
 

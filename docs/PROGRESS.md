@@ -2,8 +2,11 @@
 
 更新时间：2026-10-06，用户调整为 Ant Browser 核心流程与浏览器点击检查。
 
-- 当前任务：[#28](https://github.com/axgiroud312-byte/prism-local-browser/issues/28) 精简 CI，默认只运行浏览器点击，不构建或打包；本地/远程结果见 [验收记录](ACCEPTANCE.md)。
-- 下一项：[#29](https://github.com/axgiroud312-byte/prism-local-browser/issues/29) 已建票，参照 Ant Browser 调整环境列表、新建和打开流程，本次尚未开始界面实现。
+- 已有成果：[#28](https://github.com/axgiroud312-byte/prism-local-browser/issues/28) 精简 CI，`53ac883` 保留；本地 13/13、远程 [37419040709](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37419040709) 单个 Browser clicks / 13/13 已通过，不构建或打包。
+- 当前批次：[#30](https://github.com/axgiroud312-byte/prism-local-browser/issues/30) 承接环境表与统一创建/编辑窗口；[#29](https://github.com/axgiroud312-byte/prism-local-browser/issues/29) 负责整体六项验收，不重复页面实现。目标为服务内核/直连或代理/自动固定指纹/创建并打开/关闭重开，保留失败恢复与身份保护。
+- 本地验收完成：实现 `9e5b819`、审查修复 `d039147` 已集成；`npm run check` **21/21，45.2 秒**（14 demo + 7 合成 bridge），类型检查通过，三张当前源码合成截图已核对。#29 六项与 #30 七项分别见 [逐票矩阵](verification/issue28-30.md)。早期失败和修复保留，未跳过旧用例；最新远程结果及待合并增量 PR 随实际回执更新。
+- 交付：[PR #31](https://github.com/axgiroud312-byte/prism-local-browser/pull/31)，`codex/issue28-30-delivery` → `goal/v1-remaining-integration`，待合并。交付 head `935cf5f` 的[远程 37424312735](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37424312735) 单 Browser clicks job **21/21，57.2 秒，job 1 分 38 秒**；最终回执文档提交后最新 head 结果登记 PR/三票。PR #27 保留草稿，尚不含未合入的 #31 界面代码；没有自动合并或关闭历史票。
+- 本批次没有重建历史候选或执行真实桌面验收；新 Vite UI 不冒称已包含在旧安装包。源码、测试、文档/截图分文件负责，由协调者最终集成并登记实际结果。
 - 旧 T01–T21 及其缺口保留为历史，不再自动逐票推进；以下是此前候选交付记录，不能作为当前检查要求。
 
 ## 历史候选交付状态
@@ -13,7 +16,7 @@
 - 已有实跑：正式代理启动/关闭/重开、故障和资源恢复、FIFO/Cookie、真实148→150代理迁移/完整回退；direct三存储/回收/恢复五切点只算各自范围。
 - 现场：`goal/v1-remaining-integration`，主代理唯一写，子代理只读。四个交接修复保留并提交；无自动点击/停服/真实数据修改。2026-10-06已核对恢复登录，38个原本本地提交已推送，创建[草稿PR #27](https://github.com/axgiroud312-byte/prism-local-browser/pull/27)；修订默认无点击CI已通过，暂不合并或关闭票。
 
-## 当前阻塞与恢复入口
+## 历史桌面阻塞与恢复入口（不前置阻塞本批次页面工作）
 
 - 正式provider、proxy迁移副本及本机故障矩阵已验证；跨登录/重启及独立外部全路径仍待验，未知清理继续占用。
 - 148/150均已获核验并运行；专用外部代理/独立观察器未发现，开发HTTP_PROXY不算授权资源。最小配置与人工步骤见报告；精确candidate.6在Home新用户/VM、缺WebView2及人工验收仍缺，Server开发预览安装和本机空产品根不替代。

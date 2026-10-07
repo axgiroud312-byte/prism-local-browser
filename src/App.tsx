@@ -7,6 +7,7 @@ import {
   useSyncExternalStore,
   type ReactNode,
 } from "react";
+import { createPortal } from "react-dom";
 import {
   Activity as ActivityIcon,
   ArrowDownToLine,
@@ -48,7 +49,6 @@ import {
   Settings2,
   ShieldCheck,
   SlidersHorizontal,
-  Sparkles,
   Square,
   Terminal,
   Trash2,
@@ -82,6 +82,7 @@ import {
   type EnvironmentPreview,
   type FingerprintPreview,
   type ProfileRevision,
+  type Operation,
 } from "./application/contract";
 import { applyFingerprint, fingerprintMatchesConfiguration } from "./application/fingerprint-model";
 import prdText from "../docs/PRD.md?raw";
@@ -100,21 +101,37 @@ import { readRuntimeStartPlan } from "./application/runtime-start-plan";
 import { NativeBackupManager } from "./components/NativeBackupManager";
 import { NativeRecycleManager } from "./components/NativeRecycleManager";
 import { NativeDiagnostics } from "./components/NativeDiagnostics";
-import { FingerprintRevisionPanel } from "./components/FingerprintRevisionPanel";
+import { EnvironmentForm } from "./components/EnvironmentForm";
 
 type Route =
   "environments" | "proxies" | "kernels" | "backups" | "activity" | "guide";
 type Drawer = {
   kind: "create" | "edit";
   environment: Environment;
-  tab: "basic" | "fingerprint" | "preferences";
   previewId: string;
   requestId: string;
+  creationOperationId?: string;
+  creationUnconfirmed?: boolean;
+  openAfterCreate?: boolean;
   expectedRevision?: number;
   fingerprint?: FingerprintPreview;
   history?: ProfileRevision[];
   userDataRef?: string;
 };
+type EnvironmentOutcome = {
+  id: string;
+  name: string;
+  action: "打开" | "关闭" | "分组";
+  state: "pending" | "accepted" | "success" | "error" | "skipped";
+  message: string;
+  operationId?: string;
+  created?: boolean;
+};
+const fingerprintInputKey = (environment: Environment) => JSON.stringify([
+  environment.coreId, environment.seed, environment.fingerprintVersion,
+  environment.language, environment.timezone, environment.cpu,
+  environment.width, environment.height,
+]);
 type Dialog =
   | { kind: "delete"; ids: string[] }
   | { kind: "cookies"; id: string }
@@ -267,14 +284,21 @@ export default function App({ application }: { application: ApplicationService }
   const [selected, setSelected] = useState<string[]>([]);
   const [page, setPage] = useState(1);
   const [drawer, setDrawer] = useState<Drawer | null>(null);
+  const [drawerSuspended, setDrawerSuspended] = useState(false);
+  const drawerVisible = !!drawer && !drawerSuspended;
   const drawerRef = useRef(drawer);
   drawerRef.current = drawer;
   const drawerRuntime = drawer?.kind === "edit" ? workspace.runtimeSessions?.[drawer.environment.id] : undefined;
-  const profileBusy = nativeMode && !!drawerRuntime && (["starting", "running", "stopping"].includes(drawerRuntime.state) || !!drawerRuntime.pid || drawerRuntime.resourcesPending || drawerRuntime.needsReconcile || drawerRuntime.persistencePending);
+  const drawerNetworkResources = drawer?.kind === "edit" ? workspace.networkResources?.[drawer.environment.id] : undefined;
+  const profileBusy = nativeMode && (!!drawerNetworkResources || !!drawerRuntime && (["starting", "running", "stopping"].includes(drawerRuntime.state) || !!drawerRuntime.pid || drawerRuntime.resourcesPending || drawerRuntime.needsReconcile || drawerRuntime.persistencePending));
   const previewOpenSequence = useRef(0);
   const fingerprintBusy = useRef(false);
+  const automaticPreviewAttempt = useRef("");
+  const [previewError, setPreviewError] = useState("");
   const [dialog, setDialog] = useState<Dialog | null>(null);
   const [nativeProxyImportOpen, setNativeProxyImportOpen] = useState(false);
+  const [draftProxyImportOpen, setDraftProxyImportOpen] = useState(false);
+  const [draftProxyImportBusy, setDraftProxyImportBusy] = useState(false);
   const [nativeCookieEnvironment, setNativeCookieEnvironment] = useState<Environment | null>(null);
   const [nativeBatchInput, setNativeBatchInput] = useState<NativeBatchDialogInput | null>(null);
   const [nativeBackupSelection, setNativeBackupSelection] = useState<string[]>([]);
@@ -314,27 +338,35 @@ export default function App({ application }: { application: ApplicationService }
   const checkingBusy = useRef(false);
   const runtimeActions = useRef(new Set<string>());
   const [runtimeActionIds, setRuntimeActionIds] = useState<string[]>([]);
+  const [outcomes, setOutcomes] = useState<EnvironmentOutcome[]>([]);
+  const outcomesRef = useRef(outcomes);
+  outcomesRef.current = outcomes;
+  const [groupPending, setGroupPending] = useState(false);
   const initialDraft = useRef("");
   const initialFingerprintHash = useRef("");
   const backupFile = useRef<HTMLInputElement>(null);
   const cookieFile = useRef<HTMLInputElement>(null);
   const proxyFile = useRef<HTMLInputElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
+  const drawerOverlayRef = useRef<HTMLDivElement>(null);
+  const draftProxyOverlayRef = useRef<HTMLDivElement>(null);
+  const proxyReturnFocus = useRef<HTMLElement | null>(null);
+  const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 });
   const searchRef = useRef<HTMLInputElement>(null);
   const notify = (text: string, error = false) => {
     setToast({ text, error });
     if (toastTimer.current) clearTimeout(toastTimer.current);
     toastTimer.current = setTimeout(() => setToast(null), 4200);
   };
-  const update = (fn: (s: State) => State, activity?: Pick<Activity, "action" | "target" | "detail" | "result">) => {
+  const updateDemo = (fn: (s: State) => State, activity?: Pick<Activity, "action" | "target" | "detail" | "result">) => {
     const result = application.compatibility?.update((s) => {
       const next = fn(s);
       return activity ? { ...next, activities: [{ ...activity, id: uid("log"), time: now() }, ...next.activities] } : next;
-    });
-    if (!result) notify("此演示操作尚未接入桌面服务。", true);
-    else if (!result.ok) notify(result.error.message, true);
-    return Boolean(result?.ok);
+    }) ?? { ok: false as const, mode: application.mode, error: { code: "CAPABILITY_UNSUPPORTED", message: "此演示操作尚未接入桌面服务。", retryable: false } };
+    if (!result.ok) notify(result.error.message, true);
+    return result;
   };
+  const update = (fn: (s: State) => State, activity?: Pick<Activity, "action" | "target" | "detail" | "result">) => updateDemo(fn, activity).ok;
   const log = (
     action: string,
     target: string,
@@ -390,7 +422,7 @@ export default function App({ application }: { application: ApplicationService }
     return () => window.removeEventListener("hashchange", change);
   }, []);
   const closeDrawer = () => {
-    if (generating || saving.current) return;
+    if (saving.current || drawer?.creationOperationId || drawer?.creationUnconfirmed) return;
     if (
       drawer &&
       (JSON.stringify(drawer.environment) !== initialDraft.current || (drawer.fingerprint?.previewProfile.configHash ?? "") !== initialFingerprintHash.current) &&
@@ -400,11 +432,22 @@ export default function App({ application }: { application: ApplicationService }
     previewOpenSequence.current++;
     if (drawer) void application.discardPreview(drawer.previewId);
     setDrawer(null);
+    setDrawerSuspended(false);
+    setPreviewError("");
   };
   useEffect(() => {
     const key = (e: KeyboardEvent) => {
       if (nativeBatchInput || nativeCookieEnvironment || nativeRecycleSelection) {
         if ((e.ctrlKey || e.metaKey) && e.key === "k") e.preventDefault();
+        return;
+      }
+      if (draftProxyImportOpen || dialog) {
+        if ((e.ctrlKey || e.metaKey) && e.key === "k") e.preventDefault();
+        if (e.key === "Escape" && !draftProxyImportBusy && !groupPending) {
+          e.preventDefault();
+          if (draftProxyImportOpen) setDraftProxyImportOpen(false);
+          else setDialog(null);
+        }
         return;
       }
       if ((e.ctrlKey || e.metaKey) && e.key === "k") {
@@ -413,40 +456,43 @@ export default function App({ application }: { application: ApplicationService }
       }
       if (e.key === "Escape") {
         setMenu(null);
-        if (!generating) {
-          closeDrawer();
-          setDialog(null);
-        }
+        if (drawerVisible) closeDrawer();
       }
     };
     window.addEventListener("keydown", key);
     return () => window.removeEventListener("keydown", key);
-  }, [generating, drawer, nativeBatchInput, nativeCookieEnvironment, nativeRecycleSelection]);
+  }, [generating, drawer, drawerVisible, dialog, draftProxyImportOpen, draftProxyImportBusy, groupPending, nativeBatchInput, nativeCookieEnvironment, nativeRecycleSelection]);
   useEffect(() => {
-    if (!drawer && !dialog) return;
+    if (dialog?.kind === "proxy" || draftProxyImportOpen || !drawerVisible || !proxyReturnFocus.current) return;
+    const timer = setTimeout(() => proxyReturnFocus.current?.focus(), 40);
+    return () => clearTimeout(timer);
+  }, [dialog?.kind, draftProxyImportOpen, drawerVisible]);
+  useEffect(() => {
+    if (!formError) return;
+    const overlay = dialog ? overlayRef.current : drawerVisible ? drawerOverlayRef.current : null;
+    overlay?.querySelector('[role="alert"]')?.scrollIntoView({ block: "nearest" });
+  }, [formError, Boolean(dialog), drawerVisible]);
+  useEffect(() => {
+    if (!drawerVisible && !dialog && !draftProxyImportOpen) return;
     const oldOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     const previous = document.activeElement as HTMLElement;
-    const timer = setTimeout(
-      () =>
-        overlayRef.current
-          ?.querySelector<HTMLElement>("button, input, select, textarea")
-          ?.focus(),
-      30,
-    );
+    const topOverlay = () => draftProxyImportOpen ? draftProxyOverlayRef.current : dialog ? overlayRef.current : drawerOverlayRef.current;
+    const timer = setTimeout(() => topOverlay()?.querySelector<HTMLElement>("input:not(:disabled), textarea:not(:disabled), button:not(:disabled), select:not(:disabled)")?.focus(), 30);
     const trap = (e: KeyboardEvent) => {
-      if (e.key !== "Tab" || !overlayRef.current) return;
+      const overlay = topOverlay();
+      if (e.key !== "Tab" || !overlay) return;
       const elements = [
-        ...overlayRef.current.querySelectorAll<HTMLElement>(
-          "button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), a[href]",
+        ...overlay.querySelectorAll<HTMLElement>(
+          "button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), a[href], summary",
         ),
       ].filter((el) => el.offsetParent !== null);
       const first = elements[0],
         last = elements.at(-1);
-      if (e.shiftKey && document.activeElement === first) {
+      if (e.shiftKey && (document.activeElement === first || !overlay.contains(document.activeElement))) {
         e.preventDefault();
         last?.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
+      } else if (!e.shiftKey && (document.activeElement === last || !overlay.contains(document.activeElement))) {
         e.preventDefault();
         first?.focus();
       }
@@ -458,7 +504,7 @@ export default function App({ application }: { application: ApplicationService }
       document.removeEventListener("keydown", trap);
       previous?.focus();
     };
-  }, [Boolean(drawer || dialog)]);
+  }, [drawerVisible, Boolean(dialog), draftProxyImportOpen]);
   const navigate = (r: Route) => {
     location.hash = `/${r}`;
   };
@@ -484,8 +530,9 @@ export default function App({ application }: { application: ApplicationService }
     (e) => e.status === "running",
   ).length;
   const errors = nativeMode ? workspace.environmentPage?.errorCount ?? 0 : state.environments.filter((e) => e.status === "error").length;
+  const usableKernels = state.kernels.filter(kernel => kernel.available && (!nativeMode || workspace.kernelRecords?.some(record => record.id === kernel.id && record.status === "verified")));
   const patchDraft = (value: Partial<Environment>) => {
-    if (saving.current) return;
+    if (saving.current || drawerRef.current?.creationOperationId || drawerRef.current?.creationUnconfirmed) return;
     if (profileBusy && Object.keys(value).some(key => !["name", "group", "note"].includes(key))) return;
     setFormError("");
     setDrawer((d) =>
@@ -493,19 +540,28 @@ export default function App({ application }: { application: ApplicationService }
     );
   };
   async function openCreate(template?: Environment) {
+    if (drawerRef.current) { setDrawerSuspended(false); return; }
+    if (saving.current || batchBusy.current) { notify("请等待当前操作完成，或取消余下任务。", true); return; }
     const sequence = ++previewOpenSequence.current;
     const result = await application.previewEnvironment({ kind: "create", sourceId: template?.id });
     if (sequence !== previewOpenSequence.current) { if (result.ok) void application.discardPreview(result.data.previewId); return; }
     if (!result.ok) { notify(result.error.message, true); return; }
     const preview = result.data;
-    initialDraft.current = JSON.stringify(preview.environment);
+    const environment = { ...preview.environment, coreId: usableKernels.some(kernel => kernel.id === preview.environment.coreId) ? preview.environment.coreId : usableKernels.find(kernel => kernel.id === workspace.defaultKernel?.kernelId)?.id ?? usableKernels[0]?.id ?? preview.environment.coreId };
+    if (!template && group !== "全部分组") environment.group = group;
+    initialDraft.current = JSON.stringify(environment);
     initialFingerprintHash.current = preview.fingerprint?.previewProfile.configHash ?? "";
-    setDrawer({ kind: "create", ...preview, requestId: uid("request"), tab: "basic" });
+    automaticPreviewAttempt.current = "";
+    setPreviewError("");
+    setDrawer({ kind: "create", ...preview, environment, requestId: uid("request") });
     setFormError("");
     setQuantity(1);
+    setDrawerSuspended(false);
     setMenu(null);
   }
   async function openEdit(e: Environment) {
+    if (drawerRef.current) { setDrawerSuspended(false); return; }
+    if (saving.current || batchBusy.current) { notify("请等待当前操作完成，或取消余下任务。", true); return; }
     const sequence = ++previewOpenSequence.current;
     const result = await application.previewEnvironment({ kind: "edit", sourceId: e.id });
     if (sequence !== previewOpenSequence.current) { if (result.ok) void application.discardPreview(result.data.previewId); return; }
@@ -513,13 +569,16 @@ export default function App({ application }: { application: ApplicationService }
     const preview = result.data;
     initialDraft.current = JSON.stringify(preview.environment);
     initialFingerprintHash.current = preview.fingerprint?.previewProfile.configHash ?? "";
-    setDrawer({ kind: "edit", ...preview, requestId: uid("request"), tab: "basic" });
+    automaticPreviewAttempt.current = "";
+    setPreviewError("");
+    setDrawer({ kind: "edit", ...preview, requestId: uid("request") });
     setQuantity(1);
+    setDrawerSuspended(false);
     setFormError("");
     setMenu(null);
     const history = await application.listFingerprintRevisions(e.id);
     setDrawer(current => current?.previewId === preview.previewId ? { ...current, history: history.ok ? history.data : undefined } : current);
-    if (!history.ok && drawerRef.current?.previewId === preview.previewId) setFormError(history.error.message);
+    if (!history.ok && previewOpenSequence.current === sequence) setFormError(history.error.message);
   }
   function applyProfilePreview(previewId: string, preview: EnvironmentPreview) {
     setDrawer(current => {
@@ -527,19 +586,43 @@ export default function App({ application }: { application: ApplicationService }
       return { ...current, requestId: uid("request"), fingerprint: preview.fingerprint, userDataRef: preview.userDataRef ?? current.userDataRef, environment: applyFingerprint(current.environment, preview.fingerprint.previewProfile) };
     });
   }
-  async function generateProfile(regenerate = false) {
-    if (!drawer || fingerprintBusy.current || saving.current || profileBusy) return;
-    const target = drawer.previewId;
+  async function generateProfile(regenerate = false, automatic = false) {
+    const draft = drawerRef.current;
+    if (!draft || draft.creationOperationId || draft.creationUnconfirmed || fingerprintBusy.current || saving.current || profileBusy) return;
+    const target = draft.previewId;
+    const inputKey = fingerprintInputKey(draft.environment);
     fingerprintBusy.current = true;
     setGenerating(true);
-    setFormError("");
+    setPreviewError("");
     try {
-      const result = await application.generateFingerprint({ previewId: target, kernelId: drawer.environment.coreId, templateId: drawer.environment.fingerprintVersion, overrides: drawer.environment, regenerate });
-      if (drawerRef.current?.previewId !== target) return;
-      if (result.ok) { applyProfilePreview(target, result.data); notify(regenerate ? "新的种子只在预览中；查看变更后保存才生效。" : "档案预览已更新，没有保存或启动浏览器。"); }
-      else setFormError(result.error.message);
+      const result = await application.generateFingerprint({ previewId: target, kernelId: draft.environment.coreId, templateId: draft.environment.fingerprintVersion, overrides: draft.environment, regenerate });
+      if (drawerRef.current?.previewId !== target || fingerprintInputKey(drawerRef.current.environment) !== inputKey) return;
+      if (result.ok) {
+        if (automatic && !initialFingerprintHash.current) initialFingerprintHash.current = result.data.fingerprint?.previewProfile.configHash ?? "";
+        applyProfilePreview(target, result.data);
+        if (regenerate) notify("已换一套指纹草稿；保存才生效，取消保留原身份。");
+      } else setPreviewError(result.error.message);
+    } catch {
+      if (drawerRef.current?.previewId === target) setPreviewError("指纹预览暂时无法读取，草稿已保留，请重试。");
     } finally { fingerprintBusy.current = false; setGenerating(false); }
   }
+  const draftFingerprintKey = drawer ? fingerprintInputKey(drawer.environment) : "";
+  const selectedKernelRecord = workspace.kernelRecords?.find(record => record.id === drawer?.environment.coreId);
+  const canGenerateProfile = !!drawer && usableKernels.some(kernel => kernel.id === drawer.environment.coreId);
+  const profileIsFresh = !!drawer?.fingerprint && fingerprintMatchesConfiguration(drawer.fingerprint.previewProfile, drawer.environment);
+  const pendingConfiguration = nativeMode && drawer?.environment.coreId === "kernel-pending";
+  const canSaveProfile = drawer?.kind === "edit" ? pendingConfiguration || profileIsFresh : profileIsFresh && canGenerateProfile;
+  useEffect(() => {
+    if (!drawer || drawer.creationOperationId || drawer.creationUnconfirmed || profileBusy || !canGenerateProfile || profileIsFresh || generating || savePending) return;
+    const key = `${drawer.previewId}:${draftFingerprintKey}`;
+    if (automaticPreviewAttempt.current === key) return;
+    const timer = setTimeout(() => {
+      if (fingerprintBusy.current || saving.current) return;
+      automaticPreviewAttempt.current = key;
+      void generateProfile(false, true);
+    }, 120);
+    return () => clearTimeout(timer);
+  }, [drawer?.previewId, drawer?.creationOperationId, drawer?.creationUnconfirmed, draftFingerprintKey, canGenerateProfile, profileIsFresh, profileBusy, generating, savePending]);
   async function previewProfileRestore(revision: number) {
     if (!drawer || fingerprintBusy.current || saving.current || profileBusy) return;
     const target = drawer.previewId;
@@ -551,7 +634,7 @@ export default function App({ application }: { application: ApplicationService }
       else setFormError(result.error.message);
     } finally { fingerprintBusy.current = false; setGenerating(false); }
   }
-  async function saveEnvironment() {
+  async function saveEnvironment(openAfterCreate = false) {
     if (batchBusy.current || saving.current || fingerprintBusy.current || !drawer) return;
     const target = drawer.previewId;
     saving.current = true;
@@ -568,34 +651,58 @@ export default function App({ application }: { application: ApplicationService }
         setDrawer(null);
         return;
       }
-      if (nativeMode) {
-        if (!Number.isSafeInteger(quantity) || quantity < 1) { setFormError("数量必须是可精确表示的正整数；没有保存总数产品配额。"); return; }
+      const recoveringCreation = !!drawer.creationOperationId || !!drawer.creationUnconfirmed;
+      if (!recoveringCreation && (!Number.isSafeInteger(quantity) || quantity < 1)) { setFormError("数量必须是可精确表示的正整数；没有保存总数产品配额。"); return; }
+      if (!recoveringCreation && nativeMode && quantity > 1) {
         const planned = await application.previewBatch?.({ kind: "create", create: { ...request, count: quantity } });
         if (drawerRef.current?.previewId !== target) return;
         if (!planned?.ok) { setFormError(planned && !planned.ok ? planned.error.message : "当前桌面服务未提供持久批次。"); return; }
         setNativeBatchInput({ kind: "create", initialPage: planned.data }); setDrawer(null); void application.discardPreview(target);
         return;
       }
-      const accepted = await application.createBatch({ ...request, count: quantity });
-      if (drawerRef.current?.previewId !== target) return;
-      if (!accepted.ok) { setFormError(accepted.error.message); return; }
+      let operation: Operation | undefined;
+      if (drawer.creationOperationId) {
+        const existing = await application.getOperation(drawer.creationOperationId);
+        if (!existing.ok) { setFormError(`创建结果尚未确认：${existing.error.message}。重试只核实原任务，不会重复创建。`); return; }
+        operation = existing.data;
+      } else {
+        const accepted = await application.createBatch({ ...request, count: quantity });
+        if (drawerRef.current?.previewId !== target) return;
+        if (!accepted.ok) {
+          if (nativeMode && ["NATIVE_UNAVAILABLE", "CAPABILITY_UNSUPPORTED"].includes(accepted.error.code)) setDrawer(draft => draft?.previewId === target ? { ...draft, creationUnconfirmed: true, openAfterCreate: openAfterCreate || draft.openAfterCreate } : draft);
+          else setDrawer(draft => draft?.previewId === target ? { ...draft, creationUnconfirmed: false, openAfterCreate: undefined } : draft);
+          setFormError(accepted.error.message); return;
+        }
+        operation = accepted.data.operation;
+        setDrawer(draft => draft?.previewId === target ? { ...draft, creationOperationId: operation!.id, creationUnconfirmed: false, openAfterCreate: openAfterCreate || draft.openAfterCreate } : draft);
+      }
       batchBusy.current = true;
-      creationOperation.current = accepted.data.operation.id;
+      creationOperation.current = operation.id;
       latestOperationEvent.current = undefined;
-      setDrawer(null);
-      let inspected = await application.getOperation(creationOperation.current);
+      if (!nativeMode && quantity > 1) setDrawer(null);
+      let inspected = { ok: true as const, mode: application.mode, data: operation } as Awaited<ReturnType<ApplicationService["getOperation"]>>;
       while (inspected.ok && !operationIsTerminal(inspected.data)) {
         setBatch({ label: "创建环境", done: inspected.data.completedIds.length, total: inspected.data.total });
         await sleep(30);
         inspected = await application.getOperation(creationOperation.current);
       }
-      if (!inspected.ok) notify(inspected.error.message, true);
+      if (!inspected.ok) { setFormError(`创建结果尚未确认：${inspected.error.message}。请重试核实原任务，不会重复创建。`); return; }
       else {
-        const operation = inspected.data;
-        const prefix = operation.state === "cancelled" ? "已取消余下任务；" : "";
-        notify(`${operation.error?.message || prefix}已创建 ${operation.completedIds.length} 个环境`, operation.state === "failed");
+        operation = inspected.data;
+        if (!operation.completedIds.length) {
+          setFormError(operation.error?.message || "创建未完成，草稿已保留，请修正后重试。");
+          setDrawer(draft => draft?.previewId === target || !draft && quantity > 1 ? { ...(draft ?? drawer), creationOperationId: undefined, creationUnconfirmed: false, openAfterCreate: undefined, requestId: uid("request") } : draft);
+          return;
+        }
+        setDrawer(null);
+        void application.discardPreview(target);
+        notify(`已创建 ${operation.completedIds.length} 个环境${operation.state !== "completed" ? "；其余未完成，请查看操作记录" : ""}`, operation.state === "failed");
       }
       setGroup("全部分组"); setStatus("all"); setSearch(""); setPage(1);
+      // Creation is already committed. Opening/retrying uses only these IDs.
+      batchBusy.current = false;
+      setBatch(null);
+      if (openAfterCreate || drawer.openAfterCreate) await launch(operation.completedIds, true);
     } finally {
       saving.current = false;
       setSavePending(false);
@@ -616,23 +723,71 @@ export default function App({ application }: { application: ApplicationService }
     runtimeActions.current.delete(id);
     setRuntimeActionIds([...runtimeActions.current]);
   }
-  async function launch(ids: string[]) {
+  function setOutcome(outcome: EnvironmentOutcome) {
+    setOutcomes(previous => {
+      const found = previous.find(item => item.id === outcome.id);
+      const next = { ...found, ...outcome, operationId: outcome.operationId, created: outcome.created ?? found?.created };
+      return found ? previous.map(item => item.id === outcome.id ? next : item) : [...previous, next];
+    });
+  }
+  function applyRuntimeOperation(id: string, operation: Operation) {
+    setOutcomes(previous => previous.map(item => {
+      if (item.id !== id || item.operationId !== operation.id) return item;
+      const finished = operationIsTerminal(operation);
+      return { ...item,
+        state: !finished ? "accepted" : operation.state === "completed" ? "success" : "error",
+        message: !finished ? operation.persistencePending ? "结果待保存，请稍候核实" : item.action === "打开" ? "正在打开，等待浏览器就绪" : "正在关闭，等待资源释放" : operation.state === "completed" ? item.action === "打开" ? "已打开" : "已关闭，浏览数据已保留" : operation.error?.message || "任务未完成，可修正后重试",
+      };
+    }));
+  }
+  const pendingRuntimeOutcomeKey = outcomes.filter(item => item.operationId && ["pending", "accepted"].includes(item.state)).map(item => `${item.id}:${item.operationId}`).join("|");
+  useEffect(() => {
+    if (!nativeMode || !pendingRuntimeOutcomeKey) return;
+    let cancelled = false;
+    let timer: ReturnType<typeof setTimeout>;
+    const read = async () => {
+      for (const item of outcomesRef.current.filter(item => item.operationId && ["pending", "accepted"].includes(item.state))) {
+        const result = await application.getOperation(item.operationId!);
+        if (cancelled) return;
+        if (result.ok) applyRuntimeOperation(item.id, result.data);
+        else setOutcomes(previous => previous.map(outcome => outcome.id === item.id && outcome.operationId === item.operationId && ["pending", "accepted"].includes(outcome.state) ? { ...outcome, message: `结果尚未确认：${result.error.message}；正在自动核实，不会重复提交。` } : outcome));
+      }
+      if (!cancelled) timer = setTimeout(() => void read(), 750);
+    };
+    void read();
+    return () => { cancelled = true; clearTimeout(timer); };
+  }, [application, nativeMode, pendingRuntimeOutcomeKey]);
+  function failDemoWrite(targets: string[], index: number, action: "打开" | "关闭", message: string) {
+    const id = targets[index];
+    const saved = application.getSnapshot().state.environments.find(item => item.id === id);
+    const detail = saved && ["starting", "stopping"].includes(saved.status) ? `${message} 已保存状态仍为${statusLabels[saved.status]}；恢复存储后重试${action}会继续保存模拟结果。` : message;
+    const unexecuted = new Set(targets.slice(index + 1));
+    setOutcomes(previous => previous.map(item => {
+      if (item.action !== action || !["pending", "accepted"].includes(item.state)) return item;
+      if (item.id === id) return { ...item, state: "error", message: detail };
+      if (unexecuted.has(item.id)) return { ...item, state: "skipped", message: "前一项未能保存，本项尚未执行；恢复存储后可重新操作。" };
+      return item;
+    }));
+  }
+  async function launch(ids: string[], created = false) {
     if (nativeMode) {
       if (!application.startRuntime) { notify("当前桌面版本未接入真实启停。", true); return; }
       const targets = [...new Set(ids)].filter(id => !runtimeActions.current.has(id));
       if (!targets.length) return;
       targets.forEach(beginRuntimeAction);
       try {
-        const planned = await readRuntimeStartPlan(application, targets);
-        if (!planned.ok) { notify(planned.error.message, true); return; }
-        const directCount = planned.data.filter(item => item.networkPolicy === "direct").length;
-        const proxyCount = planned.data.length - directCount;
-        const confirmation = directCount ? `所选${directCount}个未绑定代理的环境将使用本机直连，网站可看到本机出口。${proxyCount ? `另外${proxyCount}个代理环境须通过逐会话隔离及前检，不会改为直连。` : ""}确认按刚读取的ID/修订/策略排队启动？` : "所选环境均绑定代理；各项通过实际隔离和前检后才能启动，失败不改直连。确认按读取的ID/修订排队启动？";
-        if (!window.confirm(confirmation)) return;
-        for (const item of planned.data) {
+        for (const id of targets) {
+          const name = current.current.environments.find(environment => environment.id === id)?.name ?? "所选环境";
+          setOutcome({ id, name, action: "打开", state: "pending", message: "正在读取保存的配置", created });
+          // Resolve each exact ID, including off-page selections; one failure
+          // must not prevent other selected environments from opening.
+          const planned = await readRuntimeStartPlan(application, [id]);
+          if (!planned.ok) { setOutcome({ id, name, action: "打开", state: "error", message: planned.error.message, created }); continue; }
+          const item = planned.data[0];
           const result = await application.startRuntime({ environmentId: item.environmentId, requestId: uid("request"), networkPolicy: item.networkPolicy, expectedRevision: item.expectedRevision });
-          if (!result.ok) { notify(result.error.message, true); continue; }
-          notify("启动任务已受理；内核和控制通道就绪后才显示运行中。");
+          if (!result.ok) { setOutcome({ id, name: item.name, action: "打开", state: "error", message: result.error.message, created }); continue; }
+          setOutcome({ id, name: item.name, action: "打开", state: "accepted", operationId: result.data.operation.id, message: "打开任务已受理，等待浏览器就绪", created });
+          applyRuntimeOperation(id, result.data.operation);
         }
       } finally { targets.forEach(endRuntimeAction); }
       setMenu(null);
@@ -646,84 +801,114 @@ export default function App({ application }: { application: ApplicationService }
     batchCancelled.current = false;
     let done = 0;
     setMenu(null);
-    for (const id of ids) {
-      if (batchCancelled.current) break;
-      const e = current.current.environments.find((i) => i.id === id);
-      if (!e || ["running", "starting", "stopping"].includes(e.status))
-        continue;
-      setBatch({ label: "启动环境", done, total: ids.length });
-      const failure = launchError(e, current.current);
-      if (failure) {
-        if (!update((s) => ({
-          ...s,
-          environments: s.environments.map((i) =>
-            i.id === id ? { ...i, status: "error", error: failure } : i,
-          ),
-        }), log("启动被阻止", e.name, failure, "error"))) break;
-        notify(failure, true);
-        continue;
+    const targets = [...new Set(ids)].filter(id => !runtimeActions.current.has(id));
+    targets.forEach(id => setOutcome({ id, name: current.current.environments.find(environment => environment.id === id)?.name ?? "所选环境", action: "打开", state: "pending", message: "等待模拟打开", created }));
+    try {
+      for (const [index, id] of targets.entries()) {
+        const snapshot = application.getSnapshot().state;
+        const e = snapshot.environments.find((i) => i.id === id);
+        if (batchCancelled.current) {
+          setOutcomes(previous => previous.map(item => item.id === id && item.action === "打开" && item.state === "pending" ? { ...item, state: "skipped", message: "已取消，未继续打开" } : item));
+          continue;
+        }
+        if (!e) { setOutcome({ id, name: "所选环境", action: "打开", state: "error", message: "环境已不存在，请刷新列表", created }); continue; }
+        if (["running", "stopping"].includes(e.status) || runtimeActions.current.has(id)) {
+          setOutcome({ id, name: e.name, action: "打开", state: "skipped", message: e.status === "running" ? "已运行，无需重复打开" : "请先完成关闭，再打开", created });
+          continue;
+        }
+        setBatch({ label: "启动环境", done, total: targets.length });
+        const failure = launchError(e, snapshot);
+        if (failure) {
+          const result = updateDemo((s) => ({
+            ...s,
+            environments: s.environments.map((i) =>
+              i.id === id ? { ...i, status: "error", error: failure } : i,
+            ),
+          }), log("启动被阻止", e.name, failure, "error"));
+          if (!result.ok) { failDemoWrite(targets, index, "打开", result.error.message); break; }
+          setOutcome({ id, name: e.name, action: "打开", state: "error", message: failure, created });
+          done++;
+          continue;
+        }
+        // A failed completion write leaves the saved starting state intact.
+        // Retrying finishes that write instead of treating it as active work.
+        if (e.status !== "starting") {
+          const result = updateDemo((s) => ({
+            ...s,
+            environments: s.environments.map((i) =>
+              i.id === id ? { ...i, status: "starting", error: undefined } : i,
+            ),
+          }));
+          if (!result.ok) { failDemoWrite(targets, index, "打开", result.error.message); break; }
+          setOutcome({ id, name: e.name, action: "打开", state: "accepted", message: "正在模拟打开", created });
+          await sleep(650);
+        }
+        if (application.getSnapshot().state.environments.find((i) => i.id === id)?.status === "starting") {
+          const result = updateDemo((s) => ({
+            ...s,
+            environments: s.environments.map((i) =>
+              i.id === id && i.status === "starting"
+                ? { ...i, status: "running", lastOpened: now() }
+                : i,
+            ),
+          }), log("模拟启动", e.name, "演示状态已变为运行中；未启动真实浏览器进程。"));
+          if (!result.ok) { failDemoWrite(targets, index, "打开", result.error.message); break; }
+        }
+        const latest = application.getSnapshot().state.environments.find(item => item.id === id);
+        setOutcomes(previous => previous.map(item => item.id === id && item.action === "打开" ? { ...item, state: latest?.status === "running" ? "success" : "skipped", message: latest?.status === "running" ? "已模拟打开，未启动真实浏览器" : "打开已取消" } : item));
+        done++;
       }
-      if (!update((s) => ({
-        ...s,
-        environments: s.environments.map((i) =>
-          i.id === id ? { ...i, status: "starting", error: undefined } : i,
-        ),
-      }))) break;
-      await sleep(650);
-      if (
-        current.current.environments.find((i) => i.id === id)?.status ===
-        "starting"
-      ) {
-        if (!update((s) => ({
-          ...s,
-          environments: s.environments.map((i) =>
-            i.id === id && i.status === "starting"
-              ? { ...i, status: "running", lastOpened: now() }
-              : i,
-          ),
-        }), log(
-          "模拟启动",
-          e.name,
-          "演示状态已变为运行中；未启动真实浏览器进程。",
-        ))) break;
-      }
-      done++;
-    }
-    batchBusy.current = false;
-    setBatch(null);
+    } finally { batchBusy.current = false; setBatch(null); }
   }
   async function stop(ids: string[]) {
     if (nativeMode) {
       if (!application.stopRuntime) { notify("当前桌面版本未接入真实停止。", true); return; }
       for (const id of [...new Set(ids)]) {
-        if (application.getSnapshot().runtimeSessions?.[id]?.needsReconcile) { notify("此环境的会话仍待核对；批量关闭不会自动按PID结束或升级成强制结束。", true); continue; }
+        const name = current.current.environments.find(environment => environment.id === id)?.name ?? outcomesRef.current.find(item => item.id === id)?.name ?? "所选环境";
+        if (application.getSnapshot().runtimeSessions?.[id]?.needsReconcile) { setOutcome({ id, name, action: "关闭", state: "error", message: "会话待核对，请使用行内核对会话；不会按PID结束进程" }); continue; }
         if (!beginRuntimeAction(id)) continue;
+        setOutcome({ id, name, action: "关闭", state: "pending", message: "正在提交关闭" });
         try {
           const result = await application.stopRuntime({ environmentId: id, requestId: uid("request") });
-          if (!result.ok) notify(result.error.message, true);
-          else notify("停止任务已受理；等待本次会话退出，不会清除浏览数据。");
+          if (!result.ok) setOutcome({ id, name, action: "关闭", state: "error", message: result.error.message });
+          else {
+            setOutcome({ id, name, action: "关闭", state: "accepted", operationId: result.data.operation.id, message: "关闭任务已受理，等待资源释放" });
+            applyRuntimeOperation(id, result.data.operation);
+          }
         } finally { endRuntimeAction(id); }
       }
       setMenu(null);
       return;
     }
     batchCancelled.current = true;
-    for (const id of ids) {
-      const e = current.current.environments.find((i) => i.id === id);
-      if (!e || !["running", "starting"].includes(e.status)) continue;
-      if (!update((s) => ({
-        ...s,
-        environments: s.environments.map((i) =>
-          i.id === id ? { ...i, status: "stopping" } : i,
-        ),
-      }))) return;
-      await sleep(350);
-      if (!update((s) => ({
-        ...s,
-        environments: s.environments.map((i) =>
-          i.id === id ? { ...i, status: "ready" } : i,
-        ),
-      }), log("模拟关闭", e.name, "固定指纹和示例 Cookie 已保留。"))) return;
+    const targets = [...new Set(ids)].filter(id => !runtimeActions.current.has(id));
+    targets.forEach(id => setOutcome({ id, name: current.current.environments.find(environment => environment.id === id)?.name ?? "所选环境", action: "关闭", state: "pending", message: "等待模拟关闭" }));
+    for (const [index, id] of targets.entries()) {
+      const e = application.getSnapshot().state.environments.find((i) => i.id === id);
+      if (!e) { setOutcome({ id, name: "所选环境", action: "关闭", state: "error", message: "环境已不存在，请刷新列表" }); continue; }
+      if (!["running", "starting", "stopping"].includes(e.status)) { setOutcome({ id, name: e.name, action: "关闭", state: "skipped", message: "已停止，无需重复关闭" }); continue; }
+      if (!beginRuntimeAction(id)) continue;
+      setOutcome({ id, name: e.name, action: "关闭", state: "accepted", message: "正在模拟关闭" });
+      try {
+        if (e.status !== "stopping") {
+          const result = updateDemo((s) => ({
+            ...s,
+            environments: s.environments.map((i) =>
+              i.id === id ? { ...i, status: "stopping" } : i,
+            ),
+          }));
+          if (!result.ok) { failDemoWrite(targets, index, "关闭", result.error.message); break; }
+          await sleep(350);
+        }
+        const result = updateDemo((s) => ({
+          ...s,
+          environments: s.environments.map((i) =>
+            i.id === id ? { ...i, status: "ready" } : i,
+          ),
+        }), log("模拟关闭", e.name, "固定指纹和示例 Cookie 已保留。"));
+        if (!result.ok) { failDemoWrite(targets, index, "关闭", result.error.message); break; }
+        setOutcome({ id, name: e.name, action: "关闭", state: "success", message: "已模拟关闭，指纹与示例数据已保留" });
+      } finally { endRuntimeAction(id); }
     }
   }
   async function handleRuntimeSessionAction(id: string, expectedSessionId: string, action: "force" | "reconcile") {
@@ -829,11 +1014,36 @@ export default function App({ application }: { application: ApplicationService }
     setMenu(null);
   }
   function openProxyImport() {
+    if (drawerRef.current && !drawerSuspended) {
+      proxyReturnFocus.current = document.activeElement as HTMLElement;
+      if (nativeMode) { setDraftProxyImportBusy(false); setDraftProxyImportOpen(true); return; }
+    }
     if (nativeMode) { setNativeProxyImportOpen(true); return; }
     setDialog({ kind: "proxy" });
     setProxyText("");
     setProxyRows([]);
     setFormError("");
+  }
+  async function assignSelectedGroup() {
+    if (groupPending || !groupName.trim() || !selected.length) return;
+    const ids = [...selected], name = groupName.trim();
+    setGroupPending(true); setFormError("");
+    try {
+      if (!nativeMode) {
+        if (!update(s => ({ ...s, environments: s.environments.map(environment => ids.includes(environment.id) ? { ...environment, group: name } : environment) }), log("调整分组", `${ids.length} 个环境`, `已归入分组 ${name}。`))) return;
+      } else {
+        for (const id of ids) {
+          const preview = await application.previewEnvironment({ kind: "edit", sourceId: id });
+          if (!preview.ok) { setOutcome({ id, name: current.current.environments.find(item => item.id === id)?.name ?? "所选环境", action: "分组", state: "error", message: preview.error.message }); continue; }
+          const draft = preview.data;
+          try {
+            const result = await application.updateEnvironment({ previewId: draft.previewId, configuration: { ...draft.environment, group: name }, expectedRevision: draft.expectedRevision!, requestId: uid("request"), profileHash: draft.fingerprint?.previewProfile.configHash });
+            setOutcome({ id, name: draft.environment.name, action: "分组", state: result.ok ? "success" : "error", message: result.ok ? `已归入 ${name}，指纹保持不变` : result.error.message });
+          } finally { void application.discardPreview(draft.previewId); }
+        }
+      }
+      setDialog(null); notify("分组操作已完成，逐项失败可查看结果");
+    } finally { setGroupPending(false); }
   }
   function removeEnvironments() {
     if (dialog?.kind !== "delete") return;
@@ -863,19 +1073,12 @@ export default function App({ application }: { application: ApplicationService }
     notify("环境已从工作区移除");
   }
   const summary = routeInfo[route];
-  const selectedKernelRecord = workspace.kernelRecords?.find(record => record.id === drawer?.environment.coreId);
-  const canGenerateProfile = !nativeMode || selectedKernelRecord?.status === "verified";
-  const profileIsFresh = !!drawer?.fingerprint && fingerprintMatchesConfiguration(drawer.fingerprint.previewProfile, drawer.environment);
-  // Preserve T02's explicit, non-launchable pending configuration workflow.
-  // Selecting an installed build still requires a complete matching preview.
-  const pendingConfiguration = nativeMode && drawer?.environment.coreId === "kernel-pending";
-  const canSaveProfile = pendingConfiguration || profileIsFresh;
   const canConfigureProfileField = (field: string) => !profileBusy && (!nativeMode || !!selectedKernelRecord?.report.capabilities.some(capability => capability.field === field && capability.status === "configurable" && capability.source === "observed"));
   return (
     <div className="app-shell">
       <aside
         className="sidebar"
-        inert={Boolean(drawer || dialog || nativeBatchInput || nativeCookieEnvironment || nativeRecycleSelection || storageIssue)}
+        inert={Boolean(drawerVisible || dialog || draftProxyImportOpen || nativeBatchInput || nativeCookieEnvironment || nativeRecycleSelection || storageIssue)}
       >
         <a className="brand" href="#/environments">
           <div className="brand-mark">
@@ -955,7 +1158,7 @@ export default function App({ application }: { application: ApplicationService }
       </aside>
       <div
         className="main-shell"
-        inert={Boolean(drawer || dialog || nativeBatchInput || nativeCookieEnvironment || nativeRecycleSelection || storageIssue)}
+        inert={Boolean(drawerVisible || dialog || draftProxyImportOpen || nativeBatchInput || nativeCookieEnvironment || nativeRecycleSelection || storageIssue)}
       >
         <header className="topbar">
           <div className="breadcrumb">
@@ -987,7 +1190,8 @@ export default function App({ application }: { application: ApplicationService }
             <span className="mini-avatar">P</span>
           </div>
         </header>
-        <main>
+        <main className={route === "environments" ? "environment-workspace" : undefined}>
+          {drawerSuspended && drawer && <div className="prototype-notice" role="status"><span>环境草稿已保留，安装内核不会清空正在填写的内容。</span><Button onClick={() => { const available = usableKernels.find(kernel => kernel.id === workspace.defaultKernel?.kernelId) ?? usableKernels[0]; if (drawer.kind === "create" && !canGenerateProfile && available) patchDraft({ coreId: available.id }); setDrawerSuspended(false); navigate("environments"); }}>继续环境草稿</Button><Button onClick={closeDrawer}>放弃草稿</Button></div>}
           {nativeMode && workspace.maintenance && <div className="prototype-notice" role="status">完整恢复正在维护保护中，配置修改与新启动暂不可用。<Button onClick={() => navigate("backups")}>查看恢复任务</Button></div>}
           {nativeMode && workspace.migrationMaintenance && <div className="prototype-notice" role="status">内核迁移维护中，原环境保持停止。<Button onClick={() => navigate("kernels")}>查看试用与迁移</Button></div>}
           <div className="page-heading">
@@ -1236,11 +1440,13 @@ export default function App({ application }: { application: ApplicationService }
                   <div className="selection-bar">
                     <span>
                       已选择 <strong>{selected.length}</strong> 个环境
+                      <small>（当前页 {pageItems.filter(item => selected.includes(item.id)).length} 个；只操作已勾选项）</small>
                     </span>
                     <Button onClick={() => launch(selected)}>
                       <Monitor size={14} />
-                      批量启动
+                      批量打开
                     </Button>
+                    <Button onClick={() => { setGroupName(""); setFormError(""); setDialog({ kind: "group" }); }}><Folder size={14} />调整分组</Button>
                     <Button onClick={() => stop(selected)}>
                       <Square size={13} />
                       批量关闭
@@ -1273,6 +1479,10 @@ export default function App({ application }: { application: ApplicationService }
                   <span>启动队列：{Object.values(workspace.runtimeSessions ?? {}).filter(session => session.state === "starting" && session.launchStage === "queued").length} 项等待，按受理顺序启动；已运行环境不占队列名额。</span>
                   <Button onClick={() => void cancelQueuedRuntime()}>取消排队启动</Button>
                 </div>}
+                {outcomes.length > 0 && <section className="environment-outcomes" aria-label="逐项操作结果">
+                  <div className="outcome-heading"><strong>操作结果 · {outcomes.length} 项</strong><span>{nativeMode ? "本机服务反馈" : "模拟操作，不启动真实浏览器"}</span><button className="text-button" disabled={outcomes.some(item => ["pending", "accepted"].includes(item.state))} onClick={() => setOutcomes([])}>收起结果</button></div>
+                  <ul>{outcomes.map(item => <li key={item.id} className={`outcome-${item.state}`} role={item.state === "error" ? "alert" : "status"}><span>{["pending", "accepted"].includes(item.state) ? <LoaderCircle size={14} className="spin" /> : item.state === "error" ? <TriangleAlert size={14} /> : <CheckCircle2 size={14} />}<strong>{item.name}</strong></span><span>{item.created && item.action === "打开" ? item.state === "error" ? "已创建，打开失败；" : "已创建；" : ""}{item.message}</span>{item.state === "error" && item.action !== "分组" && <button className="text-button" disabled={runtimeActionIds.includes(item.id)} aria-label={`${item.name} 重试${item.action}`} onClick={() => item.action === "打开" ? void launch([item.id], !!item.created) : void stop([item.id])}>重试{item.action}</button>}</li>)}</ul>
+                </section>}
                 <div className="table-scroll">
                   <table className="environment-table">
                     <thead>
@@ -1304,8 +1514,9 @@ export default function App({ application }: { application: ApplicationService }
                           />
                         </th>
                         <th>环境名称 / 编号</th>
-                        <th>代理网络</th>
-                        <th>设备档案</th>
+                        <th>分组</th>
+                        <th>直连 / 代理</th>
+                        <th>内核版本</th>
                         <th>状态</th>
                         <th>最近打开</th>
                         <th className="actions-head">操作</th>
@@ -1316,6 +1527,7 @@ export default function App({ application }: { application: ApplicationService }
                         const p = state.proxies.find((p) => p.id === e.proxyId);
                         const runtimeSession = nativeMode ? workspace.runtimeSessions?.[e.id] : undefined;
                         const runtimeActionPending = runtimeActionIds.includes(e.id);
+                        const demoWriteRetry = !nativeMode && !runtimeActionPending && (e.status === "stopping" || e.status === "starting" && !batch);
                         const core = state.kernels.find(
                           (k) => k.id === e.coreId,
                         );
@@ -1356,12 +1568,11 @@ export default function App({ application }: { application: ApplicationService }
                                   </button>
                                   <div className="cell-secondary">
                                     <span className="mono">#{e.code}</span>
-                                    <span className="tiny-divider" />
-                                    <span>{e.group}</span>
                                   </div>
                                 </div>
                               </div>
                             </td>
+                            <td><Tag>{e.group || "未分组"}</Tag></td>
                             <td>
                               {p ? (
                                 <>
@@ -1375,32 +1586,28 @@ export default function App({ application }: { application: ApplicationService }
                                     {p.type.toUpperCase()} · {p.host}
                                   </div>
                                 </>
+                              ) : e.proxyId ? (
+                                <span className="proxy-title danger-text">已绑定代理不可用<br />不会改为直连</span>
                               ) : (
                                 <>
                                   <span className="proxy-title">
                                     <Globe2 size={15} />
-                                    本机网络
+                                    本机直连
                                   </span>
                                   <div className="cell-secondary">
                                     已明确选择直连
                                   </div>
                                 </>
                                )}
-                               {nativeMode && runtimeSession && <NativeRuntimeNetwork session={runtimeSession} />}
+                                {nativeMode && runtimeSession && <details className="runtime-list-details"><summary>网络详情</summary><NativeRuntimeNetwork session={runtimeSession} /></details>}
                              </td>
                              <td>
                                <span className="device-line">
                                 <Monitor size={14} />
-                                Windows · Chromium{" "}
-                                {core?.version.split(".")[0] || "—"}
+                                 Chromium {core?.version || "不可用"}
                               </span>
                               <div className="cell-secondary">
-                                <Fingerprint size={12} />
-                                <span className="mono">{e.seed}</span>
-                                <span className="locked-label">
-                                  <LockKeyhole size={10} />
-                                  固定
-                                </span>
+                                 fingerprint-chromium{nativeMode ? core?.available ? " · 已核验" : " · 未就绪" : " · 演示"}
                               </div>
                             </td>
                             <td>
@@ -1408,14 +1615,14 @@ export default function App({ application }: { application: ApplicationService }
                                 className={`status ${e.status}`}
                                 title={e.error}
                               >
-                                {["starting", "stopping"].includes(e.status) ? (
+                                {["starting", "stopping"].includes(e.status) && !demoWriteRetry ? (
                                   <LoaderCircle size={12} className="spin" />
                                 ) : (
                                   <span className="status-dot" />
                                 )}
-                                 {runtimeSession?.needsReconcile ? "待核对" : nativeMode && !core?.available ? "未就绪" : statusLabels[e.status]}
+                                 {demoWriteRetry ? "模拟结果待保存" : runtimeSession?.needsReconcile ? "待核对" : nativeMode && !core?.available ? "未就绪" : statusLabels[e.status]}
                                </span>
-                               {nativeMode && e.error && <div className="cell-secondary runtime-recovery-note" role="status">{e.error}</div>}
+                                {e.error && <div className="cell-secondary runtime-recovery-note" role="status">{e.error}</div>}
                                {runtimeSession?.nextAction && <div className="cell-secondary runtime-recovery-note">{runtimeSession.nextAction}</div>}
                                {runtimeSession?.lastExitCode !== undefined && <div className="cell-secondary">上次退出码：{runtimeSession.lastExitCode}</div>}
                                {runtimeSession?.reconciledAt && <div className="cell-secondary">核对：{time(runtimeSession.reconciledAt)}</div>}
@@ -1427,7 +1634,9 @@ export default function App({ application }: { application: ApplicationService }
                             </td>
                             <td>
                               <div className="row-actions">
-                                {runtimeSession?.persistencePending ? (
+                                {demoWriteRetry ? (
+                                  <Button className="soft-primary compact" onClick={() => e.status === "starting" ? void launch([e.id]) : void stop([e.id])}>重试{e.status === "starting" ? "打开" : "关闭"}</Button>
+                                ) : runtimeSession?.persistencePending ? (
                                   <span className="cell-secondary runtime-recovery-note" role="status">结果待保存 · 修复存储后自动核对</span>
                                 ) : workspace.networkResources?.[e.id] ? (
                                   <Button className="soft-primary compact" disabled={runtimeActionPending} onClick={() => void handleRuntimeSessionAction(e.id, workspace.networkResources![e.id], "reconcile")}>重试资源清理</Button>
@@ -1465,21 +1674,21 @@ export default function App({ application }: { application: ApplicationService }
                                     ) : (
                                       <Monitor size={13} />
                                     )}
-                                    启动
+                                    {runtimeActionPending ? "处理中" : e.status === "starting" ? "打开中" : e.status === "stopping" ? "关闭中" : "打开"}
                                   </Button>
                                 )}
+                                <Button className="compact edit-button" aria-label={`${e.name} 编辑`} disabled={!nativeMode && ["running", "starting", "stopping"].includes(e.status)} title={!nativeMode && ["running", "starting", "stopping"].includes(e.status) ? "关闭后可编辑" : "编辑环境"} onClick={() => void openEdit(e)}><Settings2 size={13} />编辑</Button>
                                 <div className="menu-wrap">
                                   <button
                                     className="icon-button"
                                     aria-label={`${e.name} 更多操作`}
-                                    onClick={() =>
-                                      setMenu(menu === e.id ? null : e.id)
-                                    }
+                                    aria-expanded={menu === e.id}
+                                    onClick={event => { const rect = event.currentTarget.getBoundingClientRect(); setMenuPosition({ top: Math.max(12, Math.min(rect.bottom + 4, window.innerHeight - 200)), right: Math.max(12, window.innerWidth - rect.right) }); setMenu(menu === e.id ? null : e.id); }}
                                   >
                                     <Ellipsis size={19} />
                                   </button>
-                                  {menu === e.id && (
-                                    <div className="dropdown">
+                                  {menu === e.id && createPortal(
+                                    <div className="dropdown environment-row-menu" style={menuPosition}>
                                       <button onClick={() => openEdit(e)}>
                                         <Settings2 size={15} />
                                         编辑环境
@@ -1508,7 +1717,7 @@ export default function App({ application }: { application: ApplicationService }
                                         <Trash2 size={15} />
                                         移除环境
                                       </button>
-                                    </div>
+                                    </div>, document.body
                                   )}
                                 </div>
                               </div>
@@ -1521,10 +1730,10 @@ export default function App({ application }: { application: ApplicationService }
                 </div>
                 {visible.length === 0 && (
                   <Empty
-                    title="没有符合条件的环境"
-                    text="试试其他关键词，或创建一个新的浏览器环境。"
+                    title={environmentTotal === 0 ? "还没有浏览器环境" : "没有符合条件的环境"}
+                    text={environmentTotal === 0 ? "新建一个环境，选择网络与内核即可开始。" : "试试其他关键词或清除筛选，已保存环境没有被删除。"}
                     action={
-                      <Button
+                      environmentTotal === 0 ? <Button className="primary" onClick={() => void openCreate()}>创建第一个环境</Button> : <Button
                         onClick={() => {
                           setSearch("");
                           setGroup("全部分组");
@@ -2166,16 +2375,17 @@ export default function App({ application }: { application: ApplicationService }
           </footer>
         </main>
       </div>
-      {drawer && (
+      {drawerVisible && drawer && (
         <div
-          className="overlay"
+          className="overlay environment-overlay"
+          inert={Boolean(dialog || draftProxyImportOpen)}
           onMouseDown={(e) => {
-            if (e.target === e.currentTarget && !generating) closeDrawer();
+            if (e.target === e.currentTarget) closeDrawer();
           }}
         >
           <div
-            className="drawer"
-            ref={overlayRef}
+            className="drawer environment-drawer"
+            ref={drawerOverlayRef}
             role="dialog"
             aria-modal="true"
             aria-labelledby="drawer-title"
@@ -2197,348 +2407,19 @@ export default function App({ application }: { application: ApplicationService }
               <button
                 className="icon-button"
                 aria-label="关闭环境配置"
-                disabled={generating}
+                disabled={savePending || !!drawer.creationOperationId || drawer.creationUnconfirmed}
                 onClick={closeDrawer}
               >
                 <X size={20} />
               </button>
             </div>
-            <div className="drawer-tabs">
-              {(
-                [
-                  { id: "basic", name: "基础与代理", icon: Layers3 },
-                  { id: "fingerprint", name: "设备指纹", icon: Fingerprint },
-                  { id: "preferences", name: "浏览器偏好", icon: Settings2 },
-                ] as const
-              ).map((t) => (
-                <button
-                  key={t.id}
-                  className={drawer.tab === t.id ? "active" : ""}
-                  onClick={() => setDrawer({ ...drawer, tab: t.id })}
-                >
-                  <t.icon size={16} />
-                  {t.name}
-                </button>
-              ))}
-            </div>
             <div className="drawer-body">
-              {drawer.tab === "basic" && (
-                <>
-                  <div className="form-section-title">
-                    <span>01</span>
-                    <h3>环境信息</h3>
-                  </div>
-                  <Field label="环境名称 *">
-                    <input
-                      autoComplete="off"
-                      aria-label="环境名称"
-                      value={drawer.environment.name}
-                      placeholder="例如：北美主店"
-                      onChange={(e) => patchDraft({ name: e.target.value })}
-                    />
-                  </Field>
-                  <div className="field-row">
-                    <Field label="环境分组">
-                      <input
-                        list="group-options"
-                        value={drawer.environment.group}
-                        onChange={(e) => patchDraft({ group: e.target.value })}
-                      />
-                      <datalist id="group-options">
-                        {groups.map((g) => (
-                          <option key={g} value={g} />
-                        ))}
-                      </datalist>
-                    </Field>
-                    {drawer.kind === "create" && (
-                      <Field
-                        label="创建数量"
-                        hint={nativeMode ? "先查看分页计划，再明确执行；取消/重开保留已完成项，不设保存总数配额。" : "每个实例生成独立种子与数据记录"}
-                      >
-                        <input
-                          aria-label="创建数量"
-                          type="number"
-                          min="1"
-                          step="1"
-                          value={quantity}
-                          onChange={(e) => setQuantity(Number(e.target.value))}
-                        />
-                      </Field>
-                    )}
-                  </div>
-                  <Field label="备注">
-                    <textarea
-                      value={drawer.environment.note}
-                      onChange={(e) => patchDraft({ note: e.target.value })}
-                      rows={2}
-                      placeholder="添加店铺用途或操作提醒"
-                    />
-                  </Field>
-                  <div className="form-section-title">
-                    <span>02</span>
-                    <h3>代理网络</h3>
-                  </div>
-                  <Field
-                    label="绑定代理"
-                    hint="修改代理不会自动更换已保存的指纹和地区设置。"
-                  >
-                    <select
-                      aria-label="绑定代理"
-                      disabled={profileBusy || savePending}
-                      value={drawer.environment.proxyId}
-                      onChange={(e) => patchDraft({ proxyId: e.target.value })}
-                    >
-                      <option value="">本机网络（直连）</option>
-                      {state.proxies.map((p) => (
-                        <option key={p.id} value={p.id}>
-                          {p.name} ·{" "}
-                          {p.status === "failed"
-                            ? "连接失败"
-                            : p.status === "unchecked"
-                              ? "待检查"
-                              : p.type.toUpperCase()}
-                        </option>
-                      ))}
-                    </select>
-                  </Field>
-                  <div className="form-note">
-                    <ShieldCheck size={17} />
-                    <span>
-                      {drawer.environment.proxyId
-                        ? "已绑定代理。未通过连接检查时将阻止启动，不自动直连。"
-                        : "当前明确选择本机直连。需要独立出口时，请为该环境绑定代理。"}
-                    </span>
-                  </div>
-                  <div className="form-section-title">
-                    <span>03</span>
-                    <h3>浏览器内核</h3>
-                  </div>
-                  <Field label="固定内核版本">
-                    <select
-                      aria-label="固定内核版本"
-                      disabled={generating || savePending || profileBusy || (drawer.kind === "edit" && (!nativeMode || state.environments.find(environment => environment.id === drawer.environment.id)?.coreId !== "kernel-pending"))}
-                      value={drawer.environment.coreId}
-                      onChange={(e) => patchDraft({ coreId: e.target.value })}
-                    >
-                      {state.kernels.map((k) => (
-                        <option key={k.id} value={k.id}>
-                          {nativeMode ? `fingerprint-chromium ${k.version} · ${k.available ? "已核验" : "未就绪"} · ${k.id.slice(0, 8)}` : `Chromium ${k.version} · ${k.available ? "演示基线" : "待验证"}`}
-                        </option>
-                      ))}
-                    </select>
-                  </Field>
-                  <p className="field-hint">
-                    {nativeMode ? "先在内核页安装核验，再显式选择并生成档案预览。普通编辑不能切换已有精确构建；旧档案不自动重绑定，保存不代表已可启动。" : "实际内核：fingerprint-chromium。当前仅演示配置绑定，未安装浏览器内核。"}
-                  </p>
-                </>
-              )}
-              {drawer.tab === "fingerprint" && (
-                <>
-                  <div className="fingerprint-hero">
-                    <div className="fingerprint-hero-icon">
-                      <Fingerprint size={36} />
-                    </div>
-                    <div>
-                      <Tag kind="blue-tag">Windows 桌面档案</Tag>
-                      <h3>一次生成，持续使用</h3>
-                      <p>配置保存后，重新打开继续沿用。</p>
-                    </div>
-                    <Button
-                      className="soft-primary"
-                      disabled={generating || savePending || profileBusy || !canGenerateProfile}
-                      onClick={() => void generateProfile(true)}
-                    >
-                      {generating ? (
-                        <LoaderCircle size={16} className="spin" />
-                      ) : (
-                        <Sparkles size={16} />
-                      )}
-                      重新生成
-                    </Button>
-                  </div>
-                  <Field
-                    label="固定指纹种子"
-                    hint="重生成仅修改当前草稿，保存后生效；不会清除 Cookie。"
-                  >
-                    <div className="seed-input">
-                      <Fingerprint size={16} />
-                      <input
-                        aria-label="固定指纹种子"
-                        readOnly
-                        value={drawer.environment.seed}
-                      />
-                      <LockKeyhole size={15} />
-                    </div>
-                  </Field>
-                  <div className="field-row">
-                    <Field label="操作系统">
-                      <input readOnly value="Windows 桌面" />
-                    </Field>
-                    <Field label="CPU 线程数">
-                      <select
-                        disabled={generating || savePending || !canConfigureProfileField("cpu")}
-                        aria-label="CPU线程偏好"
-                        value={drawer.environment.cpu}
-                        onChange={(e) => patchDraft({ cpu: e.target.value })}
-                      >
-                        <option value="auto">由内核按种子生成</option>
-                        {["4", "8", "12", "16"].map((n) => (
-                          <option key={n}>{n}</option>
-                        ))}
-                      </select>
-                    </Field>
-                  </div>
-                  <div className="form-section-title">
-                    <span>01</span>
-                    <h3>语言与地区</h3>
-                    <button
-                      className="text-button"
-                      disabled={generating || savePending || !canConfigureProfileField("acceptLanguages") || !canConfigureProfileField("timezone")}
-                      onClick={() => {
-                        const p = state.proxies.find(
-                          (p) => p.id === drawer.environment.proxyId,
-                        );
-                        if (!p) {
-                          notify("请先绑定代理，再采用其预设地区建议。", true);
-                          return;
-                        }
-                        const r = regions[p.country];
-                        if (!r) {
-                          notify(
-                            "该地区尚无预设，请手动选择语言和时区。",
-                            true,
-                          );
-                          return;
-                        }
-                        patchDraft({
-                          language: r.language,
-                          timezone: r.timezone,
-                        });
-                        notify(
-                          "已采用代理预设地区；真实 IP 归属待桌面服务检查。",
-                        );
-                      }}
-                    >
-                      采用代理地区
-                    </button>
-                  </div>
-                  <div className="field-row">
-                    <Field label="网站语言">
-                      <select
-                        disabled={generating || savePending || !canConfigureProfileField("acceptLanguages")}
-                        aria-label="网站语言"
-                        value={drawer.environment.language}
-                        onChange={(e) =>
-                          patchDraft({ language: e.target.value })
-                        }
-                      >
-                        {Object.values(regions).map((r) => (
-                          <option key={r.language} value={r.language}>
-                            {r.language}
-                          </option>
-                        ))}
-                      </select>
-                    </Field>
-                    <Field label="时区">
-                      <select
-                        disabled={generating || savePending || !canConfigureProfileField("timezone")}
-                        aria-label="设备时区"
-                        value={drawer.environment.timezone}
-                        onChange={(e) =>
-                          patchDraft({ timezone: e.target.value })
-                        }
-                      >
-                        {Object.values(regions).map((r) => (
-                          <option key={r.timezone}>{r.timezone}</option>
-                        ))}
-                      </select>
-                    </Field>
-                  </div>
-                  {profileBusy && <p className="field-hint">环境正在运行、停止或等待会话核对，只能保存名称、分组和备注；实际目录空闲确认前不能改设备、代理及启动偏好。</p>}
-                  <FingerprintRevisionPanel preview={drawer.fingerprint} history={drawer.history} native={nativeMode} stale={!profileIsFresh && !pendingConfiguration} busy={generating || savePending || profileBusy} canGenerate={canGenerateProfile} dataRef={drawer.userDataRef} onPreview={() => void generateProfile()} onRestore={revision => void previewProfileRestore(revision)} />
-                </>
-              )}
-              {drawer.tab === "preferences" && (
-                <>
-                  <div className="form-section-title">
-                    <span>01</span>
-                    <h3>打开与显示</h3>
-                  </div>
-                  <Field
-                    label="启动网址"
-                    hint="每行一个完整网址，支持 http 和 https。"
-                  >
-                    <textarea
-                      rows={4}
-                      aria-label="启动网址"
-                      disabled={profileBusy || savePending}
-                      value={drawer.environment.urls}
-                      onChange={(e) => patchDraft({ urls: e.target.value })}
-                      placeholder="https://example.com"
-                    />
-                  </Field>
-                  <div className="field-row">
-                    <Field label="窗口宽度">
-                      <input
-                        disabled={generating || savePending || profileBusy}
-                        type="number"
-                        value={drawer.environment.width}
-                        onChange={(e) =>
-                          patchDraft({ width: Number(e.target.value) })
-                        }
-                      />
-                    </Field>
-                    <Field label="窗口高度">
-                      <input
-                        disabled={generating || savePending || profileBusy}
-                        type="number"
-                        value={drawer.environment.height}
-                        onChange={(e) =>
-                          patchDraft({ height: Number(e.target.value) })
-                        }
-                      />
-                    </Field>
-                  </div>
-                  <div className="form-note">
-                    <Info size={17} />
-                    <span>
-                      窗口尺寸控制可见窗口大小，不代表网站读取的完整屏幕指纹。
-                    </span>
-                  </div>
-                  <label className="toggle-row">
-                    <div>
-                      <strong>恢复上次标签页</strong>
-                      <p>再次打开时继续之前的工作。</p>
-                    </div>
-                    <input
-                      type="checkbox"
-                      checked={drawer.environment.restoreTabs}
-                      disabled={profileBusy || savePending}
-                      onChange={(e) =>
-                        patchDraft({ restoreTabs: e.target.checked })
-                      }
-                    />
-                  </label>
-                  <div className="form-section-title">
-                    <span>02</span>
-                    <h3>数据保存</h3>
-                  </div>
-                  <div className="policy-item">
-                    <ShieldCheck size={19} />
-                    <div>
-                      <strong>独立数据目录</strong>
-                      <p>{nativeMode ? "首次启动创建本环境独立目录；停止与档案修改保留数据，不与其他环境共享。" : "桌面版为此环境分配独立浏览器目录。"}</p>
-                    </div>
-                  </div>
-                  <div className="policy-item">
-                    <LockKeyhole size={19} />
-                    <div>
-                      <strong>保留登录数据</strong>
-                      <p>{nativeMode ? "管理端Cookie使用指定会话私有通道写后核对；实际隔离与重开保留仍待统一验收。" : "关闭窗口和修改代理时保留原有 Cookie。"}</p>
-                    </div>
-                  </div>
-                </>
-              )}
+              <EnvironmentForm environment={drawer.environment} kind={drawer.kind} groups={groups} kernels={usableKernels} proxies={state.proxies} native={nativeMode}
+                busy={savePending || !!drawer.creationOperationId || !!drawer.creationUnconfirmed} generating={generating} profileBusy={profileBusy}
+                kernelLocked={drawer.kind === "edit" && (!nativeMode || state.environments.find(environment => environment.id === drawer.environment.id)?.coreId !== "kernel-pending")}
+                canGenerate={canGenerateProfile} fresh={profileIsFresh} preview={drawer.fingerprint} history={drawer.history} dataRef={drawer.userDataRef}
+                quantity={quantity} previewError={previewError} onChange={patchDraft} onQuantity={setQuantity} onGenerate={regenerate => void generateProfile(regenerate)} onRestore={revision => void previewProfileRestore(revision)}
+                onImportProxy={openProxyImport} canConfigure={canConfigureProfileField} onKernels={() => { setDrawerSuspended(true); navigate("kernels"); }} />
               {formError && (
                 <div className="form-error" role="alert">
                   <TriangleAlert size={16} />
@@ -2549,22 +2430,21 @@ export default function App({ application }: { application: ApplicationService }
             <div className="drawer-footer">
               <span>
                 <ShieldCheck size={14} />
-                {pendingConfiguration ? "仅保存待绑定配置 · 未生成可用档案，不能启动" : !canSaveProfile ? "请在设备指纹页选择内核、生成并查看预览" : nativeMode ? "保存到本机 SQLite · 提交成功才完成" : "仅保存在当前浏览器的演示数据"}
+                {drawer.creationOperationId || drawer.creationUnconfirmed ? "保留原创建请求，重试只核实结果" : generating ? "正在准备指纹预览…" : !canSaveProfile ? "请选择可用内核；预览会自动准备" : nativeMode ? "保存到本机 · 关闭后身份不变" : "演示模式 · 不启动真实浏览器"}
               </span>
               <div>
-                <Button disabled={generating || savePending} onClick={closeDrawer}>
+                <Button disabled={savePending || !!drawer.creationOperationId || drawer.creationUnconfirmed} onClick={closeDrawer}>
                   取消
                 </Button>
                 <Button
-                  className="primary"
-                  disabled={generating || savePending || !canSaveProfile}
-                  onClick={saveEnvironment}
+                  className={drawer.kind === "edit" || quantity > 1 || drawer.creationOperationId ? "primary" : ""}
+                  disabled={savePending || (!drawer.creationOperationId && (generating || !canSaveProfile))}
+                  onClick={() => void saveEnvironment()}
                 >
                   <Check size={16} />
-                  {drawer.kind === "create"
-                    ? nativeMode ? `查看 ${quantity} 项创建计划` : `创建${quantity > 1 ? ` ${quantity} 个` : ""}环境`
-                    : "保存配置"}
+                  {drawer.creationOperationId || drawer.creationUnconfirmed ? "重试核实创建结果" : drawer.kind === "create" ? quantity > 1 ? nativeMode ? `查看 ${quantity} 项创建计划` : `创建 ${quantity} 个环境` : "创建" : "保存"}
                 </Button>
+                {drawer.kind === "create" && !drawer.creationOperationId && !drawer.creationUnconfirmed && quantity === 1 && <Button className="primary" disabled={generating || savePending || !canSaveProfile} onClick={() => void saveEnvironment(true)}><Monitor size={16} />创建并打开</Button>}
               </div>
             </div>
           </div>
@@ -2573,8 +2453,13 @@ export default function App({ application }: { application: ApplicationService }
       {nativeMode && nativeCookieEnvironment && <NativeCookieImport key={nativeCookieEnvironment.id} application={application} workspace={workspace} environment={nativeCookieEnvironment} onClose={() => setNativeCookieEnvironment(null)} />}
       {nativeMode && nativeRecycleSelection && <NativeRecycleManager application={application} workspace={workspace} selectedIds={nativeRecycleSelection} onClose={() => { setNativeRecycleSelection(null); setSelected([]); void application.refresh?.(); }} />}
       {nativeMode && nativeBatchInput && <NativeBatchDialog key={`${nativeBatchInput.kind}:${nativeBatchInput.initialPage?.planId ?? nativeBatchInput.sourceIds?.join(",") ?? "history"}`} application={application} workspace={workspace} input={nativeBatchInput} onClose={() => { setNativeBatchInput(null); setMenu(null); }} />}
+      {nativeMode && draftProxyImportOpen && <div className="overlay modal-overlay stacked-overlay"><div className="modal wide-modal" ref={draftProxyOverlayRef} role="dialog" aria-modal="true" aria-labelledby="draft-proxy-import-title">
+        <div className="modal-header"><h2 id="draft-proxy-import-title">导入代理</h2><button className="icon-button" aria-label="关闭代理导入并返回环境配置" disabled={draftProxyImportBusy} onClick={() => setDraftProxyImportOpen(false)}><X size={20} /></button></div>
+        <div className="modal-body"><p className="modal-intro">环境草稿已保留。导入成功后可直接选择新代理，不会改变指纹。</p><NativeProxyManager application={application} workspace={workspace} importOnly importOpen onImportOpenChange={open => { setDraftProxyImportOpen(open); if (!open) setDraftProxyImportBusy(false); }} onBusyChange={setDraftProxyImportBusy} onImported={ids => { if (ids[0]) patchDraft({ proxyId: ids[0] }); notify(`已导入 ${ids.length} 条代理，环境草稿已保留`); }} /></div>
+        <div className="modal-footer"><Button disabled={draftProxyImportBusy} onClick={() => setDraftProxyImportOpen(false)}>返回环境配置</Button></div>
+      </div></div>}
       {dialog && (
-        <div className="overlay modal-overlay">
+        <div className={`overlay modal-overlay ${drawerVisible ? "stacked-overlay" : ""}`}>
           <div
             className={`modal ${["proxy", "cookies"].includes(dialog.kind) ? "wide-modal" : ""}`}
             ref={overlayRef}
@@ -2601,6 +2486,7 @@ export default function App({ application }: { application: ApplicationService }
               <button
                 className="icon-button"
                 aria-label="关闭对话框"
+                disabled={groupPending}
                 onClick={() => setDialog(null)}
               >
                 <X size={20} />
@@ -2613,9 +2499,9 @@ export default function App({ application }: { application: ApplicationService }
                     每行一个代理，支持
                     HTTP、HTTPS、SOCKS5。请使用示例数据，原型不进行真实网络检查。
                   </p>
-                  <Field label="代理内容">
+                  <Field label="代理文本">
                     <textarea
-                      aria-label="代理内容"
+                      aria-label="代理文本"
                       className="code-input"
                       rows={5}
                       placeholder="socks5://demo:password@192.0.2.10:1080"
@@ -2666,7 +2552,7 @@ export default function App({ application }: { application: ApplicationService }
                         );
                       }}
                     >
-                      解析并预览
+                      解析预览
                     </Button>
                   </div>
                   {proxyRows.length > 0 && (
@@ -3057,7 +2943,7 @@ export default function App({ application }: { application: ApplicationService }
               )}
             </div>
             <div className="modal-footer">
-              <Button onClick={() => setDialog(null)}>取消</Button>
+              <Button disabled={groupPending} onClick={() => setDialog(null)}>取消</Button>
               {dialog.kind === "proxy-edit" && (
                 <Button
                   className="primary"
@@ -3114,11 +3000,12 @@ export default function App({ application }: { application: ApplicationService }
                       `${nodes.length} 条`,
                       "有效行已导入，无效行未保存；等待连接检查。",
                     ))) return;
+                    if (drawerRef.current && nodes[0]) patchDraft({ proxyId: nodes[0].id });
                     setDialog(null);
                     notify(`已导入 ${nodes.length} 条代理，待检查`);
                   }}
                 >
-                  导入 {proxyRows.filter((r) => r.node).length} 条有效代理
+                  导入 {proxyRows.filter((r) => r.node).length} 个代理
                 </Button>
               )}
               {dialog.kind === "cookies" && (
@@ -3184,23 +3071,8 @@ export default function App({ application }: { application: ApplicationService }
               {dialog.kind === "group" && (
                 <Button
                   className="primary"
-                  disabled={!selected.length || !groupName.trim()}
-                  onClick={() => {
-                    if (!update((s) => ({
-                      ...s,
-                      environments: s.environments.map((e) =>
-                        selected.includes(e.id)
-                          ? { ...e, group: groupName.trim() }
-                          : e,
-                      ),
-                    }), log(
-                      "调整分组",
-                      `${selected.length} 个环境`,
-                      `已归入分组 ${groupName.trim()}。`,
-                    ))) return;
-                    setDialog(null);
-                    notify("分组已更新");
-                  }}
+                  disabled={groupPending || !selected.length || !groupName.trim()}
+                  onClick={() => void assignSelectedGroup()}
                 >
                   应用到所选环境
                 </Button>

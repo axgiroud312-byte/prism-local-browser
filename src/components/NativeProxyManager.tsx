@@ -7,7 +7,7 @@ import { proxyResolutionLabel, proxyStageLabel } from "../application/proxy-netw
 const statusLabels = { unchecked: "尚未检查", connected: "本次检查通过", failed: "检查未通过" };
 const failureMessage = (result: ApplicationResult<unknown> | undefined) => !result ? "当前桌面服务不支持此操作，没有模拟保存。" : result.ok ? "" : `${result.error.code}：${result.error.message}`;
 
-export function NativeProxyManager({ application, workspace, importOpen, onImportOpenChange }: { application: ApplicationService; workspace: WorkspaceView; importOpen: boolean; onImportOpenChange: (open: boolean) => void }) {
+export function NativeProxyManager({ application, workspace, importOpen, onImportOpenChange, importOnly = false, onImported, onBusyChange }: { application: ApplicationService; workspace: WorkspaceView; importOpen: boolean; onImportOpenChange: (open: boolean) => void; importOnly?: boolean; onImported?: (ids: string[]) => void; onBusyChange?: (busy: boolean) => void }) {
   const records = workspace.nativeProxyRecords ?? [];
   const [text, setText] = useState("");
   const [showText, setShowText] = useState(false);
@@ -45,6 +45,7 @@ export function NativeProxyManager({ application, workspace, importOpen, onImpor
     return () => { alive.current = false; generation.current++; if (previewId.current) void application.discardProxyImport?.(previewId.current); previewId.current = undefined; };
   }, [application]);
   useEffect(() => { if (!importOpen) { discardPreview(); setText(""); setShowText(false); } }, [importOpen]);
+  useEffect(() => { onBusyChange?.(busy); }, [busy, onBusyChange]);
 
   useEffect(() => {
     if (!activeKey) return;
@@ -117,8 +118,8 @@ export function NativeProxyManager({ application, workspace, importOpen, onImpor
   }
 
   return <div className="native-proxy-manager">
-    <div className="info-strip"><ShieldCheck size={19} /><div><strong>本机凭据保护，独立环境通道</strong><p>HTTP / HTTPS / SOCKS5通道代码已接；环境启动重新建独立通道并做同通道前检，不凭历史成功启动。SOCKS5目标域名交给代理解析，无认证与用户名密码分别协商，不降级；HTTPS代理TLS不能跳验证。实际验收与运行期全路径保护仍待补。</p></div></div>
-    <div className="info-strip"><ShieldCheck size={19} /><div><strong>代理启动按实际会话核对隔离资源</strong><p>正式启动会创建独立容器和专属代理桥，核对进程树与同通道前检；缺失、失败或状态不明时拒绝启动。独立检查不能代替这套核对。当前受控本机启动闭环已验证，外部全路径及故障验收仍待补齐；支持前提是Windows网络隔离机制正常工作。</p></div></div>
+    {!importOnly && <><div className="info-strip"><ShieldCheck size={19} /><div><strong>本机凭据保护，独立环境通道</strong><p>HTTP / HTTPS / SOCKS5通道代码已接；环境启动重新建独立通道并做同通道前检，不凭历史成功启动。SOCKS5目标域名交给代理解析，无认证与用户名密码分别协商，不降级；HTTPS代理TLS不能跳验证。实际验收与运行期全路径保护仍待补。</p></div></div>
+    <div className="info-strip"><ShieldCheck size={19} /><div><strong>代理启动按实际会话核对隔离资源</strong><p>正式启动会创建独立容器和专属代理桥，核对进程树与同通道前检；缺失、失败或状态不明时拒绝启动。独立检查不能代替这套核对。当前受控本机启动闭环已验证，外部全路径及故障验收仍待补齐；支持前提是Windows网络隔离机制正常工作。</p></div></div></>}
     {importOpen && <section className="work-card native-proxy-form" aria-labelledby="native-proxy-import-title">
       <h2 id="native-proxy-import-title">导入代理 · 先预览再保存</h2>
       <p>每行一条：<code>http://user:password@host:port</code>、<code>https://host:port</code>、<code>socks5://user:password@host:port</code>或<code>host:port:user:password</code>。IPv6使用<code>socks5://[2001:db8::1]:1080</code>；分隔符按URI编码。SOCKS5账号密码各需1–255个UTF-8字节。HTTP/SOCKS5到代理不加密认证，HTTPS才提供TLS保护；预览不回显凭据。</p>
@@ -136,6 +137,7 @@ export function NativeProxyManager({ application, workspace, importOpen, onImpor
           const saved = new Set(data.importedLines), remaining = text.split(/\n/).filter((_, index) => !saved.has(index+1)).join("\n");
           previewId.current = undefined; setPreview(undefined); setSelected([]); setText(remaining); setShowText(false);
           setMessage(`已保存${data.importedIds.length}个代理；${remaining.trim() ? "未选与错误行仍留在输入框，可修正后重新解析。" : "原始凭据输入已清除。"}`);
+          onImported?.(data.importedIds);
           if (!remaining.trim()) onImportOpenChange(false);
         })}>保存所选有效行</button>
       </>}
@@ -147,7 +149,7 @@ export function NativeProxyManager({ application, workspace, importOpen, onImpor
       <div className="native-proxy-actions"><button className="btn primary" disabled={busy}>确认保存</button><button type="button" className="btn" disabled={busy} onClick={() => { clearCredentials(); setEditing(undefined); setConfiguration(undefined); }}>取消并清除新凭据</button></div>
     </form></section>}
     {deleting && <section className="work-card native-proxy-form" role="group" aria-label="删除代理确认"><h2>确认删除 {deleting.name}？</h2><p>只删除本机代理配置与其受保护认证，不改变环境设备身份；被引用的节点不能直接删除。</p><div className="native-proxy-actions"><button className="btn danger" disabled={busy} onClick={() => void perform(() => application.deleteProxy?.({ proxyId: deleting.id, expectedRevision: deleting.revision, requestId: crypto.randomUUID() }), () => { setDeleting(undefined); setMessage("代理配置已删除。"); })}>确认删除</button><button className="btn" disabled={busy} onClick={() => setDeleting(undefined)}>取消</button></div></section>}
-    <section className="work-card"><div className="section-toolbar"><h2>本机代理 <span>{records.length}</span></h2><button className="btn" disabled={busy} onClick={() => void application.refresh?.()}><RefreshCw size={15} />重新读取</button></div>
+    {!importOnly && <section className="work-card"><div className="section-toolbar"><h2>本机代理 <span>{records.length}</span></h2><button className="btn" disabled={busy} onClick={() => void application.refresh?.()}><RefreshCw size={15} />重新读取</button></div>
       <div className="table-scroll"><table><thead><tr><th>名称 / 地址</th><th>认证 / 绑定</th><th>真实检查 / 实际出口</th><th>操作</th></tr></thead><tbody>{records.map(record => {
         const task = activeByProxy.get(record.id), report = task ? task.proxyReport : record.checkReport;
         return <tr key={record.id}>
@@ -160,7 +162,7 @@ export function NativeProxyManager({ application, workspace, importOpen, onImpor
         </tr>;
       })}</tbody></table></div>
       {!records.length && <div className="native-proxy-empty"><p>没有本机代理。演示数据不会进入这里。</p><button className="btn primary" onClick={() => onImportOpenChange(true)}>导入代理</button></div>}
-    </section>
+    </section>}
     {(busy || message) && <p className="native-proxy-message" role="status" aria-live="polite">{busy && <LoaderCircle size={16} className="spin" />}{message || "本机服务正在处理，尚未确认保存。"}</p>}
   </div>;
 }
