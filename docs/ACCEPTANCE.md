@@ -4,6 +4,10 @@
 
 ## 完整目标继续复查（2026-10-06；原结果保留，缺口恢复OPEN）
 
+2026-10-07续修：[输入所有权、焦点返回和布局](verification/issue37-recovery-and-layout.md)五候选经独立源码审查无可信P1/P2、merger普通合入 `4a2afbf`，六源码/五新增测试的11责任路径与候选normalized blobs一致。MAIN仅39新用例＋原390px一例 **40/40，82.0秒**、两项noEmit；其他六页18个DOM状态及5个上边界未观察越界，均无新截图或真实native调用。内核测试的Install3/Verify1/Delete1/Cancel0为合成mock，不是实际内核操作。
+
+[18张新对照](screenshots/issue37-recovery-layout/index.html)为8组前后＋2张错误页，各图实际独立分类与时点单列；修复前FAIL不冲销。新normal Vite源码4a2/77输入不复用398/81或b424/79身份；旧20包/926、1300私有项、274/47与44/47层不改。原指南新增有界只读恢复仍失败；不增加whole-cell PASS、完整1:1、正式4/21或真实桌面通过，不重跑681的唯一196全套，也未构建、打包或运行真实探针。
+
 2026-10-07本轮：[字节校验/迁移清理与增量证据](verification/issue37-frontier-evidence.md)的两个修复普通合入398；新增6包20张实际图独立10 ADAPTED / 10 MAPPED，另4条独立动作、16条同图恢复链，[七份保存合同](verification/issue37-frontier-contracts.json)限定一致、0P1/P2。最终实际数据独立批准后按精确字节发布，图库实际20包/926记录；新20图与历史9账本/14包元数据限定后审计通过，不重扫旧906图。私有对照实际1300项，原1280对象保留；一次MAIN前置顺序误并行在对照写前拒绝、0半写文件，记录后按顺序完成，旧失败不覆盖。
 
 原47定义的继承37/47层保持不变；新[有限汇总](verification/issue37-frontier-finite.json)实际追加7项为44/47、剩E18/F11/R09，不是44项正式验收。P07/M22的[准确源码与检查](verification/issue37-frontier-code.json)、原79/当前81输入、图片、合同与有限决定分别绑定；F26仅限Create→Batch合成移交，M22未知清理不认证原生安全，MISSING_DIRECT/HELP保留。原274/47、whole-cell PASS新增0、唯一681的196全套、六票OPEN/PR草稿及正式4/21不变；本轮没有重跑全套、构建/打包/Wails/UIA或真实内核/网络/目录恢复探针。

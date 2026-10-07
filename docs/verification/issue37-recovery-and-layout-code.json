@@ -1,0 +1,346 @@
+{
+  "schemaVersion": 1,
+  "kind": "public-main-projection-current-recovery-code-and-lightweight-checks-not-full-acceptance",
+  "date": "2026-10-07",
+  "sourceHead": "4a2afbf053352760dddbdb7baa24a368c659878f",
+  "baseHead": "505ed75cb1fb9bde4b29d94075d0274c5e120c55",
+  "protectedPr31Ancestor": "e170099bc25aa15ecb9a8456d782394a2139ec20",
+  "integrationBranch": "codex/issue32-37-ui-integration",
+  "producerSHA256": "982372badae4e62a008d3b5ebad39d2d9cdf49e920d5cdac8230ca7e68473f60",
+  "owners": [
+    {
+      "id": "G03",
+      "owner": "cookie-file-owner",
+      "candidate": "50882070888a4c8168ac5018a0a6e7765a234a31",
+      "paths": [
+        "src/components/DemoEnvironmentWindows.tsx",
+        "tests/ui/demo-cookie-read-ownership.spec.ts"
+      ],
+      "newCases": 10,
+      "authorGreen": {
+        "new": 10,
+        "existing": 1
+      },
+      "authorReportSHA256": "b8bc60823e3986e6e3ad72af06074e58923675916526c6102011556a9488b933",
+      "inputs": [
+        {
+          "file": "src/components/DemoEnvironmentWindows.tsx",
+          "blob": "f40464ca961941b8061cccf476953cb2c5116ae4",
+          "actualMainSHA256": "1bcd5ad9bb918ba8101f36a9e197704fbc3019772412f8d1acb1f53e3f9df5e5",
+          "bytes": 6164
+        },
+        {
+          "file": "tests/ui/demo-cookie-read-ownership.spec.ts",
+          "blob": "75f493dc9df7d845903254cc5139558821f7b73d",
+          "actualMainSHA256": "2a2ba4a00576f14c687779ae3a6d1fb041bab8e495151eb6d6ddecbd9b08615f",
+          "bytes": 17447
+        }
+      ]
+    },
+    {
+      "id": "G02",
+      "owner": "kernel-return-focus",
+      "candidate": "bd65d54a744f96149d4def7ab3410b3398a31b0c",
+      "paths": [
+        "src/components/NativeKernelManager.tsx",
+        "src/components/ProxyKernelModal.tsx",
+        "tests/ui/kernel-return-focus.spec.ts"
+      ],
+      "newCases": 9,
+      "authorGreen": {
+        "new": 9,
+        "existing": 1
+      },
+      "newCaseMockCalls": {
+        "Install": 3,
+        "Verify": 1,
+        "Delete": 1,
+        "Cancel": 0
+      },
+      "authorReportSHA256": "d226bc9713e0257417e370f1206e61bc5f2c2f9f604c41e7059fa3f5f3259614",
+      "inputs": [
+        {
+          "file": "src/components/NativeKernelManager.tsx",
+          "blob": "024d8b04831e47ba6665bbb23eacbfef7f630f9a",
+          "actualMainSHA256": "8c2471bd5a8299f127b4301079e9e5f47e4598ca8f65fd4c39118676a0ddd59d",
+          "bytes": 17287
+        },
+        {
+          "file": "src/components/ProxyKernelModal.tsx",
+          "blob": "6a21583bd970cd094835a7f15704ca780feb5b9f",
+          "actualMainSHA256": "fbc658bad4bd41c204a6c2aa1b733a938b32be8838fe1b4cef43ebf1c42d25b1",
+          "bytes": 4816
+        },
+        {
+          "file": "tests/ui/kernel-return-focus.spec.ts",
+          "blob": "58f46317ffe44173f945c5320d12b5e9236f706c",
+          "actualMainSHA256": "25b0aedd60bbabd120b765499a69cad2b0d2f8184074493f4ad8c766346d4f53",
+          "bytes": 18577
+        }
+      ]
+    },
+    {
+      "id": "G05",
+      "owner": "long-proxy-title",
+      "candidate": "0d75e7ee229f135eed025e0d8b6177060b86050f",
+      "paths": [
+        "src/components/reference-ui.css",
+        "tests/ui/long-proxy-title.spec.ts"
+      ],
+      "newCases": 4,
+      "authorGreen": {
+        "new": 4,
+        "existing": 0,
+        "containedLongShortCases": 8
+      },
+      "authorReportSHA256": "b112038959621fb390e561fdb0dff3ffc8bd03194bb9405da64d3c73db064c1c",
+      "inputs": [
+        {
+          "file": "src/components/reference-ui.css",
+          "blob": "eee73d75904bb6cdb535657c1a4ae5b47c0a17f9",
+          "actualMainSHA256": "c5fcaded0f7d93d65052d68a360ad3e5f4f9dae40d924202d8d875b6ae55c9b0",
+          "bytes": 2775
+        },
+        {
+          "file": "tests/ui/long-proxy-title.spec.ts",
+          "blob": "6596f846df6fc6a112c3f9eb55f1ad4ad784c0bb",
+          "actualMainSHA256": "c5a107a4af04648310f98d7a29b6822d2fa119e416ce469dd94406542eaa3156",
+          "bytes": 10638
+        }
+      ]
+    },
+    {
+      "id": "G01",
+      "owner": "editor-blocker-reason",
+      "candidate": "ebb53b7ab4088f2696571bd7b21ae1af8301a8d0",
+      "paths": [
+        "src/components/EnvironmentEditorWindow.tsx",
+        "tests/ui/editor-blocker-reason.spec.ts"
+      ],
+      "newCases": 7,
+      "authorGreen": {
+        "new": 7,
+        "existing": 0
+      },
+      "authorReportSHA256": "d525879f884c0abbd537c9258eef1801e9d3fc9fee4905160511728734b16306",
+      "inputs": [
+        {
+          "file": "src/components/EnvironmentEditorWindow.tsx",
+          "blob": "98c7dfcf2e986a3add5b52d4e8a558e377d4aaad",
+          "actualMainSHA256": "d97721dc7c23b349b9d1c628336c307a38fc24ff888e8296644d7b260414ac1b",
+          "bytes": 4020
+        },
+        {
+          "file": "tests/ui/editor-blocker-reason.spec.ts",
+          "blob": "008d1a31d3032211b2792b0914f0adc62227cb0f",
+          "actualMainSHA256": "af1b1b263ceceb13a255b3b3df9c74e7659dab628b698b8327fd637889c2f40f",
+          "bytes": 22762
+        }
+      ]
+    },
+    {
+      "id": "G04",
+      "owner": "narrow-toolbar",
+      "candidate": "1686e742573f1031e3c00911a66bad2d3502c923",
+      "approvedPredecessor": "1924f98003cfb53d10e9a1f49f6fc5d7697bf2e4",
+      "paths": [
+        "src/styles.css",
+        "tests/ui/narrow-environment-toolbar.spec.ts"
+      ],
+      "newCases": 9,
+      "authorGreen": {
+        "new": 9,
+        "existing": 0
+      },
+      "authorReportSHA256": "efbc8339c54dcffd298c19779ebdb2a35776d2b45725b24debbb7157a7b85dd3",
+      "inputs": [
+        {
+          "file": "src/styles.css",
+          "blob": "bd728080d1e4f52a25b4293350fe7605e872fa6b",
+          "actualMainSHA256": "607735fd50de1265e1a6c26ebb0037131f93161c1824f6f25f5f728f39b05e0c",
+          "bytes": 34881
+        },
+        {
+          "file": "tests/ui/narrow-environment-toolbar.spec.ts",
+          "blob": "75d06e190e8da87d6dcec7053a169233530a91cb",
+          "actualMainSHA256": "55ebc0ae6efb54c730dcc08282493b5ab10aaed5ddd95b6609fb3b0bfdf54dae",
+          "bytes": 19748
+        }
+      ]
+    }
+  ],
+  "merges": [
+    {
+      "head": "7a7f4cbb5c196220127cc38bd8e925e903fd3721",
+      "parents": [
+        "505ed75cb1fb9bde4b29d94075d0274c5e120c55",
+        "50882070888a4c8168ac5018a0a6e7765a234a31"
+      ],
+      "method": "ordinary --no-ff --no-edit"
+    },
+    {
+      "head": "6049667215005cc731142c800b82c28c9fa6ad7e",
+      "parents": [
+        "7a7f4cbb5c196220127cc38bd8e925e903fd3721",
+        "bd65d54a744f96149d4def7ab3410b3398a31b0c"
+      ],
+      "method": "ordinary --no-ff --no-edit"
+    },
+    {
+      "head": "1e40981fd45974b37061d827e9ca286c275b0bd1",
+      "parents": [
+        "6049667215005cc731142c800b82c28c9fa6ad7e",
+        "0d75e7ee229f135eed025e0d8b6177060b86050f"
+      ],
+      "method": "ordinary --no-ff --no-edit"
+    },
+    {
+      "head": "5d4e835cab103f3fe4ebb9a823d12e5e66e576ab",
+      "parents": [
+        "1e40981fd45974b37061d827e9ca286c275b0bd1",
+        "ebb53b7ab4088f2696571bd7b21ae1af8301a8d0"
+      ],
+      "method": "ordinary --no-ff --no-edit"
+    },
+    {
+      "head": "4a2afbf053352760dddbdb7baa24a368c659878f",
+      "parents": [
+        "5d4e835cab103f3fe4ebb9a823d12e5e66e576ab",
+        "1686e742573f1031e3c00911a66bad2d3502c923"
+      ],
+      "method": "ordinary --no-ff --no-edit"
+    }
+  ],
+  "sourceReviews": [
+    {
+      "file": "recovery-three-independent-source-review.json",
+      "rawSHA256": "6e4e907dd4d296b5ede21453826da9ebe2bd2dff515e16a2023486d3847fa154",
+      "scope": "independent exact candidate source/test evidence review; not whole-codebase or native acceptance",
+      "credibleP1": 0,
+      "credibleP2": 0
+    },
+    {
+      "file": "editor-blocker-reason-independent-source-review.json",
+      "rawSHA256": "cebeb28cd3cbcdf685c90558a739da8bcce6a80da9e0a019f97cd58c0a6d2514",
+      "scope": "independent exact candidate source/test evidence review; not whole-codebase or native acceptance",
+      "credibleP1": 0,
+      "credibleP2": 0
+    },
+    {
+      "file": "narrow-toolbar-independent-source-review.json",
+      "rawSHA256": "b66eb951f0bb5ba96fdb6b378a86c67ffd6cd86e91293389898b953179e80091",
+      "scope": "independent exact candidate source/test evidence review; not whole-codebase or native acceptance",
+      "credibleP1": 0,
+      "credibleP2": 0
+    },
+    {
+      "file": "narrow-toolbar-boundary-independent-source-review.json",
+      "rawSHA256": "e817642e15ed249581df82bccbd510a88a6593cc68e62648124e651af28796b1",
+      "scope": "independent exact candidate source/test evidence review; not whole-codebase or native acceptance",
+      "credibleP1": 0,
+      "credibleP2": 0
+    }
+  ],
+  "mainUI": {
+    "sourceHead": "4a2afbf053352760dddbdb7baa24a368c659878f",
+    "newCases": 39,
+    "unchangedExisting390pxCase": 1,
+    "actualPassed": 40,
+    "failed": 0,
+    "skipped": 0,
+    "flaky": 0,
+    "durationMs": 82047.71399999999,
+    "selections": [
+      "tests/ui/narrow-environment-toolbar.spec.ts",
+      "tests/ui/demo-cookie-read-ownership.spec.ts",
+      "tests/ui/kernel-return-focus.spec.ts",
+      "tests/ui/editor-blocker-reason.spec.ts",
+      "tests/ui/long-proxy-title.spec.ts",
+      "tests/ui/environment.spec.ts:217"
+    ],
+    "rawReportSHA256": "60f71dc83fba70fc5046615b18fc77c83606bcf29f121ba600e67c0a93a2792d",
+    "commandReceiptSHA256": "2128b58683bec22391f840974c3c18356c3fc6284760690ec24c4a6780a81fb6",
+    "configSHA256": "b423b5d7652b5a2c9cffcf012c11e2554487562433c5b222b8ebeea68c1c1fe7",
+    "origin": "http://127.0.0.1:5207",
+    "sharedSuiteRerun": false
+  },
+  "mainNoEmit": [
+    {
+      "project": "tsconfig.json",
+      "sourceHead": "4a2afbf053352760dddbdb7baa24a368c659878f",
+      "exitCode": 0,
+      "receiptSHA256": "91bdac7631718d0336bc7f890e9f225e562cd2b74babe4195e182212159f2eff"
+    },
+    {
+      "project": "tsconfig.tests.json",
+      "sourceHead": "4a2afbf053352760dddbdb7baa24a368c659878f",
+      "exitCode": 0,
+      "receiptSHA256": "77d13beafd8e3d24832914315f8ba4d1247d4f409eb5cc1f5638fc1a7679c5c4"
+    }
+  ],
+  "newNormalViteFreeze": {
+    "sourceHead": "4a2afbf053352760dddbdb7baa24a368c659878f",
+    "inputCount": 77,
+    "mapSHA256": "938e6d2a12861bdb5a0efee0d716b4bdf62af88cb098c42a6132453e93e81d52",
+    "rawManifestSHA256": "c354986a3350a27e4f369d8590b7fc6de0e28aa5b617d586db061fbebe18b404",
+    "normalViteRendererOnly": true,
+    "nativeTransformHarnessIncluded": false,
+    "old398RenderHashReused": false
+  },
+  "extraDOMChecks": {
+    "otherPages": {
+      "sourceHead": "4a2afbf053352760dddbdb7baa24a368c659878f",
+      "cases": 18,
+      "rawSHA256": "3d7acad155a00273c362d3a8085751c884ceaa237149d1ee1842d74d49daa3d3",
+      "PNGs": 0,
+      "overflowCases": 0
+    },
+    "upperBoundary": {
+      "sourceHead": "4a2afbf053352760dddbdb7baa24a368c659878f",
+      "widths": [
+        1101,
+        1170,
+        1200,
+        1279,
+        1280
+      ],
+      "rawSHA256": "68af2b8ca40f40024b18122a8e46005bc96f70289ccde8c7a16cebffba5b13d2",
+      "PNGs": 0,
+      "offscreenCases": 0
+    }
+  },
+  "skillFallback": "tdd/code-review unavailable; existing Playwright RED-to-GREEN and independent reviews used without installing tools",
+  "retainedFailedAttempts": [
+    {
+      "kind": "preview screenshot first locator attempt",
+      "outcome": "REJECTED_0_PNG_WRONG_DIRECT_EDIT_LOCATOR",
+      "supersededBy": "new menu-entry capture fork and new successful attempt",
+      "historyRewritten": false
+    },
+    {
+      "kind": "public code projection first privacy guard",
+      "outcome": "REFUSED_0_CANDIDATE_0_PUBLIC_FILES",
+      "cause": "URL suffix false-matched an unbounded drive-letter regex; new attempt retains a boundary-qualified private-path guard",
+      "historyRewritten": false
+    }
+  ],
+  "limits": [
+    "Author candidate checks retain their own heads and checkout/EOL qualification; they are not relabelled as MAIN checks.",
+    "Native-mode tests use an in-memory synthetic bridge; mock Install/Verify/Delete interactions do not install, verify or delete real kernels.",
+    "New image source is this exact clean normal Vite head and new input map, not historical b424/79 or 398/81.",
+    "History681 shared196 tests were not rerun. Old FAIL/MISSING and 274/47 layers remain unchanged.",
+    "Full same-version original guide and some direct-business references remain missing; strict full-product one-to-one remains unproven."
+  ],
+  "issuesRemainOpen": [
+    32,
+    33,
+    34,
+    35,
+    36,
+    37
+  ],
+  "pr38RemainsDraft": true,
+  "historicalFormalAcceptance": "4/21",
+  "productionBuild": false,
+  "realDesktopAcceptanceAdded": false
+}

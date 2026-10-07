@@ -8,6 +8,8 @@
 
 本表关联12项需求、原型与native入口。源码入口不代表完整验收；[本轮逐票矩阵](verification/V1-final.md)明确区分服务回归、真实桌面、本机/独立网络及候选交付。[ACCEPTANCE](ACCEPTANCE.md)为实际结果索引；正式计数仍4/21。
 
+CK-001 / ENV-001 / FP-002 / CORE-001 / PRX-001 / UX-001：[4a2五项续修](verification/issue37-recovery-and-layout.md)保护demo文件读取窗口/目标/最新输入、继承内核替换链返回焦点、显示真正保存阻断原因，恢复≤1279px工具栏动作及合法长标题边界。保存/生成条件、原请求核实、稳定身份和准确范围不变。MAIN39新＋原390px一例40/40，两项noEmit；新18图单列原时点与独立结论，旧账本不倒改，不增加严格1:1或正式桌面通过数。
+
 UX-001 / PRX-001 的后续批次预览焦点、旧修订报告标签与primary恢复按钮修复已合入 `9de0e2a`，实际38/38新定向及两项noEmit通过；BKP-001 / DATA-001 / CORE-001 / DOC-001的新支持窗口逐图来源与失败边界见 [补核证据](verification/issue37-continuation-evidence.md)。旧 `83eafe1` 图包保持原source/render，不自动给后来源码或274项清单增加验收通过数。
 
 CORE-001 / PRX-001 / UX-001的密集列表分页、未知请求提示容量、待保存文案与工作区晚到portal所有权修复已合入 `75bc58d`，仅新22/22定向一次及两项noEmit通过。新图须在准确源绑定下独立复核；原始FAIL与未验真实能力不回写成成功。
