@@ -176,12 +176,17 @@ func TestRealProtectedFaultContainmentAndIndependence(t *testing.T) {
 		t.Fatal(err)
 	}
 	waitFaultCondition(t, func() bool { return f.pages.Load() > 0 })
-	// Take away A's actual listener while retaining its browser. A graceful
-	// bridge disposal tests loss of the socket, not a distinct bridge process:
-	// production's bridge is in the manager process; hard exit is tested below.
+	// Closing A's bridge must stop its exact Job before the old endpoint can
+	// be treated as a usable channel. Standard proxy mode does not claim OS
+	// isolation against an arbitrary replacement listener.
 	u, _ := url.Parse(a.Endpoint())
 	if err := a.bridge.Close(); err != nil {
 		t.Fatal(err)
+	}
+	select {
+	case <-pa.Done():
+	case <-ctx.Done():
+		t.Fatal("bridge disposal did not stop exact A tree")
 	}
 	listener, err := net.Listen("tcp4", u.Host)
 	if err != nil {
@@ -191,11 +196,8 @@ func TestRealProtectedFaultContainmentAndIndependence(t *testing.T) {
 	takeover := &http.Server{Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { hijacked.Add(1); fmt.Fprint(w, "unexpected takeover") })}
 	go takeover.Serve(listener)
 	defer takeover.Close()
-	if err := faultNavigate(ctx, pa, "http://prism-fault.test/after-listener-loss"); err != nil {
-		t.Fatal(err)
-	}
 	// Positive control proves the replacement listener is reachable by an
-	// ordinary caller; only the browser's requests must remain absent.
+	// ordinary caller after the owned browser Job has stopped.
 	response, err := http.Get("http://" + u.Host + "/ordinary-control")
 	if err != nil {
 		t.Fatal(err)
@@ -203,8 +205,8 @@ func TestRealProtectedFaultContainmentAndIndependence(t *testing.T) {
 	response.Body.Close()
 	waitFaultCondition(t, func() bool { return hijacked.Load() == 1 })
 	time.Sleep(700 * time.Millisecond)
-	if !pa.Alive() || hijacked.Load() != 1 {
-		t.Fatal("live protected browser reached ordinary replacement listener")
+	if pa.Alive() || hijacked.Load() != 1 {
+		t.Fatal("bridge-loss Job remained alive or an owned request reached replacement listener")
 	}
 	if err := pa.Stop(ctx); err != nil {
 		t.Fatal(err)
@@ -242,7 +244,7 @@ func TestRealProtectedFaultContainmentAndIndependence(t *testing.T) {
 	if err != nil || len(pending) != 0 {
 		t.Fatal("fault cleanup unresolved", err)
 	}
-	t.Log("actual old-port takeover rejected with live browser; ordinary control reached; A cleanup preserved B; upstream loss stopped B; no direct fixture request; pending=0")
+	t.Log("bridge disposal stopped exact A Job; ordinary replacement control reached; A cleanup preserved B; upstream loss stopped B; no direct fixture request; pending=0")
 }
 
 // Parent kills this exact owned helper after a flushed readiness line. No

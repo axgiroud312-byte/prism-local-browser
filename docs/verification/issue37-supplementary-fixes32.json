@@ -1,0 +1,2800 @@
+{
+  "schemaVersion": 1,
+  "kind": "public-derived-32-record-fix-crosswalk-delta-not-new-acceptance",
+  "date": "2026-10-07",
+  "scope": {
+    "ownedNewFiles": [
+      "notes/continuation1/supplementary-crosswalk-fixes32.md",
+      "notes/continuation1/supplementary-crosswalk-fixes32.json"
+    ],
+    "newPublicPacketsOnly": [
+      "issue37-kernel-repairs75",
+      "issue37-proxy-row-repairs"
+    ],
+    "newSourceCertificate": false,
+    "newVisualReview": false,
+    "sourceFilesOrToolsRead": false,
+    "protected851Or345FileSetsRechecked": false,
+    "environmentOrContextAuthorsInspected": false,
+    "readyPrivateAuthorArtifactsConsumed": false,
+    "imagesViewedOrGenerated": 0,
+    "browserTestsBuildsNativeNetworkKeyboardExecution": false,
+    "gitOrTrackerOperations": false,
+    "agentsDispatched": false,
+    "publicSourceToolDocOrHistoricalReportWrites": 0,
+    "wholeCellCoveragePromotions": 0,
+    "wholeCurrentHeadPass": false,
+    "strictVisualPass": false,
+    "realDesktopAcceptance": false,
+    "pathPolicy": "Repository-relative docs/... and normalized notes/continuation1/... aliases only; no private absolute paths or original commercial assets."
+  },
+  "immutableBaseline": {
+    "publicProjection": {
+      "path": "docs/verification/issue37-supplementary-crosswalk.json",
+      "sha256": "73171f07263db2a2d3212cd324057ca0a2b911367efd04d9c1e7b897fc83928f",
+      "bytes": 2814214
+    },
+    "originalPlan": {
+      "path": "notes/continuation1/supplementary-crosswalk-plan.json",
+      "sha256": "1b01d2b2efdb58fc0b9fcb1284cfb91c70e45a6bf98d11bdc7646a432095aeb1",
+      "bytes": 2647168
+    },
+    "reviewedAdditions": {
+      "path": "notes/continuation1/supplementary-crosswalk-reviewed-additions.json",
+      "sha256": "ec3990337456a9d8334a9119df3138eda49be122428224fce2d1905182d9e906",
+      "bytes": 3023108
+    },
+    "inventory": {
+      "path": "docs/verification/issue37-supported-states.json",
+      "sha256": "cfe87b10ac18060d09f41aff8a97b97d8c73c058e76f480d631c961cfb8f5b54",
+      "bytes": 302530
+    },
+    "publicByteEqualityWithUnpublishedPrivateJSONClaimed": false,
+    "publicProvenanceRenameIsNotHistoryMutationByThisAccountant": true,
+    "cells": 274,
+    "historicalCoverage": {
+      "COVERED": 113,
+      "PARTIAL": 60,
+      "MISSING": 101
+    },
+    "historicalSupplementStatusCounts": {
+      "supplemented-bounded": 190,
+      "partly-supplemented": 20,
+      "unproven": 39,
+      "reference-open": 19,
+      "image-fail-retained": 6,
+      "pending-review": 0
+    },
+    "historicalImageRecords": 600,
+    "historicalPacketLocalPairs": 300,
+    "historicalAcceptedBoundedPairs": 271,
+    "historicalVerdictCounts": {
+      "ADAPTED": 16,
+      "MAPPED": 530,
+      "MISSING": 32,
+      "FAIL": 22
+    },
+    "historicalUniquePNGHashes": 592,
+    "historicalDistinctOrderedPNGHashPairs": 296,
+    "historicalDistinctAcceptedOrderedPNGHashPairs": 268,
+    "historicalRemainingSemanticGapCells": 66,
+    "permanentHistoricalFailStatusCellIDs": [
+      "P03",
+      "K03",
+      "K09",
+      "K10",
+      "K14",
+      "K16"
+    ],
+    "newPairsDoNotIncrementTheseCellStatusCounts": true,
+    "legacy350IndexAndAllPriorAttemptsRetained": true,
+    "oldP34FailImagesAlsoRetained": true,
+    "allGuideDirectOriginalReferenceStillMissing": true,
+    "priorSixMigrationReferenceOverridesAndB11QualificationUnchanged": true
+  },
+  "definitions": {
+    "imageLedgerSourceBinding": "Each row's sourceBinding is an explicit foreign key into sourceBindings. Resolve packet/sourceHead/renderHash79/baseRenderHash78/manifest SHA/review SHA only from that key; never inherit a later HEAD. Each row also has its exact independentReviewSHA256.",
+    "tagNull": "null records that the original manifest field was absent, not an empty or rewritten original tag field. Original bytes are bound by manifest SHA.",
+    "pairedRecords": "Exactly two admitted viewport records grouped by packet and id. MAPPED is the immutable independent review conclusion for this bounded pair, not same-business original equivalence or whole-cell acceptance.",
+    "proofHash": "SHA-256 of UTF-8 JSON.stringify(original manifest record.actionProof), preserving original property order. It binds stored synthetic actions, not actions executed by this accountant.",
+    "gapDelta": "66 original gap-bearing cell definitions only. Five finite predicates are addressed at their own 75bc capture identity, one K10 definition is narrowed conservatively, 60 definitions are unchanged. This does not recalculate the historical 274-cell statuses.",
+    "unchangedGap": "For an unchanged delta row, currentQualifiedRemainingSemanticGaps are exactly baselineRemainingSemanticGaps; no missing screen or mandatory PNG per callback is invented.",
+    "currentQualifiedGapStatus": "A separate finite-predicate accounting label. finite-predicate-addressed never means the cell, current branch, latest HEAD, backend or native ability is accepted.",
+    "K10ConservativeRemainder": "The distinct supported first malformed-receipt identity-error hint has no separate direct pixels or exact content proof here. Keep K10 open conservatively within its original malformed-receipt definition; if MAIN limits that definition solely to the exact historical post-replay frame, only that narrower hint is addressed. Neither interpretation certifies the first hint or requires a new modal."
+  },
+  "sourceBindings": {
+    "kernel75": {
+      "packet": "issue37-kernel-repairs75",
+      "manifest": "docs/screenshots/issue37-kernel-repairs75/manifest.json",
+      "manifestSHA256": "ebe25fcdaa076443d2b7f9431352414d8f51b8d59a92ffbfcebedfee3c227474",
+      "sourceHead": "75bc58d3c209f90680b8915f94f4a1f49339a76c",
+      "renderHash79": "904b07019ee5891cca07502c16239b83166f4474fcf8c7ac49ea5cb3bd33f191",
+      "baseRenderHash78": "76cc03dda5defd8f812a2391cacdf511d5b3a839a6b7f044e4bf0ec7328c1b67",
+      "rendererInputCountRecordedNotRechecked": 79,
+      "frozenRendererInventorySHA256Reported": "42f131967097ec6cb03ecb0a8366dbfd6462c85285ea60ae01bd71936d64a55e",
+      "captureManifestSHA256Reported": "5ca8418b555ad986183bec1b424ddbc74ac080a1a801f6d040a4c1c8bb1d2171",
+      "independentReview": "notes/continuation1/kernel-repairs-75bc-visual.json",
+      "independentReviewSHA256": "19e8b75331e8850c8a5cbeec7b708d351ebbb5401ce610d7dadc0ae4f6dd2274",
+      "reviewMarkdown": "notes/continuation1/kernel-repairs-75bc-visual.md",
+      "reviewMarkdownSHA256": "052b6ca803747fefc6cb74dff6df973080c4faf043b1a21b15d67f6b7698cc88",
+      "imageRecords": 28,
+      "pairedRecords": 14,
+      "verdictCounts": {
+        "MAPPED": 28,
+        "ADAPTED": 0,
+        "MISSING": 0,
+        "FAIL": 0
+      },
+      "independentReviewerFullImplementationPNGViewsReported": 28,
+      "independentReviewerActualOriginalPNGViewsReported": 6,
+      "sourceHeadIsCaptureIdentityNotFreshHEADCertificate": true
+    },
+    "proxy340": {
+      "packet": "issue37-proxy-row-repairs",
+      "manifest": "docs/screenshots/issue37-proxy-row-repairs/manifest.json",
+      "manifestSHA256": "a81456c2f924da52904d55ea46dab1cd038d1679c1fd6b0c60ff94cee644c5cc",
+      "sourceHead": "340a22c1e8489fad2db091a25bb14bb7d2e66984",
+      "renderHash79": "0df5a445b4a16f1984f2944ac7367d1202322b892876f2d31b9e853d9a8708ce",
+      "baseRenderHash78": "819ebca00422211c9fe8863f04ae67f2e9149cdee0199e75a1ecb9747bcc4ee3",
+      "rendererInputCountRecordedNotRechecked": 79,
+      "frozenRendererInventorySHA256Reported": "d3e6938da18e184f1b9e2160d151196646f0cb22093e64390ea37afd5a66d83d",
+      "captureManifestSHA256Reported": "b781c77e65bbbe9fbe4ae5459531b228a404cea04cea4b59f77de7b12de50527",
+      "independentReview": "notes/continuation1/proxy-row-repairs-340-visual.json",
+      "independentReviewSHA256": "9fff60ff2deb799293031cdcc107737b193c41c0c2eb67ab9b09976191cba38f",
+      "reviewMarkdown": "notes/continuation1/proxy-row-repairs-340-visual.md",
+      "reviewMarkdownSHA256": "3f80c91442ec8c33037a448e779693476d65ae1dac93c0178aba8089fd8beee0",
+      "imageRecords": 4,
+      "pairedRecords": 2,
+      "verdictCounts": {
+        "MAPPED": 4,
+        "ADAPTED": 0,
+        "MISSING": 0,
+        "FAIL": 0
+      },
+      "independentReviewerFullImplementationPNGViewsReported": 4,
+      "independentReviewerActualOriginalPNGViewsReported": 2,
+      "sourceHeadIsCaptureIdentityNotFreshHEADCertificate": true,
+      "75bcPixelsRelabelledAs340": false
+    }
+  },
+  "imageLedger": [
+    {
+      "sourceBinding": "kernel75",
+      "manifestRecordIndex": 0,
+      "id": "verified-gap-kernel-demo-list-dense-bottom",
+      "viewport": "1440x900",
+      "file": "docs/screenshots/issue37-kernel-repairs75/1440x900/verified-gap-kernel-demo-list-dense-bottom.png",
+      "imageSHA256": "a51874f73d5ab85cb73e1b21415a6fbcfe537e362fb3c11d9f416aaf1c1f33fc",
+      "bytes": 112098,
+      "cells": null,
+      "catalogueCells": [
+        "K03"
+      ],
+      "verdict": "MAPPED",
+      "independentReviewSHA256": "19e8b75331e8850c8a5cbeec7b708d351ebbb5401ce610d7dadc0ae4f6dd2274",
+      "actionProofSHA256": "6fc0e3f31ce3777c23d18f1c00e7ae6b42a0bb33634e53e985d48a101fa261d1",
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "kernel75",
+      "manifestRecordIndex": 1,
+      "id": "verified-gap-kernel-demo-list-dense-page-two",
+      "viewport": "1440x900",
+      "file": "docs/screenshots/issue37-kernel-repairs75/1440x900/verified-gap-kernel-demo-list-dense-page-two.png",
+      "imageSHA256": "1d3555e070c4dd9ea78ef0c97bad26249abe55613200248a5b5f518c3976c022",
+      "bytes": 56289,
+      "cells": null,
+      "catalogueCells": [
+        "K03"
+      ],
+      "verdict": "MAPPED",
+      "independentReviewSHA256": "19e8b75331e8850c8a5cbeec7b708d351ebbb5401ce610d7dadc0ae4f6dd2274",
+      "actionProofSHA256": "a65590c7853c13e24aa8f45d0a6ac7558f73c96e3aa485906666145edf4293bc",
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "kernel75",
+      "manifestRecordIndex": 2,
+      "id": "verified-gap-kernel-native-list-dense-bottom",
+      "viewport": "1440x900",
+      "file": "docs/screenshots/issue37-kernel-repairs75/1440x900/verified-gap-kernel-native-list-dense-bottom.png",
+      "imageSHA256": "0719b36d06a776908a8760d52329a42e51ecdebc1c4d46a3813a5908faa7919f",
+      "bytes": 123579,
+      "cells": null,
+      "catalogueCells": [
+        "K03"
+      ],
+      "verdict": "MAPPED",
+      "independentReviewSHA256": "19e8b75331e8850c8a5cbeec7b708d351ebbb5401ce610d7dadc0ae4f6dd2274",
+      "actionProofSHA256": "15928992b3363e67b2cda429f89726e5f9761a2a035b37be235370cf3c7923c4",
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "kernel75",
+      "manifestRecordIndex": 3,
+      "id": "verified-gap-kernel-native-list-dense-page-two",
+      "viewport": "1440x900",
+      "file": "docs/screenshots/issue37-kernel-repairs75/1440x900/verified-gap-kernel-native-list-dense-page-two.png",
+      "imageSHA256": "74e439c74fc725336bfe0cb91ffe8100d08dc2e0399153857fb72d3eb74de7c5",
+      "bytes": 61767,
+      "cells": null,
+      "catalogueCells": [
+        "K03"
+      ],
+      "verdict": "MAPPED",
+      "independentReviewSHA256": "19e8b75331e8850c8a5cbeec7b708d351ebbb5401ce610d7dadc0ae4f6dd2274",
+      "actionProofSHA256": "a0f1d7ae57de30425077e32d76204fd1714631b7c1f0bd6ff1bf95fd028add58",
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "kernel75",
+      "manifestRecordIndex": 4,
+      "id": "verified-gap-proxy-demo-list-dense-bottom",
+      "viewport": "1440x900",
+      "file": "docs/screenshots/issue37-kernel-repairs75/1440x900/verified-gap-proxy-demo-list-dense-bottom.png",
+      "imageSHA256": "fabef2049eee30a014fb58f3d5d6a742ba790bfa55a84c1a4634ae6459527900",
+      "bytes": 82996,
+      "cells": null,
+      "catalogueCells": [
+        "P03"
+      ],
+      "verdict": "MAPPED",
+      "independentReviewSHA256": "19e8b75331e8850c8a5cbeec7b708d351ebbb5401ce610d7dadc0ae4f6dd2274",
+      "actionProofSHA256": "9ebdd833d478794e7506ee90f80ed237e7aab1192a561445ef117cd8fdf37e2c",
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "kernel75",
+      "manifestRecordIndex": 5,
+      "id": "verified-gap-proxy-demo-list-dense-page-two",
+      "viewport": "1440x900",
+      "file": "docs/screenshots/issue37-kernel-repairs75/1440x900/verified-gap-proxy-demo-list-dense-page-two.png",
+      "imageSHA256": "8ba09920bc8816537bb0c24e3f32ab42f1c196868ff4dc66403fc47dc0aead00",
+      "bytes": 55381,
+      "cells": null,
+      "catalogueCells": [
+        "P03"
+      ],
+      "verdict": "MAPPED",
+      "independentReviewSHA256": "19e8b75331e8850c8a5cbeec7b708d351ebbb5401ce610d7dadc0ae4f6dd2274",
+      "actionProofSHA256": "34d5cb6789034981339a67b1a0af1c8d112d502282cf8893a25c645fbdbf2cb6",
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "kernel75",
+      "manifestRecordIndex": 6,
+      "id": "verified-gap-proxy-native-list-dense-bottom",
+      "viewport": "1440x900",
+      "file": "docs/screenshots/issue37-kernel-repairs75/1440x900/verified-gap-proxy-native-list-dense-bottom.png",
+      "imageSHA256": "17e291ac50f908a947917974ac9378b572f42e4bbecb06ef37c9c27d709c8704",
+      "bytes": 88260,
+      "cells": null,
+      "catalogueCells": [
+        "P03"
+      ],
+      "verdict": "MAPPED",
+      "independentReviewSHA256": "19e8b75331e8850c8a5cbeec7b708d351ebbb5401ce610d7dadc0ae4f6dd2274",
+      "actionProofSHA256": "98e1826899c3f88b57354bdf73f5b05423df55d64c93747c5d71281f3d8326a9",
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "kernel75",
+      "manifestRecordIndex": 7,
+      "id": "verified-gap-proxy-native-list-dense-page-two",
+      "viewport": "1440x900",
+      "file": "docs/screenshots/issue37-kernel-repairs75/1440x900/verified-gap-proxy-native-list-dense-page-two.png",
+      "imageSHA256": "66fc5d5def523ce837fd44a31d553337d9b5e225950fac4dd0683fd7ed8e9fe3",
+      "bytes": 60005,
+      "cells": null,
+      "catalogueCells": [
+        "P03"
+      ],
+      "verdict": "MAPPED",
+      "independentReviewSHA256": "19e8b75331e8850c8a5cbeec7b708d351ebbb5401ce610d7dadc0ae4f6dd2274",
+      "actionProofSHA256": "9a015c1e6029398138049665b2ad4b04bd69f98c42abdee29f1705404d2065e5",
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "kernel75",
+      "manifestRecordIndex": 8,
+      "id": "verified-gap-kernel-install-official-unknown",
+      "viewport": "1440x900",
+      "file": "docs/screenshots/issue37-kernel-repairs75/1440x900/verified-gap-kernel-install-official-unknown.png",
+      "imageSHA256": "229cfa84e28ac6b8735ea427dcafe46cf9d9102196faf6caa2fdec80ed7118a8",
+      "bytes": 84106,
+      "cells": null,
+      "catalogueCells": [
+        "K10"
+      ],
+      "verdict": "MAPPED",
+      "independentReviewSHA256": "19e8b75331e8850c8a5cbeec7b708d351ebbb5401ce610d7dadc0ae4f6dd2274",
+      "actionProofSHA256": "4fa44490e4ccdd0031f0662a4734434f6d54f4d76938a60bcbdd38db25adecb6",
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "kernel75",
+      "manifestRecordIndex": 9,
+      "id": "verified-gap-kernel-install-malformed-receipt",
+      "viewport": "1440x900",
+      "file": "docs/screenshots/issue37-kernel-repairs75/1440x900/verified-gap-kernel-install-malformed-receipt.png",
+      "imageSHA256": "229cfa84e28ac6b8735ea427dcafe46cf9d9102196faf6caa2fdec80ed7118a8",
+      "bytes": 84106,
+      "cells": null,
+      "catalogueCells": [
+        "K10"
+      ],
+      "verdict": "MAPPED",
+      "independentReviewSHA256": "19e8b75331e8850c8a5cbeec7b708d351ebbb5401ce610d7dadc0ae4f6dd2274",
+      "actionProofSHA256": "537c30bbbe7c83615717cba5ad36db6201ed048b81e8d1ff22338b00be08bac8",
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "kernel75",
+      "manifestRecordIndex": 10,
+      "id": "verified-gap-kernel-task-persistence-blocked",
+      "viewport": "1440x900",
+      "file": "docs/screenshots/issue37-kernel-repairs75/1440x900/verified-gap-kernel-task-persistence-blocked.png",
+      "imageSHA256": "32d9be7afe88f8553ac598b1eb13c00cac67a0611e669bec97907554c23df59d",
+      "bytes": 76292,
+      "cells": null,
+      "catalogueCells": [
+        "K14"
+      ],
+      "verdict": "MAPPED",
+      "independentReviewSHA256": "19e8b75331e8850c8a5cbeec7b708d351ebbb5401ce610d7dadc0ae4f6dd2274",
+      "actionProofSHA256": "3432db3202f4344df826b97f89ec15588fa393a21d6137fed4ccc81c51ddc95e",
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "kernel75",
+      "manifestRecordIndex": 11,
+      "id": "verified-gap-kernel-accepted-refresh-fault",
+      "viewport": "1440x900",
+      "file": "docs/screenshots/issue37-kernel-repairs75/1440x900/verified-gap-kernel-accepted-refresh-fault.png",
+      "imageSHA256": "761f95a39f88a4f2ce1db4deafd86114457b564733c74ce8b3ec431cf8bab1f7",
+      "bytes": 73616,
+      "cells": null,
+      "catalogueCells": [
+        "K16"
+      ],
+      "verdict": "MAPPED",
+      "independentReviewSHA256": "19e8b75331e8850c8a5cbeec7b708d351ebbb5401ce610d7dadc0ae4f6dd2274",
+      "actionProofSHA256": "5e2d4b71d80493ffcfbe7bab00979945b3c2dd1199642718b8a66758e1bacc30",
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "kernel75",
+      "manifestRecordIndex": 12,
+      "id": "verified-gap-kernel-accepted-refresh-recovered",
+      "viewport": "1440x900",
+      "file": "docs/screenshots/issue37-kernel-repairs75/1440x900/verified-gap-kernel-accepted-refresh-recovered.png",
+      "imageSHA256": "6381a6b1081b7b7fca575fe8fa925fdb25539ec2133ba49bccc49eb484202777",
+      "bytes": 73190,
+      "cells": null,
+      "catalogueCells": [
+        "K16"
+      ],
+      "verdict": "MAPPED",
+      "independentReviewSHA256": "19e8b75331e8850c8a5cbeec7b708d351ebbb5401ce610d7dadc0ae4f6dd2274",
+      "actionProofSHA256": "ac9fe5df78bb91e7ee1af57ef171186a1f54e8ce1c4dc0bd219e3d6381e28ddc",
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "kernel75",
+      "manifestRecordIndex": 13,
+      "id": "verified-gap-kernel-local-invalid-fields",
+      "viewport": "1440x900",
+      "file": "docs/screenshots/issue37-kernel-repairs75/1440x900/verified-gap-kernel-local-invalid-fields.png",
+      "imageSHA256": "c21fabb7fe47352a100b481c2700790d699ef6009e5127939363e8c71d0251e4",
+      "bytes": 77167,
+      "cells": null,
+      "catalogueCells": [
+        "K09"
+      ],
+      "verdict": "MAPPED",
+      "independentReviewSHA256": "19e8b75331e8850c8a5cbeec7b708d351ebbb5401ce610d7dadc0ae4f6dd2274",
+      "actionProofSHA256": "5589473b032780b916816655c9d1abc453521c2ce758ec3d78552c849f813e1e",
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "kernel75",
+      "manifestRecordIndex": 14,
+      "id": "verified-gap-kernel-demo-list-dense-bottom",
+      "viewport": "1280x800",
+      "file": "docs/screenshots/issue37-kernel-repairs75/1280x800/verified-gap-kernel-demo-list-dense-bottom.png",
+      "imageSHA256": "bd0dbf7f36be4577045af1080988b7872e6bcfecba19f22abc21b01c4207cde5",
+      "bytes": 99858,
+      "cells": null,
+      "catalogueCells": [
+        "K03"
+      ],
+      "verdict": "MAPPED",
+      "independentReviewSHA256": "19e8b75331e8850c8a5cbeec7b708d351ebbb5401ce610d7dadc0ae4f6dd2274",
+      "actionProofSHA256": "a1e1027c82fcd1f109595e3230d7e5c701b038149370430412cddf6c9c6f0a08",
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "kernel75",
+      "manifestRecordIndex": 15,
+      "id": "verified-gap-kernel-demo-list-dense-page-two",
+      "viewport": "1280x800",
+      "file": "docs/screenshots/issue37-kernel-repairs75/1280x800/verified-gap-kernel-demo-list-dense-page-two.png",
+      "imageSHA256": "cb1431dc56e02610be831ec60cc13cccc6368631aff8fbb2c3cc683de63fc280",
+      "bytes": 53843,
+      "cells": null,
+      "catalogueCells": [
+        "K03"
+      ],
+      "verdict": "MAPPED",
+      "independentReviewSHA256": "19e8b75331e8850c8a5cbeec7b708d351ebbb5401ce610d7dadc0ae4f6dd2274",
+      "actionProofSHA256": "96564dd8adcf0aff24dd5236d9842a2379ea64e849fe9a77ce0f0ef6d9499ad6",
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "kernel75",
+      "manifestRecordIndex": 16,
+      "id": "verified-gap-kernel-native-list-dense-bottom",
+      "viewport": "1280x800",
+      "file": "docs/screenshots/issue37-kernel-repairs75/1280x800/verified-gap-kernel-native-list-dense-bottom.png",
+      "imageSHA256": "11b0f42009d69743ab43e686b8aab45063deb213d6d8612f09dacefdecebbfff",
+      "bytes": 112329,
+      "cells": null,
+      "catalogueCells": [
+        "K03"
+      ],
+      "verdict": "MAPPED",
+      "independentReviewSHA256": "19e8b75331e8850c8a5cbeec7b708d351ebbb5401ce610d7dadc0ae4f6dd2274",
+      "actionProofSHA256": "2202cc9b2c7da1dc29b28c3283d587b7755a1eb5c2b51cd1250b2a065e88b553",
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "kernel75",
+      "manifestRecordIndex": 17,
+      "id": "verified-gap-kernel-native-list-dense-page-two",
+      "viewport": "1280x800",
+      "file": "docs/screenshots/issue37-kernel-repairs75/1280x800/verified-gap-kernel-native-list-dense-page-two.png",
+      "imageSHA256": "2d114f7181e5d1f2d4d437717f5c08081454516cba0e6ecc7d07f0d1cc1bca7c",
+      "bytes": 59471,
+      "cells": null,
+      "catalogueCells": [
+        "K03"
+      ],
+      "verdict": "MAPPED",
+      "independentReviewSHA256": "19e8b75331e8850c8a5cbeec7b708d351ebbb5401ce610d7dadc0ae4f6dd2274",
+      "actionProofSHA256": "3d6e0014336a313887af93b2c2cb5b802880c3730b45503fda9ab8d0defe988a",
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "kernel75",
+      "manifestRecordIndex": 18,
+      "id": "verified-gap-proxy-demo-list-dense-bottom",
+      "viewport": "1280x800",
+      "file": "docs/screenshots/issue37-kernel-repairs75/1280x800/verified-gap-proxy-demo-list-dense-bottom.png",
+      "imageSHA256": "4de91faea08b5a6306e932c11357587f19c48e7005e1fa7343e9c9b2180cdf11",
+      "bytes": 76360,
+      "cells": null,
+      "catalogueCells": [
+        "P03"
+      ],
+      "verdict": "MAPPED",
+      "independentReviewSHA256": "19e8b75331e8850c8a5cbeec7b708d351ebbb5401ce610d7dadc0ae4f6dd2274",
+      "actionProofSHA256": "2dd91dd7ab274a29bdd9c55d7519d1094571a99131fcd0f4b76923f3f9e70857",
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "kernel75",
+      "manifestRecordIndex": 19,
+      "id": "verified-gap-proxy-demo-list-dense-page-two",
+      "viewport": "1280x800",
+      "file": "docs/screenshots/issue37-kernel-repairs75/1280x800/verified-gap-proxy-demo-list-dense-page-two.png",
+      "imageSHA256": "704fdece50e70e6ad10bbd4de10246dc8a37d3a6e12d3573e6fc6bcef2fc31a7",
+      "bytes": 53800,
+      "cells": null,
+      "catalogueCells": [
+        "P03"
+      ],
+      "verdict": "MAPPED",
+      "independentReviewSHA256": "19e8b75331e8850c8a5cbeec7b708d351ebbb5401ce610d7dadc0ae4f6dd2274",
+      "actionProofSHA256": "c55021d420f1ea0849e036a3626d883b5cb9b52a21e4c52f50112d678b25d1b5",
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "kernel75",
+      "manifestRecordIndex": 20,
+      "id": "verified-gap-proxy-native-list-dense-bottom",
+      "viewport": "1280x800",
+      "file": "docs/screenshots/issue37-kernel-repairs75/1280x800/verified-gap-proxy-native-list-dense-bottom.png",
+      "imageSHA256": "c568efa15e713e320347d14578244f9736e2904a741fbc7dd2d13e747669f809",
+      "bytes": 81677,
+      "cells": null,
+      "catalogueCells": [
+        "P03"
+      ],
+      "verdict": "MAPPED",
+      "independentReviewSHA256": "19e8b75331e8850c8a5cbeec7b708d351ebbb5401ce610d7dadc0ae4f6dd2274",
+      "actionProofSHA256": "fdc131fbd2528088ebce97edabf1e1c928fb6ce6935d4602b99feff295f76c76",
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "kernel75",
+      "manifestRecordIndex": 21,
+      "id": "verified-gap-proxy-native-list-dense-page-two",
+      "viewport": "1280x800",
+      "file": "docs/screenshots/issue37-kernel-repairs75/1280x800/verified-gap-proxy-native-list-dense-page-two.png",
+      "imageSHA256": "f9b124e6be1a1dc4eb5deed9caa29522d7b391ba4ff593139e150d6daa1f7ce7",
+      "bytes": 58133,
+      "cells": null,
+      "catalogueCells": [
+        "P03"
+      ],
+      "verdict": "MAPPED",
+      "independentReviewSHA256": "19e8b75331e8850c8a5cbeec7b708d351ebbb5401ce610d7dadc0ae4f6dd2274",
+      "actionProofSHA256": "937f889e006c13ec69e3139075d24e99f1d9532908fb6a266b76a03a6fd17706",
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "kernel75",
+      "manifestRecordIndex": 22,
+      "id": "verified-gap-kernel-install-official-unknown",
+      "viewport": "1280x800",
+      "file": "docs/screenshots/issue37-kernel-repairs75/1280x800/verified-gap-kernel-install-official-unknown.png",
+      "imageSHA256": "6513faca7aa62b6e2b96f19a2cbd1595d6bf16385bd254097d7973bc2f61659f",
+      "bytes": 78288,
+      "cells": null,
+      "catalogueCells": [
+        "K10"
+      ],
+      "verdict": "MAPPED",
+      "independentReviewSHA256": "19e8b75331e8850c8a5cbeec7b708d351ebbb5401ce610d7dadc0ae4f6dd2274",
+      "actionProofSHA256": "8f7a8193c427eb68c458a0e37e6be24c8002c014d0b459d29a533ec8c94fd23f",
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "kernel75",
+      "manifestRecordIndex": 23,
+      "id": "verified-gap-kernel-install-malformed-receipt",
+      "viewport": "1280x800",
+      "file": "docs/screenshots/issue37-kernel-repairs75/1280x800/verified-gap-kernel-install-malformed-receipt.png",
+      "imageSHA256": "6513faca7aa62b6e2b96f19a2cbd1595d6bf16385bd254097d7973bc2f61659f",
+      "bytes": 78288,
+      "cells": null,
+      "catalogueCells": [
+        "K10"
+      ],
+      "verdict": "MAPPED",
+      "independentReviewSHA256": "19e8b75331e8850c8a5cbeec7b708d351ebbb5401ce610d7dadc0ae4f6dd2274",
+      "actionProofSHA256": "369153ffe999022cc0f160ea890f97429482fdd85d0a7a296299becc43372e2c",
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "kernel75",
+      "manifestRecordIndex": 24,
+      "id": "verified-gap-kernel-task-persistence-blocked",
+      "viewport": "1280x800",
+      "file": "docs/screenshots/issue37-kernel-repairs75/1280x800/verified-gap-kernel-task-persistence-blocked.png",
+      "imageSHA256": "f556e81ba4b9b80666cdd88589c92fb4bee09dee92821947260246c0676daf18",
+      "bytes": 71433,
+      "cells": null,
+      "catalogueCells": [
+        "K14"
+      ],
+      "verdict": "MAPPED",
+      "independentReviewSHA256": "19e8b75331e8850c8a5cbeec7b708d351ebbb5401ce610d7dadc0ae4f6dd2274",
+      "actionProofSHA256": "3432db3202f4344df826b97f89ec15588fa393a21d6137fed4ccc81c51ddc95e",
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "kernel75",
+      "manifestRecordIndex": 25,
+      "id": "verified-gap-kernel-accepted-refresh-fault",
+      "viewport": "1280x800",
+      "file": "docs/screenshots/issue37-kernel-repairs75/1280x800/verified-gap-kernel-accepted-refresh-fault.png",
+      "imageSHA256": "e556aff6561e72ff42533d02f320003dc45cdd5290ae74e7d18b7fc46e700e87",
+      "bytes": 68224,
+      "cells": null,
+      "catalogueCells": [
+        "K16"
+      ],
+      "verdict": "MAPPED",
+      "independentReviewSHA256": "19e8b75331e8850c8a5cbeec7b708d351ebbb5401ce610d7dadc0ae4f6dd2274",
+      "actionProofSHA256": "f61db9000f0685e699c32549b4e2212a5fd360f4102d4c68120524c7be9ff481",
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "kernel75",
+      "manifestRecordIndex": 26,
+      "id": "verified-gap-kernel-accepted-refresh-recovered",
+      "viewport": "1280x800",
+      "file": "docs/screenshots/issue37-kernel-repairs75/1280x800/verified-gap-kernel-accepted-refresh-recovered.png",
+      "imageSHA256": "12ded270f7bbf8197dd9f0c5e83b34fd5ffd7014e678f4c12c38e99af26c5439",
+      "bytes": 68486,
+      "cells": null,
+      "catalogueCells": [
+        "K16"
+      ],
+      "verdict": "MAPPED",
+      "independentReviewSHA256": "19e8b75331e8850c8a5cbeec7b708d351ebbb5401ce610d7dadc0ae4f6dd2274",
+      "actionProofSHA256": "687afe95c9fe0f6a3baff1622b6cf48d39f2a4e8dd28c68fc5d5e3e336b87f80",
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "kernel75",
+      "manifestRecordIndex": 27,
+      "id": "verified-gap-kernel-local-invalid-fields",
+      "viewport": "1280x800",
+      "file": "docs/screenshots/issue37-kernel-repairs75/1280x800/verified-gap-kernel-local-invalid-fields.png",
+      "imageSHA256": "51bd2016fa0afc061cfb12dbd7a9a0de7c2670ed787401d114477b67f341018c",
+      "bytes": 72453,
+      "cells": null,
+      "catalogueCells": [
+        "K09"
+      ],
+      "verdict": "MAPPED",
+      "independentReviewSHA256": "19e8b75331e8850c8a5cbeec7b708d351ebbb5401ce610d7dadc0ae4f6dd2274",
+      "actionProofSHA256": "5589473b032780b916816655c9d1abc453521c2ce758ec3d78552c849f813e1e",
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "proxy340",
+      "manifestRecordIndex": 0,
+      "id": "verified-proxy-row-and-detail-current",
+      "viewport": "1440x900",
+      "file": "docs/screenshots/issue37-proxy-row-repairs/1440x900/verified-proxy-row-and-detail-current.png",
+      "imageSHA256": "e0a9c785cd421899f5fb0a02a17fdeefc5f01d55b1d6bb5a4a9221f82a25aaa5",
+      "bytes": 70370,
+      "cells": [
+        "P33"
+      ],
+      "catalogueCells": null,
+      "verdict": "MAPPED",
+      "independentReviewSHA256": "9fff60ff2deb799293031cdcc107737b193c41c0c2eb67ab9b09976191cba38f",
+      "actionProofSHA256": "4ada03072c150ade6c40ae8cb142110ab97e7ef32342b3459bf67dafd10f524a",
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "proxy340",
+      "manifestRecordIndex": 1,
+      "id": "verified-proxy-row-and-detail-stale",
+      "viewport": "1440x900",
+      "file": "docs/screenshots/issue37-proxy-row-repairs/1440x900/verified-proxy-row-and-detail-stale.png",
+      "imageSHA256": "bbadb9fd6b67cb7ebdd066879eef3666ea6e7ca84634c683466a94dd69021eff",
+      "bytes": 59655,
+      "cells": [
+        "P34"
+      ],
+      "catalogueCells": null,
+      "verdict": "MAPPED",
+      "independentReviewSHA256": "9fff60ff2deb799293031cdcc107737b193c41c0c2eb67ab9b09976191cba38f",
+      "actionProofSHA256": "6b5d68bac7cff0d63abc416ce956d137e1f47eb33030f6954befe98889b3b199",
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "proxy340",
+      "manifestRecordIndex": 2,
+      "id": "verified-proxy-row-and-detail-current",
+      "viewport": "1280x800",
+      "file": "docs/screenshots/issue37-proxy-row-repairs/1280x800/verified-proxy-row-and-detail-current.png",
+      "imageSHA256": "bbf6ea6e971996c0cf0fb7006d8fa81625a9a6b619ff5d4318584926e7964931",
+      "bytes": 65773,
+      "cells": [
+        "P33"
+      ],
+      "catalogueCells": null,
+      "verdict": "MAPPED",
+      "independentReviewSHA256": "9fff60ff2deb799293031cdcc107737b193c41c0c2eb67ab9b09976191cba38f",
+      "actionProofSHA256": "4ada03072c150ade6c40ae8cb142110ab97e7ef32342b3459bf67dafd10f524a",
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "proxy340",
+      "manifestRecordIndex": 3,
+      "id": "verified-proxy-row-and-detail-stale",
+      "viewport": "1280x800",
+      "file": "docs/screenshots/issue37-proxy-row-repairs/1280x800/verified-proxy-row-and-detail-stale.png",
+      "imageSHA256": "6662f76d4afa36e0e21d8b61f95cc8536531392215a43a8ab51fad17b3db10dd",
+      "bytes": 55957,
+      "cells": [
+        "P34"
+      ],
+      "catalogueCells": null,
+      "verdict": "MAPPED",
+      "independentReviewSHA256": "9fff60ff2deb799293031cdcc107737b193c41c0c2eb67ab9b09976191cba38f",
+      "actionProofSHA256": "6b5d68bac7cff0d63abc416ce956d137e1f47eb33030f6954befe98889b3b199",
+      "cellFullyCovered": false
+    }
+  ],
+  "pairedRecords": [
+    {
+      "sourceBinding": "kernel75",
+      "packet": "issue37-kernel-repairs75",
+      "id": "verified-gap-kernel-demo-list-dense-bottom",
+      "sourceHead": "75bc58d3c209f90680b8915f94f4a1f49339a76c",
+      "renderHash": "904b07019ee5891cca07502c16239b83166f4474fcf8c7ac49ea5cb3bd33f191",
+      "viewports": [
+        "1440x900",
+        "1280x800"
+      ],
+      "imageSHA256s": {
+        "1440x900": "a51874f73d5ab85cb73e1b21415a6fbcfe537e362fb3c11d9f416aaf1c1f33fc",
+        "1280x800": "bd0dbf7f36be4577045af1080988b7872e6bcfecba19f22abc21b01c4207cde5"
+      },
+      "verdicts": {
+        "1440x900": "MAPPED",
+        "1280x800": "MAPPED"
+      },
+      "cellIds": [
+        "K03"
+      ],
+      "scope": {
+        "mode": "demo",
+        "route": "kernels",
+        "referenceId": "proxy-list",
+        "predicateProfile": "dense-first-page-bottom",
+        "rowsTotal": 12,
+        "rowsOnPage": 10,
+        "addressedPredicate": "Demo kernel short-viewport first-page pagination and safety boundary clipping; unchanged ten 48px rows with 10px gaps."
+      },
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "kernel75",
+      "packet": "issue37-kernel-repairs75",
+      "id": "verified-gap-kernel-demo-list-dense-page-two",
+      "sourceHead": "75bc58d3c209f90680b8915f94f4a1f49339a76c",
+      "renderHash": "904b07019ee5891cca07502c16239b83166f4474fcf8c7ac49ea5cb3bd33f191",
+      "viewports": [
+        "1440x900",
+        "1280x800"
+      ],
+      "imageSHA256s": {
+        "1440x900": "1d3555e070c4dd9ea78ef0c97bad26249abe55613200248a5b5f518c3976c022",
+        "1280x800": "cb1431dc56e02610be831ec60cc13cccc6368631aff8fbb2c3cc683de63fc280"
+      },
+      "verdicts": {
+        "1440x900": "MAPPED",
+        "1280x800": "MAPPED"
+      },
+      "cellIds": [
+        "K03"
+      ],
+      "scope": {
+        "mode": "demo",
+        "route": "kernels",
+        "referenceId": "proxy-list",
+        "predicateProfile": "kernel-last-page-two-rows",
+        "rowsTotal": 12,
+        "rowsOnPage": 2,
+        "addressedPredicate": "Finite page-two content/control companion to dense clipping repair; two final metadata rows and disabled next page, not an additional cell resolution."
+      },
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "kernel75",
+      "packet": "issue37-kernel-repairs75",
+      "id": "verified-gap-kernel-native-list-dense-bottom",
+      "sourceHead": "75bc58d3c209f90680b8915f94f4a1f49339a76c",
+      "renderHash": "904b07019ee5891cca07502c16239b83166f4474fcf8c7ac49ea5cb3bd33f191",
+      "viewports": [
+        "1440x900",
+        "1280x800"
+      ],
+      "imageSHA256s": {
+        "1440x900": "0719b36d06a776908a8760d52329a42e51ecdebc1c4d46a3813a5908faa7919f",
+        "1280x800": "11b0f42009d69743ab43e686b8aab45063deb213d6d8612f09dacefdecebbfff"
+      },
+      "verdicts": {
+        "1440x900": "MAPPED",
+        "1280x800": "MAPPED"
+      },
+      "cellIds": [
+        "K03"
+      ],
+      "scope": {
+        "mode": "native-proxy-kernel",
+        "route": "kernels",
+        "referenceId": "proxy-list",
+        "predicateProfile": "dense-first-page-bottom",
+        "rowsTotal": 12,
+        "rowsOnPage": 10,
+        "addressedPredicate": "Native synthetic kernel short-viewport first-page pagination and capability boundary clipping, with ten rows retained."
+      },
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "kernel75",
+      "packet": "issue37-kernel-repairs75",
+      "id": "verified-gap-kernel-native-list-dense-page-two",
+      "sourceHead": "75bc58d3c209f90680b8915f94f4a1f49339a76c",
+      "renderHash": "904b07019ee5891cca07502c16239b83166f4474fcf8c7ac49ea5cb3bd33f191",
+      "viewports": [
+        "1440x900",
+        "1280x800"
+      ],
+      "imageSHA256s": {
+        "1440x900": "74e439c74fc725336bfe0cb91ffe8100d08dc2e0399153857fb72d3eb74de7c5",
+        "1280x800": "2d114f7181e5d1f2d4d437717f5c08081454516cba0e6ecc7d07f0d1cc1bca7c"
+      },
+      "verdicts": {
+        "1440x900": "MAPPED",
+        "1280x800": "MAPPED"
+      },
+      "cellIds": [
+        "K03"
+      ],
+      "scope": {
+        "mode": "native-proxy-kernel",
+        "route": "kernels",
+        "referenceId": "proxy-list",
+        "predicateProfile": "kernel-last-page-two-rows",
+        "rowsTotal": 12,
+        "rowsOnPage": 2,
+        "addressedPredicate": "Exact last two synthetic build rows and next-page disabled companion; not proof of actual registration, install or other K03 modes."
+      },
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "kernel75",
+      "packet": "issue37-kernel-repairs75",
+      "id": "verified-gap-proxy-demo-list-dense-bottom",
+      "sourceHead": "75bc58d3c209f90680b8915f94f4a1f49339a76c",
+      "renderHash": "904b07019ee5891cca07502c16239b83166f4474fcf8c7ac49ea5cb3bd33f191",
+      "viewports": [
+        "1440x900",
+        "1280x800"
+      ],
+      "imageSHA256s": {
+        "1440x900": "fabef2049eee30a014fb58f3d5d6a742ba790bfa55a84c1a4634ae6459527900",
+        "1280x800": "4de91faea08b5a6306e932c11357587f19c48e7005e1fa7343e9c9b2180cdf11"
+      },
+      "verdicts": {
+        "1440x900": "MAPPED",
+        "1280x800": "MAPPED"
+      },
+      "cellIds": [
+        "P03"
+      ],
+      "scope": {
+        "mode": "demo",
+        "route": "proxies",
+        "referenceId": "proxy-list",
+        "predicateProfile": "dense-first-page-bottom",
+        "rowsTotal": 14,
+        "rowsOnPage": 10,
+        "addressedPredicate": "Demo proxy dense first-page pagination and no-network/no-real-kernel disclaimer clipping; no fewer rows or reduced spacing."
+      },
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "kernel75",
+      "packet": "issue37-kernel-repairs75",
+      "id": "verified-gap-proxy-demo-list-dense-page-two",
+      "sourceHead": "75bc58d3c209f90680b8915f94f4a1f49339a76c",
+      "renderHash": "904b07019ee5891cca07502c16239b83166f4474fcf8c7ac49ea5cb3bd33f191",
+      "viewports": [
+        "1440x900",
+        "1280x800"
+      ],
+      "imageSHA256s": {
+        "1440x900": "8ba09920bc8816537bb0c24e3f32ab42f1c196868ff4dc66403fc47dc0aead00",
+        "1280x800": "704fdece50e70e6ad10bbd4de10246dc8a37d3a6e12d3573e6fc6bcef2fc31a7"
+      },
+      "verdicts": {
+        "1440x900": "MAPPED",
+        "1280x800": "MAPPED"
+      },
+      "cellIds": [
+        "P03"
+      ],
+      "scope": {
+        "mode": "demo",
+        "route": "proxies",
+        "referenceId": "proxy-list",
+        "predicateProfile": "proxy-last-page-four-rows",
+        "rowsTotal": 14,
+        "rowsOnPage": 4,
+        "addressedPredicate": "Exact last four rows, pagination and safety copy companion; not a new quota, selection-scope action or real check."
+      },
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "kernel75",
+      "packet": "issue37-kernel-repairs75",
+      "id": "verified-gap-proxy-native-list-dense-bottom",
+      "sourceHead": "75bc58d3c209f90680b8915f94f4a1f49339a76c",
+      "renderHash": "904b07019ee5891cca07502c16239b83166f4474fcf8c7ac49ea5cb3bd33f191",
+      "viewports": [
+        "1440x900",
+        "1280x800"
+      ],
+      "imageSHA256s": {
+        "1440x900": "17e291ac50f908a947917974ac9378b572f42e4bbecb06ef37c9c27d709c8704",
+        "1280x800": "c568efa15e713e320347d14578244f9736e2904a741fbc7dd2d13e747669f809"
+      },
+      "verdicts": {
+        "1440x900": "MAPPED",
+        "1280x800": "MAPPED"
+      },
+      "cellIds": [
+        "P03"
+      ],
+      "scope": {
+        "mode": "native-proxy-kernel",
+        "route": "proxies",
+        "referenceId": "proxy-list",
+        "predicateProfile": "dense-first-page-bottom",
+        "rowsTotal": 14,
+        "rowsOnPage": 10,
+        "addressedPredicate": "Native synthetic proxy dense short-viewport pagination and temporary-channel/desktop-not-accepted boundary clipping."
+      },
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "kernel75",
+      "packet": "issue37-kernel-repairs75",
+      "id": "verified-gap-proxy-native-list-dense-page-two",
+      "sourceHead": "75bc58d3c209f90680b8915f94f4a1f49339a76c",
+      "renderHash": "904b07019ee5891cca07502c16239b83166f4474fcf8c7ac49ea5cb3bd33f191",
+      "viewports": [
+        "1440x900",
+        "1280x800"
+      ],
+      "imageSHA256s": {
+        "1440x900": "66fc5d5def523ce837fd44a31d553337d9b5e225950fac4dd0683fd7ed8e9fe3",
+        "1280x800": "f9b124e6be1a1dc4eb5deed9caa29522d7b391ba4ff593139e150d6daa1f7ce7"
+      },
+      "verdicts": {
+        "1440x900": "MAPPED",
+        "1280x800": "MAPPED"
+      },
+      "cellIds": [
+        "P03"
+      ],
+      "scope": {
+        "mode": "native-proxy-kernel",
+        "route": "proxies",
+        "referenceId": "proxy-list",
+        "predicateProfile": "proxy-last-page-four-rows",
+        "rowsTotal": 14,
+        "rowsOnPage": 4,
+        "addressedPredicate": "Exact final synthetic proxy rows, next disabled and preserved failure-not-direct disclaimer; not exit or runtime protection acceptance."
+      },
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "kernel75",
+      "packet": "issue37-kernel-repairs75",
+      "id": "verified-gap-kernel-install-official-unknown",
+      "sourceHead": "75bc58d3c209f90680b8915f94f4a1f49339a76c",
+      "renderHash": "904b07019ee5891cca07502c16239b83166f4474fcf8c7ac49ea5cb3bd33f191",
+      "viewports": [
+        "1440x900",
+        "1280x800"
+      ],
+      "imageSHA256s": {
+        "1440x900": "229cfa84e28ac6b8735ea427dcafe46cf9d9102196faf6caa2fdec80ed7118a8",
+        "1280x800": "6513faca7aa62b6e2b96f19a2cbd1595d6bf16385bd254097d7973bc2f61659f"
+      },
+      "verdicts": {
+        "1440x900": "MAPPED",
+        "1280x800": "MAPPED"
+      },
+      "cellIds": [
+        "K10"
+      ],
+      "scope": {
+        "mode": "native-proxy-kernel",
+        "route": "kernels",
+        "referenceId": "proxy-add",
+        "predicateProfile": "official-post-replay-unknown-hint",
+        "addressedPredicate": "Complete same-original-request UNKNOWN hint and footer in naturally enlarged 620x444 form after exact replay; no known task."
+      },
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "kernel75",
+      "packet": "issue37-kernel-repairs75",
+      "id": "verified-gap-kernel-install-malformed-receipt",
+      "sourceHead": "75bc58d3c209f90680b8915f94f4a1f49339a76c",
+      "renderHash": "904b07019ee5891cca07502c16239b83166f4474fcf8c7ac49ea5cb3bd33f191",
+      "viewports": [
+        "1440x900",
+        "1280x800"
+      ],
+      "imageSHA256s": {
+        "1440x900": "229cfa84e28ac6b8735ea427dcafe46cf9d9102196faf6caa2fdec80ed7118a8",
+        "1280x800": "6513faca7aa62b6e2b96f19a2cbd1595d6bf16385bd254097d7973bc2f61659f"
+      },
+      "verdicts": {
+        "1440x900": "MAPPED",
+        "1280x800": "MAPPED"
+      },
+      "cellIds": [
+        "K10"
+      ],
+      "scope": {
+        "mode": "native-proxy-kernel",
+        "route": "kernels",
+        "referenceId": "proxy-add",
+        "predicateProfile": "official-post-replay-unknown-hint",
+        "addressedPredicate": "Exact OLD malformed-receipt sequence's second original request ends UNKNOWN; visible replay hint capacity is addressed, not the first identity-error hint.",
+        "firstMalformedIdentityErrorHintProved": false,
+        "samePixelsAsOfficialUnknownDifferentStoredRequests": true
+      },
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "kernel75",
+      "packet": "issue37-kernel-repairs75",
+      "id": "verified-gap-kernel-task-persistence-blocked",
+      "sourceHead": "75bc58d3c209f90680b8915f94f4a1f49339a76c",
+      "renderHash": "904b07019ee5891cca07502c16239b83166f4474fcf8c7ac49ea5cb3bd33f191",
+      "viewports": [
+        "1440x900",
+        "1280x800"
+      ],
+      "imageSHA256s": {
+        "1440x900": "32d9be7afe88f8553ac598b1eb13c00cac67a0611e669bec97907554c23df59d",
+        "1280x800": "f556e81ba4b9b80666cdd88589c92fb4bee09dee92821947260246c0676daf18"
+      },
+      "verdicts": {
+        "1440x900": "MAPPED",
+        "1280x800": "MAPPED"
+      },
+      "cellIds": [
+        "K14"
+      ],
+      "scope": {
+        "mode": "native-proxy-kernel",
+        "route": "kernels",
+        "referenceId": "batch-progress-fixture",
+        "predicateProfile": "persistence-protected-nonterminal",
+        "addressedPredicate": "Pending task first-line label and stored lower entry both say result pending save; completed 0 and cancellation remains disabled."
+      },
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "kernel75",
+      "packet": "issue37-kernel-repairs75",
+      "id": "verified-gap-kernel-accepted-refresh-fault",
+      "sourceHead": "75bc58d3c209f90680b8915f94f4a1f49339a76c",
+      "renderHash": "904b07019ee5891cca07502c16239b83166f4474fcf8c7ac49ea5cb3bd33f191",
+      "viewports": [
+        "1440x900",
+        "1280x800"
+      ],
+      "imageSHA256s": {
+        "1440x900": "761f95a39f88a4f2ce1db4deafd86114457b564733c74ce8b3ec431cf8bab1f7",
+        "1280x800": "e556aff6561e72ff42533d02f320003dc45cdd5290ae74e7d18b7fc46e700e87"
+      },
+      "verdicts": {
+        "1440x900": "MAPPED",
+        "1280x800": "MAPPED"
+      },
+      "cellIds": [
+        "K16"
+      ],
+      "scope": {
+        "mode": "native-proxy-kernel",
+        "route": "kernels",
+        "referenceId": "batch-progress-fixture",
+        "predicateProfile": "accepted-workspace-read-fault",
+        "addressedPredicate": "Read-fault blocker recovery primary is visibly blue/white and enabled while admitted task persists; inert/focus facts are stored audits, not accountant keyboard execution."
+      },
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "kernel75",
+      "packet": "issue37-kernel-repairs75",
+      "id": "verified-gap-kernel-accepted-refresh-recovered",
+      "sourceHead": "75bc58d3c209f90680b8915f94f4a1f49339a76c",
+      "renderHash": "904b07019ee5891cca07502c16239b83166f4474fcf8c7ac49ea5cb3bd33f191",
+      "viewports": [
+        "1440x900",
+        "1280x800"
+      ],
+      "imageSHA256s": {
+        "1440x900": "6381a6b1081b7b7fca575fe8fa925fdb25539ec2133ba49bccc49eb484202777",
+        "1280x800": "12ded270f7bbf8197dd9f0c5e83b34fd5ffd7014e678f4c12c38e99af26c5439"
+      },
+      "verdicts": {
+        "1440x900": "MAPPED",
+        "1280x800": "MAPPED"
+      },
+      "cellIds": [
+        "K16"
+      ],
+      "scope": {
+        "mode": "native-proxy-kernel",
+        "route": "kernels",
+        "referenceId": "batch-progress-fixture",
+        "predicateProfile": "accepted-workspace-read-recovered",
+        "addressedPredicate": "Stored retry/read/reopen retains this scene's admitted original task and environment; completion remains zero. Different fault and recovery scenes are not one cross-scene installation."
+      },
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "kernel75",
+      "packet": "issue37-kernel-repairs75",
+      "id": "verified-gap-kernel-local-invalid-fields",
+      "sourceHead": "75bc58d3c209f90680b8915f94f4a1f49339a76c",
+      "renderHash": "904b07019ee5891cca07502c16239b83166f4474fcf8c7ac49ea5cb3bd33f191",
+      "viewports": [
+        "1440x900",
+        "1280x800"
+      ],
+      "imageSHA256s": {
+        "1440x900": "c21fabb7fe47352a100b481c2700790d699ef6009e5127939363e8c71d0251e4",
+        "1280x800": "51bd2016fa0afc061cfb12dbd7a9a0de7c2670ed787401d114477b67f341018c"
+      },
+      "verdicts": {
+        "1440x900": "MAPPED",
+        "1280x800": "MAPPED"
+      },
+      "cellIds": [
+        "K09"
+      ],
+      "scope": {
+        "mode": "native-proxy-kernel",
+        "route": "kernels",
+        "referenceId": "proxy-add",
+        "predicateProfile": "local-invalid-fields-readable-acquisition",
+        "addressedPredicate": "Actual format-validation bubble is readable at both viewports; original invalid input/zero install retained. Waiting 400ms is not itself visual proof."
+      },
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "proxy340",
+      "packet": "issue37-proxy-row-repairs",
+      "id": "verified-proxy-row-and-detail-current",
+      "sourceHead": "340a22c1e8489fad2db091a25bb14bb7d2e66984",
+      "renderHash": "0df5a445b4a16f1984f2944ac7367d1202322b892876f2d31b9e853d9a8708ce",
+      "viewports": [
+        "1440x900",
+        "1280x800"
+      ],
+      "imageSHA256s": {
+        "1440x900": "e0a9c785cd421899f5fb0a02a17fdeefc5f01d55b1d6bb5a4a9221f82a25aaa5",
+        "1280x800": "bbf6ea6e971996c0cf0fb7006d8fa81625a9a6b619ff5d4318584926e7964931"
+      },
+      "verdicts": {
+        "1440x900": "MAPPED",
+        "1280x800": "MAPPED"
+      },
+      "cellIds": [
+        "P33"
+      ],
+      "scope": {
+        "mode": "native-proxy-kernel",
+        "route": "proxies",
+        "referenceId": "proxy-edit",
+        "predicateProfile": "current-report-foreground-row-dom-only",
+        "addressedPredicate": "Finite current report foreground IP/time/three stages and stored exact fourth-td button text; background success/IP cells are not directly image-visible.",
+        "removesOriginal66GapCell": false,
+        "newP31FailureCoverage": false
+      },
+      "cellFullyCovered": false
+    },
+    {
+      "sourceBinding": "proxy340",
+      "packet": "issue37-proxy-row-repairs",
+      "id": "verified-proxy-row-and-detail-stale",
+      "sourceHead": "340a22c1e8489fad2db091a25bb14bb7d2e66984",
+      "renderHash": "0df5a445b4a16f1984f2944ac7367d1202322b892876f2d31b9e853d9a8708ce",
+      "viewports": [
+        "1440x900",
+        "1280x800"
+      ],
+      "imageSHA256s": {
+        "1440x900": "bbadb9fd6b67cb7ebdd066879eef3666ea6e7ca84634c683466a94dd69021eff",
+        "1280x800": "6662f76d4afa36e0e21d8b61f95cc8536531392215a43a8ab51fad17b3db10dd"
+      },
+      "verdicts": {
+        "1440x900": "MAPPED",
+        "1280x800": "MAPPED"
+      },
+      "cellIds": [
+        "P34"
+      ],
+      "scope": {
+        "mode": "native-proxy-kernel",
+        "route": "proxies",
+        "referenceId": "proxy-edit",
+        "predicateProfile": "stale-same-id-revision-mismatch-row-and-detail",
+        "addressedPredicate": "Both row and detail visibly reject current-report success for same native ID with revision mismatch; old IP/table absent. Not all 13 behavior scenarios or normal Go production.",
+        "removesOriginal66GapCell": false,
+        "newP31FailureCoverage": false
+      },
+      "cellFullyCovered": false
+    }
+  ],
+  "predicateProfiles": {
+    "dense-first-page-bottom": {
+      "rowHeight": 48,
+      "rowGap": 10,
+      "pageSize": 10,
+      "allTenRowsRetainedInDOM": true,
+      "viewportConditions": {
+        "1440x900": {
+          "tableScrollTop": 0,
+          "tableScrollHeight": 630,
+          "tableClientHeight": 630,
+          "bottomDifference": 0,
+          "positiveScrollClaimed": false,
+          "paginationY": [
+            770,
+            818
+          ],
+          "boundaryY": [
+            826,
+            844
+          ]
+        },
+        "1280x800": {
+          "tableScrollTop": 72,
+          "tableScrollHeight": 630,
+          "tableClientHeight": 558,
+          "bottomDifference": 0,
+          "actualTableRegionScroll": true,
+          "paginationY": [
+            698,
+            746
+          ],
+          "boundaryY": [
+            754,
+            772
+          ]
+        }
+      },
+      "originalReferenceRelation": "Two-row proxy-list shell/list geometry only; current dense kernel/proxy data differ. 48px rows, 10px gaps, 40px header retained.",
+      "hiddenRowsDuringRealTableScrollAreNotRemovedRecords": true,
+      "newProductQuota": false,
+      "realChecksOrInstall": false
+    },
+    "kernel-last-page-two-rows": {
+      "rowHeight": 48,
+      "rowGap": 10,
+      "pageSize": 10,
+      "page": 2,
+      "rowsOnPage": 2,
+      "nextDisabled": true,
+      "paginationYBothViewports": [
+        306,
+        354
+      ],
+      "boundaryYBothViewports": [
+        362,
+        380
+      ],
+      "scrollTopBothViewports": 0,
+      "tableClientAndScrollHeightBothViewports": 166,
+      "notViewportBottomPinnedPaginationClaim": true,
+      "referenceRelation": "proxy-list primitive only, not same business"
+    },
+    "proxy-last-page-four-rows": {
+      "rowHeight": 48,
+      "rowGap": 10,
+      "pageSize": 10,
+      "page": 2,
+      "rowsOnPage": 4,
+      "nextDisabled": true,
+      "paginationYBothViewports": [
+        422,
+        470
+      ],
+      "boundaryYBothViewports": [
+        478,
+        496
+      ],
+      "scrollTopBothViewports": 0,
+      "tableClientAndScrollHeightBothViewports": 282,
+      "notViewportBottomPinnedPaginationClaim": true,
+      "referenceRelation": "proxy-list primitive only, not same business"
+    },
+    "official-post-replay-unknown-hint": {
+      "frameSize": [
+        620,
+        444
+      ],
+      "headerHeight": 40,
+      "footerHeight": 58,
+      "bodyClientAndScrollHeight": 346,
+      "bodyScrollTop": 0,
+      "message": "NATIVE_UNAVAILABLE：合成受理回执未知，没有推断新任务。 原请求是否受理未知，只能核实同一请求。",
+      "viewportConditions": {
+        "1440x900": {
+          "hintY": [
+            560,
+            610
+          ],
+          "bodyBottom": 622
+        },
+        "1280x800": {
+          "hintY": [
+            510,
+            560
+          ],
+          "bodyBottom": 572
+        }
+      },
+      "requestsPerIndependentScene": 2,
+      "sameMethodRequestIdAndPayloadWithinScene": true,
+      "noKnownTask": true,
+      "originalBuild": {
+        "source": "official",
+        "version": "151.0.9000.11",
+        "expectedChecksum": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "officialOriginalTokenAndTrustRetainedFlag": false,
+      "localTokenTrustCoverageBorrowed": false,
+      "heightIsNaturalCapacitySafetyAdaptation": true,
+      "heightSafetyAdaptationImpliesADAPTEDVerdict": false,
+      "referenceRelation": "proxy-add 620px geometry only; original approximately 742.156px form is not this install business",
+      "firstMalformedIdentityErrorHintProved": false,
+      "realInstallIdempotencyProved": false
+    },
+    "persistence-protected-nonterminal": {
+      "frameSize": [
+        400,
+        358
+      ],
+      "actualTaskLabel": "任务：结果待保存",
+      "storedUnderlyingEntryLabel": "查看内核任务 · 结果待保存",
+      "underlyingEntryEvidence": "stored action proof, not unobscured lower-entry pixels",
+      "accepted": 1,
+      "completed": 0,
+      "failed": 0,
+      "cancelDisabled": true,
+      "cancelRequests": 0,
+      "exactOperationId": "synthetic-gap-kernel-install-1",
+      "originalOperationStageStateOrIdentityMutated": false,
+      "nonDurableResultProtected": true,
+      "afterPersistenceOrHistoricalWindowProved": false,
+      "referenceRelation": "batch-progress-fixture 400px container only; original 400x199 batch business differs"
+    },
+    "accepted-workspace-read-fault": {
+      "blockerFrameSize": [
+        500,
+        198
+      ],
+      "lowerTaskWidth": 400,
+      "recoveryButtonBackground": "rgb(47, 84, 235)",
+      "recoveryButtonColor": "rgb(255, 255, 255)",
+      "recoveryButtonDisabled": false,
+      "storedFaultOwnership": {
+        "lowerFrameLayer": 92,
+        "lowerFrameInert": true,
+        "lowerMaskAlpha": 0,
+        "lowerMaskInert": true,
+        "highestLayer": 160,
+        "highestInert": false,
+        "focusInside": true,
+        "effectiveMaskCount": 1
+      },
+      "installCallsPerScene": 1,
+      "cancelCallsPerScene": 0,
+      "admissionUnknown": false,
+      "originalEnvironmentIdentityRetainedAsStored": true,
+      "freshReadRecoveryAndKeyboardFactsAreStoredOnly": true,
+      "accountantKeyboardOrNativeExecution": false,
+      "inheritedBluePrimaryStyleNotNew75StyleChange": true,
+      "referenceRelation": "batch result primitive plus explicit workspace safety blocker, not archived business"
+    },
+    "accepted-workspace-read-recovered": {
+      "frameSize": [
+        400,
+        328
+      ],
+      "taskLabel": "已受理，等待执行",
+      "accepted": 1,
+      "completed": 0,
+      "failed": 0,
+      "installCallsPerScene": 1,
+      "cancelCallsPerScene": 0,
+      "heldRecoveryReadsBeforeReleasePerScene": 2,
+      "sameSceneTaskAndEnvironmentRetainedAsStored": true,
+      "sceneReturnedViaRouteToSameTaskAsStored": true,
+      "crossSceneDuplicateTaskIdIsNotSameInstall": true,
+      "realRecoveryOrInstallComplete": false
+    },
+    "local-invalid-fields-readable-acquisition": {
+      "frameSize": [
+        620,
+        530
+      ],
+      "reviewedBubbleText": "Please match the requested format.",
+      "reviewedBubble": "white background, readable black text and warning glyph",
+      "storedVersionValue": "not-a-version",
+      "storedPatternMismatch": true,
+      "storedInvalidControls": 2,
+      "storedActualFocusOnInvalidVersion": true,
+      "extraSettlingMilliseconds": 400,
+      "installCalls": 0,
+      "chooserCalls": 1,
+      "forcedFocusOrTooltipHiding": false,
+      "waitingAloneProvesPixels": false,
+      "oldAcquisitionFAILReclassified": false,
+      "allLocalesOSAccessibilityOrPermanentProductBugCertified": false,
+      "referenceRelation": "proxy-add container only"
+    },
+    "current-report-foreground-row-dom-only": {
+      "frameSize": [
+        620,
+        544
+      ],
+      "bodyClientAndScrollHeight": 446,
+      "foregroundLabel": "修订 1 · 本次检查通过",
+      "foregroundSyntheticIP": "203.0.113.81",
+      "foregroundLatencyMs": 36,
+      "foregroundTimestampAndThreePassedStagesVisible": true,
+      "backgroundFourthTdStatusDirectlyVisible": false,
+      "backgroundIPDirectlyVisible": false,
+      "storedFourthTdButtonText": "本次检查通过",
+      "rowTextEvidence": "Stored exact fourth-td button toHaveText and innerText after the detail was opened; DOM text does not prove unobscured pixels.",
+      "referenceRelation": "620px proxy-edit container hierarchy only; original editing fields and 726.15625px height differ",
+      "newReachabilityOrP31FailureCoverage": false
+    },
+    "stale-same-id-revision-mismatch-row-and-detail": {
+      "frameSize": [
+        620,
+        234
+      ],
+      "bodyClientAndScrollHeight": 136,
+      "mode": "native",
+      "sameProxyId": true,
+      "recordRevision": 1,
+      "reportRevision": 0,
+      "rawRecordStatus": "connected",
+      "activeTask": false,
+      "rowAndForegroundLabel": "暂无当前修订有效检查结果",
+      "rowAndDetailDirectlyVisibleBothViewports": true,
+      "oldIPObservationBlockVisible": false,
+      "foregroundStageRows": 0,
+      "rowWrapLines": {
+        "1440x900": 1,
+        "1280x800": 2
+      },
+      "neighbourHTTPPortFinalZeroWrapRetainedNotClipped": true,
+      "all13BehaviorScenariosVisuallyProved": false,
+      "normalGoProducingStaleConnectedEstablished": false,
+      "rawStatusFilterAndAlreadyFilteredIPProjectionUnchanged": true,
+      "referenceRelation": "proxy-edit container primitive only"
+    }
+  },
+  "cellRelationUpdates": [
+    {
+      "id": "P03",
+      "ownerTicket": 35,
+      "owner": "proxy-list",
+      "sourceOwnersAtHistoricalInventory": [
+        "src/components/ProxyManagementPage.tsx:18-35",
+        "src/components/DemoProxyManager.tsx:10-34",
+        "src/components/NativeProxyManager.tsx:20-88"
+      ],
+      "historicalCoverage": "MISSING",
+      "historicalSupplementStatus": "image-fail-retained",
+      "historicalStatusAfterThisDelta": "image-fail-retained",
+      "sourceBinding": "kernel75",
+      "pairIDs": [
+        "verified-gap-proxy-demo-list-dense-bottom",
+        "verified-gap-proxy-demo-list-dense-page-two",
+        "verified-gap-proxy-native-list-dense-bottom",
+        "verified-gap-proxy-native-list-dense-page-two"
+      ],
+      "currentQualifiedGapStatus": "finite-predicate-addressed",
+      "addressed": "Both mode-specific dense first-page footers/pagination and exact final four-row controls at both viewports, with actual short-viewport table scroll.",
+      "remainingQualifiedOriginal66Gaps": [],
+      "unprovedScope": [
+        "Other P03 empty/filter/selection-service predicates keep their separate historical identities; new lists dispatch no checks and do not prove all P03 or later340 layout."
+      ],
+      "directReferenceAvailableInBaseline": true,
+      "newDirectSameBusinessReference": false,
+      "cellFullyCovered": false,
+      "oldFailedImagesTurnedIntoPass": false
+    },
+    {
+      "id": "K03",
+      "ownerTicket": 35,
+      "owner": "kernel",
+      "sourceOwnersAtHistoricalInventory": [
+        "src/components/KernelManagementPage.tsx:16-24",
+        "src/components/DemoKernelManager.tsx:6-9",
+        "src/components/NativeKernelManager.tsx:10-76"
+      ],
+      "historicalCoverage": "MISSING",
+      "historicalSupplementStatus": "image-fail-retained",
+      "historicalStatusAfterThisDelta": "image-fail-retained",
+      "sourceBinding": "kernel75",
+      "pairIDs": [
+        "verified-gap-kernel-demo-list-dense-bottom",
+        "verified-gap-kernel-demo-list-dense-page-two",
+        "verified-gap-kernel-native-list-dense-bottom",
+        "verified-gap-kernel-native-list-dense-page-two"
+      ],
+      "currentQualifiedGapStatus": "finite-predicate-addressed",
+      "addressed": "Both modes' dense ten-row first-page pagination/boundary and final two build rows at both viewports; none hidden or reduced to fix clipping.",
+      "remainingQualifiedOriginal66Gaps": [],
+      "unprovedScope": [
+        "Unavailable/filtered/empty records retain old bounded context; no real registration or install, no whole K03 or propagation of75 pixels to340."
+      ],
+      "directReferenceAvailableInBaseline": false,
+      "newDirectSameBusinessReference": false,
+      "cellFullyCovered": false,
+      "oldFailedImagesTurnedIntoPass": false
+    },
+    {
+      "id": "K09",
+      "ownerTicket": 35,
+      "owner": "kernel-prepare",
+      "sourceOwnersAtHistoricalInventory": [
+        "src/components/NativeKernelManager.tsx:46-49,68-72",
+        "src/components/kernel-task-owner.ts:23-51"
+      ],
+      "historicalCoverage": "MISSING",
+      "historicalSupplementStatus": "image-fail-retained",
+      "historicalStatusAfterThisDelta": "image-fail-retained",
+      "sourceBinding": "kernel75",
+      "pairIDs": [
+        "verified-gap-kernel-local-invalid-fields"
+      ],
+      "currentQualifiedGapStatus": "finite-predicate-addressed",
+      "addressed": "Finite invalid-version/SHA form acquisition: version format bubble readable, two invalid controls recorded, original invalid submission with installation zero.",
+      "remainingQualifiedOriginal66Gaps": [],
+      "unprovedScope": [
+        "Not every possible invalid SHA/native tooltip/OS language; readable finding belongs to independent PNG review, not inference from400ms wait. Earlier chooser/trust-reset records and old acquisition FAIL stay separate."
+      ],
+      "directReferenceAvailableInBaseline": false,
+      "newDirectSameBusinessReference": false,
+      "cellFullyCovered": false,
+      "oldFailedImagesTurnedIntoPass": false
+    },
+    {
+      "id": "K10",
+      "ownerTicket": 35,
+      "owner": "kernel-prepare",
+      "sourceOwnersAtHistoricalInventory": [
+        "src/components/NativeKernelManager.tsx:46-49,68-72",
+        "src/components/kernel-task-owner.ts:23-51"
+      ],
+      "historicalCoverage": "MISSING",
+      "historicalSupplementStatus": "image-fail-retained",
+      "historicalStatusAfterThisDelta": "image-fail-retained",
+      "sourceBinding": "kernel75",
+      "pairIDs": [
+        "verified-gap-kernel-install-official-unknown",
+        "verified-gap-kernel-install-malformed-receipt"
+      ],
+      "currentQualifiedGapStatus": "partly-addressed-first-hint-unproven",
+      "addressed": "Full post-second-original-request NATIVE_UNAVAILABLE/UNKNOWN hint and original-request verification footer in the exact old official/malformed sequences;620x444 natural capacity safety adaptation.",
+      "remainingQualifiedOriginal66Gaps": [
+        "No separately bound first malformed-receipt identity-error hint pixels or exact content proof. Retain that narrower K10 condition conservatively; the admitted pair is only the after-retry UNKNOWN frame."
+      ],
+      "firstErrorHintRequirementQualification": "Inventory's notes require frozen exact request and original-request verification, not a mandatory new dialog or first-glyph PNG. If MAIN's original66 definition is restricted to the exact historical post-replay hint only, that finite hint is addressed; full malformed-hint coverage is still not certified here.",
+      "unprovedScope": [
+        "Local token/trust semantics not borrowed from official flag=false; real installation idempotency, first identity error and late receipt authority not certified by equal pixels."
+      ],
+      "directReferenceAvailableInBaseline": false,
+      "newDirectSameBusinessReference": false,
+      "cellFullyCovered": false,
+      "oldFailedImagesTurnedIntoPass": false
+    },
+    {
+      "id": "K14",
+      "ownerTicket": 35,
+      "owner": "kernel-task",
+      "sourceOwnersAtHistoricalInventory": [
+        "src/components/NativeKernelManager.tsx:27-45,63-66,73-76",
+        "src/components/kernel-task-owner.ts:16-51"
+      ],
+      "historicalCoverage": "MISSING",
+      "historicalSupplementStatus": "image-fail-retained",
+      "historicalStatusAfterThisDelta": "image-fail-retained",
+      "sourceBinding": "kernel75",
+      "pairIDs": [
+        "verified-gap-kernel-task-persistence-blocked"
+      ],
+      "currentQualifiedGapStatus": "finite-predicate-addressed",
+      "addressed": "Current pending-save label conflict addressed: foreground task and stored entry say待保存, completed0, protected nonterminal and disabled cancel, original task retained.",
+      "remainingQualifiedOriginal66Gaps": [],
+      "unprovedScope": [
+        "Entry text is stored DOM/action evidence, not an uncovered lower-entry image claim. No persistence recovery/real disk, old history-window or complete cancel/interrupted branches certification."
+      ],
+      "directReferenceAvailableInBaseline": false,
+      "newDirectSameBusinessReference": false,
+      "cellFullyCovered": false,
+      "oldFailedImagesTurnedIntoPass": false
+    },
+    {
+      "id": "K16",
+      "ownerTicket": 35,
+      "owner": "kernel-task",
+      "sourceOwnersAtHistoricalInventory": [
+        "src/components/NativeKernelManager.tsx:27-45,63-66,73-76",
+        "src/components/kernel-task-owner.ts:16-51"
+      ],
+      "historicalCoverage": "MISSING",
+      "historicalSupplementStatus": "image-fail-retained",
+      "historicalStatusAfterThisDelta": "image-fail-retained",
+      "sourceBinding": "kernel75",
+      "pairIDs": [
+        "verified-gap-kernel-accepted-refresh-fault",
+        "verified-gap-kernel-accepted-refresh-recovered"
+      ],
+      "currentQualifiedGapStatus": "finite-predicate-addressed",
+      "addressed": "Exact K16 blocker now has readable enabled blue-white primary; saved late-portal lower92 inert/highest160 active and held fresh read/reopen retain the admitted scene's original task/environment, completed0.",
+      "remainingQualifiedOriginal66Gaps": [],
+      "unprovedScope": [
+        "Inert/focus, request UUID and held-read assertions come from stored MAIN audits; no new keyboard, native or source certificate. Fault/recovered captures are independent scenes, not one installation across scenes; S06 and inherited style are not substitutes for this new pair."
+      ],
+      "directReferenceAvailableInBaseline": false,
+      "newDirectSameBusinessReference": false,
+      "cellFullyCovered": false,
+      "oldFailedImagesTurnedIntoPass": false
+    },
+    {
+      "id": "P33",
+      "ownerTicket": 35,
+      "owner": "proxy-report",
+      "sourceOwnersAtHistoricalInventory": [
+        "src/components/NativeProxyManager.tsx:17-18,77-79,88",
+        "src/components/DemoProxyManager.tsx:33"
+      ],
+      "historicalCoverage": "MISSING",
+      "historicalSupplementStatus": "supplemented-bounded",
+      "historicalStatusAfterThisDelta": "supplemented-bounded",
+      "sourceBinding": "proxy340",
+      "pairIDs": [
+        "verified-proxy-row-and-detail-current"
+      ],
+      "currentQualifiedGapStatus": "foreground-current-bounded-row-dom-only",
+      "addressed": "Finite valid-current foreground report IP/time/three passed stages plus stored exact fourth-td row button text agreement.",
+      "wasInOriginal66GapSet": false,
+      "remainingQualifiedOriginal66Gaps": [],
+      "unprovedScope": [
+        "Current fourth-td status/IP cell is covered by544px-high detail, not directly visible pixels. No normal network/current row unobscured image, P31 failure or all13 behavior scenarios claimed."
+      ],
+      "directReferenceAvailableInBaseline": false,
+      "newDirectSameBusinessReference": false,
+      "cellFullyCovered": false,
+      "old8DetailOnlyReviewReinterpreted": false
+    },
+    {
+      "id": "P34",
+      "ownerTicket": 35,
+      "owner": "proxy-report",
+      "sourceOwnersAtHistoricalInventory": [
+        "src/components/NativeProxyManager.tsx:17-18,77-79,88",
+        "src/components/DemoProxyManager.tsx:33"
+      ],
+      "historicalCoverage": "MISSING",
+      "historicalSupplementStatus": "supplemented-bounded",
+      "historicalStatusAfterThisDelta": "supplemented-bounded",
+      "sourceBinding": "proxy340",
+      "pairIDs": [
+        "verified-proxy-row-and-detail-stale"
+      ],
+      "currentQualifiedGapStatus": "same-id-revision-mismatch-row-and-detail-bounded",
+      "addressed": "Added directly visible idle row and detail rejection for same native ID record revision1/report revision0; no stale IP/observation block/stage table.",
+      "wasInOriginal66GapSet": false,
+      "remainingQualifiedOriginal66Gaps": [],
+      "unprovedScope": [
+        "Not wrong-proxy/missing/unfinished/future-stage or all13cases. Raw connected/status filter/IP projection unchanged; normal Go generating contradictory stale connected remains unproven. Old8 detail-only scope and original P34 FAIL images retained."
+      ],
+      "directReferenceAvailableInBaseline": false,
+      "newDirectSameBusinessReference": false,
+      "cellFullyCovered": false,
+      "old8DetailOnlyReviewReinterpreted": false
+    }
+  ],
+  "remainingExact66GapDelta": [
+    {
+      "id": "S02",
+      "ticket": 33,
+      "owner": "shell",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "Native shell is pictured on several routes, but all seven sidebar transitions plus topbar help/bell are not jointly asserted. Guide function links are not the seven-route/topbar action predicate."
+      ]
+    },
+    {
+      "id": "S07",
+      "ticket": 37,
+      "owner": "workspace",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "All three distinct maintenance banners and create-preview refusal are pictured; each banner's exact original-task return target is not exercised by those captures."
+      ]
+    },
+    {
+      "id": "S08",
+      "ticket": 37,
+      "owner": "workspace",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "suspended draft notice→continue or abandon; resume usable native kernel without clearing draft"
+      ]
+    },
+    {
+      "id": "S09",
+      "ticket": 33,
+      "owner": "shell",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "Only the historical supplied demo success/error notification snapshots are exact; native success/error notification classes lack exact mode-bound snapshot evidence. No requirement for every possible message string is invented."
+      ]
+    },
+    {
+      "id": "E07",
+      "ticket": 33,
+      "owner": "env",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "Native filtered no-results is exact. Native truly empty workspace, query-busy and query-read-error control predicates remain unproved; occluded list backgrounds do not certify a normal unobstructed list state."
+      ]
+    },
+    {
+      "id": "E13",
+      "ticket": 33,
+      "owner": "env",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "Group-search-empty popovers exist in both modes. Applied compound filters and actual reset/service scope remain unproved; merely showing a Reset button is insufficient."
+      ]
+    },
+    {
+      "id": "E17",
+      "ticket": 33,
+      "owner": "runtime",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "starting/stopping storage write failure→模拟结果待保存 and retry open/close"
+      ]
+    },
+    {
+      "id": "E18",
+      "ticket": 33,
+      "owner": "runtime",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "mixed pending/accepted/success/error/skipped per-item outcomes, retry and collapse; one failure is not mixed-bulk proof"
+      ]
+    },
+    {
+      "id": "E19",
+      "ticket": 33,
+      "owner": "runtime",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "starting queued FIFO bar/cancel queue, starting active/cancel start and stopping disabled; phases in same table, not extra windows"
+      ]
+    },
+    {
+      "id": "E20",
+      "ticket": 33,
+      "owner": "runtime",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "normal running/resource cleanup/reconcile/persistence row affordances; those exact proofs are edit-drawer captures, not each list variant"
+      ]
+    },
+    {
+      "id": "E21",
+      "ticket": 33,
+      "owner": "runtime",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "missing saved proxy renders refusal not direct; missing/unavailable exact core is 未就绪"
+      ]
+    },
+    {
+      "id": "E23",
+      "ticket": 33,
+      "owner": "runtime",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "direct-policy/error-only popup; NativeRuntimeNetwork intentionally absent for direct; not proven by proxy popup"
+      ]
+    },
+    {
+      "id": "E24",
+      "ticket": 33,
+      "owner": "runtime",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "current same-channel precheck in progress/pass/fail/write-pending labels; expanded phases contain channel/target/observed IP"
+      ]
+    },
+    {
+      "id": "E25",
+      "ticket": 33,
+      "owner": "runtime",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "historical report and reconcile disclaimer do not claim live bridge ownership"
+      ]
+    },
+    {
+      "id": "E26",
+      "ticket": 33,
+      "owner": "runtime",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "NETWORK_PROTECTION_UNAVAILABLE versus containment stopped/exit-unconfirmed alerts; preserved proxy policy, no separate modal"
+      ]
+    },
+    {
+      "id": "G03",
+      "ticket": 33,
+      "owner": "groups",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "Both modes exercise group-search/reset/view-group return. Native group-search-empty is pictured; complete demo empty-versus-return render-input equivalence is not bound by the final return-to-environments image. Do not create one mandatory image per callback."
+      ]
+    },
+    {
+      "id": "G05",
+      "ticket": 33,
+      "owner": "group-window",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "Native loaded-member modal is exact with five IDs. Busy and mixed saved outcomes for those loaded IDs are not certified by the demo equal-definition modal or idle native edit image."
+      ]
+    },
+    {
+      "id": "F07",
+      "ticket": 34,
+      "owner": "form",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "idle native create top/proxy/preferences/fingerprint/bottom and idle edit top require exact mode/content pairs; locked create/history are not those states"
+      ]
+    },
+    {
+      "id": "F08",
+      "ticket": 34,
+      "owner": "form",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "Native create with zero usable cores is pictured. Demo no-core, unavailable saved-core edit and allowed native kernel-pending metadata edit/return-to-retained-draft branches remain unproved."
+      ]
+    },
+    {
+      "id": "F10",
+      "ticket": 34,
+      "owner": "form",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "same select API but native version labels and saved-build lock differ; demo dropdown does not prove native"
+      ]
+    },
+    {
+      "id": "F11",
+      "ticket": 34,
+      "owner": "profile",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "automatic preview busy, stale device input and preview failure/retry are same drawer branches, not new windows"
+      ]
+    },
+    {
+      "id": "F13",
+      "ticket": 34,
+      "owner": "profile",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "identical App toast text does not certify native generated preview/capability source"
+      ]
+    },
+    {
+      "id": "F15",
+      "ticket": 34,
+      "owner": "profile",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "demo technical details/history has distinct demo capability source labels"
+      ]
+    },
+    {
+      "id": "F16",
+      "ticket": 34,
+      "owner": "profile",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "rollback preview/restoredFrom/change list/new revision and incompatible-history disabled buttons are not pictured by history list alone"
+      ]
+    },
+    {
+      "id": "F19",
+      "ticket": 34,
+      "owner": "form",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "known create/edit/profile revision refusal retains mutable draft; history-read failure sets form error"
+      ]
+    },
+    {
+      "id": "F21",
+      "ticket": 34,
+      "owner": "form",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "same validation but native count>1 routes plan and source capture absent for invalid native quantity"
+      ]
+    },
+    {
+      "id": "F26",
+      "ticket": 34,
+      "owner": "form",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "create terminal no-completed-IDs returns editable draft; partial completion retains created IDs; persistence pending cannot prematurely close as success"
+      ]
+    },
+    {
+      "id": "F28",
+      "ticket": 33,
+      "owner": "runtime",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "native created-then-open-failure/retry exact ID must be separately exercised, not borrowed from demo"
+      ]
+    },
+    {
+      "id": "F30",
+      "ticket": 34,
+      "owner": "env-confirm",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "byte-identical dirty child message; native cancellation/preview ownership not proven by demo"
+      ]
+    },
+    {
+      "id": "F32",
+      "ticket": 34,
+      "owner": "env-confirm",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "Owned/control-lost force warning and zero-dispatch stack are pictured. This accounting has no raw exact positive ForceStop payload or fresh negative-target payload proof in the 62-case summary; its test titles do not certify the whole revalidation cell."
+      ]
+    },
+    {
+      "id": "I05",
+      "ticket": 35,
+      "owner": "draft-import",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "page importer hide/reopen is related, not both actual-App draft cancel/Escape/reopen focus and identical inputs proof"
+      ]
+    },
+    {
+      "id": "C02",
+      "ticket": 34,
+      "owner": "demo-cookie",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "demo empty text, parse invalid rows, selected file returning raw text and save write failure; no native file subwindow or explicit File.text rejection alert is invented"
+      ]
+    },
+    {
+      "id": "C07",
+      "ticket": 34,
+      "owner": "cookie",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "input-key conflicts/expired/partition attributes, parser error/observation failure and dense body bottom require explicit fixture branch coverage"
+      ]
+    },
+    {
+      "id": "C08",
+      "ticket": 34,
+      "owner": "cookie",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "no controlled writer: explicit direct startup consent versus saved proxy refusal; starting/unknown session cannot write"
+      ]
+    },
+    {
+      "id": "C09",
+      "ticket": 34,
+      "owner": "cookie",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "replace-all destructive checkbox inline in same window, not separate alertdialog; retry must never re-clear"
+      ]
+    },
+    {
+      "id": "C13",
+      "ticket": 34,
+      "owner": "cookie",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "durable all-verified/already-matched result, cancelled-remainder and persistence-pending differ from partial/unknown; original effects preserved"
+      ]
+    },
+    {
+      "id": "C14",
+      "ticket": 34,
+      "owner": "cookie",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "only retry selected unverified keys/merge, close then reopen safe report; an available retry button is not retry result proof"
+      ]
+    },
+    {
+      "id": "B03",
+      "ticket": 34,
+      "owner": "batch",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "The reviewed native two-ID preview shows just one unchecked shared-consent guard and disabled execution. Direct-policy acknowledgement, checked/shared transitions and unset per-ID mapping errors are not established by this pair or its no-commit focus proof; these are existing B03 predicates, not a new demo batch feature."
+      ]
+    },
+    {
+      "id": "B06",
+      "ticket": 34,
+      "owner": "batch",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "old-result title and active/persist-pending/final mixed result footers are not all proven by same frame"
+      ]
+    },
+    {
+      "id": "B08",
+      "ticket": 34,
+      "owner": "batch",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "successful page two, dense table bottom, ID lookup empty/error and old/current handoff"
+      ]
+    },
+    {
+      "id": "B09",
+      "ticket": 34,
+      "owner": "batch",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "accepted active/cancelRequested, persistence pending and missing final detail after confirmed counts preserve phase/authority; no new modal"
+      ]
+    },
+    {
+      "id": "B10",
+      "ticket": 34,
+      "owner": "batch",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "known/unknown commit refusal and continue-not-completed only; must observe real synthetic calls/new attempt without duplicating completed IDs"
+      ]
+    },
+    {
+      "id": "B11",
+      "ticket": 34,
+      "owner": "form",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "demo App batch status bar/progress/cancel/mixed saved results not certified by multi-count drawer"
+      ]
+    },
+    {
+      "id": "R02",
+      "ticket": 34,
+      "owner": "recycle",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "unread/read-error/empty list branches and explicit retry"
+      ]
+    },
+    {
+      "id": "R03",
+      "ticket": 34,
+      "owner": "recycle",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "dense bottom/page two/selected IDs/original identity details"
+      ]
+    },
+    {
+      "id": "R06",
+      "ticket": 34,
+      "owner": "recycle",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "multi-page target confirmation/body bottom and restore identity details expanded; all total IDs require consent, not current page"
+      ]
+    },
+    {
+      "id": "R08",
+      "ticket": 34,
+      "owner": "recycle",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "admission unknown/pending original request in confirmation; active/cancelled/failed-unprotected/completed results and per-item details differ"
+      ]
+    },
+    {
+      "id": "R09",
+      "ticket": 34,
+      "owner": "recycle",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "retry exact protected task and read/cancel historical operation cannot infer success from preseeded result"
+      ]
+    },
+    {
+      "id": "R11",
+      "ticket": 34,
+      "owner": "env-confirm",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "demo running refusal and save-write failure stay same remove window"
+      ]
+    },
+    {
+      "id": "P03",
+      "ticket": 35,
+      "owner": "proxy-list",
+      "delta": "finite-predicate-addressed",
+      "baselineRemainingSemanticGaps": [
+        "1280x800 demo and native dense first-page footer/pagination are FAIL. The 1440 partners are MAPPED, not a two-viewport passing pair; keep 10 rows/page, exact IDs and safety boundary copy."
+      ],
+      "currentQualifiedRemainingSemanticGaps": [],
+      "relationUpdateId": "P03",
+      "historicalFailUnchanged": true
+    },
+    {
+      "id": "P07",
+      "ticket": 35,
+      "owner": "proxy-import",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "Both modes have authenticated/invalid/existing-duplicate preview snapshots and native 256-byte SOCKS refusal. Demo byte-limit refusal and the selected single-row save outcome are not proved by zero-commit preview records; use bounded action evidence, not invented dialogs."
+      ]
+    },
+    {
+      "id": "P20",
+      "ticket": 35,
+      "owner": "proxy-edit",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "Native replace-authentication top/bottom are exact, including two masked fields. HTTPS warning is separately represented by P21. An edit-specific SOCKS byte-length refusal remains unproved; an add-service refusal cannot silently certify the edit control predicate."
+      ]
+    },
+    {
+      "id": "K03",
+      "ticket": 35,
+      "owner": "kernel",
+      "delta": "finite-predicate-addressed",
+      "baselineRemainingSemanticGaps": [
+        "1280x800 demo and native dense first-page footer/pagination are FAIL; the other viewport and list variants remain separately bounded. The four dense FAIL images across K03/P03 are not repaired by any packet read here."
+      ],
+      "currentQualifiedRemainingSemanticGaps": [],
+      "relationUpdateId": "K03",
+      "historicalFailUnchanged": true
+    },
+    {
+      "id": "K09",
+      "ticket": 35,
+      "owner": "kernel-prepare",
+      "delta": "finite-predicate-addressed",
+      "baselineRemainingSemanticGaps": [
+        "Local invalid-version/SHA validation popup is FAIL at both viewports. Selected/trust reset and chooser cancelled/refused/unknown records remain MAPPED; their guards do not certify readable invalid-field pixels."
+      ],
+      "currentQualifiedRemainingSemanticGaps": [],
+      "relationUpdateId": "K09",
+      "historicalFailUnchanged": true
+    },
+    {
+      "id": "K10",
+      "ticket": 35,
+      "owner": "kernel-prepare",
+      "delta": "partly-addressed-first-hint-unproven",
+      "baselineRemainingSemanticGaps": [
+        "Official unknown-admission and malformed-receipt request hints are FAIL at both viewports. Local unknown and same-request replay-to-accepted are separate bounded records, not repair certification."
+      ],
+      "currentQualifiedRemainingSemanticGaps": [
+        "No separately bound first malformed-receipt identity-error hint pixels or exact content proof. Retain that narrower K10 condition conservatively; the admitted pair is only the after-retry UNKNOWN frame."
+      ],
+      "relationUpdateId": "K10",
+      "historicalFailUnchanged": true,
+      "firstHintWasNotTheHistoricalCapturedFrame": true,
+      "noMandatoryNewDialogOrPNGPerCallback": true
+    },
+    {
+      "id": "K14",
+      "ticket": 35,
+      "owner": "kernel-task",
+      "delta": "finite-predicate-addressed",
+      "baselineRemainingSemanticGaps": [
+        "Persistence-blocked task reports are FAIL at both viewports because completed labels conflict with non-durable pending facts. Other cancel/unknown/interrupted phases do not repair that predicate."
+      ],
+      "currentQualifiedRemainingSemanticGaps": [],
+      "relationUpdateId": "K14",
+      "historicalFailUnchanged": true
+    },
+    {
+      "id": "K16",
+      "ticket": 35,
+      "owner": "kernel-task",
+      "delta": "finite-predicate-addressed",
+      "baselineRemainingSemanticGaps": [
+        "Accepted-refresh workspace-blocker recovery primary is FAIL at both viewports; recovered same-task snapshots remain MAPPED. The S06 blue-primary source fix/test and image cannot substitute for a newly reviewed K16 blocker image."
+      ],
+      "currentQualifiedRemainingSemanticGaps": [],
+      "relationUpdateId": "K16",
+      "historicalFailUnchanged": true
+    },
+    {
+      "id": "M14",
+      "ticket": 35,
+      "owner": "migration",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "Committed and completed same-task reports have exact historical pairs. A prepared report with its exact configuration/backup/trial facts is not separately bound by those records; ready is recorded as stage=ready, not prepared. This is a same-container predicate gap, not a requirement for a new recovery window or another picture of an equivalent callback."
+      ]
+    },
+    {
+      "id": "M20",
+      "ticket": 35,
+      "owner": "migration-restore",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "Actual migration-stack upgrade restore confirmation is pictured. Independent required-ack gate transitions in that migration context are not established by an ordinary restore child pair or by a summary title; do not invent a new migration preflight window."
+      ]
+    },
+    {
+      "id": "M21",
+      "ticket": 35,
+      "owner": "migration-restore",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "Actual migration-context rolled-back/protected/completed result pairs exist. Exact RecoverRestore retry in that upgrade context remains unproved; ordinary Q16 recovery and identical child component bytes cannot grant the missing contextual control proof."
+      ]
+    },
+    {
+      "id": "M22",
+      "ticket": 35,
+      "owner": "migration-restore",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "SOURCE_LIMIT: an exact Backup.DiscardRestore attempt returns ok=false while original source/preview stay active. Frozen evidence says migration has no observable unknown-discard receipt/retry entry. Keep the cleanup outcome unconfirmed; do not certify safety or invent a required recovery screen.",
+        "Hide/reopen, known discard, expired/count/hash refusal and accepted/unknown restore authority are separately bounded or pending. None removes the unknown-cleanup limit."
+      ]
+    },
+    {
+      "id": "D03",
+      "ticket": 36,
+      "owner": "demo-backup",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "The frozen case observes true empty and filtered zero and reset, then captures filtered-zero. Its records=[] body/pagination predicate is shared, but complete empty toolbar/search-input equality is not bound; reuse only the explicit empty body, not the whole cell."
+      ]
+    },
+    {
+      "id": "N03",
+      "ticket": 36,
+      "owner": "backup",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "Native task-tab empty/nonmatch/dense-bottom/page-two are pictured. Published-tab empty label is distinct and lacks an exact pair or a demonstrated equal rendered predicate in those task records."
+      ]
+    },
+    {
+      "id": "A02",
+      "ticket": 36,
+      "owner": "activity",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "Native empty/page-two/filter-reset dense-bottom are exact. An unobstructed ordinary native list-top state is not supplied by session-detail overlay images or by dense-bottom geometry."
+      ]
+    },
+    {
+      "id": "A12",
+      "ticket": 36,
+      "owner": "activity-detail",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "Actual Activity owned/control-lost force warning is pictured with ForceStop=0. The 62-case report is source/test context, not raw exact positive/negative call-payload proof in this accounting; no whole-cell coverage follows from its titles."
+      ]
+    },
+    {
+      "id": "H19",
+      "ticket": 36,
+      "owner": "guide",
+      "delta": "unchanged",
+      "baselineRemainingSemanticGaps": [
+        "Lazy recovery actions exist in both modes, but a stable first lazy-loading fallback snapshot is not acquired. Keep acquisition source-limited/undecidable; do not fabricate permanent loading UI."
+      ]
+    }
+  ],
+  "storedFiniteRequestBindings": [
+    {
+      "sourceBinding": "kernel75",
+      "id": "verified-gap-kernel-install-official-unknown",
+      "viewport": "1440x900",
+      "method": "Kernel.Install",
+      "requestId": "6f5a19c9-660f-4b77-b507-30d0c398e16b",
+      "payloadSHA256": "b86fad029e5a83fd771b19d133bf06ce2afa1b088108cd1d9e3712cb2cbcbd74",
+      "identicalRequestOccurrences": 2,
+      "noKnownTask": true
+    },
+    {
+      "sourceBinding": "kernel75",
+      "id": "verified-gap-kernel-install-official-unknown",
+      "viewport": "1280x800",
+      "method": "Kernel.Install",
+      "requestId": "fbdab6da-bd53-49f6-925e-015930c29073",
+      "payloadSHA256": "13d123500d05a461f6bc53f503f7056bc9a6d1741e1f8939cb54fa690d93fec3",
+      "identicalRequestOccurrences": 2,
+      "noKnownTask": true
+    },
+    {
+      "sourceBinding": "kernel75",
+      "id": "verified-gap-kernel-install-malformed-receipt",
+      "viewport": "1440x900",
+      "method": "Kernel.Install",
+      "requestId": "03ffbf7c-ea31-4a17-b695-ae65a6a5674f",
+      "payloadSHA256": "52111a4c027783e189ab4803e4f3b6f101eeac9e1d7a60d32ac886e2ab7da0a5",
+      "identicalRequestOccurrences": 2,
+      "noKnownTask": true
+    },
+    {
+      "sourceBinding": "kernel75",
+      "id": "verified-gap-kernel-install-malformed-receipt",
+      "viewport": "1280x800",
+      "method": "Kernel.Install",
+      "requestId": "4eadc1ba-de45-4c86-a3df-dc4eca2462c8",
+      "payloadSHA256": "00f28617269a6b6f205724a21214e026efaab5e1f4af0aa31b4c8444b691e392",
+      "identicalRequestOccurrences": 2,
+      "noKnownTask": true
+    },
+    {
+      "sourceBinding": "kernel75",
+      "id": "verified-gap-kernel-accepted-refresh-fault",
+      "viewport": "1440x900",
+      "method": "Kernel.Install",
+      "requestId": "cad314a6-0e9c-4e07-816c-54dcf7cbd2f0",
+      "payloadSHA256": "440caf17de13d340a85d01ec3490822d3e5d8aa80e7c1daf90fbbf4fef512a89",
+      "identicalRequestOccurrences": 1,
+      "operationId": "synthetic-gap-kernel-install-1",
+      "failedReadsAfterAdmission": 2,
+      "heldRecoveryReadsBeforeRelease": 0,
+      "originalEnvironmentIdentityRetained": true
+    },
+    {
+      "sourceBinding": "kernel75",
+      "id": "verified-gap-kernel-accepted-refresh-fault",
+      "viewport": "1280x800",
+      "method": "Kernel.Install",
+      "requestId": "4bdfe6cf-7192-4d42-919d-bfa562c1328c",
+      "payloadSHA256": "23454bd6a03991b69d42876eaabf36a4daec58ff2144a1cf9f78c33c34399648",
+      "identicalRequestOccurrences": 1,
+      "operationId": "synthetic-gap-kernel-install-1",
+      "failedReadsAfterAdmission": 1,
+      "heldRecoveryReadsBeforeRelease": 0,
+      "originalEnvironmentIdentityRetained": true
+    },
+    {
+      "sourceBinding": "kernel75",
+      "id": "verified-gap-kernel-accepted-refresh-recovered",
+      "viewport": "1440x900",
+      "method": "Kernel.Install",
+      "requestId": "581fc0dc-148e-4a0c-bf64-40bc2b63ab8a",
+      "payloadSHA256": "8803ab106a98cc2e702fba904f543015ffac924cfb0e30ada00ff72c1c083d75",
+      "identicalRequestOccurrences": 1,
+      "operationId": "synthetic-gap-kernel-install-1",
+      "failedReadsAfterAdmission": 1,
+      "heldRecoveryReadsBeforeRelease": 2,
+      "originalEnvironmentIdentityRetained": true
+    },
+    {
+      "sourceBinding": "kernel75",
+      "id": "verified-gap-kernel-accepted-refresh-recovered",
+      "viewport": "1280x800",
+      "method": "Kernel.Install",
+      "requestId": "1bf5a71d-b396-44f7-8861-b10b3bd55e90",
+      "payloadSHA256": "31ebf59471da61d49db7a8034e31760674687fc6394f466547963d9c5e8ee802",
+      "identicalRequestOccurrences": 1,
+      "operationId": "synthetic-gap-kernel-install-1",
+      "failedReadsAfterAdmission": 1,
+      "heldRecoveryReadsBeforeRelease": 2,
+      "originalEnvironmentIdentityRetained": true
+    }
+  ],
+  "referenceAnchorsReportedNotReadByAccountant": [
+    {
+      "sourceBinding": "kernel75",
+      "id": "proxy-list",
+      "viewport": "1440x900",
+      "imageSHA256": "e45ffde8ab3a94fede4b1a8c23a96164206dd095f98d738fd80462680849c75c"
+    },
+    {
+      "sourceBinding": "kernel75",
+      "id": "proxy-list",
+      "viewport": "1280x800",
+      "imageSHA256": "3e179c45e816feea739f1f1a806903b7ac0d912048a432138f6ca310f6ee1f6b"
+    },
+    {
+      "sourceBinding": "kernel75",
+      "id": "proxy-add",
+      "viewport": "1440x900",
+      "imageSHA256": "65e69372915648879eb828fb2b2e5d164ad772be6f5903f70315862aeac0baad"
+    },
+    {
+      "sourceBinding": "kernel75",
+      "id": "proxy-add",
+      "viewport": "1280x800",
+      "imageSHA256": "74ad42de724f897c55bfa32f5338c8598c7a36fdbcd7317753952c01c0fb1f8c"
+    },
+    {
+      "sourceBinding": "kernel75",
+      "id": "batch-progress-fixture",
+      "viewport": "1440x900",
+      "imageSHA256": "7a8c7b7fcdf5784ac0d3a1eb3ec68ca51775100930bd38c1b181245245202179"
+    },
+    {
+      "sourceBinding": "kernel75",
+      "id": "batch-progress-fixture",
+      "viewport": "1280x800",
+      "imageSHA256": "d1af97ee4e7e07ab77492cf65195c935af8f3187a8f4781c9c4462f89eff7305"
+    },
+    {
+      "sourceBinding": "proxy340",
+      "id": "proxy-edit",
+      "viewport": "1440x900",
+      "imageSHA256": "45dfec49ea773f1fff960cdaa36708092b115409c3da77155ea63f75a45a2519"
+    },
+    {
+      "sourceBinding": "proxy340",
+      "id": "proxy-edit",
+      "viewport": "1280x800",
+      "imageSHA256": "a6434ff387334025eff11e3f94657929e497e0c9beed2cca11f2111489ebbfcc"
+    }
+  ],
+  "storedAuditsAndChecksNotExecuted": {
+    "directedChecksProjection": {
+      "path": "docs/verification/issue37-integrated-directed-checks.json",
+      "sha256": "d7e03fc6a4e10766960ead8250a7ca0ada32171b96f2d3d2c91171077a145d47",
+      "bytes": 6821
+    },
+    "existingDirectedRunsReported": {
+      "340": 26,
+      "9de": 38,
+      "75bc": 22,
+      "shared681fFullCheck": 196
+    },
+    "newCaseExecutionsByAccountant": 0,
+    "oldTestsReclassified": false,
+    "checkCountsAreNewImagesOr274Acceptance": false,
+    "formalDesktopAcceptanceCountUnchanged": "4/21",
+    "kernel28Capture": {
+      "nativeAuditImageRecords": 20,
+      "storedNativeGetterAttempts": 0,
+      "unsupportedMethods": [],
+      "ignoredHmrConsoleRecordsRetained": 56,
+      "blockedDevelopmentWebSocketsRetained": 56,
+      "inertFocusAndRecoveryAreStoredMeasurementsNotNewKeyboardOrNativeEvidence": true
+    },
+    "proxy4Capture": {
+      "eachFreshContextGetterAttempts": 0,
+      "storageBlocked": true,
+      "Workspace.Read": 9,
+      "Operation.Read": 0,
+      "Proxy.Check": 0,
+      "Runtime.Start": 0,
+      "unsupportedMethods": [],
+      "perViewportWorkspaceReads": {
+        "current1440": 3,
+        "stale1440": 2,
+        "current1280": 2,
+        "stale1280": 2
+      },
+      "ignoredHmrConsoleRecordsRetained": 8,
+      "blockedDevelopmentWebSocketsRetained": 8,
+      "guideClassifierExceptionApplied": false
+    },
+    "proxy26BehaviorChecks": {
+      "storageAttemptCounterPresent": false,
+      "captureGetterZeroTransferredToBehaviorChecks": false,
+      "13ScenarioAssertionsAre13NewVisualCases": false
+    },
+    "old8ReviewReinterpreted": false,
+    "proxyRawStatusFilterAndExistingIPFilterChanged": false,
+    "normalGoProducingStaleConnectedEstablished": false,
+    "environmentAndSeparateContextAuthors": {
+      "activePrivatePerAssignment": true,
+      "progressPolled": false,
+      "sourceOrWorktreesRead": false,
+      "readyArtifactsConsumed": false,
+      "allBaselineUnprovenStatusesUnchanged": true
+    }
+  },
+  "duplicateAccounting": {
+    "sameNewPixelsDifferentStoredContractBranches": [
+      {
+        "imageSHA256": "229cfa84e28ac6b8735ea427dcafe46cf9d9102196faf6caa2fdec80ed7118a8",
+        "viewport": "1440x900",
+        "sourceBinding": "kernel75",
+        "ids": [
+          "verified-gap-kernel-install-official-unknown",
+          "verified-gap-kernel-install-malformed-receipt"
+        ]
+      },
+      {
+        "imageSHA256": "6513faca7aa62b6e2b96f19a2cbd1595d6bf16385bd254097d7973bc2f61659f",
+        "viewport": "1280x800",
+        "sourceBinding": "kernel75",
+        "ids": [
+          "verified-gap-kernel-install-official-unknown",
+          "verified-gap-kernel-install-malformed-receipt"
+        ]
+      }
+    ],
+    "baselinePixelReuseNotSourceReuse": [
+      {
+        "newSourceBinding": "kernel75",
+        "newId": "verified-gap-kernel-demo-list-dense-bottom",
+        "viewport": "1440x900",
+        "oldPacket": "issue37-kernel-proxy83",
+        "oldId": "gap-kernel-demo-list-dense-bottom"
+      },
+      {
+        "newSourceBinding": "kernel75",
+        "newId": "verified-gap-kernel-demo-list-dense-page-two",
+        "viewport": "1440x900",
+        "oldPacket": "issue37-kernel-proxy83",
+        "oldId": "gap-kernel-demo-list-dense-page-two"
+      },
+      {
+        "newSourceBinding": "kernel75",
+        "newId": "verified-gap-kernel-native-list-dense-bottom",
+        "viewport": "1440x900",
+        "oldPacket": "issue37-kernel-proxy83",
+        "oldId": "gap-kernel-native-list-dense-bottom"
+      },
+      {
+        "newSourceBinding": "kernel75",
+        "newId": "verified-gap-kernel-native-list-dense-page-two",
+        "viewport": "1440x900",
+        "oldPacket": "issue37-kernel-proxy83",
+        "oldId": "gap-kernel-native-list-dense-page-two"
+      },
+      {
+        "newSourceBinding": "kernel75",
+        "newId": "verified-gap-proxy-demo-list-dense-bottom",
+        "viewport": "1440x900",
+        "oldPacket": "issue37-kernel-proxy83",
+        "oldId": "gap-proxy-demo-list-dense-bottom"
+      },
+      {
+        "newSourceBinding": "kernel75",
+        "newId": "verified-gap-proxy-demo-list-dense-page-two",
+        "viewport": "1440x900",
+        "oldPacket": "issue37-kernel-proxy83",
+        "oldId": "gap-proxy-demo-list-dense-page-two"
+      },
+      {
+        "newSourceBinding": "kernel75",
+        "newId": "verified-gap-proxy-native-list-dense-bottom",
+        "viewport": "1440x900",
+        "oldPacket": "issue37-kernel-proxy83",
+        "oldId": "gap-proxy-native-list-dense-bottom"
+      },
+      {
+        "newSourceBinding": "kernel75",
+        "newId": "verified-gap-proxy-native-list-dense-page-two",
+        "viewport": "1440x900",
+        "oldPacket": "issue37-kernel-proxy83",
+        "oldId": "gap-proxy-native-list-dense-page-two"
+      },
+      {
+        "newSourceBinding": "proxy340",
+        "newId": "verified-proxy-row-and-detail-current",
+        "viewport": "1440x900",
+        "oldPacket": "issue37-main83",
+        "oldId": "native-proxy-check-details-current"
+      },
+      {
+        "newSourceBinding": "proxy340",
+        "newId": "verified-proxy-row-and-detail-current",
+        "viewport": "1280x800",
+        "oldPacket": "issue37-main83",
+        "oldId": "native-proxy-check-details-current"
+      }
+    ],
+    "oldPixelSourceHead": "83eafe1bee11ec68077b22c8fecc4f4f2bba456f",
+    "samePNGDoesNotProveSameRequestModeChildOrCurrentSource": true,
+    "recordsWithDuplicatePixelsRetainedNotDeduplicatedAway": true
+  },
+  "summary": {
+    "historical274CellStatusesUnchanged": true,
+    "newDeltaImageRecords": 32,
+    "newDeltaPacketLocalPairedRecords": 16,
+    "newDeltaVerdicts": {
+      "MAPPED": 32,
+      "ADAPTED": 0,
+      "MISSING": 0,
+      "FAIL": 0
+    },
+    "newDeltaDistinctCaseIDValues": 16,
+    "newDeltaDistinctPNGHashes": 30,
+    "newDeltaDistinctOrderedPNGHashPairs": 15,
+    "newDeltaImageBytes": 2393250,
+    "newDeltaRecordHashesAlreadyIn600Baseline": 10,
+    "newDeltaDistinctPNGHashesAbsentFromBaseline": 20,
+    "newDeltaDistinctOrderedPNGHashPairsAbsentFromBaseline": 14,
+    "sourceBoundRelationUpdateCells": 8,
+    "pairedRecordsAreCellCountIncrements": false,
+    "original66GapDelta": {
+      "unchanged": 60,
+      "finitePredicateAddressed": 5,
+      "partlyAddressedFirstHintUnproven": 1
+    },
+    "finitePredicateAddressedCellIDs": [
+      "P03",
+      "K03",
+      "K09",
+      "K14",
+      "K16"
+    ],
+    "narrowedButNotRemovedCellIDs": [
+      "K10"
+    ],
+    "notInOriginal66ButWithRelationUpdates": [
+      "P33",
+      "P34"
+    ],
+    "conservativeQualifiedRemainingGapCells": 61,
+    "conservativeQualifiedRemainingGapCountsByTicket": {
+      "33": 16,
+      "34": 30,
+      "35": 8,
+      "36": 5,
+      "37": 2
+    },
+    "conservativeQualifiedRemainingGapCellIDsByTicket": {
+      "33": [
+        "S02",
+        "S09",
+        "E07",
+        "E13",
+        "E17",
+        "E18",
+        "E19",
+        "E20",
+        "E21",
+        "E23",
+        "E24",
+        "E25",
+        "E26",
+        "G03",
+        "G05",
+        "F28"
+      ],
+      "34": [
+        "F07",
+        "F08",
+        "F10",
+        "F11",
+        "F13",
+        "F15",
+        "F16",
+        "F19",
+        "F21",
+        "F26",
+        "F30",
+        "F32",
+        "C02",
+        "C07",
+        "C08",
+        "C09",
+        "C13",
+        "C14",
+        "B03",
+        "B06",
+        "B08",
+        "B09",
+        "B10",
+        "B11",
+        "R02",
+        "R03",
+        "R06",
+        "R08",
+        "R09",
+        "R11"
+      ],
+      "35": [
+        "I05",
+        "P07",
+        "P20",
+        "K10",
+        "M14",
+        "M20",
+        "M21",
+        "M22"
+      ],
+      "36": [
+        "D03",
+        "N03",
+        "A02",
+        "A12",
+        "H19"
+      ],
+      "37": [
+        "S07",
+        "S08"
+      ]
+    },
+    "remainingGapCountQualification": "61 = 60 unchanged original definitions + conservative K10 first-hint scope. If MAIN evaluates only the exact old post-second-request frame, the narrower remaining original-gap count is60; this report does not certify or silently discard the distinct first malformed identity hint.",
+    "combinedReferenceOnlyCounts": {
+      "packets": 9,
+      "imageRecords": 632,
+      "packetLocalPairedRecords": 316,
+      "distinctCaseIDValues": 315,
+      "verdicts": {
+        "ADAPTED": 16,
+        "MAPPED": 562,
+        "MISSING": 32,
+        "FAIL": 22
+      },
+      "acceptedBoundedPairedRecords": 287,
+      "distinctPNGHashes": 612,
+      "distinctOrderedPNGHashPairs": 310,
+      "distinctAcceptedOrderedPNGHashPairs": 282
+    },
+    "combined632ProjectionWritten": false,
+    "combined632IsWholeCurrentPass": false,
+    "raw634PNGHashCountAsserted": false,
+    "rawHashAccountingQualification": "Actual PNG-byte arithmetic is592 baseline unique +20 new unique =612 across632 record slots. The32 delta records contain30 distinct hashes, two within-delta duplicates and ten baseline pixel aliases. Counts are records or hashes, never supported states.",
+    "historicalFailImagesReclassified": 0,
+    "historicalMissingImagesReclassified": 0,
+    "wholeCellCoveragePromotions": 0,
+    "currentHEADCertified": false,
+    "strictVisualPass": false,
+    "realDesktopAcceptance": false
+  },
+  "integrity": {
+    "validationKind": "Readonly schema/key/count/SHA reconciliation, not product tests or independent picture/source review.",
+    "newManifestUserSuppliedSHAsMatched": 2,
+    "newPNGByteHashesAndByteCountsMatched": 32,
+    "newExactManifestToIndependentReviewRecordsMatched": 32,
+    "newExactSourceRenderViewportTagGroupsMatched": 16,
+    "newStoredActionProofHashesBound": 32,
+    "newStoredRequestBindingRecordsMatched": 8,
+    "baselineInventoryCellIdentitiesAndOriginalCoveragePreserved": 274,
+    "baselinePublicLedgerNotRewritten": 600,
+    "allOriginal66GapDefinitionsRetained": 66,
+    "newRelationUpdateCellsBound": 8,
+    "originalPlanJSONUnchanged": true,
+    "reviewedAdditionsJSONUnchanged": true,
+    "public600ProjectionByteUnchanged": true,
+    "admittedReviewAndManifestBytesUnchanged": true,
+    "oldPNGBytesOrProtectedSourceToolSetsRechecked": false,
+    "newImagesViewed": 0,
+    "originalCommercialImagesRead": 0,
+    "sourceCertificatesInheritedAcrossHeads": false,
+    "privateAbsolutePathsInOutput": false
+  },
+  "publicationProvenance": {
+    "independentMapperReportSha256": "2550c67c027ed68c268e09686c02f3b4532b5cc83ddc8e15c5bb8b8aff951a1b",
+    "frozen600ProjectionSha256": "73171f07263db2a2d3212cd324057ca0a2b911367efd04d9c1e7b897fc83928f",
+    "privateMapperBytesEdited": false,
+    "frozen600ProjectionEdited": false,
+    "original274InventoryEdited": false
+  },
+  "mainSelectedOriginalPredicateScope": {
+    "originalGapCells": 66,
+    "finitePredicatesAddressed": [
+      "P03",
+      "K03",
+      "K09",
+      "K10",
+      "K14",
+      "K16"
+    ],
+    "remainingOriginalPredicateCellsAfterOnlyThisDelta": 60,
+    "firstMalformedIdentityGlyphIndependentlyShown": false,
+    "conservativeReviewerAlternativeRemaining": 61,
+    "qualification": "K10 originally concerns clipped unknown/malformed request hints and exact original-request verification. The new post-verification hints address that original finite predicate. The distinct first malformed-identity glyph remains unpictured, but is not invented as a new mandatory cell or per-callback screenshot.",
+    "catalogueWholeCellPassesAdded": 0,
+    "historicalFailStatusRemoved": false,
+    "currentHeadPass": false
+  }
+}

@@ -177,6 +177,8 @@ export interface ApplicationService {
   migrationAction?(operationId: string, action: "stop" | "commit" | "recover"): Promise<ApplicationResult<Operation>>;
   previewMigrationRollback?(operationId: string): Promise<ApplicationResult<NativeRestorePreview>>;
   discardMigrationRollback?(): Promise<void>;
+  /** Volatile cleanup ownership only; never exposes source tokens or paths. */
+  getMigrationRollbackCleanup?(): { operationId: string; previewId?: string; pending: boolean } | undefined;
   consumeMigrationRollback?(previewId: string): void;
   getPendingMigration?(): { request: NativeMigrationRequest; operationId?: string } | undefined;
   wasMigrationNotAccepted?(requestId: string): boolean;
@@ -200,6 +202,9 @@ export interface ApplicationService {
   exportBackup?(request: NativeBackupExportRequest): Promise<ApplicationResult<{ status: "accepted"; operation: Operation }>>;
   getPendingBackupExport?(): NativeBackupPending | undefined;
   selectRestoreSource?(): Promise<ApplicationResult<{ status: "selected" | "cancelled"; sourceToken?: string; name?: string }>>;
+  getPendingRestoreSource?(): NativeRestoreSourcePending | undefined;
+  recoverRestoreSource?(): Promise<ApplicationResult<NativeRestoreSourceState>>;
+  discardPendingRestoreSource?(): Promise<ApplicationResult<{ status: "discarded" }>>;
   previewRestore?(sourceToken: string): Promise<ApplicationResult<NativeRestorePreview>>;
   readRestorePage?(request: { previewId: string; offset: number; pageSize: number }): Promise<ApplicationResult<NativeRestorePage>>;
   discardRestore?(previewId: string, sourceToken: string): Promise<ApplicationResult<{ status: "discarded" }>>;
@@ -219,7 +224,7 @@ export interface NativeBackupExportRequest {
 export interface DiagnosticReport {
   format: "prism-local-diagnostics"; schemaVersion: 1; generatedAt: string;
   application: { version: string; platform: string; architecture: string; goVersion: string; signature: "not-checked" };
-  proxyProtection: "available" | "unavailable"; excluded: string[];
+  proxyProtection: "standard-proxy-bridge" | "available" | "unavailable"; excluded: string[];
   workspace: {
     status: "available" | "partial" | "unavailable"; startupCode?: string; schemaVersion?: number;
     counts: Record<string, number>; maintenance: DiagnosticOperation[]; operations: DiagnosticOperation[];
@@ -243,6 +248,14 @@ export interface NativeRestorePreview {
   bytes: number; canRestore: boolean;
   kernels: { id: string; version: string; archiveSha256: string; executableSha256: string; localId: string; state: "pending" | "missing" | "unavailable" | "verified-bytes"; required: boolean }[];
   credentials: { proxyId: string; state: "none" | "available-current-user" | "reentry-required" }[];
+}
+export interface NativeRestoreSourceState {
+  mode: "native"; requestId: string; status: "selecting" | "selected" | "cancelled" | "failed" | "discarded";
+  sourceToken?: string; name?: string; preflightRunning: boolean; cleanupPending: boolean; preview?: NativeRestorePreview;
+}
+export interface NativeRestoreSourcePending {
+  requestId: string; sourceToken?: string; name?: string; previewId?: string;
+  selectionPending: boolean; preflightPending: boolean; cleanupRequested: boolean;
 }
 export interface NativeRestoreRequest {
   previewId: string; archiveSha256: string; confirmOverwrite: boolean; acknowledgeCredentials: boolean; stopRunning: boolean; requestId: string;

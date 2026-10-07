@@ -1,0 +1,414 @@
+{
+  "schemaVersion": 1,
+  "kind": "public-independent-environment-css-source-review-with-separate-main-integration-receipts",
+  "date": "2026-10-07",
+  "independentReview": {
+    "verdict": "SCOPED_SOURCE_CONSISTENT",
+    "findings": [],
+    "findingCounts": {
+      "P1": 0,
+      "P2": 0,
+      "admissionToolGaps": 0
+    },
+    "originalReportSha256": "6d4341c0362edfaf9610d8a1cb9d1b340ab3b554e614b634d3e09727765c4849",
+    "sourceHead": "340a22c1e8489fad2db091a25bb14bb7d2e66984",
+    "renderHash": "0df5a445b4a16f1984f2944ac7367d1202322b892876f2d31b9e853d9a8708ce",
+    "moduleImports": 0,
+    "browserRuns": 0,
+    "pixelsViewed": 0,
+    "originalReviewPendingExecutionFieldsNotEdited": true,
+    "sourceChecks": [
+      {
+        "id": "CSS-BATCH-SCOPE",
+        "disposition": "SOURCE_CONSISTENT",
+        "locations": [
+          "src/components/environment-windows.css:71-76",
+          "src/components/NativeBatchDialog.tsx:226,237",
+          "src/components/NativeCookieImport.tsx:181"
+        ],
+        "notes": "60px/nowrap/normal wrap applies only to batch first th/td; later equal-specificity override of generic 45px. Other columns and Cookie selection/status cells are not targeted. No global number leak, hiding or font/zoom reduction."
+      },
+      {
+        "id": "CSS-TABLE-WHOLE-ROWS",
+        "disposition": "SOURCE_CONSISTENT_WITH_CAPACITY_ADAPTATION",
+        "locations": [
+          "src/styles.css:149-169",
+          "src/App.tsx:1291-1313"
+        ],
+        "notes": "Nonempty direct-band tables consume natural notice/band/footer heights. Body=max(68,58*floor((A-50)/58)+10), with unchanged 40px header and 48px rows/10px gaps. Snap governs settled band-bearing scrolling; ordinary/empty sizing is not switched. Legitimate copy is retained, not compressed or hidden."
+      },
+      {
+        "id": "CSS-RUNTIME-POPUP",
+        "disposition": "SOURCE_CONSISTENT_COMPATIBILITY_NOT_CERTIFIED",
+        "locations": [
+          "src/styles.css:120,124",
+          "src/components/reference-ui.css:1",
+          "src/components/ReferenceUi.tsx:20-49",
+          "src/components/EnvironmentRuntimeDetails.tsx:13-21"
+        ],
+        "notes": "Own scrolling plus fit-content/stretch limit anchored 8px above real pager. Existing stage/report/warning/disclaimer content, outside/Escape handlers and fixed popup owner remain. Author Chromium reports feature support; no independent Firefox or Wails/WebView claim."
+      },
+      {
+        "id": "CSS-COMPOSITE-CONTROLS",
+        "disposition": "SOURCE_CONSISTENT_NOT_RUNTIME_REGRESSION_PASS",
+        "locations": [
+          "src/styles.css:160-169,224",
+          "src/components/environment-windows.css:48-55,71-76",
+          "src/components/NativeRecycleManager.tsx:140-160",
+          "src/components/EnvironmentEditorWindow.tsx:11-16"
+        ],
+        "notes": "Table versus batch selectors and pagination classes do not overlap. No new Cookie/recycle/drawer control selector, overlay/z-index/inert/opacity/secret-mask change, or JS/domain/adapter/fixture change. Existing transparent lower-owner masking rule remains untouched."
+      },
+      {
+        "id": "TOOL-V2-LINEAGE",
+        "disposition": "SOURCE_CONSISTENT_RAW_BLOCK_COMPARISON",
+        "locations": [
+          "capture-authored-environment-gaps-atomic.mjs:97-203",
+          "capture-environment-css-repairs.mjs:105-215"
+        ],
+        "notes": "Execution/per-pair guards and global archive/publication/refusal tail are byte-identical raw text after removing the two added provenance lines in each block. V2's prior archive-before-publication and pair-failure-retention repairs are retained, not re-executed.",
+        "originalExecutionAndPerPairGuardBlockSha256": "df1f169811f7afa7148cab65733cc6c9ee86cff66beff337a552dfc3c62be265",
+        "originalGlobalArchivePublicationFailureBlockSha256": "d278f7e37bfb8848d77caf2bc9bd0cfe96cf3d4f3b8589e361ac7f0272bf49b1"
+      },
+      {
+        "id": "TOOL-NEW-SOURCE-FREEZE",
+        "disposition": "SOURCE_CONSISTENT_NOT_EXECUTED",
+        "locations": [
+          "capture-environment-css-repairs.mjs:18-54,57-84,128-130,183-214"
+        ],
+        "notes": "Explicit future full HEAD/freeze and literal module/export/images; 340 ancestor; exactly two committed CSS changes and two raw changes; exact 79 inputs. Original spec identity stays 340 for finite guards while records add actual new source/render alongside original identity. Source/tool/reference/archive gates precede final PNG/manifest; global refusal retains failures. Exact-candidate integration guard is the prerequisite; runner alone does not pin the candidate commits."
+      },
+      {
+        "id": "TOOL-FINITE-FACTORY",
+        "disposition": "SOURCE_CONSISTENT_NOT_EXECUTED",
+        "locations": [
+          "environment-css-repair-gap-cases.mjs:3-39",
+          "environment-css-repair-gap-plan.md:3-9",
+          "environment-css-repair-gap-plan.json:3-19",
+          "environment-table-gap-cases.mjs:516-589,599-657",
+          "environment-batch-gap-cases.mjs:370-410,424-453"
+        ],
+        "notes": "Literal factory selects 14 original table and 3 batch image specs with exact cardinality guard, no new standalone actions. Precise original finite safety dispatch rejects out-of-set IDs; original replies, method/effect/query budgets, identities and callbacks are unchanged. Six previously clear desktop detail partners are necessary new-CSS companions, not added old FAILs or a full 56 rerun."
+      },
+      {
+        "id": "TOOL-NATURAL-OUTER-BODY",
+        "disposition": "SOURCE_CONSISTENT_POSITION_SUPPLEMENT",
+        "locations": [
+          "environment-css-repair-gap-cases.mjs:18-30",
+          "src/components/NativeBatchDialog.tsx:10,215-246",
+          "src/components/environment-batch.css:2,7-10",
+          "environment-batch-gap-cases.mjs:376-382,400-410"
+        ],
+        "notes": "Page two unchanged. Dense/continue original action first; exact existing dialog title and left 6px actual body padding target real outer wheel. Reads scroll position only, preserving dense inner bottom and exact retry requests; no DOM/scrollTop/focus/hash/style/controller mutation or fake background/mask. Does not erase old captured-position clipping."
+      },
+      {
+        "id": "TOOL-INTEGRATION-BOUNDARY",
+        "disposition": "SOURCE_CONSISTENT_NOT_EXECUTED",
+        "locations": [
+          "environment-css-integration-guard.mjs:7-45"
+        ],
+        "notes": "Exact ordered reviewed tips must be supplied. Before/after require MAIN branch/empty index, initial 340, owned one-file deltas, protected canonical/raw receipts, both merged ancestors and exact integrated CSS blobs, plus PR31 ancestry. Docs remain MAIN work, not discarded or certified. Only private exclusive-create receipts are written; no git mutation command is implemented."
+      }
+    ],
+    "protectedInputQualification": {
+      "declaredSourceFamilyCount": 79,
+      "ownedCssPathCount": 2,
+      "protectedCanonicalInputCount": 77,
+      "canonicalBasis": "Complete one-file diffs for the two direct-parent candidates establish the proposed composition's other 77 committed source-family paths unchanged.",
+      "compositeMergeExecuted": false,
+      "old79InputAuditRepeated": false,
+      "all77WorktreeRawHashesIndependentlyRecomputed": false,
+      "futureRunnerMustCheckExact79PathFamilyAndOnlyTwoRawChanges": true,
+      "integrationGuardBroadTrackedProtectedCountObserved": 359,
+      "declaredProtectedPathsCoveredByBroadTrackedGuard": 73,
+      "declaredProtectedPathsExcludedFromBroadTrackedGuard": [
+        "docs/DEVELOPMENT.md",
+        "docs/KERNEL.md",
+        "docs/PRD.md",
+        "docs/USER_GUIDE.md"
+      ],
+      "excludedEmbeddedDocsCoveredByRunner": "79-input raw equality, clean renderer and whole-commit two-CSS-only diff",
+      "rawEolBytesMustNotBeNormalizedForFutureFreeze": true,
+      "author78InputSnapshotsAreNotMain79Freeze": true
+    },
+    "finiteRepairPlan": {
+      "factory": "environmentCssRepairGapCases",
+      "suppliedStatus": "MAIN_AUTHORED_NOT_EXECUTED",
+      "executionStatusInThisReview": "NOT_EXECUTED",
+      "tableStates": 14,
+      "batchStates": 3,
+      "totalImageStates": 17,
+      "viewports": [
+        {
+          "width": 1440,
+          "height": 900
+        },
+        {
+          "width": 1280,
+          "height": 800
+        }
+      ],
+      "defaultPlannedImages": 34,
+      "newStandaloneActionCases": 0,
+      "originalCallbacksRetainedWithoutAdditionalPhotos": true,
+      "sixPreviouslyClearDesktopDetailsIncludedAsNewCssCompanions": true,
+      "full56ImageRerun": false,
+      "tableIds": [
+        "env-table-demo-start-completion-write-refused",
+        "env-table-demo-stop-completion-write-refused",
+        "env-table-demo-mixed-terminal",
+        "env-table-native-mixed-pending",
+        "env-table-native-mixed-accepted",
+        "env-table-native-fifo-active-queued",
+        "env-table-native-fifo-stopping-disabled",
+        "env-table-native-missing-saved-proxy",
+        "env-table-native-precheck-pass-expanded",
+        "env-table-native-precheck-save-pending-expanded",
+        "env-table-native-historical-network-disclaimer",
+        "env-table-native-reconcile-network-disclaimer",
+        "env-table-native-containment-stopped-warning",
+        "env-table-native-containment-unconfirmed-warning"
+      ],
+      "batchIds": [
+        "env-batch-successful-page-two",
+        "env-batch-dense-table-bottom",
+        "env-batch-continue-only-unfinished"
+      ],
+      "naturalOuterBodyBottomSupplementIds": [
+        "env-batch-dense-table-bottom",
+        "env-batch-continue-only-unfinished"
+      ],
+      "exactExistingBatchDialogTitle": "持久批次与逐项结果",
+      "outerWheelPointerXOffset": 6,
+      "existingBodyLeftPadding": 26,
+      "descriptorOriginalSourceHeadPreserved": "340a22c1e8489fad2db091a25bb14bb7d2e66984",
+      "descriptorOriginalRenderHashPreserved": "0df5a445b4a16f1984f2944ac7367d1202322b892876f2d31b9e853d9a8708ce",
+      "newActualHeadOrRenderHashClaimed": null,
+      "requiredOrderedIntegrationTips": [
+        "29f7ea56c6f32f7b3f253328e00dce9a33d9916e",
+        "900a20d336646938a01f966b1c40abf5c01809d9"
+      ]
+    },
+    "reviewedPrivateInputIdentities": [
+      {
+        "file": "capture-environment-css-repairs.mjs",
+        "sha256": "13e8aa2509792ea820751812dedbe20f57d77c32426239905443700994787531",
+        "bytes": 21133
+      },
+      {
+        "file": "environment-css-repair-gap-cases.mjs",
+        "sha256": "42ef72862dc4eb7b51261c72daebe1f7f2098400de9ac61d8b923ea65e422c93",
+        "bytes": 3119
+      },
+      {
+        "file": "environment-css-integration-guard.mjs",
+        "sha256": "34565de884624c8b458caaadb8b305bd275df9960a613f1b38d970c273298b7b",
+        "bytes": 4451
+      },
+      {
+        "file": "environment-css-repair-gap-plan.md",
+        "sha256": "dec4030019586e2ce4a39b7083c159c764b0afc5bf72a5b531f9accbeeb8efe2",
+        "bytes": 1653
+      },
+      {
+        "file": "environment-css-repair-gap-plan.json",
+        "sha256": "cfd72f75d42c920a0903a91e8e88ca1dfe24c81ac8168832e145699e09962c54",
+        "bytes": 812
+      },
+      {
+        "file": "capture-authored-environment-gaps-atomic.mjs",
+        "sha256": "ec11cddfa5dfcf3d088c61579ba5446e2aeda77d0be0c1bac21f326bbc5c4ca0",
+        "bytes": 19266
+      },
+      {
+        "file": "environment-table-gap-cases.mjs",
+        "sha256": "27de0cc4053429df17f0b1ca3db5a1f0530371a2c5c1e6dc5727390661f0c4be",
+        "bytes": 61734
+      },
+      {
+        "file": "environment-batch-gap-cases.mjs",
+        "sha256": "a7fab737a01182dd0b0199a91e0beafafb31e3c28c25700444aeb1737d801fdf",
+        "bytes": 52643
+      },
+      {
+        "file": "batch-index-fix-author/batch-index-fix-author-report.md",
+        "sha256": "6c20222cf061fa6a93a21bc1b4cff9edc84b1f89d618e03333c4f8090902a7a8",
+        "bytes": 8558
+      },
+      {
+        "file": "batch-index-fix-author/batch-index-fix-author-report.json",
+        "sha256": "a55f39f301d57822e1cbb9228c8777e48f440dc52feb9dcabde99b438e418613",
+        "bytes": 9696
+      },
+      {
+        "file": "table-layout-fix-author/report.md",
+        "sha256": "52e0b5839c10de288ebcf02fe4e70d37081d76173637887be0628f2b13e30331",
+        "bytes": 8193
+      },
+      {
+        "file": "table-layout-fix-author/green.json",
+        "sha256": "39f212de7f04a0aaf0ed88e483007dbd8d90c0b72275080ac7702fc3b5a7ac81",
+        "bytes": 107024
+      },
+      {
+        "file": "frozen-render-inputs-340a22c/render-inputs.json",
+        "sha256": "d3e6938da18e184f1b9e2160d151196646f0cb22093e64390ea37afd5a66d83d",
+        "bytes": 34193
+      }
+    ]
+  },
+  "candidates": [
+    {
+      "name": "batch-index-capacity",
+      "commit": "29f7ea56c6f32f7b3f253328e00dce9a33d9916e",
+      "soleParent": "340a22c1e8489fad2db091a25bb14bb7d2e66984",
+      "branch": "codex/issue34-batch-index-capacity",
+      "changedFiles": [
+        "src/components/environment-windows.css"
+      ],
+      "insertions": 1,
+      "deletions": 0,
+      "baseCanonical": {
+        "blobSha1": "4747e7d824e7d69331c50296c3d24444f308ccea",
+        "sha256": "6152087d59dda2aa153fa0c08623013c0f9740417dcaeea969f6c45c451161a8",
+        "byteCount": 8058
+      },
+      "candidateCanonical": {
+        "blobSha1": "86853c131d411b07c81149c7be6826f25bb06d1b",
+        "sha256": "c55cb49fc69639837131c0f93e219583c4a66e4ff0a4d256bfdca8c8e792dc68",
+        "byteCount": 8205
+      },
+      "candidateRawSha256": "12b081f4e498c58234fe372d04131b79f953bde46dd10e159a1545528f025f44",
+      "scopeDisposition": "SOURCE_CONSISTENT_NOT_PIXEL_ACCEPTED"
+    },
+    {
+      "name": "table-layout-capacity",
+      "commit": "900a20d336646938a01f966b1c40abf5c01809d9",
+      "soleParent": "340a22c1e8489fad2db091a25bb14bb7d2e66984",
+      "branch": "codex/issue33-table-layout-capacity",
+      "changedFiles": [
+        "src/styles.css"
+      ],
+      "insertions": 13,
+      "deletions": 2,
+      "baseCanonical": {
+        "blobSha1": "88d9472950d37629753884e505dd8b4974652a47",
+        "sha256": "48c5716dea50fc0f343a1406a47371df8f3a57226ffffd81452dafdcc59b19ec",
+        "byteCount": 30960
+      },
+      "candidateCanonical": {
+        "blobSha1": "66a8cbae0779f6c59989d377979eb4bf09ae1d25",
+        "sha256": "f7a975d7f48c6e30cfcf340ef0dc5574c97a01c22dfcfbd669ee14fd76241e9f",
+        "byteCount": 32697
+      },
+      "candidateRawSha256": "22e57f1dd8be73001b84881cbfb336f79c85406e095b55b6f81d09b24da32a90",
+      "scopeDisposition": "SOURCE_CONSISTENT_NOT_PIXEL_ACCEPTED"
+    }
+  ],
+  "authorChecksNotIndependentRuntimeAcceptance": {
+    "reviewerExecutedOrCertifiedTheseChecks": false,
+    "batch": {
+      "reportMd": "batch-index-fix-author/batch-index-fix-author-report.md",
+      "reportJson": "batch-index-fix-author/batch-index-fix-author-report.json",
+      "reportedSuccessfulChecks": 6,
+      "reportedFailedChecksInFinalAttempt": 0,
+      "pngs": 0,
+      "checkedSourceWasBaseHeadPlusCssWip": true,
+      "reportedRenderInputCount": 78,
+      "reportedRenderHash": "1bfa67fadd7cd546cf576cc07e23523e9e47c43c6c2741c7e6d4a089d61db91e",
+      "oldF02InitialClippingNotRemovedByProductGeometry": true,
+      "reportedNaturalBodyBottom": {
+        "pageTwo": 0,
+        "dense": 157,
+        "continue": 71
+      },
+      "retainedHistory": [
+        "two preflight failures",
+        "six measurement failures",
+        "six final successful directed checks",
+        "separate Windows metadata-import failure and metadata-only retry"
+      ],
+      "finiteInMemoryOnly": true,
+      "realBackendUnfinishedEnforcementProven": false
+    },
+    "table": {
+      "reportMd": "table-layout-fix-author/report.md",
+      "actualMetadataJson": "table-layout-fix-author/green.json",
+      "observedMetadataRecordsMarkedPass": 8,
+      "observedFinalFailureRecords": 0,
+      "pngs": 0,
+      "checkedSourceHead": "340a22c1e8489fad2db091a25bb14bb7d2e66984",
+      "checkedSourceDirtyCssWip": true,
+      "renderInputCount": 78,
+      "sourceBeforeAfterRenderHash": "af26f3443dded87aa958f6de14cfb5e256963d2caa7a0a5a7181853a26d04336",
+      "sourceBeforeAfterHashesEqualInSuppliedMetadata": true,
+      "normalCapacity1440_1280": [
+        10,
+        8
+      ],
+      "refusalAdaptedCapacity1440_1280": [
+        9,
+        7
+      ],
+      "mixedAcceptedAdaptedCapacity1440_1280": [
+        8,
+        6
+      ],
+      "authorChromiumCssSupportFlags": {
+        "rowRound": true,
+        "container": true,
+        "pagerAnchor": true,
+        "stretch": true
+      },
+      "tallPopup1280ReportedVisibleHeight": 375,
+      "tallPopup1280ReportedContentHeight": 433,
+      "tallPopup1280ReportedScrollTopAtBottom": 58,
+      "retainedHistory": [
+        "RED failures",
+        "private fork/origin/raw-parser preflight corrections",
+        "RED measurement-property tool defect and correction"
+      ],
+      "finiteInMemoryOnly": true,
+      "independentPixelOrDesktopAcceptance": false
+    }
+  },
+  "mainOrdinaryIntegration": {
+    "sourceHead": "03d0f6836399a9eae83895424c6a13e4d00c0abd",
+    "renderHash": "df5b45f48531cbff945dc13eb0eac1d51fc91b8789aea7608c640b2110c46d3e",
+    "rawRenderHash78": "023e5f5bdeac450a0bb3e5c1dd0983b2f0d2a539332ea3834efd733713f5719a",
+    "exactlyOwnedChangedFiles": [
+      "src/components/environment-windows.css",
+      "src/styles.css"
+    ],
+    "exactCandidateBlobsMatch": true,
+    "other359TrackedNonDocNonOwnedRawAndCanonicalInputsMatch": true,
+    "declaredSourceFamily": 79,
+    "cssChangedInputs": 2,
+    "other77RenderInputsMustMatchOriginal340": true,
+    "embeddedDocsCoveredSeparatelyBy79InputFreezeNot359Guard": true,
+    "exactPR31AncestorPreserved": true,
+    "beforeReceiptSha256": "c9e6da3dbe870ae4ea38a94137db2754508ca84149cabe5ef81f67fac606393c",
+    "afterReceiptSha256": "8ca4c9e922b91e10f4c25a56af182d2057483a0b15c2a670dda546e9c38970ea",
+    "newFrozenSourceManifestSha256": "f8fd47e5be03405ac065f9841573d1d9d05ab6a11bf27de42570503826015c1e",
+    "unrelatedMainDocumentationDiscarded": false
+  },
+  "retainedHistory": {
+    "oldTableFailImages": 22,
+    "oldBatchFailImages": 6,
+    "oldFailVerdictsOverwritten": 0,
+    "oldReviewsCasesAndAttemptsUntouched": true,
+    "oldEbvF01AndF02Preserved": true,
+    "oldF02IsCapturedPositionNotPermanentUnreachability": true,
+    "otherFailMissingSourceLimitsAndGuideGapsUntouched": true,
+    "existingAcceptanceCountersUnchanged": true,
+    "sourcePackets83_9de_75Borrowed": false,
+    "oldPixelAuditsRepeated": false,
+    "four340V1SavedArtifactContractsReviewed": false
+  },
+  "newPngsByThisPublisher": 0,
+  "newWholeCellPasses": 0,
+  "strictVisualPass": false,
+  "completeProductAcceptance": false,
+  "realDesktopAcceptance": false,
+  "scope": "Independent review is source-only. MAIN ordinary merge and byte freeze are separate facts, not image/runtime/native acceptance. Required safety copy and old FAILs remain; CSS compatibility in Wails/WebView is unverified."
+}

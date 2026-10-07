@@ -75,6 +75,8 @@ type Service struct {
 	startQueue         []chan struct{}
 	closeDone          chan struct{}
 	closeError         error
+	closeStorageClosed bool
+	restoreCloseError  error
 	closeOnce          sync.Once
 	closeRequested     atomic.Bool
 	closeRetryActive   atomic.Bool
@@ -100,6 +102,7 @@ type Service struct {
 	backupUses         map[string]*backupTask
 	backupGate         chan struct{}
 	restoreSources     map[string]restoreSource
+	restoreSelections  map[string]*restoreSelection
 	restorePreview     *restoreDraft
 	restorePreflight   *restorePreflight
 	restoreScratch     string
@@ -167,6 +170,7 @@ func Open(root string, options Options) (*Service, error) {
 	s.batchAcceptances = map[string]*batchAcceptance{}
 	s.backupDestinations, s.backupTasks, s.backupUses, s.backupGate = map[string]backupDestination{}, map[string]*backupTask{}, map[string]*backupTask{}, make(chan struct{}, 1)
 	s.restoreSources = map[string]restoreSource{}
+	s.restoreSelections = map[string]*restoreSelection{}
 	if err = s.initialize(); err != nil {
 		db.Close()
 		return nil, err
@@ -258,9 +262,9 @@ func (s *Service) CloseContext(ctx context.Context) error {
 	case <-finished:
 		s.mu.Lock()
 		defer s.mu.Unlock()
-		return s.closeError
+		return s.finishShutdownLocked()
 	case <-ctx.Done():
-		return errors.New("controlled sessions have not all exited; cleanup continues and its resources are retained")
+		return &ShutdownError{Code: "EXIT_CLEANUP_PENDING", cause: errors.New("controlled sessions have not all exited; cleanup continues and its resources are retained")}
 	}
 }
 
@@ -391,47 +395,7 @@ func (s *Service) closeResources(processes []RuntimeProcess, finished chan struc
 	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	s.flushRuntimePersistence()
-	s.flushProxyPersistence()
-	s.flushCookiePersistence()
-	s.flushBatchPersistence()
-	s.flushBackupPersistence()
-	s.flushRestorePersistence()
-	s.flushRecyclePersistence()
-	s.flushMigrationPersistence()
-	proxy.Wipe(s.proxyRequestKey)
-	s.proxyRequestKey = nil
-	s.closeError = s.db.Close()
-	if s.networkStore != nil {
-		s.closeError = errors.Join(s.closeError, s.networkStore.Close())
-	}
-	if len(s.runtimePending) != 0 {
-		s.closeError = errors.Join(s.closeError, errors.New("runtime observations could not all be persisted before shutdown"))
-	}
-	if len(s.networkRecoveries) != 0 {
-		s.closeError = errors.Join(s.closeError, errors.New("network cleanup results could not all be persisted before shutdown"))
-	}
-	if len(s.proxyPending) != 0 {
-		s.closeError = errors.Join(s.closeError, errors.New("proxy check results could not all be persisted before shutdown"))
-	}
-	if len(s.cookiePending) != 0 {
-		s.closeError = errors.Join(s.closeError, errors.New("cookie observations could not all be persisted"))
-	}
-	if len(s.batchTasks) != 0 || len(s.batchAcceptances) != 0 {
-		s.closeError = errors.Join(s.closeError, errors.New("batch journal observations could not all be persisted"))
-	}
-	if len(s.backupTasks) != 0 {
-		s.closeError = errors.Join(s.closeError, errors.New("backup observations could not all be persisted"))
-	}
-	if s.restoreTask != nil {
-		s.closeError = errors.Join(s.closeError, errors.New("restore outcome remains protected or could not be persisted"))
-	}
-	if s.recycleTask != nil {
-		s.closeError = errors.Join(s.closeError, errors.New("recycle outcome remains protected or could not be persisted"))
-	}
-	if s.migrationTask != nil {
-		s.closeError = errors.Join(s.closeError, errors.New("migration outcome remains protected for next startup"))
-	}
+	_ = s.finishShutdownLocked()
 	close(finished)
 }
 func (s *Service) initialize() error {
@@ -631,7 +595,7 @@ func (s *Service) Call(request Request) Result {
 		return s.selectMigrationRollback(request.Payload)
 	}
 	// Read-only preflight must bypass all recovery/persistence flush dispatch.
-	if request.Method == "Backup.SelectRestoreSource" || request.Method == "Backup.PreviewRestore" || request.Method == "Backup.ReadRestorePage" || request.Method == "Backup.DiscardRestore" {
+	if request.Method == "Backup.SelectRestoreSource" || request.Method == "Backup.ReadRestoreSource" || request.Method == "Backup.PreviewRestore" || request.Method == "Backup.ReadRestorePage" || request.Method == "Backup.DiscardRestore" {
 		return s.restorePreviewCall(request)
 	}
 	if request.Method == "Cookie.ParseImport" {

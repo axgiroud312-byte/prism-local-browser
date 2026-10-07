@@ -1,0 +1,518 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-06",
+  "kind": "private-tool-controls-published-as-counts-and-hash-bound-outcomes",
+  "sourceHead": "83eafe1bee11ec68077b22c8fecc4f4f2bba456f",
+  "renderHash": "2c8ea5e5ec1b7fc5f5edaeef8813ac43907e37f26ddfbc6beb3959c7c5b13e55",
+  "sourceBoundToHistoricalRendererNotLaterHead": true,
+  "diagnosticProtocol": {
+    "resultSha256": "94bd64b41f0f640049b21eeda9c58592a0a8f9356ac7cf8a2cbc41652d9b211f",
+    "passed": 15,
+    "failed": 0,
+    "pureGuardControls": 13,
+    "browserExpectedRejections": 2,
+    "scope": "Only the declared Diagnostics.Export → Diagnostics.EndVerification phase shares an exact reportId/requestId. Entire original envelope and payload are compared unchanged; phase before Export, changed fields and foreign method families are denied before the fixture.",
+    "controls": [
+      {
+        "id": "exact-export-retry",
+        "expectedRejected": false,
+        "rejected": false,
+        "passed": true,
+        "nativeIO": false
+      },
+      {
+        "id": "declared-end-phase-keeps-payload",
+        "expectedRejected": false,
+        "rejected": false,
+        "passed": true,
+        "nativeIO": false
+      },
+      {
+        "id": "exact-end-retry",
+        "expectedRejected": false,
+        "rejected": false,
+        "passed": true,
+        "nativeIO": false
+      },
+      {
+        "id": "unknown-end-then-original-retry",
+        "expectedRejected": false,
+        "rejected": false,
+        "passed": true,
+        "nativeIO": false
+      },
+      {
+        "id": "changed-report-id",
+        "expectedRejected": true,
+        "rejected": true,
+        "passed": true,
+        "nativeIO": false
+      },
+      {
+        "id": "added-payload-field",
+        "expectedRejected": true,
+        "rejected": true,
+        "passed": true,
+        "nativeIO": false
+      },
+      {
+        "id": "changed-envelope-version",
+        "expectedRejected": true,
+        "rejected": true,
+        "passed": true,
+        "nativeIO": false
+      },
+      {
+        "id": "foreign-method-same-request-id",
+        "expectedRejected": true,
+        "rejected": true,
+        "passed": true,
+        "nativeIO": false
+      },
+      {
+        "id": "foreign-diagnostic-phase",
+        "expectedRejected": true,
+        "rejected": true,
+        "passed": true,
+        "nativeIO": false
+      },
+      {
+        "id": "end-before-export",
+        "expectedRejected": true,
+        "rejected": true,
+        "passed": true,
+        "nativeIO": false
+      },
+      {
+        "id": "ordinary-method-replay",
+        "expectedRejected": false,
+        "rejected": false,
+        "passed": true,
+        "nativeIO": false
+      },
+      {
+        "id": "ordinary-method-count-change",
+        "expectedRejected": true,
+        "rejected": true,
+        "passed": true,
+        "nativeIO": false
+      },
+      {
+        "id": "ordinary-method-phase-not-allowed",
+        "expectedRejected": true,
+        "rejected": true,
+        "passed": true,
+        "nativeIO": false
+      }
+    ],
+    "browserControls": [
+      {
+        "kind": "changed-report-id",
+        "firstError": "DIAGNOSTICS_RESULT_UNCONFIRMED",
+        "rejected": true,
+        "fixtureCallsBefore": 2,
+        "fixtureCallsAfter": 2,
+        "nativeStorageAttempts": 0,
+        "passed": true,
+        "explicitToolNegativeControl": true,
+        "nativeIO": false
+      },
+      {
+        "kind": "foreign-method",
+        "firstError": "DIAGNOSTICS_RESULT_UNCONFIRMED",
+        "rejected": true,
+        "fixtureCallsBefore": 2,
+        "fixtureCallsAfter": 2,
+        "nativeStorageAttempts": 0,
+        "passed": true,
+        "explicitToolNegativeControl": true,
+        "nativeIO": false
+      }
+    ],
+    "rawGetterTotal": 0,
+    "legacyGuardOrFirstFailureChanged": false
+  },
+  "nativeGuideDeniedProbe": {
+    "resultSha256": "57f7d264e307933a0886477a2265754d39a027188bc97e095563f4a0e7bed6f3",
+    "handoffSha256": "26926282ac8064468472756ec06dede8d49db285af8dfd394ee87ef8ab105eda",
+    "contract": "native-guide-blocked-debug-probe-v1",
+    "inputBindingSha256": "00f40da82762eb091a9a86caabd6a9bf272a13a7e472f635070b26c5a1ee829a",
+    "verifiedChecks": 50,
+    "failed": 0,
+    "actualBrowserControlsAndPositions": 30,
+    "preContextScopeRejections": 2,
+    "predicateOnlyControls": 12,
+    "hostMetadataControls": 6,
+    "captureInterfacePositionsWithinThose30BrowserChecks": 16,
+    "screenshotsFromValidation": 0,
+    "kindCounts": {
+      "REAL_APP_BROWSER_POSITIVE_BOUNDARY": 1,
+      "REAL_APP_BROWSER_EXPECTED_REJECTION": 7,
+      "REAL_APP_BROWSER_MUTATION_PREVENTED": 1,
+      "REAL_APP_BROWSER_COPY_ISOLATION": 1,
+      "REAL_APP_BROWSER_ATTESTATION_EXPECTED_REJECTION": 1,
+      "REAL_APP_BROWSER_API_EXPECTED_REJECTION": 1,
+      "CAPTURE_INTERFACE_SCOPE_EXPECTED_REJECTION": 2,
+      "REAL_APP_CAPTURE_SCOPE_EXPECTED_REJECTION": 2,
+      "PREDICATE_ONLY_NOT_BROWSER_SECURITY_PROOF": 11,
+      "PREDICATE_ONLY_NOT_REEXECUTED_ESM": 1,
+      "HOST_ATTESTATION_EXPECTED_REJECTION": 6,
+      "REAL_APP_CAPTURE_INTERFACE_POSITION": 16
+    },
+    "controls": [
+      {
+        "id": "real-root-native-guide-baseline",
+        "kind": "REAL_APP_BROWSER_POSITIVE_BOUNDARY",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED",
+        "rawTotal": 1,
+        "blockedKnown": 1,
+        "unknown": 0
+      },
+      {
+        "id": "direct-getter-before-markdown",
+        "kind": "REAL_APP_BROWSER_EXPECTED_REJECTION",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED",
+        "known": 0,
+        "unknown": 1
+      },
+      {
+        "id": "caught-inline-storage-read-no-method-success",
+        "kind": "REAL_APP_BROWSER_EXPECTED_REJECTION",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED",
+        "known": 1,
+        "unknown": 1
+      },
+      {
+        "id": "caught-inline-storage-write-no-method-success",
+        "kind": "REAL_APP_BROWSER_EXPECTED_REJECTION",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED",
+        "known": 1,
+        "unknown": 1
+      },
+      {
+        "id": "second-real-getter-is-not-free-allowance",
+        "kind": "REAL_APP_BROWSER_EXPECTED_REJECTION",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED",
+        "known": 1,
+        "unknown": 1
+      },
+      {
+        "id": "own-nonconfigurable-getter-cannot-be-replaced",
+        "kind": "REAL_APP_BROWSER_MUTATION_PREVENTED",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED"
+      },
+      {
+        "id": "raw-counter-cannot-be-zeroed-even-if-caught",
+        "kind": "REAL_APP_BROWSER_EXPECTED_REJECTION",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED",
+        "known": 1,
+        "unknown": 0
+      },
+      {
+        "id": "counter-snapshot-cannot-overwrite-private-events",
+        "kind": "REAL_APP_BROWSER_COPY_ISOLATION",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED"
+      },
+      {
+        "id": "unknown-native-method-denied-before-fixture",
+        "kind": "REAL_APP_BROWSER_EXPECTED_REJECTION",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED",
+        "known": 1,
+        "unknown": 0
+      },
+      {
+        "id": "same-request-id-changed-payload-denied",
+        "kind": "REAL_APP_BROWSER_EXPECTED_REJECTION",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED",
+        "known": 1,
+        "unknown": 0
+      },
+      {
+        "id": "actual-browser-bad-expected-module-hash",
+        "kind": "REAL_APP_BROWSER_ATTESTATION_EXPECTED_REJECTION",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED",
+        "known": 1,
+        "unknown": 0
+      },
+      {
+        "id": "acceptance-cannot-disable-expected-probe",
+        "kind": "REAL_APP_BROWSER_API_EXPECTED_REJECTION",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED"
+      },
+      {
+        "id": "non-guide-native-state-refused",
+        "kind": "CAPTURE_INTERFACE_SCOPE_EXPECTED_REJECTION",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED"
+      },
+      {
+        "id": "unreviewed-viewport-refused",
+        "kind": "CAPTURE_INTERFACE_SCOPE_EXPECTED_REJECTION",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED"
+      },
+      {
+        "id": "rendered-scope-mismatch-native-guide-prd",
+        "kind": "REAL_APP_CAPTURE_SCOPE_EXPECTED_REJECTION",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED"
+      },
+      {
+        "id": "rendered-scope-mismatch-native-guide-user-bottom",
+        "kind": "REAL_APP_CAPTURE_SCOPE_EXPECTED_REJECTION",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED"
+      },
+      {
+        "id": "wrong-origin",
+        "kind": "PREDICATE_ONLY_NOT_BROWSER_SECURITY_PROOF",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED"
+      },
+      {
+        "id": "wrong-query",
+        "kind": "PREDICATE_ONLY_NOT_BROWSER_SECURITY_PROOF",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED"
+      },
+      {
+        "id": "wrong-line",
+        "kind": "PREDICATE_ONLY_NOT_BROWSER_SECURITY_PROOF",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED"
+      },
+      {
+        "id": "wrong-column",
+        "kind": "PREDICATE_ONLY_NOT_BROWSER_SECURITY_PROOF",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED"
+      },
+      {
+        "id": "wrong-function",
+        "kind": "PREDICATE_ONLY_NOT_BROWSER_SECURITY_PROOF",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED"
+      },
+      {
+        "id": "wrong-constructor-frame",
+        "kind": "PREDICATE_ONLY_NOT_BROWSER_SECURITY_PROOF",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED"
+      },
+      {
+        "id": "missing-runtime-frame",
+        "kind": "PREDICATE_ONLY_NOT_BROWSER_SECURITY_PROOF",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED"
+      },
+      {
+        "id": "wrong-runtime-column",
+        "kind": "PREDICATE_ONLY_NOT_BROWSER_SECURITY_PROOF",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED"
+      },
+      {
+        "id": "wrong-tool-getter-frame",
+        "kind": "PREDICATE_ONLY_NOT_BROWSER_SECURITY_PROOF",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED"
+      },
+      {
+        "id": "unordered-constructor-chain",
+        "kind": "PREDICATE_ONLY_NOT_BROWSER_SECURITY_PROOF",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED"
+      },
+      {
+        "id": "empty-stack",
+        "kind": "PREDICATE_ONLY_NOT_BROWSER_SECURITY_PROOF",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED"
+      },
+      {
+        "id": "replayed-exact-constructor-ordinal-two",
+        "kind": "PREDICATE_ONLY_NOT_REEXECUTED_ESM",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED"
+      },
+      {
+        "id": "bad-served-hash",
+        "kind": "HOST_ATTESTATION_EXPECTED_REJECTION",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED"
+      },
+      {
+        "id": "missing-module-attestation",
+        "kind": "HOST_ATTESTATION_EXPECTED_REJECTION",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED"
+      },
+      {
+        "id": "counter-conservation",
+        "kind": "HOST_ATTESTATION_EXPECTED_REJECTION",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED"
+      },
+      {
+        "id": "descriptor-replaced",
+        "kind": "HOST_ATTESTATION_EXPECTED_REJECTION",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED"
+      },
+      {
+        "id": "storage-object-granted",
+        "kind": "HOST_ATTESTATION_EXPECTED_REJECTION",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED"
+      },
+      {
+        "id": "outside-module-evaluation-phase",
+        "kind": "HOST_ATTESTATION_EXPECTED_REJECTION",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED"
+      },
+      {
+        "id": "1440x900-native-guide-user",
+        "kind": "REAL_APP_CAPTURE_INTERFACE_POSITION",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED",
+        "rawTotal": 1,
+        "known": 1,
+        "unknown": 0,
+        "noScreenshotClaimed": true
+      },
+      {
+        "id": "1440x900-native-guide-user-bottom",
+        "kind": "REAL_APP_CAPTURE_INTERFACE_POSITION",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED",
+        "rawTotal": 1,
+        "known": 1,
+        "unknown": 0,
+        "noScreenshotClaimed": true
+      },
+      {
+        "id": "1440x900-native-guide-prd",
+        "kind": "REAL_APP_CAPTURE_INTERFACE_POSITION",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED",
+        "rawTotal": 1,
+        "known": 1,
+        "unknown": 0,
+        "noScreenshotClaimed": true
+      },
+      {
+        "id": "1440x900-native-guide-prd-bottom",
+        "kind": "REAL_APP_CAPTURE_INTERFACE_POSITION",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED",
+        "rawTotal": 1,
+        "known": 1,
+        "unknown": 0,
+        "noScreenshotClaimed": true
+      },
+      {
+        "id": "1440x900-native-guide-development",
+        "kind": "REAL_APP_CAPTURE_INTERFACE_POSITION",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED",
+        "rawTotal": 1,
+        "known": 1,
+        "unknown": 0,
+        "noScreenshotClaimed": true
+      },
+      {
+        "id": "1440x900-native-guide-development-bottom",
+        "kind": "REAL_APP_CAPTURE_INTERFACE_POSITION",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED",
+        "rawTotal": 1,
+        "known": 1,
+        "unknown": 0,
+        "noScreenshotClaimed": true
+      },
+      {
+        "id": "1440x900-native-guide-kernel",
+        "kind": "REAL_APP_CAPTURE_INTERFACE_POSITION",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED",
+        "rawTotal": 1,
+        "known": 1,
+        "unknown": 0,
+        "noScreenshotClaimed": true
+      },
+      {
+        "id": "1440x900-native-guide-kernel-bottom",
+        "kind": "REAL_APP_CAPTURE_INTERFACE_POSITION",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED",
+        "rawTotal": 1,
+        "known": 1,
+        "unknown": 0,
+        "noScreenshotClaimed": true
+      },
+      {
+        "id": "1280x800-native-guide-user",
+        "kind": "REAL_APP_CAPTURE_INTERFACE_POSITION",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED",
+        "rawTotal": 1,
+        "known": 1,
+        "unknown": 0,
+        "noScreenshotClaimed": true
+      },
+      {
+        "id": "1280x800-native-guide-user-bottom",
+        "kind": "REAL_APP_CAPTURE_INTERFACE_POSITION",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED",
+        "rawTotal": 1,
+        "known": 1,
+        "unknown": 0,
+        "noScreenshotClaimed": true
+      },
+      {
+        "id": "1280x800-native-guide-prd",
+        "kind": "REAL_APP_CAPTURE_INTERFACE_POSITION",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED",
+        "rawTotal": 1,
+        "known": 1,
+        "unknown": 0,
+        "noScreenshotClaimed": true
+      },
+      {
+        "id": "1280x800-native-guide-prd-bottom",
+        "kind": "REAL_APP_CAPTURE_INTERFACE_POSITION",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED",
+        "rawTotal": 1,
+        "known": 1,
+        "unknown": 0,
+        "noScreenshotClaimed": true
+      },
+      {
+        "id": "1280x800-native-guide-development",
+        "kind": "REAL_APP_CAPTURE_INTERFACE_POSITION",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED",
+        "rawTotal": 1,
+        "known": 1,
+        "unknown": 0,
+        "noScreenshotClaimed": true
+      },
+      {
+        "id": "1280x800-native-guide-development-bottom",
+        "kind": "REAL_APP_CAPTURE_INTERFACE_POSITION",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED",
+        "rawTotal": 1,
+        "known": 1,
+        "unknown": 0,
+        "noScreenshotClaimed": true
+      },
+      {
+        "id": "1280x800-native-guide-kernel",
+        "kind": "REAL_APP_CAPTURE_INTERFACE_POSITION",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED",
+        "rawTotal": 1,
+        "known": 1,
+        "unknown": 0,
+        "noScreenshotClaimed": true
+      },
+      {
+        "id": "1280x800-native-guide-kernel-bottom",
+        "kind": "REAL_APP_CAPTURE_INTERFACE_POSITION",
+        "status": "EXPECTED_GUARD_OUTCOME_VERIFIED",
+        "rawTotal": 1,
+        "known": 1,
+        "unknown": 0,
+        "noScreenshotClaimed": true
+      }
+    ],
+    "exactOrderedConstructorChainBound": true,
+    "localAndActuallyServedDependencyBytesBound": true,
+    "rawGetterTotal": 1,
+    "blockedKnownConstructorProbes": 1,
+    "unknownOrApplicationAttempts": 0,
+    "StorageObjectGranted": false,
+    "getterPermanentlyThrowsAndNonconfigurable": true,
+    "oldStrictZeroAllGetterWouldStillFail": true,
+    "olderFailedGuardRunsAnd12Plus12Plus2ActionsAnd16RejectedImagesRetained": true,
+    "completeOriginalHelpRecovered": false
+  },
+  "safeguardsUnchanged": [
+    "No ordinary App/demo storage access is allowed in a native guide.",
+    "Unknown getter attempt, second attempt, descriptor replacement, counter rewrite and foreign methods remain denied.",
+    "Predicate-only stack negatives do not mean those ESM constructors were reexecuted; host metadata controls are not browser security certification.",
+    "Tool controls do not certify all product states, a newer HEAD, the old zero-getter contract, real native I/O or strict 1:1."
+  ],
+  "nativeIO": false,
+  "realDesktopAcceptance": false,
+  "productSecurityCertification": false,
+  "strictVisualPass": false
+}

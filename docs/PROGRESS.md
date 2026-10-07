@@ -1,6 +1,43 @@
 # Goal 当前执行位置
 
-更新时间：2026-10-06，用户调整为 Ant Browser 核心流程与浏览器点击检查。
+最新：**0.3.0-preview.10 / `95a600f`** 的 148 共享内核多开修复已完成限定真实桌面验证。直连与两个代理三开、代理运行时直连关闭重开、Clash 环境关开且其他环境原 PID 不变均通过；受控 `62300` 故障只停止目标、不回退直连，故障前检 `no-process-created`，恢复后原 ID/seed/profile 重试成功。两次正常退出均为 `exit0`，自有 Chrome、未闭合网络会话、未释放资源均为 0；重启后 204 项原配置身份不变，原代理环境真实页面数据读回与 SQLite 完整性核对通过。程序入口为 `build/bin/prism-browser.exe`，来源、哈希及逐项证据见[148 多开修复](verification/desktop-148-isolation-fix.md)。
+
+按用户要求采用 Ant-Browser 标准共享内核，已消除旧共享 ACL 引起的本机 148 多开 GPU 崩溃触发条件；取消额外 AppContainer/共享 ACL 操作，约 425 MiB 每会话副本方案未交付。正式 **4/21** 保持，150/跨版本迁移本轮不适用；真实自然指纹等待/迟到回复等未证条件仍保留，不宣布原 21 项整体验收完成。用户取消 1:1，旧失败和来源保留如下。
+
+## 历史：preview9 与更早执行位置
+
+历史 preview9：**0.3.0-preview.9 / `490f198`** 已交付恢复来源与退出清理修复，并完成限定真实桌面操作。128 项 native 批次取消得到 21 完成/107 未执行，原计划重试只补 107；148 + 当前 Clash、受控代理故障停止、原 ID 重试和备份恢复真实三存储均有新证据。148 普通打开仍出现真实内核崩溃，整体未完成。详见[148 修复与实际验收](verification/desktop-148-repair.md)。下文 preview7/8 记录保持原来源。
+
+更新时间：2026-10-07。**用户取消1:1要求，当前指派为桌面可用性收口。** 从 `8688906` 继续，PR #31 精确 `e170099` 已核实为祖先，#38 → #31 → #27 依赖保留。停止扩展视觉图、参考恢复及图库审计；下方旧差异和来源保留历史身份。当前调查、修复、新构建与实际验收见 [桌面收口记录](verification/desktop-closeout.md)。正式计数不因目标变更或模拟检查增加。
+
+## 历史桌面结果（2026-10-07；preview7/8）
+
+必要修复已提交 `be5b176`；实际迁移失败原因的安全分类持久化提交为 `e349eea`。后者构建 **0.3.0-preview.8**，新程序路径、哈希与交付组件见 [交付记录](verification/desktop-release-closeout.md)。preview7 与 preview8 的真实操作保留准确来源；二者均为本轮新 Wails production 程序，不能将 preview7 结果改挂 preview8。
+
+preview8 两次正常退出均确认退出码 0，重开后原配置、精确内核及数据引用持久化。最终实读 73 个合成环境的 ID/seed/独立引用互不重复，72 个实际 profile 目录与一个仅创建、从未打开的 `dataNeverInitialized` 引用符合服务延迟建目录契约；原五项保存身份不变。只读预检丢弃前后 73 项环境/指纹完整记录相同，最终自有浏览器、预检和 staging 残留均为 0，三条网络会话关闭、18 项资源释放。真实批次先 2 成功/1 名称冲突，改名后仅续做原失败项，旧成功 ID/seed/引用不变。148 原环境重开后 Cookie、localStorage 与 IndexedDB 读回正确；Clash 本机 `7897` 的真实 HTTPS 浏览器访问通过，实际节点链仍未确认。
+
+**仍阻塞：150 在实际 GUI 的普通打开与迁移试用中崩溃；原 ID 的打开重试仍失败。** 已留存 Windows Application Error 的精确 PID/创建时间/内核路径和安全分类原因，但没有可证实的根因。旧 148 原身份、数据与资源保护通过；真实服务的短目录双版本迁移成功不替代原 GUI 的失败。桌面批次在途取消、连续指纹等待/迟到回复、丢失来源标识后的可靠恢复亦未完成。完整分类见 [本轮验收表](verification/desktop-closeout.md)。正式 **4/21** 未增加：原 T05–T21 的完整验收矩阵没有全部满足；六票 OPEN、PR 草稿及原依赖保留。
+
+## 历史 #32–#37 界面增量（保留来源）
+
+- 最新补核见 [图库总入口](screenshots/issue37-continuation/index.html)与[逐图包与修复](verification/issue37-continuation-evidence.md)：帮助比例修正已合入 `83eafe1`；后续批次焦点、旧代理报告正向标签和恢复primary覆盖三处UI修复又合入 `9de0e2a`，实际38/38新定向及两项noEmit通过。五份 `83eafe1` 冻结图包的532份逐图记录含22项FAIL及完整指南MISSING，不重标成新HEAD通过。后续布局/状态修复及独立复核各按下方新来源记录；六票OPEN，PR草稿。
+- `9de0e2a`另外四状态8图已独立审查为8 MAPPED / 0 FAIL（含仅取证修正的诊断内层滚底）；迁移30状态60图为60 MAPPED / 0 FAIL，另38项有界动作保留6项定位错误。六张迁移参考归属不符同时保留原标记及实际比较，M22未知丢弃恢复仍未证实；不据此修改原274项历史计数或宣布整票完成。
+- 后续内核/代理分页、提示容量、待保存状态及晚到portal隔离修复已普通合入 `75bc58d`，四文件独立源码复核未发现可证明P1/P2；集成新22/22定向一次及两项noEmit通过。新来源28图独立MAPPED；代理行小修另见340阶段，旧视觉FAIL、完整原指南缺口、六票OPEN和正式4/21不变。
+- 代理行成功文案的防御性小修已普通合入 `340a22c`，仅组件行投影及既有13场景行断言；集成26/26一次、两项noEmit通过。正常Go产生陈旧connected回复未获证明，status/筛选/计数与服务请求不变。274项已另有[600记录冻结补证层](verification/issue37-supplementary-crosswalk.json)，含66项具体行为缺口，不修改原113/60/101或算作整项验收。
+- 83→340九文件组合的[独立固定源码复核](verification/issue37-final-source-review.json)未发现可证明P1/P2；75阶段28图与340阶段4图各已独立MAPPED，旧FAIL不撤销。进一步分组/备份/活动/迁移上下文10状态20图独立18 MAPPED / 2 FAIL；两FAIL为正文顶部裁了可自然滚到的错误末行，另只补该窗口双视口底部2图、独立2 MAPPED，不改产品。16份动作与2份图后动作的独立合同复核限定一致。新340[七路由/冷指南动作](verification/issue37-native-route340-actions.json)2份、0PNG，6条工具失败保留；[独立合同复核](verification/issue37-native-route340-contract-review.json)限定一致、0问题。getter0→1→1但始终拒绝Storage、旧严格0合同仍失败；稳定首次loading像素与环境细分仍未提前计入。
+- [环境窗口补证](verification/issue37-environment-evidence.md)新增340来源184图，全部独立逐图：70 ADAPTED / 34 MAPPED / 18 MISSING / 62 FAIL；38份动作、66份图后回调及8条历史采集失败另记，[保存证据合同](verification/issue37-environment-contract-review.json)独立限定一致、0新问题。自然取景修正不覆盖旧失败。F32积极路径只是原drawer下的一次准确合成拒绝dispatch，不是真实强制结束。
+- 批次编号单行与环境表整行容量/详情分页边界两个独立CSS候选已[源码复审](verification/issue37-environment-css-source-review.json)，普通合入 `03d0f68`。MAIN另冻结79输入，有限17状态34图独立 **34 ADAPTED / 0 FAIL**；14份同context图后回调[独立保存合同](verification/issue37-environment-css-contract-review.json)限定一致、0问题。创建编辑的状态截字、任务盖页脚与长提示盖标题最小续修已[独立源码审查并合入](verification/issue37-environment-drawer-source-review.json) `8ca2e79`，MAIN两项noEmit通过，新34图也独立 **34 ADAPTED / 0 FAIL**；[34记录/16回调保存合同](verification/issue37-environment-drawer-contract-review.json)限定一致，15份实际工具身份匹配、0问题。技术详情只查自然wheel，不删安全文案或改变窗口几何；首轮排序工具误拒的0图/0动作记录和旧62 FAIL保留。图库现14包906记录，三个新入口已自然点击、白底深字实际可读；私有对照只追加至1280项。
+- [环境归一化](verification/issue37-supplementary-environment.json)只补原47定义的35个有限缺口；[技术来源续层](verification/issue37-supplementary-environment-repairs.json)另补F13/F15，派生37/47、剩10个原定义含未证明/不支持/来源限制子句。整项新增PASS仍0、原113/60/101不变。[最终审计](verification/issue37-final-evidence.json)核对906新增及370历史PNG、来源和15份报告1887本地链接；不是真实native或全安全认证。
+
+- 基线：PR #31 精确 `e170099`，集成分支 `codex/issue32-37-ui-integration`，增量 [草稿PR #38](https://github.com/axgiroud312-byte/prism-local-browser/pull/38)。保留 #31 → #27 依赖，不自动合并。
+- #33 shell/环境表/分组已合入；#34 模块及正式环境窗口挂载合入 `0d67ea5`，dirty/force确认冻结准确草稿/会话，49/49定向通过；#35 模块合入 `c6371eb`；#36 模块合入 `3c93a2a`。各自结果见 [#33](verification/issue33.md)、[#34](verification/issue34.md)、[正式挂载](verification/issue34-integration.md)、[#35](verification/issue35.md)、[#36](verification/issue36.md)。
+- #37 全部主页面、唯一代理往返与共用弹层接入已完成；独立审查发现的准确代理报告、取消预检失败、关闭/DOM替换焦点、重复遮罩及按钮hover均已修复并复验，最后源码静态复审无已核实新P1/P2。共享全套在 `681f823` **196/196，4.7分钟**；后两项CSS小修相关6/6、5/5及两视口实际测量通过。PRD底部取图等待正文后重拍，补native密集备份第2页；`70943b0`完整 **346/346** 实际App截图取证、0失败/0未知夹具方法。逐状态视觉和参考缺口另见 [#37记录](verification/issue37.md)，不是全产品1:1或真实桌面完成。
+- 本轮清单346图逐项复核完毕，78 ADAPTED / 252 MAPPED / 16 MISSING / 0 FAIL；当时按限定范围关闭#33/#34/#35，完整目标复查发现恢复/独立窗口/证据缺口后已恢复OPEN。新增修复前24图22 MAPPED/2 FAIL不倒改；全部六票继续OPEN，PR保持草稿，不把原清单当成全部支持窗口分母。
+- 三处force/文件hover UI修复和迁移确认资格修复已集成 `0f7a233`，实际62/62定向、两项noEmit及独立只读增量源码复审通过；新比例修复及支持状态证据补齐仍在进行。新增 [274项前端交叉表](verification/issue37-supported-states.md) 是113历史COVERED/60 PARTIAL/101 MISSING，不是274通过。原设置候选6图与旧40/80分开，完整原指南仍缺，实际进展见 [继续补核](verification/issue37-continuation.md)。
+- 各阶段已完成自有worktree仅普通注销，源码合入且先核对无未保存文件。最后三个续修worktree停止自有5196/5197/5199、只移除依赖junction链接、注册解除；累计八个Windows句柄占用空目录保留未强删。主5173、5190私有对照、5198原图画廊和无关V1工作区/其他会话进程不动。
+- 只使用 Vite、相关定向点击和必要类型检查；没有本轮构建、打包、Go/Wails、UIA或真实内核/网络/目录恢复实验。历史正式4/21和旧候选内容不变。
+
+## #28–#30 历史页面成果
 
 - 已有成果：[#28](https://github.com/axgiroud312-byte/prism-local-browser/issues/28) 精简 CI，`53ac883` 保留；本地 13/13、远程 [37419040709](https://github.com/axgiroud312-byte/prism-local-browser/actions/runs/37419040709) 单个 Browser clicks / 13/13 已通过，不构建或打包。
 - 当前批次：[#30](https://github.com/axgiroud312-byte/prism-local-browser/issues/30) 承接环境表与统一创建/编辑窗口；[#29](https://github.com/axgiroud312-byte/prism-local-browser/issues/29) 负责整体六项验收，不重复页面实现。目标为服务内核/直连或代理/自动固定指纹/创建并打开/关闭重开，保留失败恢复与身份保护。
@@ -217,7 +254,7 @@
 - T15本地提交`010b35a`（42文件），[#16开发评论](https://github.com/axgiroud312-byte/prism-local-browser/issues/16#issuecomment-5929007312)，正文`output/goal/T15/development-update.md`。#16保持OPEN，四项验收未勾选，不推送/PR，已验收仍4/21。下一票#17/T16已读取、无承担者/冲突PR；只读预检需保DB和浏览目录原样，不执行正式目录切换，真实恢复仍T17。
 - 13:19–13:21：二轮确认首3项关闭，剩3 P2：原ctx固定拨号丢连接trace阶段、body/排队取消与期限误归因、超大文件未废旧preview。已实际Dial明确发阶段、真实ctx区分取消/超时/响应错误、非空文件先Discard再校验，补body受控回归与连接阶段断言。既有x/net IDNA标direct（不升版本/sum不变），许可注記补齐。13:21最后生产包静态编译、源码/测试TS类型与格式通过；最后聚焦只读复核无剩余可信P1/P2，仅源码结论。7+7+3新增回归未执行，准备本地T08提交，无网络/程序/UI/CI。
 
-## 恢复资源与 GitHub
+## 历史领取时资源与 GitHub 快照（保留原时点）
 
 - 已有其他 Node/Chrome 进程属于用户现场，不停止。已核对 5173 为本仓库旧 Vite 服务；4173 未监听（纠正初查格式误判）。本 Goal 尚未启动服务，UI 测试用独立端口 5183 和新浏览器上下文。
 - `output/`、`.playwright-cli/`、`dist/`、`node_modules/` 为现有忽略目录；不删除旧成果。新测试输出使用 `output/goal/`，仅保留合成证据。

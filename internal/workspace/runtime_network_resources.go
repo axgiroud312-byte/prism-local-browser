@@ -61,7 +61,7 @@ func (s *Service) reconcileNetworkResources(input runtimeRequest) Result {
 		if err != nil {
 			task.operation.State, task.operation.Stage = "failed", "network-cleanup-pending"
 			task.operation.CompletedIDs = []string{}
-			task.operation.Error = &Error{Code: "NETWORK_CLEANUP_PENDING", Message: "原隔离资源仍无法确认清理，保持占用；解除目录/进程问题后可再次核对，无需重开。", Retryable: true}
+			task.operation.Error = &Error{Code: "NETWORK_CLEANUP_PENDING", Message: "原代理会话资源仍无法确认清理，保持占用；解除目录/进程问题后可再次核对，无需重开。", Retryable: true}
 		}
 		if err == nil && slot != nil && s.runtimeSlots[input.EnvironmentID] == slot {
 			delete(s.networkPending, input.EnvironmentID)

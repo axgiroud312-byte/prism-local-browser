@@ -58,6 +58,23 @@ type restoreSource struct {
 	path           string
 	expires        time.Time
 	expectedSHA256 string // host-owned migration backup; never a caller path
+	scratch        string // exact owned preflight directory whose cleanup failed
+}
+
+// Selection identity belongs to the host. A lost response is recovered by the
+// original request, never by adopting another source or inventing a token.
+type restoreSelection struct {
+	status, token, name string
+}
+type RestoreSourceState struct {
+	Mode             string          `json:"mode"`
+	RequestID        string          `json:"requestId"`
+	Status           string          `json:"status"`
+	SourceToken      string          `json:"sourceToken,omitempty"`
+	Name             string          `json:"name,omitempty"`
+	PreflightRunning bool            `json:"preflightRunning"`
+	CleanupPending   bool            `json:"cleanupPending"`
+	Preview          *RestorePreview `json:"preview,omitempty"`
 }
 type restoreEnvironmentData struct {
 	manifest    backup.Environment

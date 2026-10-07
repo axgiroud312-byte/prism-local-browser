@@ -494,8 +494,12 @@ func (s *Service) finishRuntimeStart(slot *runtimeSlot, process RuntimeProcess, 
 	// fault may already display "error"; pending-write flush must not treat that
 	// display state plus a nil slot.process as permission to reuse the profile.
 	slot.process = process
-	if slot.session.NetworkPolicy == "proxy" && slot.startupError.Code == "NETWORK_PROTECTION_UNAVAILABLE" {
-		slot.session.NetworkFault = &RuntimeNetworkFault{State: "network_error", Error: slot.startupError, ObservedAt: timestamp(), Containment: "stopped"}
+	if slot.session.NetworkPolicy == "proxy" && (slot.startupError.Code == "NETWORK_PROTECTION_UNAVAILABLE" || slot.startupError.Code == "PROXY_BRIDGE_UNAVAILABLE") {
+		containment := "stopping"
+		if process == nil && channel == nil {
+			containment = "stopped"
+		}
+		slot.session.NetworkFault = &RuntimeNetworkFault{State: "network_error", Error: slot.startupError, ObservedAt: timestamp(), Containment: containment}
 	}
 	s.mu.Unlock()
 	var cleanupErr error
@@ -564,7 +568,7 @@ func (s *Service) finishRuntimeStart(slot *runtimeSlot, process RuntimeProcess, 
 	}
 	slot.session.NextAction = "本次启动未完成且资源已退出，可修复所示原因后使用原档案重试。"
 	if slot.startupError.Code == "NETWORK_PROTECTION_UNAVAILABLE" {
-		slot.session.NextAction = "当前代理启动被安全门禁阻止，没有创建浏览器；需隔离组件实现并验证，普通重试不能解除此门禁。"
+		slot.session.NextAction = "本次代理通道未准备完成，资源已确认退出；请检查本机服务后使用原环境重新启动，不改为直连。"
 	}
 	_ = s.observeRuntimeNetworkFault(slot, startupNetworkSnapshot(process, channel))
 	if slot.session.NetworkFault != nil {

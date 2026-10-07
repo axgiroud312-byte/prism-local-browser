@@ -1,11 +1,12 @@
-.native-proxy-manager { display: grid; gap: 16px; }
+.native-proxy-manager { display: grid; gap: 10px; min-width: 0; }
 .native-proxy-manager > .info-strip { margin-bottom: 0; }
-.native-proxy-form { padding: 22px; display: grid; gap: 14px; }
+.native-proxy-form { padding: 20px; display: grid; gap: 12px; min-width: 0; }
 .native-proxy-form h2, .native-proxy-form p { margin: 0; }
 .native-proxy-form p { color: var(--muted); line-height: 1.65; overflow-wrap: anywhere; }
-.native-proxy-form label { display: grid; gap: 8px; font-size: 13px; }
-.native-proxy-form input:not([type="checkbox"]), .native-proxy-form select, .native-proxy-form textarea { width: 100%; min-width: 0; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; background: #fff; color: var(--ink); font: inherit; }
-.native-proxy-form textarea { resize: vertical; font-family: Consolas, monospace; }
+.native-proxy-form label { display: grid; gap: 6px; font-size: 12px; }
+.native-proxy-form input:not([type="checkbox"]), .native-proxy-form select, .native-proxy-form textarea { width: 100%; min-width: 0; padding: 0; height: 32px; border: 0; border-bottom: 1px solid #bfbfbf; border-radius: 0; background: #fff; color: var(--ink); font: inherit; }
+.native-proxy-form input:focus, .native-proxy-form select:focus { outline: none; border-bottom: 2px solid var(--blue); }
+.native-proxy-form textarea { height: auto; padding: 8px; border: 1px solid #d9d9d9; border-radius: 3px; resize: vertical; font-family: Consolas, monospace; }
 .proxy-secret-input { -webkit-text-security: disc; }
 .native-proxy-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-bottom: 16px; }
 .native-proxy-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }

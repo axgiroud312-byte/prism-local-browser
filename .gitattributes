@@ -2,3 +2,14 @@
 # Keep fresh Windows checkouts stable without ignoring real source changes.
 go.mod text eol=lf
 go.sum text eol=lf
+
+# New evidence pins raw bytes; Windows checkout must not rewrite its line endings.
+docs/verification/issue37-frontier-* text eol=lf
+docs/screenshots/issue37-frontier-*/**/*.json text eol=lf
+docs/screenshots/issue37-frontier-*/**/*.html text eol=lf
+docs/screenshots/issue37-continuation/index.html text eol=lf
+
+# This continuation keeps exact independently reviewed generated artifact bytes.
+docs/verification/issue37-recovery-and-layout* text eol=lf
+docs/screenshots/issue37-recovery-layout/*.json text eol=lf
+docs/screenshots/issue37-recovery-layout/*.html text eol=lf

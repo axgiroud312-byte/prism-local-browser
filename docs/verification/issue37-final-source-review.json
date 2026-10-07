@@ -1,0 +1,360 @@
+{
+  "schemaVersion": 1,
+  "kind": "public-summary-of-independent-fixed-source-review",
+  "reviewDate": "2026-10-06",
+  "privateIndependentReportSha256": "4775ded4ed5497e307bb4ce2bcf058804259037b5c0ab48177dba4aaeb611860",
+  "sourceHead": "340a22c1e8489fad2db091a25bb14bb7d2e66984",
+  "base": "83eafe1bee11ec68077b22c8fecc4f4f2bba456f",
+  "renderHash79": "0df5a445b4a16f1984f2944ac7367d1202322b892876f2d31b9e853d9a8708ce",
+  "outcome": "No demonstrable P1/P2 in the combined assigned nine-file increment",
+  "findingsP1P2": [],
+  "scope": {
+    "productionFilesModified": 6,
+    "specsAdded": 3,
+    "totalDiffPaths": 9,
+    "insertions": 627,
+    "deletions": 15,
+    "completeOwnedDiffRead": true,
+    "mutablePrimarySourceCertificate": false,
+    "currentHeadOrIndexOrWorktreeStatusChecked": false,
+    "wholeProductOrAllRepositoryReview": false,
+    "newSecurityOrProviderCertificate": false,
+    "newVisualOrKeyboardCertificate": false,
+    "realNativeAcceptance": false,
+    "unavailableFinalCodeReviewSkillRetried": false,
+    "pendingEnvironmentOrContextualAuthorProgressOrOutputsInspected": false,
+    "proposedNewFeatures": []
+  },
+  "canonicalDiff": {
+    "command": "git diff --no-ext-diff --no-textconv --binary 83eafe1bee11ec68077b22c8fecc4f4f2bba456f 340a22c1e8489fad2db091a25bb14bb7d2e66984",
+    "sha256": "f0f9b31762a4c73e12b08884311b264011601a1adfe020d6f999520e8813b88e",
+    "bytes": 89469,
+    "pathStatuses": [
+      "M\tsrc/App.tsx",
+      "M\tsrc/components/NativeBatchDialog.tsx",
+      "M\tsrc/components/NativeKernelManager.tsx",
+      "M\tsrc/components/NativeProxyManager.tsx",
+      "M\tsrc/components/proxy-kernel35.css",
+      "M\tsrc/styles.css",
+      "A\ttests/ui/batch-focus-recovery.spec.ts",
+      "A\ttests/ui/continuation-visual-repairs.spec.ts",
+      "A\ttests/ui/kernel-visual-recovery.spec.ts"
+    ]
+  },
+  "sourceFiles": [
+    {
+      "file": "src/App.tsx",
+      "status": "M",
+      "additions": 15,
+      "deletions": 4,
+      "canonicalBlob": "09b2c7af579ed7fed34bfa0795d48a3fffedce0a",
+      "canonicalSha256": "ff7ee0a3898e896e1780f5634a2bd69de5a01093a9e879456d389d87ce49ad89",
+      "canonicalBytes": 103386,
+      "baseBlob": "49ee69dc9c34d80dea632bc94578178a57afa7ba",
+      "baseCanonicalSha256": "37f302ae354b2413e115c4ecaa551037ff6c16e3a9675b94e0c1910bc8d06199",
+      "frozenRawSha256": "4869c8a3174d97ec64482033a9da58f71a9436182df0b200401ea2ef2bbf1bb1",
+      "frozenRawBytes": 105178
+    },
+    {
+      "file": "src/components/NativeBatchDialog.tsx",
+      "status": "M",
+      "additions": 3,
+      "deletions": 2,
+      "canonicalBlob": "535a4af72a5f087604ade72a8f800a815536a170",
+      "canonicalSha256": "44237a5dea45bb99bf77ab914ad3a512d606e8a2edf5851037c2517d52bac7a6",
+      "canonicalBytes": 26027,
+      "baseBlob": "56252d15dfdb7d37002bc13069c0b5297fb41e26",
+      "baseCanonicalSha256": "f3ec8dccd291bdfac3668de00a054be96d1d16127c7d558796c264e2ea21dd15",
+      "frozenRawSha256": "c10a7a435bd2dbd5726c23cd33e84b7d859a3b82a334c911e826f3e4b7e97a9a",
+      "frozenRawBytes": 26276
+    },
+    {
+      "file": "src/components/NativeKernelManager.tsx",
+      "status": "M",
+      "additions": 5,
+      "deletions": 4,
+      "canonicalBlob": "18724a07b8b485a7a1530b502bbf6c2a94e0a014",
+      "canonicalSha256": "09625f5e155c295bb69ab1465be652edc10c49c775db5a484e7808e4025f0312",
+      "canonicalBytes": 15789,
+      "baseBlob": "91a7bd4c9c1f01cc818a059e6c8c142adb5debc0",
+      "baseCanonicalSha256": "ae0357774678fa3290df2c10655f7bbe3efc66a88404adda043ec738d8849521",
+      "frozenRawSha256": "df5c1c9810808d072e06faeadf2170a71044e57ab05dc78f9410c92ecab51294",
+      "frozenRawBytes": 15867
+    },
+    {
+      "file": "src/components/NativeProxyManager.tsx",
+      "status": "M",
+      "additions": 17,
+      "deletions": 4,
+      "canonicalBlob": "188f0b19bbbc8b4c20f117b55311be904c33b156",
+      "canonicalSha256": "53ee41ef65159df416867deceaeefb792867a6798c5bd26a8c75bf28b4d0fb78",
+      "canonicalBytes": 12602,
+      "baseBlob": "565ed76ec383917d85bf1589129d4ff507b26546",
+      "baseCanonicalSha256": "2f3c57335de08b1068ecc8936eea289219c8f2d654499e2dd7070a1933281d77",
+      "frozenRawSha256": "b965643192e6d79afb6e67f8deac41696cbff0d67d36a9046a142c5fac3e6b39",
+      "frozenRawBytes": 12705
+    },
+    {
+      "file": "src/components/proxy-kernel35.css",
+      "status": "M",
+      "additions": 3,
+      "deletions": 0,
+      "canonicalBlob": "35ea4a6e979482f34285de8baf0386a4dd6f42ee",
+      "canonicalSha256": "0c2fbe376e37403be10330d3f73b92503017cb9b4422cd162f1e9b3e4be9f9a0",
+      "canonicalBytes": 9750,
+      "baseBlob": "07245bb285167be6748f1d0c088fe18b89a6c731",
+      "baseCanonicalSha256": "ff8e6fff2ace119cbad6c9cddd2377900371119c4f14406e23f102d69be02a99",
+      "frozenRawSha256": "76d84072fc3bcdf70ebe190a360dcd01e7560284ff2bc61fca4eb3ac8d12d0be",
+      "frozenRawBytes": 9860
+    },
+    {
+      "file": "src/styles.css",
+      "status": "M",
+      "additions": 1,
+      "deletions": 1,
+      "canonicalBlob": "88d9472950d37629753884e505dd8b4974652a47",
+      "canonicalSha256": "48c5716dea50fc0f343a1406a47371df8f3a57226ffffd81452dafdcc59b19ec",
+      "canonicalBytes": 30960,
+      "baseBlob": "6975af8ea02abb56b321b6abcbc88db2e499c2ec",
+      "baseCanonicalSha256": "a855c7438b6ce73ffc5570011fbae8d55c5052c6b65b39960b31584de42dc480",
+      "frozenRawSha256": "e32043713fc23b7be880491b4434c7ab000e842e70b12fcb8d9799e620325627",
+      "frozenRawBytes": 31308
+    },
+    {
+      "file": "tests/ui/batch-focus-recovery.spec.ts",
+      "status": "A",
+      "additions": 165,
+      "deletions": 0,
+      "canonicalBlob": "0a565623d125b0c22189f6bb7b77c7d2542e9757",
+      "canonicalSha256": "baf3b59953d7902a5b56b2857049c97f59296ecd377d48b9af5ddd63d24525b7",
+      "canonicalBytes": 12582,
+      "baseBlob": null,
+      "baseCanonicalSha256": null,
+      "frozenRawSha256": null,
+      "frozenRawBytes": null
+    },
+    {
+      "file": "tests/ui/continuation-visual-repairs.spec.ts",
+      "status": "A",
+      "additions": 163,
+      "deletions": 0,
+      "canonicalBlob": "839df0bfb31696a7bfa2e0a3802b8a3cf272cd16",
+      "canonicalSha256": "22a60e593ac62065d63b9c872e7d6f026b88b351c3388abe18b7088b5e516783",
+      "canonicalBytes": 13481,
+      "baseBlob": null,
+      "baseCanonicalSha256": null,
+      "frozenRawSha256": null,
+      "frozenRawBytes": null
+    },
+    {
+      "file": "tests/ui/kernel-visual-recovery.spec.ts",
+      "status": "A",
+      "additions": 255,
+      "deletions": 0,
+      "canonicalBlob": "cde72ad4c1fcce066c737e6cadd7cb31b4253f1a",
+      "canonicalSha256": "9349522e975177b5693c02df76b728cadc443405b64116b345d2482af5a573c6",
+      "canonicalBytes": 30276,
+      "baseBlob": null,
+      "baseCanonicalSha256": null,
+      "frozenRawSha256": null,
+      "frozenRawBytes": null
+    }
+  ],
+  "rawCanonicalQualification": "Six production raw hashes are actual bytes read in frozen-render-inputs-340a22c, not mutable PRIMARY or author checkout. All three specs are outside the 79 renderer inputs and have no new raw-checkout certificate. Canonical hashes use exact Git blobs; CRLF-only equivalence is separate. No protected newline or Git attribute/config rewrite.",
+  "boundedMerges": [
+    {
+      "base": "83eafe1bee11ec68077b22c8fecc4f4f2bba456f",
+      "head": "9de0e2a170dcde6a0fc9450571049dc5de7b0e78",
+      "candidate": "0e5837650c48d995112a7280dfac719b72882692",
+      "parents": [
+        "83eafe1bee11ec68077b22c8fecc4f4f2bba456f",
+        "0e5837650c48d995112a7280dfac719b72882692"
+      ],
+      "allFiveOwnedCanonicalBlobsMatchReviewedCandidate": true,
+      "changedRendererFiles": [
+        "src/components/NativeBatchDialog.tsx",
+        "src/components/NativeProxyManager.tsx",
+        "src/styles.css"
+      ],
+      "unownedCanonicalAndFrozenRawUnchanged": 76,
+      "unownedBindingSha256": "8751233404052b29100e39f1109ba7e5279aa748fc707036e6d1bf6f58ffc12e"
+    },
+    {
+      "base": "9de0e2a170dcde6a0fc9450571049dc5de7b0e78",
+      "head": "75bc58d3c209f90680b8915f94f4a1f49339a76c",
+      "candidate": "294e8e86e1cf6b7be7b6e8f4c4801b463abf6bef",
+      "parents": [
+        "9de0e2a170dcde6a0fc9450571049dc5de7b0e78",
+        "294e8e86e1cf6b7be7b6e8f4c4801b463abf6bef"
+      ],
+      "allFourOwnedCanonicalBlobsMatchReviewedCandidate": true,
+      "changedRendererFiles": [
+        "src/App.tsx",
+        "src/components/NativeKernelManager.tsx",
+        "src/components/proxy-kernel35.css"
+      ],
+      "unownedCanonicalAndFrozenRawUnchanged": 76,
+      "unownedBindingSha256": "b9d3c20c01c83a6aa3431d0ac92da3e9654fb6aea40c58d6e247042ce3580568"
+    },
+    {
+      "base": "75bc58d3c209f90680b8915f94f4a1f49339a76c",
+      "head": "340a22c1e8489fad2db091a25bb14bb7d2e66984",
+      "candidate": "6b027f3e3ee9fd2b20726280e6637095e78f6ae8",
+      "parents": [
+        "75bc58d3c209f90680b8915f94f4a1f49339a76c",
+        "6b027f3e3ee9fd2b20726280e6637095e78f6ae8"
+      ],
+      "bothOwnedCanonicalBlobsMatchReviewedCandidate": true,
+      "changedRendererFiles": [
+        "src/components/NativeProxyManager.tsx"
+      ],
+      "unownedCanonicalAndFrozenRawUnchanged": 78,
+      "unownedBindingSha256": "96ac8cbff9d2cff0cea7ad1b39f784c9c219024058a790c2a1cf285ba46c943b"
+    }
+  ],
+  "protectedFromPR31": {
+    "base": "e170099bc25aa15ecb9a8456d782394a2139ec20",
+    "totalPathModeBlobBindings": 267,
+    "allUnchanged": true,
+    "groups": [
+      {
+        "name": "applicationService",
+        "membership": "src/application/**",
+        "count": 13,
+        "canonicalTreeBindingsSha256": "b3fa6673c9f472c197d56f37e03a0af5a51e0f65d9e3e3f4251c79025fc042a5",
+        "diff": []
+      },
+      {
+        "name": "domain",
+        "membership": "src/domain.ts and src/domain/**",
+        "count": 1,
+        "canonicalTreeBindingsSha256": "e7f08e0bba16f8fc83dd517668b665c8a79939b384bfcbbe02df22975a885c6f",
+        "diff": []
+      },
+      {
+        "name": "backend",
+        "membership": "internal/**, cmd/**, main.go",
+        "count": 214,
+        "canonicalTreeBindingsSha256": "2de29957254b7aaa3083c41b6e41031ff5e5a25fe89dfc065a3a119de31b7db1",
+        "diff": []
+      },
+      {
+        "name": "dependencies",
+        "membership": "package.json, package-lock.json, go.mod, go.sum",
+        "count": 4,
+        "canonicalTreeBindingsSha256": "14a32eb01de4717339f2e45c12544d9434eb56de9a2cde350936269100eb937f",
+        "diff": []
+      },
+      {
+        "name": "buildAndCI",
+        "membership": "build/**, scripts/**, .github/**, index.html, playwright.config.ts, tsconfig.json, tsconfig.tests.json, vite.config.ts, wails.json, .gitattributes, .gitignore",
+        "count": 35,
+        "canonicalTreeBindingsSha256": "660da34f7f0d947d49034eb262caec230b83e3533f33910d25d99767d5345f68",
+        "diff": []
+      }
+    ],
+    "qualification": "Only immutable tree preservation for these explicit protected categories; not a whole-repository or security audit. UI/docs/test changes elsewhere since PR31 are not claimed absent."
+  },
+  "combinedSourceObservations": [
+    {
+      "id": "COUNTED-LATE-PORTAL-WITH-BATCH-FOCUS",
+      "conclusion": "No demonstrable new P1/P2. Per-element acquire/release map coexists with existing counted locks and live-ref top-modal-only batch focus repair.",
+      "locations": [
+        "src/App.tsx:539-556,561-615,1610,1719-1735",
+        "src/components/NativeBatchDialog.tsx:48-74",
+        "src/components/modal-lifecycle.ts:8-43,57-104",
+        "src/components/LocalPageUi.tsx:21-38,41-89"
+      ],
+      "sourceFacts": [
+        "New owners are discovered on direct body/app-shell child-list changes; no subtree/attribute observation is needed for the existing direct portal handoff.",
+        "Each current lower element is acquired once; removed elements and effect cleanup release only this owner's locks.",
+        "Workspace layer 160 is excluded; diagnostic opened from that blocker becomes 162 under existing highest-visible-layer-plus-2 logic and is excluded.",
+        "Batch repair resolves modal.current at callback time and returns unless it owns the effective top modal; disabled, inert, hidden and disconnected focus targets are rejected.",
+        "Batch/result view shares the live owner ref; existing result-trigger restoration and request identities are unchanged."
+      ],
+      "qualification": "No new browser/keyboard execution or all-overlay guarantee; source reasoning for the existing combined contexts only."
+    },
+    {
+      "id": "NEUTRAL-FIRST-FOOTER-EXCLUSIONS",
+      "conclusion": "No demonstrable new P1/P2. The changed neutral-first rule excludes primary and danger without changing disabled semantics or local-window action classes.",
+      "locations": [
+        "src/styles.css:42-46,223,236",
+        "src/components/local-pages.css:39-40",
+        "src/components/ReferenceUi.tsx:53-60",
+        "src/components/EnvironmentDialogParts.tsx:10-14",
+        "src/App.tsx:1736-1756"
+      ],
+      "qualification": "Specific selector/cascade source review, not independently measured colors, contrast or complete-window visual acceptance."
+    },
+    {
+      "id": "KERNEL-MESSAGE-CONTENT-FIT-AND-LIST-CAP",
+      "conclusion": "No demonstrable new P1/P2. Effective official source plus message uses content-fit; official without message stays 420, local stays 530. Existing viewport cap/body scrolling remain. Direct top-level list flex rules do not target dialog tables.",
+      "locations": [
+        "src/components/NativeKernelManager.tsx:62,69-72",
+        "src/components/ReferenceUi.tsx:53-60",
+        "src/components/reference-ui.css:5-10",
+        "src/components/proxy-kernel35.css:5-8,20-24,45-58"
+      ],
+      "unchanged": [
+        "field patterns/required/disabled guards",
+        "original install envelope and replay",
+        "10-per-page data",
+        "row heights/gaps/font",
+        "ability notices"
+      ],
+      "qualification": "No new pixels; no all-content/all-window fitting promise."
+    },
+    {
+      "id": "PERSISTENCE-LABEL-NOT-TERMINAL-AUTHORITY",
+      "conclusion": "No demonstrable new P1/P2. Persistence-first task labels are shared across opener/task/history; terminal, completed count, cancel, waiting and history selection guards retain their existing authority.",
+      "locations": [
+        "src/components/NativeKernelManager.tsx:10,18-21,64,74,77",
+        "src/components/NativeProxyManager.tsx:28-32,77-95",
+        "src/components/NativeBatchDialog.tsx:39-45,177-207",
+        "src/application/contract.ts:86-111",
+        "src/components/kernel-task-owner.ts:16-51"
+      ],
+      "qualification": "Display labels do not constitute admission, durable success or cancellation authority."
+    },
+    {
+      "id": "IDLE-CONNECTED-PROXY-ROW-AND-DETAIL",
+      "conclusion": "No demonstrable new P1/P2. Current report identity and error/completion/final-step predicates qualify idle connected row wording; active/pending task priority and detail current-record-by-ID resolution remain.",
+      "locations": [
+        "src/components/NativeProxyManager.tsx:17-19,61-73,76-95,101",
+        "src/components/ProxyManagementPage.tsx:21-24,28-31"
+      ],
+      "identityPredicate": "report.mode === native && report.proxyId === record.id && report.revision === record.revision",
+      "rawStatusFiltersCountsIpExpressionDemoAndRequestEnvelopesUnchanged": true,
+      "qualification": "Only accepted deliberately contradictory native-response defensive wording. Not arbitrary malformed-shape validation, every-filter consistency, provider/authentication proof, normal-Go reproduced regression or Runtime/security authorization. Earlier running steps with a final passed step remain valid; no every-step-passed or new channel metadata requirement was introduced."
+    },
+    {
+      "id": "ORIGINAL-IDENTITIES-AND-ENVELOPES",
+      "conclusion": "No demonstrable new P1/P2. Production changes are focus/DOM ownership, wording and bounded CSS only; request construction, retries, operation/plan/record IDs, revision guards, backend and protected service/domain/dependency/build/CI blobs are unchanged within the assigned increment.",
+      "locations": [
+        "src/components/NativeBatchDialog.tsx:76-89,177-207",
+        "src/components/NativeKernelManager.tsx:29-60,74",
+        "src/components/NativeProxyManager.tsx:43-73,95,99",
+        "internal/workspace/proxies.go:270-285",
+        "internal/workspace/proxy_storage.go:178-188"
+      ],
+      "normalGoSourceContext": "Proxy update sets check_json=NULL, increments revision and clears the returned report/status. Saved proxy reader rejects native mode/ID/revision mismatch.",
+      "qualification": "Only source context/preservation, no Go/Wails run or real backend/provider validation."
+    }
+  ],
+  "reviewerPreviouslyMergedApprovedCandidatesButNeverImplementedThisUi": true,
+  "preservedFailureHistories": "Original RED, invalid-fixture, pre-discovery launcher, and old image failures remain separately recorded; none reclassified by this review.",
+  "execution": {
+    "repositoryWritesByReviewer": 0,
+    "newTestRuns": 0,
+    "newTypechecks": 0,
+    "browserOrPixelReviews": 0
+  },
+  "currentCleanHeadCertified": false,
+  "wholeProductReview": false,
+  "securityCertificate": false,
+  "strictVisualPass": false,
+  "realDesktopAcceptance": false,
+  "formalDesktopCountUnchanged": "4/21",
+  "directGuideOriginalStillMissing": true,
+  "M22UnknownDiscardUiRecoveryStillUnproven": true
+}

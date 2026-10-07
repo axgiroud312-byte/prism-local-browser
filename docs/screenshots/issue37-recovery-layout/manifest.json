@@ -1,0 +1,5023 @@
+{
+  "schemaVersion": 1,
+  "kind": "public-synthetic-before-after-repair-comparison-not-full-acceptance",
+  "beforeHead": "505ed75cb1fb9bde4b29d94075d0274c5e120c55",
+  "afterHead": "4a2afbf053352760dddbdb7baa24a368c659878f",
+  "producerSHA256": "4cee012a050919e5327c8c60fd102575a38250baede1c7cb8a7a14e93e7e18a1",
+  "recordCount": 18,
+  "pairCount": 8,
+  "sources": [
+    {
+      "family": "toolbar",
+      "phase": "before",
+      "sourceHead": "505ed75cb1fb9bde4b29d94075d0274c5e120c55",
+      "rawManifestSHA256": "35e1c5b874782634e5cbaedd5a36ecabd1dab8bed1129257027b01b56381f9d6",
+      "frozenBinding": null,
+      "records": 8,
+      "PNGs": 4,
+      "strictVisualPass": false
+    },
+    {
+      "family": "toolbar",
+      "phase": "after",
+      "sourceHead": "4a2afbf053352760dddbdb7baa24a368c659878f",
+      "rawManifestSHA256": "75bc872000ad243fc6e077274cc9d9a8e835e5fc0cc3b5de5a54f9a385e917db",
+      "frozenBinding": {
+        "sourceHead": "4a2afbf053352760dddbdb7baa24a368c659878f",
+        "frozenInputManifestSHA256": "c354986a3350a27e4f369d8590b7fc6de0e28aa5b617d586db061fbebe18b404",
+        "frozenInputCount": 77,
+        "frozenInputMapSHA256": "938e6d2a12861bdb5a0efee0d716b4bdf62af88cb098c42a6132453e93e81d52",
+        "producerSHA256": "20d945b7b3cc1b32983312d0cfeb5044a459a5f02864bf371d2fae5118d80883",
+        "inputBinderSHA256": "68da91dc6bd93e50947a1bf7ccf2a040b27a504f0d8ba8aafeb669a3632f268a",
+        "renderer": "normal Vite; no native transform harness"
+      },
+      "records": 8,
+      "PNGs": 4,
+      "strictVisualPass": false
+    },
+    {
+      "family": "title",
+      "phase": "before",
+      "sourceHead": "505ed75cb1fb9bde4b29d94075d0274c5e120c55",
+      "rawManifestSHA256": "647f3f871a2fa6fb449e305c6aa125feaf716691bddad9460d4eafbe18e45156",
+      "frozenBinding": null,
+      "records": 8,
+      "PNGs": 4,
+      "strictVisualPass": false
+    },
+    {
+      "family": "title",
+      "phase": "after",
+      "sourceHead": "4a2afbf053352760dddbdb7baa24a368c659878f",
+      "rawManifestSHA256": "80674b951de47de10ea0fb528c9058c640c23dce2347559fdba0a6cb4a124f81",
+      "frozenBinding": {
+        "sourceHead": "4a2afbf053352760dddbdb7baa24a368c659878f",
+        "frozenInputManifestSHA256": "c354986a3350a27e4f369d8590b7fc6de0e28aa5b617d586db061fbebe18b404",
+        "frozenInputCount": 77,
+        "frozenInputMapSHA256": "938e6d2a12861bdb5a0efee0d716b4bdf62af88cb098c42a6132453e93e81d52",
+        "producerSHA256": "dedcec7be0bfc9f22462e1f279a16969bd1ce70c3ed30449ab9d554e7789476d",
+        "inputBinderSHA256": "68da91dc6bd93e50947a1bf7ccf2a040b27a504f0d8ba8aafeb669a3632f268a",
+        "renderer": "normal Vite; no native transform harness"
+      },
+      "records": 8,
+      "PNGs": 4,
+      "strictVisualPass": false
+    },
+    {
+      "family": "preview",
+      "phase": "after",
+      "sourceHead": "4a2afbf053352760dddbdb7baa24a368c659878f",
+      "rawManifestSHA256": "f11f7f91b1bb4b7c084616250c88eef3f35fec505e4182f393c3348386b37054",
+      "frozenBinding": {
+        "sourceHead": "4a2afbf053352760dddbdb7baa24a368c659878f",
+        "frozenInputManifestSHA256": "c354986a3350a27e4f369d8590b7fc6de0e28aa5b617d586db061fbebe18b404",
+        "frozenInputCount": 77,
+        "frozenInputMapSHA256": "938e6d2a12861bdb5a0efee0d716b4bdf62af88cb098c42a6132453e93e81d52",
+        "producerSHA256": "dfd5e5442f4b58685a527431ff18cefa8f56de43d13e9452cea5f7f85645c216",
+        "inputBinderSHA256": "68da91dc6bd93e50947a1bf7ccf2a040b27a504f0d8ba8aafeb669a3632f268a",
+        "renderer": "normal Vite; no native transform harness"
+      },
+      "records": 2,
+      "PNGs": 2,
+      "strictVisualPass": false
+    }
+  ],
+  "records": [
+    {
+      "id": "toolbar-before-environment-normal-toolbar-1024x720",
+      "family": "toolbar",
+      "phase": "before",
+      "stateId": "environment-normal-toolbar",
+      "viewport": {
+        "width": 1024,
+        "height": 720
+      },
+      "sourceHead": "505ed75cb1fb9bde4b29d94075d0274c5e120c55",
+      "png": {
+        "file": "toolbar-before-1024x720-normal.png",
+        "bytes": 69511,
+        "sha256": "18b3ffcb176fe87b4c0d891a13c3d02f261d711828d5f945de3a55c6f7bfd2c7"
+      },
+      "originalReferenceIds": [
+        "environment-list",
+        "environment-selected"
+      ],
+      "referenceRelation": "narrow reachability adaptation; no direct original narrow viewport",
+      "measurement": {
+        "viewport": {
+          "width": 1024,
+          "height": 720,
+          "dpr": 1,
+          "scale": 1
+        },
+        "documentWidth": 1024,
+        "documentHeight": 720,
+        "documentHorizontalOverflow": false,
+        "surfaces": {
+          ".sidebar": {
+            "x": 0,
+            "y": 0,
+            "width": 200,
+            "height": 720,
+            "right": 200,
+            "bottom": 720,
+            "clientHeight": 720,
+            "scrollHeight": 720
+          },
+          ".environment-search-toolbar": {
+            "x": 210,
+            "y": 50,
+            "width": 804,
+            "height": 52.859375,
+            "right": 1014,
+            "bottom": 102.859375,
+            "clientHeight": 53,
+            "scrollHeight": 53
+          },
+          ".environment-list-toolbar": {
+            "x": 210,
+            "y": 112.859375,
+            "width": 804,
+            "height": 50,
+            "right": 1014,
+            "bottom": 162.859375,
+            "clientHeight": 50,
+            "scrollHeight": 50
+          },
+          ".environment-table-scroll": {
+            "x": 220,
+            "y": 162.859375,
+            "width": 784,
+            "height": 442,
+            "right": 1004,
+            "bottom": 604.859375,
+            "clientHeight": 442,
+            "scrollHeight": 442
+          },
+          ".environment-table tbody": {
+            "x": 220,
+            "y": 202.859375,
+            "width": 855,
+            "height": 402,
+            "right": 1075,
+            "bottom": 604.859375,
+            "clientHeight": 402,
+            "scrollHeight": 590
+          },
+          ".environment-pagination": {
+            "x": 220,
+            "y": 614.859375,
+            "width": 784,
+            "height": 30,
+            "right": 1004,
+            "bottom": 644.859375,
+            "clientHeight": 30,
+            "scrollHeight": 30
+          }
+        },
+        "controls": [
+          {
+            "label": "新建环境",
+            "x": 220,
+            "y": 60.921875,
+            "width": 110,
+            "height": 31,
+            "right": 330,
+            "bottom": 91.921875
+          },
+          {
+            "label": "创建菜单",
+            "x": 330,
+            "y": 60.921875,
+            "width": 24,
+            "height": 31,
+            "right": 354,
+            "bottom": 91.921875
+          },
+          {
+            "label": "导入 / 备份",
+            "x": 468.234375,
+            "y": 60.921875,
+            "width": 114.234375,
+            "height": 31,
+            "right": 582.46875,
+            "bottom": 91.921875
+          },
+          {
+            "label": "筛选分组",
+            "x": 590.46875,
+            "y": 60.421875,
+            "width": 150,
+            "height": 32,
+            "right": 740.46875,
+            "bottom": 92.421875
+          },
+          {
+            "label": "搜索环境",
+            "x": 864.9375,
+            "y": 60.921875,
+            "width": 42.0625,
+            "height": 30,
+            "right": 907,
+            "bottom": 90.921875
+          },
+          {
+            "label": "高级搜索",
+            "x": 938,
+            "y": 63.171875,
+            "width": 66,
+            "height": 26.515625,
+            "right": 1004,
+            "bottom": 89.6875
+          },
+          {
+            "label": "全部",
+            "x": 221,
+            "y": 123.359375,
+            "width": 79.59375,
+            "height": 29,
+            "right": 300.59375,
+            "bottom": 152.359375
+          },
+          {
+            "label": "待启动",
+            "x": 300.59375,
+            "y": 123.359375,
+            "width": 79.609375,
+            "height": 29,
+            "right": 380.203125,
+            "bottom": 152.359375
+          },
+          {
+            "label": "已打开",
+            "x": 380.203125,
+            "y": 123.359375,
+            "width": 79.59375,
+            "height": 29,
+            "right": 459.796875,
+            "bottom": 152.359375
+          },
+          {
+            "label": "需处理",
+            "x": 459.796875,
+            "y": 123.359375,
+            "width": 79.609375,
+            "height": 29,
+            "right": 539.40625,
+            "bottom": 152.359375
+          },
+          {
+            "label": "分组筛选",
+            "x": 539.40625,
+            "y": 123.359375,
+            "width": 79.59375,
+            "height": 29,
+            "right": 619,
+            "bottom": 152.359375
+          },
+          {
+            "label": "更多操作",
+            "x": 878,
+            "y": 122.359375,
+            "width": 88,
+            "height": 31,
+            "right": 966,
+            "bottom": 153.359375
+          },
+          {
+            "label": "刷新环境列表",
+            "x": 972,
+            "y": 122.359375,
+            "width": 32,
+            "height": 31,
+            "right": 1004,
+            "bottom": 153.359375
+          }
+        ],
+        "controlsOutsideViewport": []
+      },
+      "strictOneToOne": false,
+      "realDesktopAcceptance": false,
+      "pairedVisualReview": {
+        "verdict": "ADAPTED",
+        "notes": [
+          "Normal toolbar controls and pagination are visible in this healthy before image.",
+          "Narrow-state adaptation only; not a strict original-state PASS."
+        ],
+        "reviewer": "ses_eec1333e3ffeYOm3ng0DDrr0R9"
+      },
+      "independentVisualReview": "COMPLETE_WITHIN_THIS_BOUNDED_SCOPE"
+    },
+    {
+      "id": "toolbar-before-environment-selected-toolbar-1024x720",
+      "family": "toolbar",
+      "phase": "before",
+      "stateId": "environment-selected-toolbar",
+      "viewport": {
+        "width": 1024,
+        "height": 720
+      },
+      "sourceHead": "505ed75cb1fb9bde4b29d94075d0274c5e120c55",
+      "png": {
+        "file": "toolbar-before-1024x720-selected.png",
+        "bytes": 71166,
+        "sha256": "37a29a58698f0f1417bef11d51b28cf68fd79d6f5e5df6225590dbee5dc4e117"
+      },
+      "originalReferenceIds": [
+        "environment-list",
+        "environment-selected"
+      ],
+      "referenceRelation": "narrow reachability adaptation; no direct original narrow viewport",
+      "measurement": {
+        "viewport": {
+          "width": 1024,
+          "height": 720,
+          "dpr": 1,
+          "scale": 1
+        },
+        "documentWidth": 1118,
+        "documentHeight": 720,
+        "documentHorizontalOverflow": true,
+        "surfaces": {
+          ".sidebar": {
+            "x": 0,
+            "y": 0,
+            "width": 200,
+            "height": 720,
+            "right": 200,
+            "bottom": 720,
+            "clientHeight": 720,
+            "scrollHeight": 720
+          },
+          ".environment-search-toolbar": {
+            "x": 210,
+            "y": 50,
+            "width": 804,
+            "height": 52.859375,
+            "right": 1014,
+            "bottom": 102.859375,
+            "clientHeight": 53,
+            "scrollHeight": 53
+          },
+          ".environment-list-toolbar": {
+            "x": 210,
+            "y": 112.859375,
+            "width": 804,
+            "height": 50,
+            "right": 1014,
+            "bottom": 162.859375,
+            "clientHeight": 50,
+            "scrollHeight": 50
+          },
+          ".environment-table-scroll": {
+            "x": 220,
+            "y": 162.859375,
+            "width": 784,
+            "height": 442,
+            "right": 1004,
+            "bottom": 604.859375,
+            "clientHeight": 442,
+            "scrollHeight": 442
+          },
+          ".environment-table tbody": {
+            "x": 220,
+            "y": 202.859375,
+            "width": 855,
+            "height": 402,
+            "right": 1075,
+            "bottom": 604.859375,
+            "clientHeight": 402,
+            "scrollHeight": 590
+          },
+          ".environment-pagination": {
+            "x": 220,
+            "y": 614.859375,
+            "width": 784,
+            "height": 30,
+            "right": 1004,
+            "bottom": 644.859375,
+            "clientHeight": 30,
+            "scrollHeight": 30
+          }
+        },
+        "controls": [
+          {
+            "label": "新建环境",
+            "x": 220,
+            "y": 60.921875,
+            "width": 110,
+            "height": 31,
+            "right": 330,
+            "bottom": 91.921875
+          },
+          {
+            "label": "创建菜单",
+            "x": 330,
+            "y": 60.921875,
+            "width": 24,
+            "height": 31,
+            "right": 354,
+            "bottom": 91.921875
+          },
+          {
+            "label": "导入 / 备份",
+            "x": 468.234375,
+            "y": 60.921875,
+            "width": 114.234375,
+            "height": 31,
+            "right": 582.46875,
+            "bottom": 91.921875
+          },
+          {
+            "label": "筛选分组",
+            "x": 590.46875,
+            "y": 60.421875,
+            "width": 150,
+            "height": 32,
+            "right": 740.46875,
+            "bottom": 92.421875
+          },
+          {
+            "label": "搜索环境",
+            "x": 864.9375,
+            "y": 60.921875,
+            "width": 42.0625,
+            "height": 30,
+            "right": 907,
+            "bottom": 90.921875
+          },
+          {
+            "label": "高级搜索",
+            "x": 938,
+            "y": 63.171875,
+            "width": 66,
+            "height": 26.515625,
+            "right": 1004,
+            "bottom": 89.6875
+          },
+          {
+            "label": "全部",
+            "x": 221,
+            "y": 123.359375,
+            "width": 79.59375,
+            "height": 29,
+            "right": 300.59375,
+            "bottom": 152.359375
+          },
+          {
+            "label": "待启动",
+            "x": 300.59375,
+            "y": 123.359375,
+            "width": 79.609375,
+            "height": 29,
+            "right": 380.203125,
+            "bottom": 152.359375
+          },
+          {
+            "label": "已打开",
+            "x": 380.203125,
+            "y": 123.359375,
+            "width": 79.59375,
+            "height": 29,
+            "right": 459.796875,
+            "bottom": 152.359375
+          },
+          {
+            "label": "需处理",
+            "x": 459.796875,
+            "y": 123.359375,
+            "width": 79.609375,
+            "height": 29,
+            "right": 539.40625,
+            "bottom": 152.359375
+          },
+          {
+            "label": "分组筛选",
+            "x": 539.40625,
+            "y": 123.359375,
+            "width": 79.59375,
+            "height": 29,
+            "right": 619,
+            "bottom": 152.359375
+          },
+          {
+            "label": "取消选择",
+            "x": 706.40625,
+            "y": 128.859375,
+            "width": 48,
+            "height": 18,
+            "right": 754.40625,
+            "bottom": 146.859375
+          },
+          {
+            "label": "批量打开",
+            "x": 764.40625,
+            "y": 122.359375,
+            "width": 70,
+            "height": 31,
+            "right": 834.40625,
+            "bottom": 153.359375
+          },
+          {
+            "label": "批量关闭",
+            "x": 840.40625,
+            "y": 122.359375,
+            "width": 70,
+            "height": 31,
+            "right": 910.40625,
+            "bottom": 153.359375
+          },
+          {
+            "label": "调整分组",
+            "x": 916.40625,
+            "y": 122.359375,
+            "width": 70,
+            "height": 31,
+            "right": 986.40625,
+            "bottom": 153.359375
+          },
+          {
+            "label": "更多操作",
+            "x": 992.40625,
+            "y": 122.359375,
+            "width": 88,
+            "height": 31,
+            "right": 1080.40625,
+            "bottom": 153.359375
+          },
+          {
+            "label": "刷新环境列表",
+            "x": 1086.40625,
+            "y": 122.359375,
+            "width": 32,
+            "height": 31,
+            "right": 1118.40625,
+            "bottom": 153.359375
+          }
+        ],
+        "controlsOutsideViewport": [
+          {
+            "label": "更多操作",
+            "x": 992.40625,
+            "y": 122.359375,
+            "width": 88,
+            "height": 31,
+            "right": 1080.40625,
+            "bottom": 153.359375
+          },
+          {
+            "label": "刷新环境列表",
+            "x": 1086.40625,
+            "y": 122.359375,
+            "width": 32,
+            "height": 31,
+            "right": 1118.40625,
+            "bottom": 153.359375
+          }
+        ]
+      },
+      "strictOneToOne": false,
+      "realDesktopAcceptance": false,
+      "pairedVisualReview": {
+        "verdict": "FAIL",
+        "notes": [
+          "Selected actions extend beyond the right image edge; more-actions is cut and refresh is off-image.",
+          "Historical before defect deliberately retained, not an after-state finding."
+        ],
+        "reviewer": "ses_eec1333e3ffeYOm3ng0DDrr0R9"
+      },
+      "independentVisualReview": "COMPLETE_WITHIN_THIS_BOUNDED_SCOPE"
+    },
+    {
+      "id": "toolbar-before-environment-normal-toolbar-900x720",
+      "family": "toolbar",
+      "phase": "before",
+      "stateId": "environment-normal-toolbar",
+      "viewport": {
+        "width": 900,
+        "height": 720
+      },
+      "sourceHead": "505ed75cb1fb9bde4b29d94075d0274c5e120c55",
+      "png": {
+        "file": "toolbar-before-900x720-normal.png",
+        "bytes": 64971,
+        "sha256": "e641da91a9b7dca0230bf93ccc80b455c7b32931729bc77a7354e81d81781543"
+      },
+      "originalReferenceIds": [
+        "environment-list",
+        "environment-selected"
+      ],
+      "referenceRelation": "narrow reachability adaptation; no direct original narrow viewport",
+      "measurement": {
+        "viewport": {
+          "width": 900,
+          "height": 720,
+          "dpr": 1,
+          "scale": 1
+        },
+        "documentWidth": 962,
+        "documentHeight": 720,
+        "documentHorizontalOverflow": true,
+        "surfaces": {
+          ".sidebar": {
+            "x": 0,
+            "y": 0,
+            "width": 200,
+            "height": 720,
+            "right": 200,
+            "bottom": 720,
+            "clientHeight": 720,
+            "scrollHeight": 720
+          },
+          ".environment-search-toolbar": {
+            "x": 210,
+            "y": 50,
+            "width": 680,
+            "height": 52.859375,
+            "right": 890,
+            "bottom": 102.859375,
+            "clientHeight": 53,
+            "scrollHeight": 53
+          },
+          ".environment-list-toolbar": {
+            "x": 210,
+            "y": 112.859375,
+            "width": 680,
+            "height": 50,
+            "right": 890,
+            "bottom": 162.859375,
+            "clientHeight": 50,
+            "scrollHeight": 50
+          },
+          ".environment-table-scroll": {
+            "x": 220,
+            "y": 162.859375,
+            "width": 660,
+            "height": 442,
+            "right": 880,
+            "bottom": 604.859375,
+            "clientHeight": 442,
+            "scrollHeight": 442
+          },
+          ".environment-table tbody": {
+            "x": 220,
+            "y": 202.859375,
+            "width": 855,
+            "height": 402,
+            "right": 1075,
+            "bottom": 604.859375,
+            "clientHeight": 402,
+            "scrollHeight": 590
+          },
+          ".environment-pagination": {
+            "x": 220,
+            "y": 614.859375,
+            "width": 660,
+            "height": 30,
+            "right": 880,
+            "bottom": 644.859375,
+            "clientHeight": 30,
+            "scrollHeight": 30
+          }
+        },
+        "controls": [
+          {
+            "label": "新建环境",
+            "x": 220,
+            "y": 60.921875,
+            "width": 110,
+            "height": 31,
+            "right": 330,
+            "bottom": 91.921875
+          },
+          {
+            "label": "创建菜单",
+            "x": 330,
+            "y": 60.921875,
+            "width": 24,
+            "height": 31,
+            "right": 354,
+            "bottom": 91.921875
+          },
+          {
+            "label": "导入 / 备份",
+            "x": 468.234375,
+            "y": 60.921875,
+            "width": 114.234375,
+            "height": 31,
+            "right": 582.46875,
+            "bottom": 91.921875
+          },
+          {
+            "label": "筛选分组",
+            "x": 590.46875,
+            "y": 60.421875,
+            "width": 150,
+            "height": 32,
+            "right": 740.46875,
+            "bottom": 92.421875
+          },
+          {
+            "label": "搜索环境",
+            "x": 864.9375,
+            "y": 60.921875,
+            "width": 4,
+            "height": 30,
+            "right": 868.9375,
+            "bottom": 90.921875
+          },
+          {
+            "label": "高级搜索",
+            "x": 896.46875,
+            "y": 63.171875,
+            "width": 66,
+            "height": 26.515625,
+            "right": 962.46875,
+            "bottom": 89.6875
+          },
+          {
+            "label": "全部",
+            "x": 221,
+            "y": 123.359375,
+            "width": 79.59375,
+            "height": 29,
+            "right": 300.59375,
+            "bottom": 152.359375
+          },
+          {
+            "label": "待启动",
+            "x": 300.59375,
+            "y": 123.359375,
+            "width": 79.609375,
+            "height": 29,
+            "right": 380.203125,
+            "bottom": 152.359375
+          },
+          {
+            "label": "已打开",
+            "x": 380.203125,
+            "y": 123.359375,
+            "width": 79.59375,
+            "height": 29,
+            "right": 459.796875,
+            "bottom": 152.359375
+          },
+          {
+            "label": "需处理",
+            "x": 459.796875,
+            "y": 123.359375,
+            "width": 79.609375,
+            "height": 29,
+            "right": 539.40625,
+            "bottom": 152.359375
+          },
+          {
+            "label": "分组筛选",
+            "x": 539.40625,
+            "y": 123.359375,
+            "width": 79.59375,
+            "height": 29,
+            "right": 619,
+            "bottom": 152.359375
+          },
+          {
+            "label": "更多操作",
+            "x": 754,
+            "y": 122.359375,
+            "width": 88,
+            "height": 31,
+            "right": 842,
+            "bottom": 153.359375
+          },
+          {
+            "label": "刷新环境列表",
+            "x": 848,
+            "y": 122.359375,
+            "width": 32,
+            "height": 31,
+            "right": 880,
+            "bottom": 153.359375
+          }
+        ],
+        "controlsOutsideViewport": [
+          {
+            "label": "高级搜索",
+            "x": 896.46875,
+            "y": 63.171875,
+            "width": 66,
+            "height": 26.515625,
+            "right": 962.46875,
+            "bottom": 89.6875
+          }
+        ]
+      },
+      "strictOneToOne": false,
+      "realDesktopAcceptance": false,
+      "pairedVisualReview": {
+        "verdict": "FAIL",
+        "notes": [
+          "Search and advanced-search escape the right edge of the unwrapped top toolbar.",
+          "Rightmost table actions are also internally clipped; that separate limitation remains unchanged after."
+        ],
+        "reviewer": "ses_eec1333e3ffeYOm3ng0DDrr0R9"
+      },
+      "independentVisualReview": "COMPLETE_WITHIN_THIS_BOUNDED_SCOPE"
+    },
+    {
+      "id": "toolbar-before-environment-selected-toolbar-900x720",
+      "family": "toolbar",
+      "phase": "before",
+      "stateId": "environment-selected-toolbar",
+      "viewport": {
+        "width": 900,
+        "height": 720
+      },
+      "sourceHead": "505ed75cb1fb9bde4b29d94075d0274c5e120c55",
+      "png": {
+        "file": "toolbar-before-900x720-selected.png",
+        "bytes": 65669,
+        "sha256": "a791e3033ccb809ecadd6750705dcdd63d21553751dc53775c7969c13632935e"
+      },
+      "originalReferenceIds": [
+        "environment-list",
+        "environment-selected"
+      ],
+      "referenceRelation": "narrow reachability adaptation; no direct original narrow viewport",
+      "measurement": {
+        "viewport": {
+          "width": 900,
+          "height": 720,
+          "dpr": 1,
+          "scale": 1
+        },
+        "documentWidth": 1118,
+        "documentHeight": 720,
+        "documentHorizontalOverflow": true,
+        "surfaces": {
+          ".sidebar": {
+            "x": 0,
+            "y": 0,
+            "width": 200,
+            "height": 720,
+            "right": 200,
+            "bottom": 720,
+            "clientHeight": 720,
+            "scrollHeight": 720
+          },
+          ".environment-search-toolbar": {
+            "x": 210,
+            "y": 50,
+            "width": 680,
+            "height": 52.859375,
+            "right": 890,
+            "bottom": 102.859375,
+            "clientHeight": 53,
+            "scrollHeight": 53
+          },
+          ".environment-list-toolbar": {
+            "x": 210,
+            "y": 112.859375,
+            "width": 680,
+            "height": 50,
+            "right": 890,
+            "bottom": 162.859375,
+            "clientHeight": 50,
+            "scrollHeight": 50
+          },
+          ".environment-table-scroll": {
+            "x": 220,
+            "y": 162.859375,
+            "width": 660,
+            "height": 442,
+            "right": 880,
+            "bottom": 604.859375,
+            "clientHeight": 442,
+            "scrollHeight": 442
+          },
+          ".environment-table tbody": {
+            "x": 220,
+            "y": 202.859375,
+            "width": 855,
+            "height": 402,
+            "right": 1075,
+            "bottom": 604.859375,
+            "clientHeight": 402,
+            "scrollHeight": 590
+          },
+          ".environment-pagination": {
+            "x": 220,
+            "y": 614.859375,
+            "width": 660,
+            "height": 30,
+            "right": 880,
+            "bottom": 644.859375,
+            "clientHeight": 30,
+            "scrollHeight": 30
+          }
+        },
+        "controls": [
+          {
+            "label": "新建环境",
+            "x": 220,
+            "y": 60.921875,
+            "width": 110,
+            "height": 31,
+            "right": 330,
+            "bottom": 91.921875
+          },
+          {
+            "label": "创建菜单",
+            "x": 330,
+            "y": 60.921875,
+            "width": 24,
+            "height": 31,
+            "right": 354,
+            "bottom": 91.921875
+          },
+          {
+            "label": "导入 / 备份",
+            "x": 468.234375,
+            "y": 60.921875,
+            "width": 114.234375,
+            "height": 31,
+            "right": 582.46875,
+            "bottom": 91.921875
+          },
+          {
+            "label": "筛选分组",
+            "x": 590.46875,
+            "y": 60.421875,
+            "width": 150,
+            "height": 32,
+            "right": 740.46875,
+            "bottom": 92.421875
+          },
+          {
+            "label": "搜索环境",
+            "x": 864.9375,
+            "y": 60.921875,
+            "width": 4,
+            "height": 30,
+            "right": 868.9375,
+            "bottom": 90.921875
+          },
+          {
+            "label": "高级搜索",
+            "x": 896.46875,
+            "y": 63.171875,
+            "width": 66,
+            "height": 26.515625,
+            "right": 962.46875,
+            "bottom": 89.6875
+          },
+          {
+            "label": "全部",
+            "x": 221,
+            "y": 123.359375,
+            "width": 79.59375,
+            "height": 29,
+            "right": 300.59375,
+            "bottom": 152.359375
+          },
+          {
+            "label": "待启动",
+            "x": 300.59375,
+            "y": 123.359375,
+            "width": 79.609375,
+            "height": 29,
+            "right": 380.203125,
+            "bottom": 152.359375
+          },
+          {
+            "label": "已打开",
+            "x": 380.203125,
+            "y": 123.359375,
+            "width": 79.59375,
+            "height": 29,
+            "right": 459.796875,
+            "bottom": 152.359375
+          },
+          {
+            "label": "需处理",
+            "x": 459.796875,
+            "y": 123.359375,
+            "width": 79.609375,
+            "height": 29,
+            "right": 539.40625,
+            "bottom": 152.359375
+          },
+          {
+            "label": "分组筛选",
+            "x": 539.40625,
+            "y": 123.359375,
+            "width": 79.59375,
+            "height": 29,
+            "right": 619,
+            "bottom": 152.359375
+          },
+          {
+            "label": "取消选择",
+            "x": 706.40625,
+            "y": 128.859375,
+            "width": 48,
+            "height": 18,
+            "right": 754.40625,
+            "bottom": 146.859375
+          },
+          {
+            "label": "批量打开",
+            "x": 764.40625,
+            "y": 122.359375,
+            "width": 70,
+            "height": 31,
+            "right": 834.40625,
+            "bottom": 153.359375
+          },
+          {
+            "label": "批量关闭",
+            "x": 840.40625,
+            "y": 122.359375,
+            "width": 70,
+            "height": 31,
+            "right": 910.40625,
+            "bottom": 153.359375
+          },
+          {
+            "label": "调整分组",
+            "x": 916.40625,
+            "y": 122.359375,
+            "width": 70,
+            "height": 31,
+            "right": 986.40625,
+            "bottom": 153.359375
+          },
+          {
+            "label": "更多操作",
+            "x": 992.40625,
+            "y": 122.359375,
+            "width": 88,
+            "height": 31,
+            "right": 1080.40625,
+            "bottom": 153.359375
+          },
+          {
+            "label": "刷新环境列表",
+            "x": 1086.40625,
+            "y": 122.359375,
+            "width": 32,
+            "height": 31,
+            "right": 1118.40625,
+            "bottom": 153.359375
+          }
+        ],
+        "controlsOutsideViewport": [
+          {
+            "label": "高级搜索",
+            "x": 896.46875,
+            "y": 63.171875,
+            "width": 66,
+            "height": 26.515625,
+            "right": 962.46875,
+            "bottom": 89.6875
+          },
+          {
+            "label": "批量关闭",
+            "x": 840.40625,
+            "y": 122.359375,
+            "width": 70,
+            "height": 31,
+            "right": 910.40625,
+            "bottom": 153.359375
+          },
+          {
+            "label": "调整分组",
+            "x": 916.40625,
+            "y": 122.359375,
+            "width": 70,
+            "height": 31,
+            "right": 986.40625,
+            "bottom": 153.359375
+          },
+          {
+            "label": "更多操作",
+            "x": 992.40625,
+            "y": 122.359375,
+            "width": 88,
+            "height": 31,
+            "right": 1080.40625,
+            "bottom": 153.359375
+          },
+          {
+            "label": "刷新环境列表",
+            "x": 1086.40625,
+            "y": 122.359375,
+            "width": 32,
+            "height": 31,
+            "right": 1118.40625,
+            "bottom": 153.359375
+          }
+        ]
+      },
+      "strictOneToOne": false,
+      "realDesktopAcceptance": false,
+      "pairedVisualReview": {
+        "verdict": "FAIL",
+        "notes": [
+          "Top search and selected action rows extend off-image; later selected actions cannot be read in this frame.",
+          "Historical before defect deliberately retained, not an after-state finding."
+        ],
+        "reviewer": "ses_eec1333e3ffeYOm3ng0DDrr0R9"
+      },
+      "independentVisualReview": "COMPLETE_WITHIN_THIS_BOUNDED_SCOPE"
+    },
+    {
+      "id": "toolbar-after-environment-normal-toolbar-1024x720",
+      "family": "toolbar",
+      "phase": "after",
+      "stateId": "environment-normal-toolbar",
+      "viewport": {
+        "width": 1024,
+        "height": 720
+      },
+      "sourceHead": "4a2afbf053352760dddbdb7baa24a368c659878f",
+      "png": {
+        "file": "toolbar-after-1024x720-normal.png",
+        "bytes": 65627,
+        "sha256": "9335a21c6f967d5cd2053120c6a44fd2d7ebbd04dd27ac6814a3eb38b5702b3e"
+      },
+      "originalReferenceIds": [
+        "environment-list",
+        "environment-selected"
+      ],
+      "referenceRelation": "narrow reachability adaptation; no direct original narrow viewport",
+      "measurement": {
+        "viewport": {
+          "width": 1024,
+          "height": 720,
+          "dpr": 1,
+          "scale": 1
+        },
+        "documentWidth": 1024,
+        "documentHeight": 720,
+        "documentHorizontalOverflow": false,
+        "surfaces": {
+          ".sidebar": {
+            "x": 0,
+            "y": 0,
+            "width": 200,
+            "height": 720,
+            "right": 200,
+            "bottom": 720,
+            "clientHeight": 720,
+            "scrollHeight": 720
+          },
+          ".environment-search-toolbar": {
+            "x": 210,
+            "y": 50,
+            "width": 804,
+            "height": 92,
+            "right": 1014,
+            "bottom": 142,
+            "clientHeight": 92,
+            "scrollHeight": 92
+          },
+          ".environment-list-toolbar": {
+            "x": 210,
+            "y": 152,
+            "width": 804,
+            "height": 51,
+            "right": 1014,
+            "bottom": 203,
+            "clientHeight": 51,
+            "scrollHeight": 51
+          },
+          ".environment-table-scroll": {
+            "x": 220,
+            "y": 203,
+            "width": 784,
+            "height": 455,
+            "right": 1004,
+            "bottom": 658,
+            "clientHeight": 455,
+            "scrollHeight": 455
+          },
+          ".environment-table tbody": {
+            "x": 220,
+            "y": 243,
+            "width": 855,
+            "height": 358,
+            "right": 1075,
+            "bottom": 601,
+            "clientHeight": 358,
+            "scrollHeight": 590
+          },
+          ".environment-pagination": {
+            "x": 220,
+            "y": 668,
+            "width": 784,
+            "height": 30,
+            "right": 1004,
+            "bottom": 698,
+            "clientHeight": 30,
+            "scrollHeight": 30
+          }
+        },
+        "controls": [
+          {
+            "label": "新建环境",
+            "x": 220,
+            "y": 60.5,
+            "width": 110,
+            "height": 31,
+            "right": 330,
+            "bottom": 91.5
+          },
+          {
+            "label": "创建菜单",
+            "x": 330,
+            "y": 60.5,
+            "width": 24,
+            "height": 31,
+            "right": 354,
+            "bottom": 91.5
+          },
+          {
+            "label": "导入 / 备份",
+            "x": 538.234375,
+            "y": 60.5,
+            "width": 114.234375,
+            "height": 31,
+            "right": 652.46875,
+            "bottom": 91.5
+          },
+          {
+            "label": "筛选分组",
+            "x": 660.46875,
+            "y": 60,
+            "width": 150,
+            "height": 32,
+            "right": 810.46875,
+            "bottom": 92
+          },
+          {
+            "label": "搜索环境",
+            "x": 336.46875,
+            "y": 100.5,
+            "width": 570.53125,
+            "height": 30,
+            "right": 907,
+            "bottom": 130.5
+          },
+          {
+            "label": "高级搜索",
+            "x": 938,
+            "y": 102.734375,
+            "width": 66,
+            "height": 26.515625,
+            "right": 1004,
+            "bottom": 129.25
+          },
+          {
+            "label": "全部",
+            "x": 221,
+            "y": 163,
+            "width": 79.59375,
+            "height": 29,
+            "right": 300.59375,
+            "bottom": 192
+          },
+          {
+            "label": "待启动",
+            "x": 300.59375,
+            "y": 163,
+            "width": 79.609375,
+            "height": 29,
+            "right": 380.203125,
+            "bottom": 192
+          },
+          {
+            "label": "已打开",
+            "x": 380.203125,
+            "y": 163,
+            "width": 79.59375,
+            "height": 29,
+            "right": 459.796875,
+            "bottom": 192
+          },
+          {
+            "label": "需处理",
+            "x": 459.796875,
+            "y": 163,
+            "width": 79.609375,
+            "height": 29,
+            "right": 539.40625,
+            "bottom": 192
+          },
+          {
+            "label": "分组筛选",
+            "x": 539.40625,
+            "y": 163,
+            "width": 79.59375,
+            "height": 29,
+            "right": 619,
+            "bottom": 192
+          },
+          {
+            "label": "更多操作",
+            "x": 878,
+            "y": 162,
+            "width": 88,
+            "height": 31,
+            "right": 966,
+            "bottom": 193
+          },
+          {
+            "label": "刷新环境列表",
+            "x": 972,
+            "y": 162,
+            "width": 32,
+            "height": 31,
+            "right": 1004,
+            "bottom": 193
+          }
+        ],
+        "controlsOutsideViewport": []
+      },
+      "strictOneToOne": false,
+      "realDesktopAcceptance": false,
+      "pairedVisualReview": {
+        "verdict": "ADAPTED",
+        "notes": [
+          "Search and advanced-search occupy a readable second row; create, import, group, more-actions, and refresh remain visible.",
+          "Table shifts downward as intended; pagination remains inside the frame without toolbar overlap."
+        ],
+        "reviewer": "ses_eec1333e3ffeYOm3ng0DDrr0R9"
+      },
+      "independentVisualReview": "COMPLETE_WITHIN_THIS_BOUNDED_SCOPE"
+    },
+    {
+      "id": "toolbar-after-environment-selected-toolbar-1024x720",
+      "family": "toolbar",
+      "phase": "after",
+      "stateId": "environment-selected-toolbar",
+      "viewport": {
+        "width": 1024,
+        "height": 720
+      },
+      "sourceHead": "4a2afbf053352760dddbdb7baa24a368c659878f",
+      "png": {
+        "file": "toolbar-after-1024x720-selected.png",
+        "bytes": 68525,
+        "sha256": "b8413f4fff670013abb0017f056ce2396624fc912162af6396083998092c2ed2"
+      },
+      "originalReferenceIds": [
+        "environment-list",
+        "environment-selected"
+      ],
+      "referenceRelation": "narrow reachability adaptation; no direct original narrow viewport",
+      "measurement": {
+        "viewport": {
+          "width": 1024,
+          "height": 720,
+          "dpr": 1,
+          "scale": 1
+        },
+        "documentWidth": 1024,
+        "documentHeight": 720,
+        "documentHorizontalOverflow": false,
+        "surfaces": {
+          ".sidebar": {
+            "x": 0,
+            "y": 0,
+            "width": 200,
+            "height": 720,
+            "right": 200,
+            "bottom": 720,
+            "clientHeight": 720,
+            "scrollHeight": 720
+          },
+          ".environment-search-toolbar": {
+            "x": 210,
+            "y": 50,
+            "width": 804,
+            "height": 92,
+            "right": 1014,
+            "bottom": 142,
+            "clientHeight": 92,
+            "scrollHeight": 92
+          },
+          ".environment-list-toolbar": {
+            "x": 210,
+            "y": 152,
+            "width": 804,
+            "height": 92,
+            "right": 1014,
+            "bottom": 244,
+            "clientHeight": 92,
+            "scrollHeight": 92
+          },
+          ".environment-table-scroll": {
+            "x": 220,
+            "y": 244,
+            "width": 784,
+            "height": 414,
+            "right": 1004,
+            "bottom": 658,
+            "clientHeight": 414,
+            "scrollHeight": 414
+          },
+          ".environment-table tbody": {
+            "x": 220,
+            "y": 284,
+            "width": 855,
+            "height": 358,
+            "right": 1075,
+            "bottom": 642,
+            "clientHeight": 358,
+            "scrollHeight": 590
+          },
+          ".environment-pagination": {
+            "x": 220,
+            "y": 668,
+            "width": 784,
+            "height": 30,
+            "right": 1004,
+            "bottom": 698,
+            "clientHeight": 30,
+            "scrollHeight": 30
+          }
+        },
+        "controls": [
+          {
+            "label": "新建环境",
+            "x": 220,
+            "y": 60.5,
+            "width": 110,
+            "height": 31,
+            "right": 330,
+            "bottom": 91.5
+          },
+          {
+            "label": "创建菜单",
+            "x": 330,
+            "y": 60.5,
+            "width": 24,
+            "height": 31,
+            "right": 354,
+            "bottom": 91.5
+          },
+          {
+            "label": "导入 / 备份",
+            "x": 538.234375,
+            "y": 60.5,
+            "width": 114.234375,
+            "height": 31,
+            "right": 652.46875,
+            "bottom": 91.5
+          },
+          {
+            "label": "筛选分组",
+            "x": 660.46875,
+            "y": 60,
+            "width": 150,
+            "height": 32,
+            "right": 810.46875,
+            "bottom": 92
+          },
+          {
+            "label": "搜索环境",
+            "x": 336.46875,
+            "y": 100.5,
+            "width": 570.53125,
+            "height": 30,
+            "right": 907,
+            "bottom": 130.5
+          },
+          {
+            "label": "高级搜索",
+            "x": 938,
+            "y": 102.734375,
+            "width": 66,
+            "height": 26.515625,
+            "right": 1004,
+            "bottom": 129.25
+          },
+          {
+            "label": "全部",
+            "x": 221,
+            "y": 163,
+            "width": 79.59375,
+            "height": 29,
+            "right": 300.59375,
+            "bottom": 192
+          },
+          {
+            "label": "待启动",
+            "x": 300.59375,
+            "y": 163,
+            "width": 79.609375,
+            "height": 29,
+            "right": 380.203125,
+            "bottom": 192
+          },
+          {
+            "label": "已打开",
+            "x": 380.203125,
+            "y": 163,
+            "width": 79.59375,
+            "height": 29,
+            "right": 459.796875,
+            "bottom": 192
+          },
+          {
+            "label": "需处理",
+            "x": 459.796875,
+            "y": 163,
+            "width": 79.609375,
+            "height": 29,
+            "right": 539.40625,
+            "bottom": 192
+          },
+          {
+            "label": "分组筛选",
+            "x": 539.40625,
+            "y": 163,
+            "width": 79.59375,
+            "height": 29,
+            "right": 619,
+            "bottom": 192
+          },
+          {
+            "label": "取消选择",
+            "x": 706.40625,
+            "y": 168.5,
+            "width": 48,
+            "height": 18,
+            "right": 754.40625,
+            "bottom": 186.5
+          },
+          {
+            "label": "批量打开",
+            "x": 650,
+            "y": 203,
+            "width": 70,
+            "height": 31,
+            "right": 720,
+            "bottom": 234
+          },
+          {
+            "label": "批量关闭",
+            "x": 726,
+            "y": 203,
+            "width": 70,
+            "height": 31,
+            "right": 796,
+            "bottom": 234
+          },
+          {
+            "label": "调整分组",
+            "x": 802,
+            "y": 203,
+            "width": 70,
+            "height": 31,
+            "right": 872,
+            "bottom": 234
+          },
+          {
+            "label": "更多操作",
+            "x": 878,
+            "y": 203,
+            "width": 88,
+            "height": 31,
+            "right": 966,
+            "bottom": 234
+          },
+          {
+            "label": "刷新环境列表",
+            "x": 972,
+            "y": 203,
+            "width": 32,
+            "height": 31,
+            "right": 1004,
+            "bottom": 234
+          }
+        ],
+        "controlsOutsideViewport": []
+      },
+      "strictOneToOne": false,
+      "realDesktopAcceptance": false,
+      "pairedVisualReview": {
+        "verdict": "ADAPTED",
+        "notes": [
+          "Selection count and cancel are clear; batch open, batch close, regroup, more-actions, and refresh wrap into a contained row.",
+          "No new clipping or overlap in the repaired toolbar; pagination remains visible."
+        ],
+        "reviewer": "ses_eec1333e3ffeYOm3ng0DDrr0R9"
+      },
+      "independentVisualReview": "COMPLETE_WITHIN_THIS_BOUNDED_SCOPE"
+    },
+    {
+      "id": "toolbar-after-environment-normal-toolbar-900x720",
+      "family": "toolbar",
+      "phase": "after",
+      "stateId": "environment-normal-toolbar",
+      "viewport": {
+        "width": 900,
+        "height": 720
+      },
+      "sourceHead": "4a2afbf053352760dddbdb7baa24a368c659878f",
+      "png": {
+        "file": "toolbar-after-900x720-normal.png",
+        "bytes": 62727,
+        "sha256": "1e3df08bf931395ccb22c5211515497ad1c04af30cda6c9ae34a7b932347c6f4"
+      },
+      "originalReferenceIds": [
+        "environment-list",
+        "environment-selected"
+      ],
+      "referenceRelation": "narrow reachability adaptation; no direct original narrow viewport",
+      "measurement": {
+        "viewport": {
+          "width": 900,
+          "height": 720,
+          "dpr": 1,
+          "scale": 1
+        },
+        "documentWidth": 900,
+        "documentHeight": 720,
+        "documentHorizontalOverflow": false,
+        "surfaces": {
+          ".sidebar": {
+            "x": 0,
+            "y": 0,
+            "width": 200,
+            "height": 720,
+            "right": 200,
+            "bottom": 720,
+            "clientHeight": 720,
+            "scrollHeight": 720
+          },
+          ".environment-search-toolbar": {
+            "x": 210,
+            "y": 50,
+            "width": 680,
+            "height": 92,
+            "right": 890,
+            "bottom": 142,
+            "clientHeight": 92,
+            "scrollHeight": 92
+          },
+          ".environment-list-toolbar": {
+            "x": 210,
+            "y": 152,
+            "width": 680,
+            "height": 51,
+            "right": 890,
+            "bottom": 203,
+            "clientHeight": 51,
+            "scrollHeight": 51
+          },
+          ".environment-table-scroll": {
+            "x": 220,
+            "y": 203,
+            "width": 660,
+            "height": 455,
+            "right": 880,
+            "bottom": 658,
+            "clientHeight": 455,
+            "scrollHeight": 455
+          },
+          ".environment-table tbody": {
+            "x": 220,
+            "y": 243,
+            "width": 855,
+            "height": 358,
+            "right": 1075,
+            "bottom": 601,
+            "clientHeight": 358,
+            "scrollHeight": 590
+          },
+          ".environment-pagination": {
+            "x": 220,
+            "y": 668,
+            "width": 660,
+            "height": 30,
+            "right": 880,
+            "bottom": 698,
+            "clientHeight": 30,
+            "scrollHeight": 30
+          }
+        },
+        "controls": [
+          {
+            "label": "新建环境",
+            "x": 220,
+            "y": 60.5,
+            "width": 110,
+            "height": 31,
+            "right": 330,
+            "bottom": 91.5
+          },
+          {
+            "label": "创建菜单",
+            "x": 330,
+            "y": 60.5,
+            "width": 24,
+            "height": 31,
+            "right": 354,
+            "bottom": 91.5
+          },
+          {
+            "label": "导入 / 备份",
+            "x": 538.234375,
+            "y": 60.5,
+            "width": 114.234375,
+            "height": 31,
+            "right": 652.46875,
+            "bottom": 91.5
+          },
+          {
+            "label": "筛选分组",
+            "x": 660.46875,
+            "y": 60,
+            "width": 150,
+            "height": 32,
+            "right": 810.46875,
+            "bottom": 92
+          },
+          {
+            "label": "搜索环境",
+            "x": 336.46875,
+            "y": 100.5,
+            "width": 446.53125,
+            "height": 30,
+            "right": 783,
+            "bottom": 130.5
+          },
+          {
+            "label": "高级搜索",
+            "x": 814,
+            "y": 102.734375,
+            "width": 66,
+            "height": 26.515625,
+            "right": 880,
+            "bottom": 129.25
+          },
+          {
+            "label": "全部",
+            "x": 221,
+            "y": 163,
+            "width": 79.59375,
+            "height": 29,
+            "right": 300.59375,
+            "bottom": 192
+          },
+          {
+            "label": "待启动",
+            "x": 300.59375,
+            "y": 163,
+            "width": 79.609375,
+            "height": 29,
+            "right": 380.203125,
+            "bottom": 192
+          },
+          {
+            "label": "已打开",
+            "x": 380.203125,
+            "y": 163,
+            "width": 79.59375,
+            "height": 29,
+            "right": 459.796875,
+            "bottom": 192
+          },
+          {
+            "label": "需处理",
+            "x": 459.796875,
+            "y": 163,
+            "width": 79.609375,
+            "height": 29,
+            "right": 539.40625,
+            "bottom": 192
+          },
+          {
+            "label": "分组筛选",
+            "x": 539.40625,
+            "y": 163,
+            "width": 79.59375,
+            "height": 29,
+            "right": 619,
+            "bottom": 192
+          },
+          {
+            "label": "更多操作",
+            "x": 754,
+            "y": 162,
+            "width": 88,
+            "height": 31,
+            "right": 842,
+            "bottom": 193
+          },
+          {
+            "label": "刷新环境列表",
+            "x": 848,
+            "y": 162,
+            "width": 32,
+            "height": 31,
+            "right": 880,
+            "bottom": 193
+          }
+        ],
+        "controlsOutsideViewport": []
+      },
+      "strictOneToOne": false,
+      "realDesktopAcceptance": false,
+      "pairedVisualReview": {
+        "verdict": "ADAPTED",
+        "notes": [
+          "Wrapped search and advanced-search labels fit; normal list actions and pagination are readable.",
+          "The table still internally clips its rightmost row actions, as before; this review does not call that repaired."
+        ],
+        "reviewer": "ses_eec1333e3ffeYOm3ng0DDrr0R9"
+      },
+      "independentVisualReview": "COMPLETE_WITHIN_THIS_BOUNDED_SCOPE"
+    },
+    {
+      "id": "toolbar-after-environment-selected-toolbar-900x720",
+      "family": "toolbar",
+      "phase": "after",
+      "stateId": "environment-selected-toolbar",
+      "viewport": {
+        "width": 900,
+        "height": 720
+      },
+      "sourceHead": "4a2afbf053352760dddbdb7baa24a368c659878f",
+      "png": {
+        "file": "toolbar-after-900x720-selected.png",
+        "bytes": 65693,
+        "sha256": "854b0a32cb332f0d07cc5dd712cda975e007c920c314d431ceb14bce794c703e"
+      },
+      "originalReferenceIds": [
+        "environment-list",
+        "environment-selected"
+      ],
+      "referenceRelation": "narrow reachability adaptation; no direct original narrow viewport",
+      "measurement": {
+        "viewport": {
+          "width": 900,
+          "height": 720,
+          "dpr": 1,
+          "scale": 1
+        },
+        "documentWidth": 900,
+        "documentHeight": 720,
+        "documentHorizontalOverflow": false,
+        "surfaces": {
+          ".sidebar": {
+            "x": 0,
+            "y": 0,
+            "width": 200,
+            "height": 720,
+            "right": 200,
+            "bottom": 720,
+            "clientHeight": 720,
+            "scrollHeight": 720
+          },
+          ".environment-search-toolbar": {
+            "x": 210,
+            "y": 50,
+            "width": 680,
+            "height": 92,
+            "right": 890,
+            "bottom": 142,
+            "clientHeight": 92,
+            "scrollHeight": 92
+          },
+          ".environment-list-toolbar": {
+            "x": 210,
+            "y": 152,
+            "width": 680,
+            "height": 92,
+            "right": 890,
+            "bottom": 244,
+            "clientHeight": 92,
+            "scrollHeight": 92
+          },
+          ".environment-table-scroll": {
+            "x": 220,
+            "y": 244,
+            "width": 660,
+            "height": 414,
+            "right": 880,
+            "bottom": 658,
+            "clientHeight": 414,
+            "scrollHeight": 414
+          },
+          ".environment-table tbody": {
+            "x": 220,
+            "y": 284,
+            "width": 855,
+            "height": 358,
+            "right": 1075,
+            "bottom": 642,
+            "clientHeight": 358,
+            "scrollHeight": 590
+          },
+          ".environment-pagination": {
+            "x": 220,
+            "y": 668,
+            "width": 660,
+            "height": 30,
+            "right": 880,
+            "bottom": 698,
+            "clientHeight": 30,
+            "scrollHeight": 30
+          }
+        },
+        "controls": [
+          {
+            "label": "新建环境",
+            "x": 220,
+            "y": 60.5,
+            "width": 110,
+            "height": 31,
+            "right": 330,
+            "bottom": 91.5
+          },
+          {
+            "label": "创建菜单",
+            "x": 330,
+            "y": 60.5,
+            "width": 24,
+            "height": 31,
+            "right": 354,
+            "bottom": 91.5
+          },
+          {
+            "label": "导入 / 备份",
+            "x": 538.234375,
+            "y": 60.5,
+            "width": 114.234375,
+            "height": 31,
+            "right": 652.46875,
+            "bottom": 91.5
+          },
+          {
+            "label": "筛选分组",
+            "x": 660.46875,
+            "y": 60,
+            "width": 150,
+            "height": 32,
+            "right": 810.46875,
+            "bottom": 92
+          },
+          {
+            "label": "搜索环境",
+            "x": 336.46875,
+            "y": 100.5,
+            "width": 446.53125,
+            "height": 30,
+            "right": 783,
+            "bottom": 130.5
+          },
+          {
+            "label": "高级搜索",
+            "x": 814,
+            "y": 102.734375,
+            "width": 66,
+            "height": 26.515625,
+            "right": 880,
+            "bottom": 129.25
+          },
+          {
+            "label": "全部",
+            "x": 221,
+            "y": 163,
+            "width": 79.59375,
+            "height": 29,
+            "right": 300.59375,
+            "bottom": 192
+          },
+          {
+            "label": "待启动",
+            "x": 300.59375,
+            "y": 163,
+            "width": 79.609375,
+            "height": 29,
+            "right": 380.203125,
+            "bottom": 192
+          },
+          {
+            "label": "已打开",
+            "x": 380.203125,
+            "y": 163,
+            "width": 79.59375,
+            "height": 29,
+            "right": 459.796875,
+            "bottom": 192
+          },
+          {
+            "label": "需处理",
+            "x": 459.796875,
+            "y": 163,
+            "width": 79.609375,
+            "height": 29,
+            "right": 539.40625,
+            "bottom": 192
+          },
+          {
+            "label": "分组筛选",
+            "x": 539.40625,
+            "y": 163,
+            "width": 79.59375,
+            "height": 29,
+            "right": 619,
+            "bottom": 192
+          },
+          {
+            "label": "取消选择",
+            "x": 706.40625,
+            "y": 168.5,
+            "width": 48,
+            "height": 18,
+            "right": 754.40625,
+            "bottom": 186.5
+          },
+          {
+            "label": "批量打开",
+            "x": 526,
+            "y": 203,
+            "width": 70,
+            "height": 31,
+            "right": 596,
+            "bottom": 234
+          },
+          {
+            "label": "批量关闭",
+            "x": 602,
+            "y": 203,
+            "width": 70,
+            "height": 31,
+            "right": 672,
+            "bottom": 234
+          },
+          {
+            "label": "调整分组",
+            "x": 678,
+            "y": 203,
+            "width": 70,
+            "height": 31,
+            "right": 748,
+            "bottom": 234
+          },
+          {
+            "label": "更多操作",
+            "x": 754,
+            "y": 203,
+            "width": 88,
+            "height": 31,
+            "right": 842,
+            "bottom": 234
+          },
+          {
+            "label": "刷新环境列表",
+            "x": 848,
+            "y": 203,
+            "width": 32,
+            "height": 31,
+            "right": 880,
+            "bottom": 234
+          }
+        ],
+        "controlsOutsideViewport": []
+      },
+      "strictOneToOne": false,
+      "realDesktopAcceptance": false,
+      "pairedVisualReview": {
+        "verdict": "ADAPTED",
+        "notes": [
+          "Selection count/cancel and all targeted batch, regroup, more-actions, and refresh controls are visible on wrapped rows.",
+          "No repaired-control overlap; unchanged internal table clipping is outside this toolbar repair claim."
+        ],
+        "reviewer": "ses_eec1333e3ffeYOm3ng0DDrr0R9"
+      },
+      "independentVisualReview": "COMPLETE_WITHIN_THIS_BOUNDED_SCOPE"
+    },
+    {
+      "id": "title-before-proxy-details-long-title-1440x900",
+      "family": "title",
+      "phase": "before",
+      "stateId": "proxy-details-long-title",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sourceHead": "505ed75cb1fb9bde4b29d94075d0274c5e120c55",
+      "png": {
+        "file": "title-before-1440x900-details.png",
+        "bytes": 67733,
+        "sha256": "a68f7193f2d72b955d27f14d2fcb969916c33e3148361af31f4bc70bf8a48d08"
+      },
+      "originalReferenceIds": [
+        "proxy-edit",
+        "proxy-bound"
+      ],
+      "referenceRelation": "mapped containers with safe long-title clipping; no direct original long-name state",
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "dialog": {
+          "x": 410,
+          "y": 365,
+          "width": 620,
+          "height": 186,
+          "right": 1030,
+          "bottom": 551
+        },
+        "header": {
+          "x": 410,
+          "y": 365,
+          "width": 620,
+          "height": 40,
+          "right": 1030,
+          "bottom": 405
+        },
+        "title": {
+          "x": -786.640625,
+          "y": 367,
+          "width": 3013.28125,
+          "height": 36,
+          "right": 2226.640625,
+          "bottom": 403,
+          "text": "代理检查详情 · WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal"
+        },
+        "close": {
+          "x": 996,
+          "y": 370,
+          "width": 26,
+          "height": 30,
+          "right": 1022,
+          "bottom": 400
+        },
+        "titleOutsideHeader": true,
+        "titleIntersectsClose": true,
+        "closeHitTest": true,
+        "rootHorizontalOverflow": false
+      },
+      "strictOneToOne": false,
+      "realDesktopAcceptance": false,
+      "pairedVisualReview": {
+        "verdict": "FAIL",
+        "notes": [
+          "Long heading streak crosses both modal edges and the close-button region; its heading prefix is not readable in-frame.",
+          "Historical title defect deliberately preserved."
+        ],
+        "reviewer": "ses_eec1333e3ffeYOm3ng0DDrr0R9"
+      },
+      "independentVisualReview": "COMPLETE_WITHIN_THIS_BOUNDED_SCOPE"
+    },
+    {
+      "id": "title-before-proxy-usage-long-title-1440x900",
+      "family": "title",
+      "phase": "before",
+      "stateId": "proxy-usage-long-title",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sourceHead": "505ed75cb1fb9bde4b29d94075d0274c5e120c55",
+      "png": {
+        "file": "title-before-1440x900-usage.png",
+        "bytes": 63306,
+        "sha256": "b06cb389ac306574fcabe8d18cbdbecb02ed73853ec29ef6a7abc02db38380e8"
+      },
+      "originalReferenceIds": [
+        "proxy-edit",
+        "proxy-bound"
+      ],
+      "referenceRelation": "mapped containers with safe long-title clipping; no direct original long-name state",
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "dialog": {
+          "x": 200,
+          "y": 162,
+          "width": 1040,
+          "height": 592,
+          "right": 1240,
+          "bottom": 754
+        },
+        "header": {
+          "x": 200,
+          "y": 162,
+          "width": 1040,
+          "height": 40,
+          "right": 1240,
+          "bottom": 202
+        },
+        "title": {
+          "x": -794.640625,
+          "y": 171,
+          "width": 3013.28125,
+          "height": 36,
+          "right": 2218.640625,
+          "bottom": 207,
+          "text": "已绑定环境 · WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal"
+        },
+        "close": {
+          "x": 1206,
+          "y": 167,
+          "width": 26,
+          "height": 30,
+          "right": 1232,
+          "bottom": 197
+        },
+        "titleOutsideHeader": true,
+        "titleIntersectsClose": true,
+        "closeHitTest": true,
+        "rootHorizontalOverflow": false
+      },
+      "strictOneToOne": false,
+      "realDesktopAcceptance": false,
+      "pairedVisualReview": {
+        "verdict": "FAIL",
+        "notes": [
+          "Usage heading runs outside both modal edges and intrudes into the close region, losing its readable prefix.",
+          "Historical title defect deliberately preserved."
+        ],
+        "reviewer": "ses_eec1333e3ffeYOm3ng0DDrr0R9"
+      },
+      "independentVisualReview": "COMPLETE_WITHIN_THIS_BOUNDED_SCOPE"
+    },
+    {
+      "id": "title-before-proxy-details-long-title-1280x800",
+      "family": "title",
+      "phase": "before",
+      "stateId": "proxy-details-long-title",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "sourceHead": "505ed75cb1fb9bde4b29d94075d0274c5e120c55",
+      "png": {
+        "file": "title-before-1280x800-details.png",
+        "bytes": 67118,
+        "sha256": "c80624cfa9713b5a211c7a24b09fffcb6fc75738bb404aeacea33baf6e76bb21"
+      },
+      "originalReferenceIds": [
+        "proxy-edit",
+        "proxy-bound"
+      ],
+      "referenceRelation": "mapped containers with safe long-title clipping; no direct original long-name state",
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scale": 1
+        },
+        "dialog": {
+          "x": 330,
+          "y": 315,
+          "width": 620,
+          "height": 186,
+          "right": 950,
+          "bottom": 501
+        },
+        "header": {
+          "x": 330,
+          "y": 315,
+          "width": 620,
+          "height": 40,
+          "right": 950,
+          "bottom": 355
+        },
+        "title": {
+          "x": -866.640625,
+          "y": 317,
+          "width": 3013.28125,
+          "height": 36,
+          "right": 2146.640625,
+          "bottom": 353,
+          "text": "代理检查详情 · WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal"
+        },
+        "close": {
+          "x": 916,
+          "y": 320,
+          "width": 26,
+          "height": 30,
+          "right": 942,
+          "bottom": 350
+        },
+        "titleOutsideHeader": true,
+        "titleIntersectsClose": true,
+        "closeHitTest": true,
+        "rootHorizontalOverflow": false
+      },
+      "strictOneToOne": false,
+      "realDesktopAcceptance": false,
+      "pairedVisualReview": {
+        "verdict": "FAIL",
+        "notes": [
+          "Long details heading spills across the modal and image edges, including the close region.",
+          "Body message and confirmation remain distinct; the retained defect is the heading overflow."
+        ],
+        "reviewer": "ses_eec1333e3ffeYOm3ng0DDrr0R9"
+      },
+      "independentVisualReview": "COMPLETE_WITHIN_THIS_BOUNDED_SCOPE"
+    },
+    {
+      "id": "title-before-proxy-usage-long-title-1280x800",
+      "family": "title",
+      "phase": "before",
+      "stateId": "proxy-usage-long-title",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "sourceHead": "505ed75cb1fb9bde4b29d94075d0274c5e120c55",
+      "png": {
+        "file": "title-before-1280x800-usage.png",
+        "bytes": 58806,
+        "sha256": "01d40aac7d95856ec635aec2f2495c6bd418d0d8050eeb54cfd56b640b008dc3"
+      },
+      "originalReferenceIds": [
+        "proxy-edit",
+        "proxy-bound"
+      ],
+      "referenceRelation": "mapped containers with safe long-title clipping; no direct original long-name state",
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scale": 1
+        },
+        "dialog": {
+          "x": 120,
+          "y": 112,
+          "width": 1040,
+          "height": 592,
+          "right": 1160,
+          "bottom": 704
+        },
+        "header": {
+          "x": 120,
+          "y": 112,
+          "width": 1040,
+          "height": 40,
+          "right": 1160,
+          "bottom": 152
+        },
+        "title": {
+          "x": -874.640625,
+          "y": 121,
+          "width": 3013.28125,
+          "height": 36,
+          "right": 2138.640625,
+          "bottom": 157,
+          "text": "已绑定环境 · WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+          "overflow": "visible",
+          "textOverflow": "clip",
+          "whiteSpace": "normal"
+        },
+        "close": {
+          "x": 1126,
+          "y": 117,
+          "width": 26,
+          "height": 30,
+          "right": 1152,
+          "bottom": 147
+        },
+        "titleOutsideHeader": true,
+        "titleIntersectsClose": true,
+        "closeHitTest": true,
+        "rootHorizontalOverflow": false
+      },
+      "strictOneToOne": false,
+      "realDesktopAcceptance": false,
+      "pairedVisualReview": {
+        "verdict": "FAIL",
+        "notes": [
+          "Usage heading crosses modal edges and the close region; its prefix is lost outside the frame.",
+          "Historical title defect deliberately preserved."
+        ],
+        "reviewer": "ses_eec1333e3ffeYOm3ng0DDrr0R9"
+      },
+      "independentVisualReview": "COMPLETE_WITHIN_THIS_BOUNDED_SCOPE"
+    },
+    {
+      "id": "title-after-proxy-details-long-title-1440x900",
+      "family": "title",
+      "phase": "after",
+      "stateId": "proxy-details-long-title",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sourceHead": "4a2afbf053352760dddbdb7baa24a368c659878f",
+      "png": {
+        "file": "title-after-1440x900-details.png",
+        "bytes": 65976,
+        "sha256": "3b29e6ec868f2764b78da46c5112368510f47aacb0414dfde2e360427551ecfb"
+      },
+      "originalReferenceIds": [
+        "proxy-edit",
+        "proxy-bound"
+      ],
+      "referenceRelation": "mapped containers with safe long-title clipping; no direct original long-name state",
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "dialog": {
+          "x": 410,
+          "y": 365,
+          "width": 620,
+          "height": 186,
+          "right": 1030,
+          "bottom": 551
+        },
+        "header": {
+          "x": 410,
+          "y": 365,
+          "width": 620,
+          "height": 40,
+          "right": 1030,
+          "bottom": 405
+        },
+        "title": {
+          "x": 452,
+          "y": 376,
+          "width": 536,
+          "height": 18,
+          "right": 988,
+          "bottom": 394,
+          "text": "代理检查详情 · WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+          "overflow": "hidden",
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap"
+        },
+        "close": {
+          "x": 996,
+          "y": 370,
+          "width": 26,
+          "height": 30,
+          "right": 1022,
+          "bottom": 400
+        },
+        "titleOutsideHeader": false,
+        "titleIntersectsClose": false,
+        "closeHitTest": true,
+        "rootHorizontalOverflow": false
+      },
+      "strictOneToOne": false,
+      "realDesktopAcceptance": false,
+      "pairedVisualReview": {
+        "verdict": "ADAPTED",
+        "notes": [
+          "Readable details prefix and ellipsis stay inside the heading; close icon is separated from text.",
+          "Message and confirmation remain clear; measured title is 536x18 with 8px close clearance."
+        ],
+        "reviewer": "ses_eec1333e3ffeYOm3ng0DDrr0R9"
+      },
+      "independentVisualReview": "COMPLETE_WITHIN_THIS_BOUNDED_SCOPE"
+    },
+    {
+      "id": "title-after-proxy-usage-long-title-1440x900",
+      "family": "title",
+      "phase": "after",
+      "stateId": "proxy-usage-long-title",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sourceHead": "4a2afbf053352760dddbdb7baa24a368c659878f",
+      "png": {
+        "file": "title-after-1440x900-usage.png",
+        "bytes": 62193,
+        "sha256": "7f89c00000cfa0fa50f400965ab9d42a85febc1cd57cc1de3b357a6f365b9572"
+      },
+      "originalReferenceIds": [
+        "proxy-edit",
+        "proxy-bound"
+      ],
+      "referenceRelation": "mapped containers with safe long-title clipping; no direct original long-name state",
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "dialog": {
+          "x": 200,
+          "y": 162,
+          "width": 1040,
+          "height": 592,
+          "right": 1240,
+          "bottom": 754
+        },
+        "header": {
+          "x": 200,
+          "y": 162,
+          "width": 1040,
+          "height": 40,
+          "right": 1240,
+          "bottom": 202
+        },
+        "title": {
+          "x": 234,
+          "y": 180,
+          "width": 956,
+          "height": 18,
+          "right": 1190,
+          "bottom": 198,
+          "text": "已绑定环境 · WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+          "overflow": "hidden",
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap"
+        },
+        "close": {
+          "x": 1206,
+          "y": 167,
+          "width": 26,
+          "height": 30,
+          "right": 1232,
+          "bottom": 197
+        },
+        "titleOutsideHeader": false,
+        "titleIntersectsClose": false,
+        "closeHitTest": true,
+        "rootHorizontalOverflow": false
+      },
+      "strictOneToOne": false,
+      "realDesktopAcceptance": false,
+      "pairedVisualReview": {
+        "verdict": "ADAPTED",
+        "notes": [
+          "Readable usage prefix and ellipsis fit the header with a clear close icon.",
+          "Search, rows, and footer remain separated; measured title is 956x18 with 16px close clearance."
+        ],
+        "reviewer": "ses_eec1333e3ffeYOm3ng0DDrr0R9"
+      },
+      "independentVisualReview": "COMPLETE_WITHIN_THIS_BOUNDED_SCOPE"
+    },
+    {
+      "id": "title-after-proxy-details-long-title-1280x800",
+      "family": "title",
+      "phase": "after",
+      "stateId": "proxy-details-long-title",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "sourceHead": "4a2afbf053352760dddbdb7baa24a368c659878f",
+      "png": {
+        "file": "title-after-1280x800-details.png",
+        "bytes": 64402,
+        "sha256": "3e9e0cd05d8c7f6195e00cde3947660ccf53924e69d0a26a4c52b6cefebf2779"
+      },
+      "originalReferenceIds": [
+        "proxy-edit",
+        "proxy-bound"
+      ],
+      "referenceRelation": "mapped containers with safe long-title clipping; no direct original long-name state",
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scale": 1
+        },
+        "dialog": {
+          "x": 330,
+          "y": 315,
+          "width": 620,
+          "height": 186,
+          "right": 950,
+          "bottom": 501
+        },
+        "header": {
+          "x": 330,
+          "y": 315,
+          "width": 620,
+          "height": 40,
+          "right": 950,
+          "bottom": 355
+        },
+        "title": {
+          "x": 372,
+          "y": 326,
+          "width": 536,
+          "height": 18,
+          "right": 908,
+          "bottom": 344,
+          "text": "代理检查详情 · WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+          "overflow": "hidden",
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap"
+        },
+        "close": {
+          "x": 916,
+          "y": 320,
+          "width": 26,
+          "height": 30,
+          "right": 942,
+          "bottom": 350
+        },
+        "titleOutsideHeader": false,
+        "titleIntersectsClose": false,
+        "closeHitTest": true,
+        "rootHorizontalOverflow": false
+      },
+      "strictOneToOne": false,
+      "realDesktopAcceptance": false,
+      "pairedVisualReview": {
+        "verdict": "ADAPTED",
+        "notes": [
+          "Details prefix and ellipsis are readable and contained; close icon and body are unobscured.",
+          "Measured title is 536x18, header 40px, and close clearance 8px; no direct original long-name state is claimed."
+        ],
+        "reviewer": "ses_eec1333e3ffeYOm3ng0DDrr0R9"
+      },
+      "independentVisualReview": "COMPLETE_WITHIN_THIS_BOUNDED_SCOPE"
+    },
+    {
+      "id": "title-after-proxy-usage-long-title-1280x800",
+      "family": "title",
+      "phase": "after",
+      "stateId": "proxy-usage-long-title",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "sourceHead": "4a2afbf053352760dddbdb7baa24a368c659878f",
+      "png": {
+        "file": "title-after-1280x800-usage.png",
+        "bytes": 58036,
+        "sha256": "5f32bc9722996f6c63c80d0b8b44bd635e7f500a96bf28e2e653b7c44851291e"
+      },
+      "originalReferenceIds": [
+        "proxy-edit",
+        "proxy-bound"
+      ],
+      "referenceRelation": "mapped containers with safe long-title clipping; no direct original long-name state",
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scale": 1
+        },
+        "dialog": {
+          "x": 120,
+          "y": 112,
+          "width": 1040,
+          "height": 592,
+          "right": 1160,
+          "bottom": 704
+        },
+        "header": {
+          "x": 120,
+          "y": 112,
+          "width": 1040,
+          "height": 40,
+          "right": 1160,
+          "bottom": 152
+        },
+        "title": {
+          "x": 154,
+          "y": 130,
+          "width": 956,
+          "height": 18,
+          "right": 1110,
+          "bottom": 148,
+          "text": "已绑定环境 · WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+          "overflow": "hidden",
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap"
+        },
+        "close": {
+          "x": 1126,
+          "y": 117,
+          "width": 26,
+          "height": 30,
+          "right": 1152,
+          "bottom": 147
+        },
+        "titleOutsideHeader": false,
+        "titleIntersectsClose": false,
+        "closeHitTest": true,
+        "rootHorizontalOverflow": false
+      },
+      "strictOneToOne": false,
+      "realDesktopAcceptance": false,
+      "pairedVisualReview": {
+        "verdict": "ADAPTED",
+        "notes": [
+          "Usage prefix and ellipsis fit with the close icon clear; search, rows, selection controls, and confirmation remain readable.",
+          "Measured title is 956x18, header 40px, and close clearance 16px; safe adaptation only."
+        ],
+        "reviewer": "ses_eec1333e3ffeYOm3ng0DDrr0R9"
+      },
+      "independentVisualReview": "COMPLETE_WITHIN_THIS_BOUNDED_SCOPE"
+    },
+    {
+      "id": "preview-after-demo-edit-invalid-width-accurate-save-blocker-1440x900",
+      "family": "preview",
+      "phase": "after",
+      "stateId": "demo-edit-invalid-width-accurate-save-blocker",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sourceHead": "4a2afbf053352760dddbdb7baa24a368c659878f",
+      "png": {
+        "file": "preview-after-1440x900-preview-error-footer.png",
+        "bytes": 122477,
+        "sha256": "0a05b05c67ca493de53f91ad318ec94422ef482e60f0a16d014068c5c06137cc"
+      },
+      "originalReferenceIds": [
+        "environment-edit",
+        "environment-create-fingerprint"
+      ],
+      "referenceRelation": "editor container and safe accurate validation reason; no direct original failure state",
+      "environmentId": "synthetic-reference-1",
+      "savedSeed": "180000001",
+      "savedCoreId": "core-148",
+      "demoStateUnchanged": true,
+      "measurement": {
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "dpr": 1,
+          "scale": 1
+        },
+        "dialog": {
+          "x": 780,
+          "y": 40,
+          "width": 660,
+          "height": 852,
+          "right": 1440,
+          "bottom": 892
+        },
+        "footer": {
+          "x": 780,
+          "y": 821,
+          "width": 660,
+          "height": 71,
+          "right": 1440,
+          "bottom": 892
+        },
+        "status": {
+          "text": "指纹预览失败",
+          "x": 900,
+          "y": 841,
+          "width": 66,
+          "height": 31,
+          "right": 966,
+          "bottom": 872
+        },
+        "previewError": "窗口宽高应为 400 至 7680 的整数。重试指纹预览",
+        "body": {
+          "scrollTop": 673,
+          "clientHeight": 741,
+          "scrollHeight": 1414
+        },
+        "buttons": [
+          {
+            "label": "换一套",
+            "disabled": false,
+            "x": 800,
+            "y": 841,
+            "width": 90,
+            "height": 31,
+            "right": 890,
+            "bottom": 872
+          },
+          {
+            "label": "取消",
+            "disabled": false,
+            "x": 1274,
+            "y": 841,
+            "width": 58,
+            "height": 31,
+            "right": 1332,
+            "bottom": 872
+          },
+          {
+            "label": "保存",
+            "disabled": true,
+            "x": 1342,
+            "y": 841,
+            "width": 78,
+            "height": 31,
+            "right": 1420,
+            "bottom": 872
+          }
+        ],
+        "footerControlsOutside": []
+      },
+      "strictOneToOne": false,
+      "realDesktopAcceptance": false,
+      "pairedVisualReview": {
+        "verdict": "ADAPTED",
+        "notes": [
+          "Validation error/retry and preview-failed footer status are readable; no false missing-kernel status appears.",
+          "Change-set, cancel, and disabled save fit the fixed footer without overlap at natural scroll bottom."
+        ],
+        "reviewer": "ses_eec1333e3ffeYOm3ng0DDrr0R9"
+      },
+      "independentVisualReview": "COMPLETE_WITHIN_THIS_BOUNDED_SCOPE"
+    },
+    {
+      "id": "preview-after-demo-edit-invalid-width-accurate-save-blocker-1280x800",
+      "family": "preview",
+      "phase": "after",
+      "stateId": "demo-edit-invalid-width-accurate-save-blocker",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "sourceHead": "4a2afbf053352760dddbdb7baa24a368c659878f",
+      "png": {
+        "file": "preview-after-1280x800-preview-error-footer.png",
+        "bytes": 90100,
+        "sha256": "dfefd895b8ef4c07e7f11036411c5021c927394a4d50d4b370424ca7658903be"
+      },
+      "originalReferenceIds": [
+        "environment-edit",
+        "environment-create-fingerprint"
+      ],
+      "referenceRelation": "editor container and safe accurate validation reason; no direct original failure state",
+      "environmentId": "synthetic-reference-1",
+      "savedSeed": "180000001",
+      "savedCoreId": "core-148",
+      "demoStateUnchanged": true,
+      "measurement": {
+        "viewport": {
+          "width": 1280,
+          "height": 800,
+          "dpr": 1,
+          "scale": 1
+        },
+        "dialog": {
+          "x": 620,
+          "y": 40,
+          "width": 660,
+          "height": 752,
+          "right": 1280,
+          "bottom": 792
+        },
+        "footer": {
+          "x": 620,
+          "y": 721,
+          "width": 660,
+          "height": 71,
+          "right": 1280,
+          "bottom": 792
+        },
+        "status": {
+          "text": "指纹预览失败",
+          "x": 740,
+          "y": 741,
+          "width": 66,
+          "height": 31,
+          "right": 806,
+          "bottom": 772
+        },
+        "previewError": "窗口宽高应为 400 至 7680 的整数。重试指纹预览",
+        "body": {
+          "scrollTop": 773,
+          "clientHeight": 641,
+          "scrollHeight": 1414
+        },
+        "buttons": [
+          {
+            "label": "换一套",
+            "disabled": false,
+            "x": 640,
+            "y": 741,
+            "width": 90,
+            "height": 31,
+            "right": 730,
+            "bottom": 772
+          },
+          {
+            "label": "取消",
+            "disabled": false,
+            "x": 1114,
+            "y": 741,
+            "width": 58,
+            "height": 31,
+            "right": 1172,
+            "bottom": 772
+          },
+          {
+            "label": "保存",
+            "disabled": true,
+            "x": 1182,
+            "y": 741,
+            "width": 78,
+            "height": 31,
+            "right": 1260,
+            "bottom": 772
+          }
+        ],
+        "footerControlsOutside": []
+      },
+      "strictOneToOne": false,
+      "realDesktopAcceptance": false,
+      "pairedVisualReview": {
+        "verdict": "ADAPTED",
+        "notes": [
+          "Error/retry and preview-failed status remain readable in the shorter drawer.",
+          "Footer controls remain separated and save visibly disabled; cropped upper scrolled content is not a new footer overlap."
+        ],
+        "reviewer": "ses_eec1333e3ffeYOm3ng0DDrr0R9"
+      },
+      "independentVisualReview": "COMPLETE_WITHIN_THIS_BOUNDED_SCOPE"
+    }
+  ],
+  "pairs": [
+    {
+      "family": "toolbar",
+      "title": "较窄窗口工具栏",
+      "stateId": "environment-normal-toolbar",
+      "viewport": {
+        "width": 1024,
+        "height": 720
+      },
+      "before": "toolbar-before-1024x720-normal.png",
+      "after": "toolbar-after-1024x720-normal.png"
+    },
+    {
+      "family": "toolbar",
+      "title": "较窄窗口工具栏",
+      "stateId": "environment-selected-toolbar",
+      "viewport": {
+        "width": 1024,
+        "height": 720
+      },
+      "before": "toolbar-before-1024x720-selected.png",
+      "after": "toolbar-after-1024x720-selected.png"
+    },
+    {
+      "family": "toolbar",
+      "title": "较窄窗口工具栏",
+      "stateId": "environment-normal-toolbar",
+      "viewport": {
+        "width": 900,
+        "height": 720
+      },
+      "before": "toolbar-before-900x720-normal.png",
+      "after": "toolbar-after-900x720-normal.png"
+    },
+    {
+      "family": "toolbar",
+      "title": "较窄窗口工具栏",
+      "stateId": "environment-selected-toolbar",
+      "viewport": {
+        "width": 900,
+        "height": 720
+      },
+      "before": "toolbar-before-900x720-selected.png",
+      "after": "toolbar-after-900x720-selected.png"
+    },
+    {
+      "family": "title",
+      "title": "长代理名称标题",
+      "stateId": "proxy-details-long-title",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "before": "title-before-1440x900-details.png",
+      "after": "title-after-1440x900-details.png"
+    },
+    {
+      "family": "title",
+      "title": "长代理名称标题",
+      "stateId": "proxy-usage-long-title",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "before": "title-before-1440x900-usage.png",
+      "after": "title-after-1440x900-usage.png"
+    },
+    {
+      "family": "title",
+      "title": "长代理名称标题",
+      "stateId": "proxy-details-long-title",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "before": "title-before-1280x800-details.png",
+      "after": "title-after-1280x800-details.png"
+    },
+    {
+      "family": "title",
+      "title": "长代理名称标题",
+      "stateId": "proxy-usage-long-title",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "before": "title-before-1280x800-usage.png",
+      "after": "title-after-1280x800-usage.png"
+    }
+  ],
+  "standardGeometry": [
+    {
+      "family": "toolbar",
+      "stateId": "environment-normal-toolbar",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "exactGeometryUnchanged": true,
+      "before": {
+        "surfaces": {
+          ".sidebar": {
+            "x": 0,
+            "y": 0,
+            "width": 200,
+            "height": 900,
+            "right": 200,
+            "bottom": 900,
+            "clientHeight": 900,
+            "scrollHeight": 900
+          },
+          ".environment-search-toolbar": {
+            "x": 210,
+            "y": 50,
+            "width": 1220,
+            "height": 52.859375,
+            "right": 1430,
+            "bottom": 102.859375,
+            "clientHeight": 53,
+            "scrollHeight": 53
+          },
+          ".environment-list-toolbar": {
+            "x": 210,
+            "y": 112.859375,
+            "width": 1220,
+            "height": 50,
+            "right": 1430,
+            "bottom": 162.859375,
+            "clientHeight": 50,
+            "scrollHeight": 50
+          },
+          ".environment-table-scroll": {
+            "x": 220,
+            "y": 162.859375,
+            "width": 1200,
+            "height": 622,
+            "right": 1420,
+            "bottom": 784.859375,
+            "clientHeight": 622,
+            "scrollHeight": 622
+          },
+          ".environment-table tbody": {
+            "x": 220,
+            "y": 202.859375,
+            "width": 1200,
+            "height": 582,
+            "right": 1420,
+            "bottom": 784.859375,
+            "clientHeight": 582,
+            "scrollHeight": 590
+          },
+          ".environment-pagination": {
+            "x": 220,
+            "y": 794.859375,
+            "width": 1200,
+            "height": 30,
+            "right": 1420,
+            "bottom": 824.859375,
+            "clientHeight": 30,
+            "scrollHeight": 30
+          }
+        },
+        "controls": [
+          {
+            "label": "新建环境",
+            "x": 220,
+            "y": 60.921875,
+            "width": 110,
+            "height": 31,
+            "right": 330,
+            "bottom": 91.921875
+          },
+          {
+            "label": "创建菜单",
+            "x": 330,
+            "y": 60.921875,
+            "width": 24,
+            "height": 31,
+            "right": 354,
+            "bottom": 91.921875
+          },
+          {
+            "label": "导入 / 备份",
+            "x": 542.234375,
+            "y": 60.921875,
+            "width": 114.234375,
+            "height": 31,
+            "right": 656.46875,
+            "bottom": 91.921875
+          },
+          {
+            "label": "筛选分组",
+            "x": 666.46875,
+            "y": 60.421875,
+            "width": 150,
+            "height": 32,
+            "right": 816.46875,
+            "bottom": 92.421875
+          },
+          {
+            "label": "搜索环境",
+            "x": 942.9375,
+            "y": 60.921875,
+            "width": 378.0625,
+            "height": 30,
+            "right": 1321,
+            "bottom": 90.921875
+          },
+          {
+            "label": "高级搜索",
+            "x": 1354,
+            "y": 63.171875,
+            "width": 66,
+            "height": 26.515625,
+            "right": 1420,
+            "bottom": 89.6875
+          },
+          {
+            "label": "全部",
+            "x": 221,
+            "y": 123.359375,
+            "width": 79.59375,
+            "height": 29,
+            "right": 300.59375,
+            "bottom": 152.359375
+          },
+          {
+            "label": "待启动",
+            "x": 300.59375,
+            "y": 123.359375,
+            "width": 79.609375,
+            "height": 29,
+            "right": 380.203125,
+            "bottom": 152.359375
+          },
+          {
+            "label": "已打开",
+            "x": 380.203125,
+            "y": 123.359375,
+            "width": 79.59375,
+            "height": 29,
+            "right": 459.796875,
+            "bottom": 152.359375
+          },
+          {
+            "label": "需处理",
+            "x": 459.796875,
+            "y": 123.359375,
+            "width": 79.609375,
+            "height": 29,
+            "right": 539.40625,
+            "bottom": 152.359375
+          },
+          {
+            "label": "分组筛选",
+            "x": 539.40625,
+            "y": 123.359375,
+            "width": 79.59375,
+            "height": 29,
+            "right": 619,
+            "bottom": 152.359375
+          },
+          {
+            "label": "更多操作",
+            "x": 1278,
+            "y": 122.359375,
+            "width": 100,
+            "height": 31,
+            "right": 1378,
+            "bottom": 153.359375
+          },
+          {
+            "label": "刷新环境列表",
+            "x": 1388,
+            "y": 122.359375,
+            "width": 32,
+            "height": 31,
+            "right": 1420,
+            "bottom": 153.359375
+          }
+        ]
+      },
+      "after": {
+        "surfaces": {
+          ".sidebar": {
+            "x": 0,
+            "y": 0,
+            "width": 200,
+            "height": 900,
+            "right": 200,
+            "bottom": 900,
+            "clientHeight": 900,
+            "scrollHeight": 900
+          },
+          ".environment-search-toolbar": {
+            "x": 210,
+            "y": 50,
+            "width": 1220,
+            "height": 52.859375,
+            "right": 1430,
+            "bottom": 102.859375,
+            "clientHeight": 53,
+            "scrollHeight": 53
+          },
+          ".environment-list-toolbar": {
+            "x": 210,
+            "y": 112.859375,
+            "width": 1220,
+            "height": 50,
+            "right": 1430,
+            "bottom": 162.859375,
+            "clientHeight": 50,
+            "scrollHeight": 50
+          },
+          ".environment-table-scroll": {
+            "x": 220,
+            "y": 162.859375,
+            "width": 1200,
+            "height": 622,
+            "right": 1420,
+            "bottom": 784.859375,
+            "clientHeight": 622,
+            "scrollHeight": 622
+          },
+          ".environment-table tbody": {
+            "x": 220,
+            "y": 202.859375,
+            "width": 1200,
+            "height": 582,
+            "right": 1420,
+            "bottom": 784.859375,
+            "clientHeight": 582,
+            "scrollHeight": 590
+          },
+          ".environment-pagination": {
+            "x": 220,
+            "y": 794.859375,
+            "width": 1200,
+            "height": 30,
+            "right": 1420,
+            "bottom": 824.859375,
+            "clientHeight": 30,
+            "scrollHeight": 30
+          }
+        },
+        "controls": [
+          {
+            "label": "新建环境",
+            "x": 220,
+            "y": 60.921875,
+            "width": 110,
+            "height": 31,
+            "right": 330,
+            "bottom": 91.921875
+          },
+          {
+            "label": "创建菜单",
+            "x": 330,
+            "y": 60.921875,
+            "width": 24,
+            "height": 31,
+            "right": 354,
+            "bottom": 91.921875
+          },
+          {
+            "label": "导入 / 备份",
+            "x": 542.234375,
+            "y": 60.921875,
+            "width": 114.234375,
+            "height": 31,
+            "right": 656.46875,
+            "bottom": 91.921875
+          },
+          {
+            "label": "筛选分组",
+            "x": 666.46875,
+            "y": 60.421875,
+            "width": 150,
+            "height": 32,
+            "right": 816.46875,
+            "bottom": 92.421875
+          },
+          {
+            "label": "搜索环境",
+            "x": 942.9375,
+            "y": 60.921875,
+            "width": 378.0625,
+            "height": 30,
+            "right": 1321,
+            "bottom": 90.921875
+          },
+          {
+            "label": "高级搜索",
+            "x": 1354,
+            "y": 63.171875,
+            "width": 66,
+            "height": 26.515625,
+            "right": 1420,
+            "bottom": 89.6875
+          },
+          {
+            "label": "全部",
+            "x": 221,
+            "y": 123.359375,
+            "width": 79.59375,
+            "height": 29,
+            "right": 300.59375,
+            "bottom": 152.359375
+          },
+          {
+            "label": "待启动",
+            "x": 300.59375,
+            "y": 123.359375,
+            "width": 79.609375,
+            "height": 29,
+            "right": 380.203125,
+            "bottom": 152.359375
+          },
+          {
+            "label": "已打开",
+            "x": 380.203125,
+            "y": 123.359375,
+            "width": 79.59375,
+            "height": 29,
+            "right": 459.796875,
+            "bottom": 152.359375
+          },
+          {
+            "label": "需处理",
+            "x": 459.796875,
+            "y": 123.359375,
+            "width": 79.609375,
+            "height": 29,
+            "right": 539.40625,
+            "bottom": 152.359375
+          },
+          {
+            "label": "分组筛选",
+            "x": 539.40625,
+            "y": 123.359375,
+            "width": 79.59375,
+            "height": 29,
+            "right": 619,
+            "bottom": 152.359375
+          },
+          {
+            "label": "更多操作",
+            "x": 1278,
+            "y": 122.359375,
+            "width": 100,
+            "height": 31,
+            "right": 1378,
+            "bottom": 153.359375
+          },
+          {
+            "label": "刷新环境列表",
+            "x": 1388,
+            "y": 122.359375,
+            "width": 32,
+            "height": 31,
+            "right": 1420,
+            "bottom": 153.359375
+          }
+        ]
+      }
+    },
+    {
+      "family": "toolbar",
+      "stateId": "environment-selected-toolbar",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "exactGeometryUnchanged": true,
+      "before": {
+        "surfaces": {
+          ".sidebar": {
+            "x": 0,
+            "y": 0,
+            "width": 200,
+            "height": 900,
+            "right": 200,
+            "bottom": 900,
+            "clientHeight": 900,
+            "scrollHeight": 900
+          },
+          ".environment-search-toolbar": {
+            "x": 210,
+            "y": 50,
+            "width": 1220,
+            "height": 52.859375,
+            "right": 1430,
+            "bottom": 102.859375,
+            "clientHeight": 53,
+            "scrollHeight": 53
+          },
+          ".environment-list-toolbar": {
+            "x": 210,
+            "y": 112.859375,
+            "width": 1220,
+            "height": 50,
+            "right": 1430,
+            "bottom": 162.859375,
+            "clientHeight": 50,
+            "scrollHeight": 50
+          },
+          ".environment-table-scroll": {
+            "x": 220,
+            "y": 162.859375,
+            "width": 1200,
+            "height": 622,
+            "right": 1420,
+            "bottom": 784.859375,
+            "clientHeight": 622,
+            "scrollHeight": 622
+          },
+          ".environment-table tbody": {
+            "x": 220,
+            "y": 202.859375,
+            "width": 1200,
+            "height": 582,
+            "right": 1420,
+            "bottom": 784.859375,
+            "clientHeight": 582,
+            "scrollHeight": 590
+          },
+          ".environment-pagination": {
+            "x": 220,
+            "y": 794.859375,
+            "width": 1200,
+            "height": 30,
+            "right": 1420,
+            "bottom": 824.859375,
+            "clientHeight": 30,
+            "scrollHeight": 30
+          }
+        },
+        "controls": [
+          {
+            "label": "新建环境",
+            "x": 220,
+            "y": 60.921875,
+            "width": 110,
+            "height": 31,
+            "right": 330,
+            "bottom": 91.921875
+          },
+          {
+            "label": "创建菜单",
+            "x": 330,
+            "y": 60.921875,
+            "width": 24,
+            "height": 31,
+            "right": 354,
+            "bottom": 91.921875
+          },
+          {
+            "label": "导入 / 备份",
+            "x": 542.234375,
+            "y": 60.921875,
+            "width": 114.234375,
+            "height": 31,
+            "right": 656.46875,
+            "bottom": 91.921875
+          },
+          {
+            "label": "筛选分组",
+            "x": 666.46875,
+            "y": 60.421875,
+            "width": 150,
+            "height": 32,
+            "right": 816.46875,
+            "bottom": 92.421875
+          },
+          {
+            "label": "搜索环境",
+            "x": 942.9375,
+            "y": 60.921875,
+            "width": 378.0625,
+            "height": 30,
+            "right": 1321,
+            "bottom": 90.921875
+          },
+          {
+            "label": "高级搜索",
+            "x": 1354,
+            "y": 63.171875,
+            "width": 66,
+            "height": 26.515625,
+            "right": 1420,
+            "bottom": 89.6875
+          },
+          {
+            "label": "全部",
+            "x": 221,
+            "y": 123.359375,
+            "width": 79.59375,
+            "height": 29,
+            "right": 300.59375,
+            "bottom": 152.359375
+          },
+          {
+            "label": "待启动",
+            "x": 300.59375,
+            "y": 123.359375,
+            "width": 79.609375,
+            "height": 29,
+            "right": 380.203125,
+            "bottom": 152.359375
+          },
+          {
+            "label": "已打开",
+            "x": 380.203125,
+            "y": 123.359375,
+            "width": 79.59375,
+            "height": 29,
+            "right": 459.796875,
+            "bottom": 152.359375
+          },
+          {
+            "label": "需处理",
+            "x": 459.796875,
+            "y": 123.359375,
+            "width": 79.609375,
+            "height": 29,
+            "right": 539.40625,
+            "bottom": 152.359375
+          },
+          {
+            "label": "分组筛选",
+            "x": 539.40625,
+            "y": 123.359375,
+            "width": 79.59375,
+            "height": 29,
+            "right": 619,
+            "bottom": 152.359375
+          },
+          {
+            "label": "取消选择",
+            "x": 706.40625,
+            "y": 128.859375,
+            "width": 48,
+            "height": 18,
+            "right": 754.40625,
+            "bottom": 146.859375
+          },
+          {
+            "label": "批量打开",
+            "x": 1002,
+            "y": 122.359375,
+            "width": 82,
+            "height": 31,
+            "right": 1084,
+            "bottom": 153.359375
+          },
+          {
+            "label": "批量关闭",
+            "x": 1094,
+            "y": 122.359375,
+            "width": 82,
+            "height": 31,
+            "right": 1176,
+            "bottom": 153.359375
+          },
+          {
+            "label": "调整分组",
+            "x": 1186,
+            "y": 122.359375,
+            "width": 82,
+            "height": 31,
+            "right": 1268,
+            "bottom": 153.359375
+          },
+          {
+            "label": "更多操作",
+            "x": 1278,
+            "y": 122.359375,
+            "width": 100,
+            "height": 31,
+            "right": 1378,
+            "bottom": 153.359375
+          },
+          {
+            "label": "刷新环境列表",
+            "x": 1388,
+            "y": 122.359375,
+            "width": 32,
+            "height": 31,
+            "right": 1420,
+            "bottom": 153.359375
+          }
+        ]
+      },
+      "after": {
+        "surfaces": {
+          ".sidebar": {
+            "x": 0,
+            "y": 0,
+            "width": 200,
+            "height": 900,
+            "right": 200,
+            "bottom": 900,
+            "clientHeight": 900,
+            "scrollHeight": 900
+          },
+          ".environment-search-toolbar": {
+            "x": 210,
+            "y": 50,
+            "width": 1220,
+            "height": 52.859375,
+            "right": 1430,
+            "bottom": 102.859375,
+            "clientHeight": 53,
+            "scrollHeight": 53
+          },
+          ".environment-list-toolbar": {
+            "x": 210,
+            "y": 112.859375,
+            "width": 1220,
+            "height": 50,
+            "right": 1430,
+            "bottom": 162.859375,
+            "clientHeight": 50,
+            "scrollHeight": 50
+          },
+          ".environment-table-scroll": {
+            "x": 220,
+            "y": 162.859375,
+            "width": 1200,
+            "height": 622,
+            "right": 1420,
+            "bottom": 784.859375,
+            "clientHeight": 622,
+            "scrollHeight": 622
+          },
+          ".environment-table tbody": {
+            "x": 220,
+            "y": 202.859375,
+            "width": 1200,
+            "height": 582,
+            "right": 1420,
+            "bottom": 784.859375,
+            "clientHeight": 582,
+            "scrollHeight": 590
+          },
+          ".environment-pagination": {
+            "x": 220,
+            "y": 794.859375,
+            "width": 1200,
+            "height": 30,
+            "right": 1420,
+            "bottom": 824.859375,
+            "clientHeight": 30,
+            "scrollHeight": 30
+          }
+        },
+        "controls": [
+          {
+            "label": "新建环境",
+            "x": 220,
+            "y": 60.921875,
+            "width": 110,
+            "height": 31,
+            "right": 330,
+            "bottom": 91.921875
+          },
+          {
+            "label": "创建菜单",
+            "x": 330,
+            "y": 60.921875,
+            "width": 24,
+            "height": 31,
+            "right": 354,
+            "bottom": 91.921875
+          },
+          {
+            "label": "导入 / 备份",
+            "x": 542.234375,
+            "y": 60.921875,
+            "width": 114.234375,
+            "height": 31,
+            "right": 656.46875,
+            "bottom": 91.921875
+          },
+          {
+            "label": "筛选分组",
+            "x": 666.46875,
+            "y": 60.421875,
+            "width": 150,
+            "height": 32,
+            "right": 816.46875,
+            "bottom": 92.421875
+          },
+          {
+            "label": "搜索环境",
+            "x": 942.9375,
+            "y": 60.921875,
+            "width": 378.0625,
+            "height": 30,
+            "right": 1321,
+            "bottom": 90.921875
+          },
+          {
+            "label": "高级搜索",
+            "x": 1354,
+            "y": 63.171875,
+            "width": 66,
+            "height": 26.515625,
+            "right": 1420,
+            "bottom": 89.6875
+          },
+          {
+            "label": "全部",
+            "x": 221,
+            "y": 123.359375,
+            "width": 79.59375,
+            "height": 29,
+            "right": 300.59375,
+            "bottom": 152.359375
+          },
+          {
+            "label": "待启动",
+            "x": 300.59375,
+            "y": 123.359375,
+            "width": 79.609375,
+            "height": 29,
+            "right": 380.203125,
+            "bottom": 152.359375
+          },
+          {
+            "label": "已打开",
+            "x": 380.203125,
+            "y": 123.359375,
+            "width": 79.59375,
+            "height": 29,
+            "right": 459.796875,
+            "bottom": 152.359375
+          },
+          {
+            "label": "需处理",
+            "x": 459.796875,
+            "y": 123.359375,
+            "width": 79.609375,
+            "height": 29,
+            "right": 539.40625,
+            "bottom": 152.359375
+          },
+          {
+            "label": "分组筛选",
+            "x": 539.40625,
+            "y": 123.359375,
+            "width": 79.59375,
+            "height": 29,
+            "right": 619,
+            "bottom": 152.359375
+          },
+          {
+            "label": "取消选择",
+            "x": 706.40625,
+            "y": 128.859375,
+            "width": 48,
+            "height": 18,
+            "right": 754.40625,
+            "bottom": 146.859375
+          },
+          {
+            "label": "批量打开",
+            "x": 1002,
+            "y": 122.359375,
+            "width": 82,
+            "height": 31,
+            "right": 1084,
+            "bottom": 153.359375
+          },
+          {
+            "label": "批量关闭",
+            "x": 1094,
+            "y": 122.359375,
+            "width": 82,
+            "height": 31,
+            "right": 1176,
+            "bottom": 153.359375
+          },
+          {
+            "label": "调整分组",
+            "x": 1186,
+            "y": 122.359375,
+            "width": 82,
+            "height": 31,
+            "right": 1268,
+            "bottom": 153.359375
+          },
+          {
+            "label": "更多操作",
+            "x": 1278,
+            "y": 122.359375,
+            "width": 100,
+            "height": 31,
+            "right": 1378,
+            "bottom": 153.359375
+          },
+          {
+            "label": "刷新环境列表",
+            "x": 1388,
+            "y": 122.359375,
+            "width": 32,
+            "height": 31,
+            "right": 1420,
+            "bottom": 153.359375
+          }
+        ]
+      }
+    },
+    {
+      "family": "toolbar",
+      "stateId": "environment-normal-toolbar",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "exactGeometryUnchanged": true,
+      "before": {
+        "surfaces": {
+          ".sidebar": {
+            "x": 0,
+            "y": 0,
+            "width": 200,
+            "height": 800,
+            "right": 200,
+            "bottom": 800,
+            "clientHeight": 800,
+            "scrollHeight": 800
+          },
+          ".environment-search-toolbar": {
+            "x": 210,
+            "y": 50,
+            "width": 1060,
+            "height": 52.859375,
+            "right": 1270,
+            "bottom": 102.859375,
+            "clientHeight": 53,
+            "scrollHeight": 53
+          },
+          ".environment-list-toolbar": {
+            "x": 210,
+            "y": 112.859375,
+            "width": 1060,
+            "height": 50,
+            "right": 1270,
+            "bottom": 162.859375,
+            "clientHeight": 50,
+            "scrollHeight": 50
+          },
+          ".environment-table-scroll": {
+            "x": 220,
+            "y": 162.859375,
+            "width": 1040,
+            "height": 522,
+            "right": 1260,
+            "bottom": 684.859375,
+            "clientHeight": 522,
+            "scrollHeight": 522
+          },
+          ".environment-table tbody": {
+            "x": 220,
+            "y": 202.859375,
+            "width": 1040,
+            "height": 482,
+            "right": 1260,
+            "bottom": 684.859375,
+            "clientHeight": 482,
+            "scrollHeight": 590
+          },
+          ".environment-pagination": {
+            "x": 220,
+            "y": 694.859375,
+            "width": 1040,
+            "height": 30,
+            "right": 1260,
+            "bottom": 724.859375,
+            "clientHeight": 30,
+            "scrollHeight": 30
+          }
+        },
+        "controls": [
+          {
+            "label": "新建环境",
+            "x": 220,
+            "y": 60.921875,
+            "width": 110,
+            "height": 31,
+            "right": 330,
+            "bottom": 91.921875
+          },
+          {
+            "label": "创建菜单",
+            "x": 330,
+            "y": 60.921875,
+            "width": 24,
+            "height": 31,
+            "right": 354,
+            "bottom": 91.921875
+          },
+          {
+            "label": "导入 / 备份",
+            "x": 542.234375,
+            "y": 60.921875,
+            "width": 114.234375,
+            "height": 31,
+            "right": 656.46875,
+            "bottom": 91.921875
+          },
+          {
+            "label": "筛选分组",
+            "x": 666.46875,
+            "y": 60.421875,
+            "width": 150,
+            "height": 32,
+            "right": 816.46875,
+            "bottom": 92.421875
+          },
+          {
+            "label": "搜索环境",
+            "x": 942.9375,
+            "y": 60.921875,
+            "width": 218.0625,
+            "height": 30,
+            "right": 1161,
+            "bottom": 90.921875
+          },
+          {
+            "label": "高级搜索",
+            "x": 1194,
+            "y": 63.171875,
+            "width": 66,
+            "height": 26.515625,
+            "right": 1260,
+            "bottom": 89.6875
+          },
+          {
+            "label": "全部",
+            "x": 221,
+            "y": 123.359375,
+            "width": 79.59375,
+            "height": 29,
+            "right": 300.59375,
+            "bottom": 152.359375
+          },
+          {
+            "label": "待启动",
+            "x": 300.59375,
+            "y": 123.359375,
+            "width": 79.609375,
+            "height": 29,
+            "right": 380.203125,
+            "bottom": 152.359375
+          },
+          {
+            "label": "已打开",
+            "x": 380.203125,
+            "y": 123.359375,
+            "width": 79.59375,
+            "height": 29,
+            "right": 459.796875,
+            "bottom": 152.359375
+          },
+          {
+            "label": "需处理",
+            "x": 459.796875,
+            "y": 123.359375,
+            "width": 79.609375,
+            "height": 29,
+            "right": 539.40625,
+            "bottom": 152.359375
+          },
+          {
+            "label": "分组筛选",
+            "x": 539.40625,
+            "y": 123.359375,
+            "width": 79.59375,
+            "height": 29,
+            "right": 619,
+            "bottom": 152.359375
+          },
+          {
+            "label": "更多操作",
+            "x": 1118,
+            "y": 122.359375,
+            "width": 100,
+            "height": 31,
+            "right": 1218,
+            "bottom": 153.359375
+          },
+          {
+            "label": "刷新环境列表",
+            "x": 1228,
+            "y": 122.359375,
+            "width": 32,
+            "height": 31,
+            "right": 1260,
+            "bottom": 153.359375
+          }
+        ]
+      },
+      "after": {
+        "surfaces": {
+          ".sidebar": {
+            "x": 0,
+            "y": 0,
+            "width": 200,
+            "height": 800,
+            "right": 200,
+            "bottom": 800,
+            "clientHeight": 800,
+            "scrollHeight": 800
+          },
+          ".environment-search-toolbar": {
+            "x": 210,
+            "y": 50,
+            "width": 1060,
+            "height": 52.859375,
+            "right": 1270,
+            "bottom": 102.859375,
+            "clientHeight": 53,
+            "scrollHeight": 53
+          },
+          ".environment-list-toolbar": {
+            "x": 210,
+            "y": 112.859375,
+            "width": 1060,
+            "height": 50,
+            "right": 1270,
+            "bottom": 162.859375,
+            "clientHeight": 50,
+            "scrollHeight": 50
+          },
+          ".environment-table-scroll": {
+            "x": 220,
+            "y": 162.859375,
+            "width": 1040,
+            "height": 522,
+            "right": 1260,
+            "bottom": 684.859375,
+            "clientHeight": 522,
+            "scrollHeight": 522
+          },
+          ".environment-table tbody": {
+            "x": 220,
+            "y": 202.859375,
+            "width": 1040,
+            "height": 482,
+            "right": 1260,
+            "bottom": 684.859375,
+            "clientHeight": 482,
+            "scrollHeight": 590
+          },
+          ".environment-pagination": {
+            "x": 220,
+            "y": 694.859375,
+            "width": 1040,
+            "height": 30,
+            "right": 1260,
+            "bottom": 724.859375,
+            "clientHeight": 30,
+            "scrollHeight": 30
+          }
+        },
+        "controls": [
+          {
+            "label": "新建环境",
+            "x": 220,
+            "y": 60.921875,
+            "width": 110,
+            "height": 31,
+            "right": 330,
+            "bottom": 91.921875
+          },
+          {
+            "label": "创建菜单",
+            "x": 330,
+            "y": 60.921875,
+            "width": 24,
+            "height": 31,
+            "right": 354,
+            "bottom": 91.921875
+          },
+          {
+            "label": "导入 / 备份",
+            "x": 542.234375,
+            "y": 60.921875,
+            "width": 114.234375,
+            "height": 31,
+            "right": 656.46875,
+            "bottom": 91.921875
+          },
+          {
+            "label": "筛选分组",
+            "x": 666.46875,
+            "y": 60.421875,
+            "width": 150,
+            "height": 32,
+            "right": 816.46875,
+            "bottom": 92.421875
+          },
+          {
+            "label": "搜索环境",
+            "x": 942.9375,
+            "y": 60.921875,
+            "width": 218.0625,
+            "height": 30,
+            "right": 1161,
+            "bottom": 90.921875
+          },
+          {
+            "label": "高级搜索",
+            "x": 1194,
+            "y": 63.171875,
+            "width": 66,
+            "height": 26.515625,
+            "right": 1260,
+            "bottom": 89.6875
+          },
+          {
+            "label": "全部",
+            "x": 221,
+            "y": 123.359375,
+            "width": 79.59375,
+            "height": 29,
+            "right": 300.59375,
+            "bottom": 152.359375
+          },
+          {
+            "label": "待启动",
+            "x": 300.59375,
+            "y": 123.359375,
+            "width": 79.609375,
+            "height": 29,
+            "right": 380.203125,
+            "bottom": 152.359375
+          },
+          {
+            "label": "已打开",
+            "x": 380.203125,
+            "y": 123.359375,
+            "width": 79.59375,
+            "height": 29,
+            "right": 459.796875,
+            "bottom": 152.359375
+          },
+          {
+            "label": "需处理",
+            "x": 459.796875,
+            "y": 123.359375,
+            "width": 79.609375,
+            "height": 29,
+            "right": 539.40625,
+            "bottom": 152.359375
+          },
+          {
+            "label": "分组筛选",
+            "x": 539.40625,
+            "y": 123.359375,
+            "width": 79.59375,
+            "height": 29,
+            "right": 619,
+            "bottom": 152.359375
+          },
+          {
+            "label": "更多操作",
+            "x": 1118,
+            "y": 122.359375,
+            "width": 100,
+            "height": 31,
+            "right": 1218,
+            "bottom": 153.359375
+          },
+          {
+            "label": "刷新环境列表",
+            "x": 1228,
+            "y": 122.359375,
+            "width": 32,
+            "height": 31,
+            "right": 1260,
+            "bottom": 153.359375
+          }
+        ]
+      }
+    },
+    {
+      "family": "toolbar",
+      "stateId": "environment-selected-toolbar",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "exactGeometryUnchanged": true,
+      "before": {
+        "surfaces": {
+          ".sidebar": {
+            "x": 0,
+            "y": 0,
+            "width": 200,
+            "height": 800,
+            "right": 200,
+            "bottom": 800,
+            "clientHeight": 800,
+            "scrollHeight": 800
+          },
+          ".environment-search-toolbar": {
+            "x": 210,
+            "y": 50,
+            "width": 1060,
+            "height": 52.859375,
+            "right": 1270,
+            "bottom": 102.859375,
+            "clientHeight": 53,
+            "scrollHeight": 53
+          },
+          ".environment-list-toolbar": {
+            "x": 210,
+            "y": 112.859375,
+            "width": 1060,
+            "height": 50,
+            "right": 1270,
+            "bottom": 162.859375,
+            "clientHeight": 50,
+            "scrollHeight": 50
+          },
+          ".environment-table-scroll": {
+            "x": 220,
+            "y": 162.859375,
+            "width": 1040,
+            "height": 522,
+            "right": 1260,
+            "bottom": 684.859375,
+            "clientHeight": 522,
+            "scrollHeight": 522
+          },
+          ".environment-table tbody": {
+            "x": 220,
+            "y": 202.859375,
+            "width": 1040,
+            "height": 482,
+            "right": 1260,
+            "bottom": 684.859375,
+            "clientHeight": 482,
+            "scrollHeight": 590
+          },
+          ".environment-pagination": {
+            "x": 220,
+            "y": 694.859375,
+            "width": 1040,
+            "height": 30,
+            "right": 1260,
+            "bottom": 724.859375,
+            "clientHeight": 30,
+            "scrollHeight": 30
+          }
+        },
+        "controls": [
+          {
+            "label": "新建环境",
+            "x": 220,
+            "y": 60.921875,
+            "width": 110,
+            "height": 31,
+            "right": 330,
+            "bottom": 91.921875
+          },
+          {
+            "label": "创建菜单",
+            "x": 330,
+            "y": 60.921875,
+            "width": 24,
+            "height": 31,
+            "right": 354,
+            "bottom": 91.921875
+          },
+          {
+            "label": "导入 / 备份",
+            "x": 542.234375,
+            "y": 60.921875,
+            "width": 114.234375,
+            "height": 31,
+            "right": 656.46875,
+            "bottom": 91.921875
+          },
+          {
+            "label": "筛选分组",
+            "x": 666.46875,
+            "y": 60.421875,
+            "width": 150,
+            "height": 32,
+            "right": 816.46875,
+            "bottom": 92.421875
+          },
+          {
+            "label": "搜索环境",
+            "x": 942.9375,
+            "y": 60.921875,
+            "width": 218.0625,
+            "height": 30,
+            "right": 1161,
+            "bottom": 90.921875
+          },
+          {
+            "label": "高级搜索",
+            "x": 1194,
+            "y": 63.171875,
+            "width": 66,
+            "height": 26.515625,
+            "right": 1260,
+            "bottom": 89.6875
+          },
+          {
+            "label": "全部",
+            "x": 221,
+            "y": 123.359375,
+            "width": 79.59375,
+            "height": 29,
+            "right": 300.59375,
+            "bottom": 152.359375
+          },
+          {
+            "label": "待启动",
+            "x": 300.59375,
+            "y": 123.359375,
+            "width": 79.609375,
+            "height": 29,
+            "right": 380.203125,
+            "bottom": 152.359375
+          },
+          {
+            "label": "已打开",
+            "x": 380.203125,
+            "y": 123.359375,
+            "width": 79.59375,
+            "height": 29,
+            "right": 459.796875,
+            "bottom": 152.359375
+          },
+          {
+            "label": "需处理",
+            "x": 459.796875,
+            "y": 123.359375,
+            "width": 79.609375,
+            "height": 29,
+            "right": 539.40625,
+            "bottom": 152.359375
+          },
+          {
+            "label": "分组筛选",
+            "x": 539.40625,
+            "y": 123.359375,
+            "width": 79.59375,
+            "height": 29,
+            "right": 619,
+            "bottom": 152.359375
+          },
+          {
+            "label": "取消选择",
+            "x": 706.40625,
+            "y": 128.859375,
+            "width": 48,
+            "height": 18,
+            "right": 754.40625,
+            "bottom": 146.859375
+          },
+          {
+            "label": "批量打开",
+            "x": 842,
+            "y": 122.359375,
+            "width": 82,
+            "height": 31,
+            "right": 924,
+            "bottom": 153.359375
+          },
+          {
+            "label": "批量关闭",
+            "x": 934,
+            "y": 122.359375,
+            "width": 82,
+            "height": 31,
+            "right": 1016,
+            "bottom": 153.359375
+          },
+          {
+            "label": "调整分组",
+            "x": 1026,
+            "y": 122.359375,
+            "width": 82,
+            "height": 31,
+            "right": 1108,
+            "bottom": 153.359375
+          },
+          {
+            "label": "更多操作",
+            "x": 1118,
+            "y": 122.359375,
+            "width": 100,
+            "height": 31,
+            "right": 1218,
+            "bottom": 153.359375
+          },
+          {
+            "label": "刷新环境列表",
+            "x": 1228,
+            "y": 122.359375,
+            "width": 32,
+            "height": 31,
+            "right": 1260,
+            "bottom": 153.359375
+          }
+        ]
+      },
+      "after": {
+        "surfaces": {
+          ".sidebar": {
+            "x": 0,
+            "y": 0,
+            "width": 200,
+            "height": 800,
+            "right": 200,
+            "bottom": 800,
+            "clientHeight": 800,
+            "scrollHeight": 800
+          },
+          ".environment-search-toolbar": {
+            "x": 210,
+            "y": 50,
+            "width": 1060,
+            "height": 52.859375,
+            "right": 1270,
+            "bottom": 102.859375,
+            "clientHeight": 53,
+            "scrollHeight": 53
+          },
+          ".environment-list-toolbar": {
+            "x": 210,
+            "y": 112.859375,
+            "width": 1060,
+            "height": 50,
+            "right": 1270,
+            "bottom": 162.859375,
+            "clientHeight": 50,
+            "scrollHeight": 50
+          },
+          ".environment-table-scroll": {
+            "x": 220,
+            "y": 162.859375,
+            "width": 1040,
+            "height": 522,
+            "right": 1260,
+            "bottom": 684.859375,
+            "clientHeight": 522,
+            "scrollHeight": 522
+          },
+          ".environment-table tbody": {
+            "x": 220,
+            "y": 202.859375,
+            "width": 1040,
+            "height": 482,
+            "right": 1260,
+            "bottom": 684.859375,
+            "clientHeight": 482,
+            "scrollHeight": 590
+          },
+          ".environment-pagination": {
+            "x": 220,
+            "y": 694.859375,
+            "width": 1040,
+            "height": 30,
+            "right": 1260,
+            "bottom": 724.859375,
+            "clientHeight": 30,
+            "scrollHeight": 30
+          }
+        },
+        "controls": [
+          {
+            "label": "新建环境",
+            "x": 220,
+            "y": 60.921875,
+            "width": 110,
+            "height": 31,
+            "right": 330,
+            "bottom": 91.921875
+          },
+          {
+            "label": "创建菜单",
+            "x": 330,
+            "y": 60.921875,
+            "width": 24,
+            "height": 31,
+            "right": 354,
+            "bottom": 91.921875
+          },
+          {
+            "label": "导入 / 备份",
+            "x": 542.234375,
+            "y": 60.921875,
+            "width": 114.234375,
+            "height": 31,
+            "right": 656.46875,
+            "bottom": 91.921875
+          },
+          {
+            "label": "筛选分组",
+            "x": 666.46875,
+            "y": 60.421875,
+            "width": 150,
+            "height": 32,
+            "right": 816.46875,
+            "bottom": 92.421875
+          },
+          {
+            "label": "搜索环境",
+            "x": 942.9375,
+            "y": 60.921875,
+            "width": 218.0625,
+            "height": 30,
+            "right": 1161,
+            "bottom": 90.921875
+          },
+          {
+            "label": "高级搜索",
+            "x": 1194,
+            "y": 63.171875,
+            "width": 66,
+            "height": 26.515625,
+            "right": 1260,
+            "bottom": 89.6875
+          },
+          {
+            "label": "全部",
+            "x": 221,
+            "y": 123.359375,
+            "width": 79.59375,
+            "height": 29,
+            "right": 300.59375,
+            "bottom": 152.359375
+          },
+          {
+            "label": "待启动",
+            "x": 300.59375,
+            "y": 123.359375,
+            "width": 79.609375,
+            "height": 29,
+            "right": 380.203125,
+            "bottom": 152.359375
+          },
+          {
+            "label": "已打开",
+            "x": 380.203125,
+            "y": 123.359375,
+            "width": 79.59375,
+            "height": 29,
+            "right": 459.796875,
+            "bottom": 152.359375
+          },
+          {
+            "label": "需处理",
+            "x": 459.796875,
+            "y": 123.359375,
+            "width": 79.609375,
+            "height": 29,
+            "right": 539.40625,
+            "bottom": 152.359375
+          },
+          {
+            "label": "分组筛选",
+            "x": 539.40625,
+            "y": 123.359375,
+            "width": 79.59375,
+            "height": 29,
+            "right": 619,
+            "bottom": 152.359375
+          },
+          {
+            "label": "取消选择",
+            "x": 706.40625,
+            "y": 128.859375,
+            "width": 48,
+            "height": 18,
+            "right": 754.40625,
+            "bottom": 146.859375
+          },
+          {
+            "label": "批量打开",
+            "x": 842,
+            "y": 122.359375,
+            "width": 82,
+            "height": 31,
+            "right": 924,
+            "bottom": 153.359375
+          },
+          {
+            "label": "批量关闭",
+            "x": 934,
+            "y": 122.359375,
+            "width": 82,
+            "height": 31,
+            "right": 1016,
+            "bottom": 153.359375
+          },
+          {
+            "label": "调整分组",
+            "x": 1026,
+            "y": 122.359375,
+            "width": 82,
+            "height": 31,
+            "right": 1108,
+            "bottom": 153.359375
+          },
+          {
+            "label": "更多操作",
+            "x": 1118,
+            "y": 122.359375,
+            "width": 100,
+            "height": 31,
+            "right": 1218,
+            "bottom": 153.359375
+          },
+          {
+            "label": "刷新环境列表",
+            "x": 1228,
+            "y": 122.359375,
+            "width": 32,
+            "height": 31,
+            "right": 1260,
+            "bottom": 153.359375
+          }
+        ]
+      }
+    },
+    {
+      "family": "title",
+      "stateId": "proxy-details-short-title",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "exactGeometryUnchanged": true,
+      "before": {
+        "dialog": {
+          "x": 410,
+          "y": 365,
+          "width": 620,
+          "height": 186,
+          "right": 1030,
+          "bottom": 551
+        },
+        "header": {
+          "x": 410,
+          "y": 365,
+          "width": 620,
+          "height": 40,
+          "right": 1030,
+          "bottom": 405
+        },
+        "title": {
+          "x": 626.625,
+          "y": 376,
+          "width": 186.734375,
+          "height": 18,
+          "right": 813.359375,
+          "bottom": 394
+        },
+        "close": {
+          "x": 996,
+          "y": 370,
+          "width": 26,
+          "height": 30,
+          "right": 1022,
+          "bottom": 400
+        }
+      },
+      "after": {
+        "dialog": {
+          "x": 410,
+          "y": 365,
+          "width": 620,
+          "height": 186,
+          "right": 1030,
+          "bottom": 551
+        },
+        "header": {
+          "x": 410,
+          "y": 365,
+          "width": 620,
+          "height": 40,
+          "right": 1030,
+          "bottom": 405
+        },
+        "title": {
+          "x": 626.625,
+          "y": 376,
+          "width": 186.734375,
+          "height": 18,
+          "right": 813.359375,
+          "bottom": 394
+        },
+        "close": {
+          "x": 996,
+          "y": 370,
+          "width": 26,
+          "height": 30,
+          "right": 1022,
+          "bottom": 400
+        }
+      }
+    },
+    {
+      "family": "title",
+      "stateId": "proxy-usage-short-title",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "exactGeometryUnchanged": true,
+      "before": {
+        "dialog": {
+          "x": 200,
+          "y": 162,
+          "width": 1040,
+          "height": 592,
+          "right": 1240,
+          "bottom": 754
+        },
+        "header": {
+          "x": 200,
+          "y": 162,
+          "width": 1040,
+          "height": 40,
+          "right": 1240,
+          "bottom": 202
+        },
+        "title": {
+          "x": 625.625,
+          "y": 180,
+          "width": 172.734375,
+          "height": 18,
+          "right": 798.359375,
+          "bottom": 198
+        },
+        "close": {
+          "x": 1206,
+          "y": 167,
+          "width": 26,
+          "height": 30,
+          "right": 1232,
+          "bottom": 197
+        }
+      },
+      "after": {
+        "dialog": {
+          "x": 200,
+          "y": 162,
+          "width": 1040,
+          "height": 592,
+          "right": 1240,
+          "bottom": 754
+        },
+        "header": {
+          "x": 200,
+          "y": 162,
+          "width": 1040,
+          "height": 40,
+          "right": 1240,
+          "bottom": 202
+        },
+        "title": {
+          "x": 625.625,
+          "y": 180,
+          "width": 172.734375,
+          "height": 18,
+          "right": 798.359375,
+          "bottom": 198
+        },
+        "close": {
+          "x": 1206,
+          "y": 167,
+          "width": 26,
+          "height": 30,
+          "right": 1232,
+          "bottom": 197
+        }
+      }
+    },
+    {
+      "family": "title",
+      "stateId": "proxy-details-short-title",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "exactGeometryUnchanged": true,
+      "before": {
+        "dialog": {
+          "x": 330,
+          "y": 315,
+          "width": 620,
+          "height": 186,
+          "right": 950,
+          "bottom": 501
+        },
+        "header": {
+          "x": 330,
+          "y": 315,
+          "width": 620,
+          "height": 40,
+          "right": 950,
+          "bottom": 355
+        },
+        "title": {
+          "x": 546.625,
+          "y": 326,
+          "width": 186.734375,
+          "height": 18,
+          "right": 733.359375,
+          "bottom": 344
+        },
+        "close": {
+          "x": 916,
+          "y": 320,
+          "width": 26,
+          "height": 30,
+          "right": 942,
+          "bottom": 350
+        }
+      },
+      "after": {
+        "dialog": {
+          "x": 330,
+          "y": 315,
+          "width": 620,
+          "height": 186,
+          "right": 950,
+          "bottom": 501
+        },
+        "header": {
+          "x": 330,
+          "y": 315,
+          "width": 620,
+          "height": 40,
+          "right": 950,
+          "bottom": 355
+        },
+        "title": {
+          "x": 546.625,
+          "y": 326,
+          "width": 186.734375,
+          "height": 18,
+          "right": 733.359375,
+          "bottom": 344
+        },
+        "close": {
+          "x": 916,
+          "y": 320,
+          "width": 26,
+          "height": 30,
+          "right": 942,
+          "bottom": 350
+        }
+      }
+    },
+    {
+      "family": "title",
+      "stateId": "proxy-usage-short-title",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "exactGeometryUnchanged": true,
+      "before": {
+        "dialog": {
+          "x": 120,
+          "y": 112,
+          "width": 1040,
+          "height": 592,
+          "right": 1160,
+          "bottom": 704
+        },
+        "header": {
+          "x": 120,
+          "y": 112,
+          "width": 1040,
+          "height": 40,
+          "right": 1160,
+          "bottom": 152
+        },
+        "title": {
+          "x": 545.625,
+          "y": 130,
+          "width": 172.734375,
+          "height": 18,
+          "right": 718.359375,
+          "bottom": 148
+        },
+        "close": {
+          "x": 1126,
+          "y": 117,
+          "width": 26,
+          "height": 30,
+          "right": 1152,
+          "bottom": 147
+        }
+      },
+      "after": {
+        "dialog": {
+          "x": 120,
+          "y": 112,
+          "width": 1040,
+          "height": 592,
+          "right": 1160,
+          "bottom": 704
+        },
+        "header": {
+          "x": 120,
+          "y": 112,
+          "width": 1040,
+          "height": 40,
+          "right": 1160,
+          "bottom": 152
+        },
+        "title": {
+          "x": 545.625,
+          "y": 130,
+          "width": 172.734375,
+          "height": 18,
+          "right": 718.359375,
+          "bottom": 148
+        },
+        "close": {
+          "x": 1126,
+          "y": 117,
+          "width": 26,
+          "height": 30,
+          "right": 1152,
+          "bottom": 147
+        }
+      }
+    }
+  ],
+  "historicalGalleryRecounted": false,
+  "strictFullProductOneToOne": false,
+  "formalDesktopAcceptance": "4/21",
+  "independentReview": {
+    "reviewer": "ses_eec1333e3ffeYOm3ng0DDrr0R9",
+    "rawReviewSHA256": "a32e369831ee3407eeff80f0dcb756576b7cecf46487ae8c2467c1df25087154",
+    "candidateSHA256": "560844df31c20dfdc6a253708a162344e7e09144ca4f18ac8c7d34bfc57fd815",
+    "indexSHA256": "d21951c385feb5eb55f67eca5a84ba15e3f20d8511fdae7571ee1db39b115cdb",
+    "classification": {
+      "ADAPTED": 11,
+      "MAPPED": 0,
+      "MISSING": 0,
+      "FAIL": 7
+    }
+  },
+  "finalizerSHA256": "473a09eb3703dc565075bbe38cd42707f6b9a396922a3efac9cd7b5980f48de1",
+  "realDesktopAcceptanceAdded": false
+}

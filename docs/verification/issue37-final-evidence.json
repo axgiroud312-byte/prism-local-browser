@@ -1,0 +1,628 @@
+{
+  "schemaVersion": 1,
+  "kind": "final-bounded-environment-continuation-evidence-and-audit-not-whole-product-acceptance",
+  "date": "2026-10-07",
+  "lastUiAcquisitionHead": "8ca2e79a13c90dcc1fc293447376380763747c5e",
+  "lastUiRenderHash79": "a83d927c931dd81b76656f98d6616aafe5f8e8df9b168d68953bab9d193537f2",
+  "documentationPublicationCommitDoesNotRebindOldImages": true,
+  "finalPublicArtifactAudit": {
+    "schemaVersion": 1,
+    "kind": "public-artifact-source-and-privacy-integrity-not-visual-acceptance",
+    "currentHead": "8ca2e79a13c90dcc1fc293447376380763747c5e",
+    "currentRenderHash": "a83d927c931dd81b76656f98d6616aafe5f8e8df9b168d68953bab9d193537f2",
+    "packets": [
+      {
+        "folder": "issue37-main83",
+        "sourceHead": "83eafe1bee11ec68077b22c8fecc4f4f2bba456f",
+        "renderHash": "a90f89be4a4bf7fcb50f29530cb046d1b08f3c86d1650fad3c97f8e5edf4a4cc",
+        "manifestSha256": "0b2a78b53e3665106f6086c18ab8eef52e7972952f838d5b72c3c2cea7b975cd",
+        "images": 156,
+        "counts": {
+          "ADAPTED": 16,
+          "MAPPED": 118,
+          "MISSING": 16,
+          "FAIL": 6
+        },
+        "unresolvedImageSlots": 16,
+        "historicalAcquisitionFailuresPreserved": 16
+      },
+      {
+        "folder": "issue37-shell-top83",
+        "sourceHead": "83eafe1bee11ec68077b22c8fecc4f4f2bba456f",
+        "renderHash": "a90f89be4a4bf7fcb50f29530cb046d1b08f3c86d1650fad3c97f8e5edf4a4cc",
+        "manifestSha256": "e6e019894bbab6815c4bc8a5826e2d9d1814b8f53d88ccff8fb8340b4ab6f44c",
+        "images": 2,
+        "counts": {
+          "ADAPTED": 0,
+          "MAPPED": 2,
+          "MISSING": 0,
+          "FAIL": 0
+        },
+        "unresolvedImageSlots": 0,
+        "historicalAcquisitionFailuresPreserved": 0
+      },
+      {
+        "folder": "issue37-kernel-proxy83",
+        "sourceHead": "83eafe1bee11ec68077b22c8fecc4f4f2bba456f",
+        "renderHash": "a90f89be4a4bf7fcb50f29530cb046d1b08f3c86d1650fad3c97f8e5edf4a4cc",
+        "manifestSha256": "62e93413846cc7157d1616c4fad7616fe8ebb06b3a11392c8d259c50cc306974",
+        "images": 238,
+        "counts": {
+          "ADAPTED": 0,
+          "MAPPED": 224,
+          "MISSING": 0,
+          "FAIL": 14
+        },
+        "unresolvedImageSlots": 2,
+        "historicalAcquisitionFailuresPreserved": 16
+      },
+      {
+        "folder": "issue37-local83",
+        "sourceHead": "83eafe1bee11ec68077b22c8fecc4f4f2bba456f",
+        "renderHash": "a90f89be4a4bf7fcb50f29530cb046d1b08f3c86d1650fad3c97f8e5edf4a4cc",
+        "manifestSha256": "ebdbfad1741cdafe2aad4f014806cd06cadbf35fe19f3c4cad535368ae8f1f39",
+        "images": 120,
+        "counts": {
+          "ADAPTED": 0,
+          "MAPPED": 118,
+          "MISSING": 0,
+          "FAIL": 2
+        },
+        "unresolvedImageSlots": 0,
+        "historicalAcquisitionFailuresPreserved": 12
+      },
+      {
+        "folder": "issue37-guide83",
+        "sourceHead": "83eafe1bee11ec68077b22c8fecc4f4f2bba456f",
+        "renderHash": "a90f89be4a4bf7fcb50f29530cb046d1b08f3c86d1650fad3c97f8e5edf4a4cc",
+        "manifestSha256": "35f119eac3c93eb0eda0cde604c03df62a47a6032539d00761e4e7ee890d06ab",
+        "images": 16,
+        "counts": {
+          "ADAPTED": 0,
+          "MAPPED": 0,
+          "MISSING": 16,
+          "FAIL": 0
+        },
+        "unresolvedImageSlots": 0,
+        "historicalAcquisitionFailuresPreserved": 0
+      },
+      {
+        "folder": "issue37-repairs9de",
+        "sourceHead": "9de0e2a170dcde6a0fc9450571049dc5de7b0e78",
+        "renderHash": "4f8954dcd9447726cec279266f164c8ece0a6277b360d73e73d06f224fc1db20",
+        "manifestSha256": "a153e6ba6504e20528487252b700f82fc21751ec7f03e10c0f2169559310f693",
+        "images": 8,
+        "counts": {
+          "ADAPTED": 0,
+          "MAPPED": 8,
+          "MISSING": 0,
+          "FAIL": 0
+        },
+        "unresolvedImageSlots": 0,
+        "historicalAcquisitionFailuresPreserved": 0
+      },
+      {
+        "folder": "issue37-migration9de",
+        "sourceHead": "9de0e2a170dcde6a0fc9450571049dc5de7b0e78",
+        "renderHash": "4f8954dcd9447726cec279266f164c8ece0a6277b360d73e73d06f224fc1db20",
+        "manifestSha256": "44d7be6186a4f80cb5fe62aaf8ae8cc96b0a9149ceb4de399ba83b9a58ed90e1",
+        "images": 60,
+        "counts": {
+          "ADAPTED": 0,
+          "MAPPED": 60,
+          "MISSING": 0,
+          "FAIL": 0
+        },
+        "unresolvedImageSlots": 0,
+        "historicalAcquisitionFailuresPreserved": 8
+      },
+      {
+        "folder": "issue37-kernel-repairs75",
+        "sourceHead": "75bc58d3c209f90680b8915f94f4a1f49339a76c",
+        "renderHash": "904b07019ee5891cca07502c16239b83166f4474fcf8c7ac49ea5cb3bd33f191",
+        "manifestSha256": "ebe25fcdaa076443d2b7f9431352414d8f51b8d59a92ffbfcebedfee3c227474",
+        "images": 28,
+        "counts": {
+          "ADAPTED": 0,
+          "MAPPED": 28,
+          "MISSING": 0,
+          "FAIL": 0
+        },
+        "unresolvedImageSlots": 0,
+        "historicalAcquisitionFailuresPreserved": 0
+      },
+      {
+        "folder": "issue37-proxy-row-repairs",
+        "sourceHead": "340a22c1e8489fad2db091a25bb14bb7d2e66984",
+        "renderHash": "0df5a445b4a16f1984f2944ac7367d1202322b892876f2d31b9e853d9a8708ce",
+        "manifestSha256": "a81456c2f924da52904d55ea46dab1cd038d1679c1fd6b0c60ff94cee644c5cc",
+        "images": 4,
+        "counts": {
+          "ADAPTED": 0,
+          "MAPPED": 4,
+          "MISSING": 0,
+          "FAIL": 0
+        },
+        "unresolvedImageSlots": 0,
+        "historicalAcquisitionFailuresPreserved": 0
+      },
+      {
+        "folder": "issue37-contextual-gaps",
+        "sourceHead": "340a22c1e8489fad2db091a25bb14bb7d2e66984",
+        "renderHash": "0df5a445b4a16f1984f2944ac7367d1202322b892876f2d31b9e853d9a8708ce",
+        "manifestSha256": "f783e9e2230e072accf55681ad0679bb9625fb02d47fe83bc711331da6766254",
+        "images": 20,
+        "counts": {
+          "ADAPTED": 0,
+          "MAPPED": 18,
+          "MISSING": 0,
+          "FAIL": 2
+        },
+        "unresolvedImageSlots": 0,
+        "historicalAcquisitionFailuresPreserved": 0
+      },
+      {
+        "folder": "issue37-contextual-proxy-bottom",
+        "sourceHead": "340a22c1e8489fad2db091a25bb14bb7d2e66984",
+        "renderHash": "0df5a445b4a16f1984f2944ac7367d1202322b892876f2d31b9e853d9a8708ce",
+        "manifestSha256": "f3a1ad9d796cfcc6658f858e55812ff050784e40802be4d3a964e3a10e33d299",
+        "images": 2,
+        "counts": {
+          "ADAPTED": 0,
+          "MAPPED": 2,
+          "MISSING": 0,
+          "FAIL": 0
+        },
+        "unresolvedImageSlots": 0,
+        "historicalAcquisitionFailuresPreserved": 0
+      },
+      {
+        "folder": "issue37-environment-gaps",
+        "sourceHead": "340a22c1e8489fad2db091a25bb14bb7d2e66984",
+        "renderHash": "0df5a445b4a16f1984f2944ac7367d1202322b892876f2d31b9e853d9a8708ce",
+        "manifestSha256": "770feea518f2fe1cae2e53c800b629b8aacf00c91d7de28b417d3ccfc684b46d",
+        "images": 184,
+        "counts": {
+          "ADAPTED": 70,
+          "MAPPED": 34,
+          "MISSING": 18,
+          "FAIL": 62
+        },
+        "unresolvedImageSlots": 0,
+        "historicalAcquisitionFailuresPreserved": 4
+      },
+      {
+        "folder": "issue37-environment-repairs",
+        "sourceHead": "03d0f6836399a9eae83895424c6a13e4d00c0abd",
+        "renderHash": "df5b45f48531cbff945dc13eb0eac1d51fc91b8789aea7608c640b2110c46d3e",
+        "manifestSha256": "b56c730cacac0c3c0da4d0ae94f41d07afe76f701773c3947b2fcbf1184355cc",
+        "images": 34,
+        "counts": {
+          "ADAPTED": 34,
+          "MAPPED": 0,
+          "MISSING": 0,
+          "FAIL": 0
+        },
+        "unresolvedImageSlots": 0,
+        "historicalAcquisitionFailuresPreserved": 0
+      },
+      {
+        "folder": "issue37-drawer-repairs",
+        "sourceHead": "8ca2e79a13c90dcc1fc293447376380763747c5e",
+        "renderHash": "a83d927c931dd81b76656f98d6616aafe5f8e8df9b168d68953bab9d193537f2",
+        "manifestSha256": "b2e25642f014af00dc0e7b4474442684f1b74bb9cef4716bc792410cccc05b48",
+        "images": 34,
+        "counts": {
+          "ADAPTED": 34,
+          "MAPPED": 0,
+          "MISSING": 0,
+          "FAIL": 0
+        },
+        "unresolvedImageSlots": 0,
+        "historicalAcquisitionFailuresPreserved": 0
+      }
+    ],
+    "publishedImageHashesMatched": 906,
+    "publishedVerdictsPreserved": {
+      "ADAPTED": 154,
+      "MAPPED": 616,
+      "MISSING": 50,
+      "FAIL": 86
+    },
+    "historical346Plus24ImageHashesMatched": 370,
+    "textArtifactsPrivacyChecked": 73,
+    "incrementFilesExactOriginalByteCopyChecked": 979,
+    "otherChangedPathsPreservedWithoutReading": [],
+    "protectedBackendServiceDomainDependenciesBuildCIChanged": false,
+    "exactPR31AncestorPreserved": true,
+    "frozenRawAndCommittedBlobsVerified": [
+      "frozen-render-inputs-8ca2e79",
+      "frozen-render-inputs-83eafe1",
+      "frozen-render-inputs-9de0e2a",
+      "frozen-render-inputs-75bc58d",
+      "frozen-render-inputs-340a22c",
+      "frozen-render-inputs-03d0f68"
+    ],
+    "originalAssetsOrImagesCopied": false,
+    "guideRawGetterOnePreserved": true,
+    "oldFailAndMissingConclusionsPreserved": true,
+    "classifiedProjectRelativeDocumentation": [
+      {
+        "file": "README.md",
+        "projectRelativeFolderSegments": [
+          ".appdata",
+          "verification"
+        ],
+        "canonicalLineUnchangedSince83": true,
+        "originalBroadRegexStillWouldReject": true,
+        "actualPrivatePathsPermitted": false
+      }
+    ],
+    "retainedPriorAuditFailure": {
+      "auditor": "audit-public-continuation.mjs",
+      "exitCode": 1,
+      "stage": "public-text-check",
+      "file": "README.md",
+      "error": "Private/original path detected in public metadata.",
+      "cause": "AppData path regex matched the unchanged documented project-relative verification-folder token, not a personal or commercial path.",
+      "originalAuditorEdited": false,
+      "oldFailureConvertedToSuccessfulReceipt": false
+    },
+    "strictVisualPass": false,
+    "completeProductAcceptance": false,
+    "realDesktopAcceptance": false,
+    "originalPrivateReceiptSha256": "a00eb32002ab213e52d6c2c6b0f5f8a4e05cc9993271e0f7eef9069bc56978df"
+  },
+  "narrowPrivacyClassificationIndependentSourcePreflight": {
+    "verdict": "SCOPED_SOURCE_FIX_CONSISTENT",
+    "findings": [],
+    "originalPrivateReportSha256": "830232a75701f3a173a89b031557d76f737994bed1ad049708717a5f83d842e1",
+    "exactForkProof": {
+      "original": "audit-public-continuation.mjs",
+      "candidate": "audit-public-continuation-relative-doc.mjs",
+      "insertions": 13,
+      "deletions": 1,
+      "changedCandidateLocations": [
+        "92",
+        "96-105",
+        "117-118"
+      ],
+      "onlyClassificationInsertionAndResultFields": true,
+      "allOtherBytesIncludingEolUnchanged": true,
+      "normalizedCandidateReproducesOriginalRawSha256": "73c43a880c96e9020e4e91ecd6641792fbc0df6e0845963e20c07e813bafc7f8",
+      "absolutePrivateOriginalCommercialWorktreeGuardsUnchanged": true,
+      "sourceImageAncestorHashStorageAndProtectedPathGuardsUnchanged": true,
+      "finalAssertPublicResultAndExclusiveReceiptWriteUnchanged": true,
+      "proofIsNotSuccessfulExecutionOfThoseGuards": true
+    },
+    "unchangedReadmeLineSha256": "01397cb39872b1b137bf58d19d0cbe40e4dea4bc1435b9dd576a2f934b394b07",
+    "onlyHistoricalProjectRelativeFolderLineClassified": true,
+    "pathTokenSegments": [
+      ".appdata",
+      "verification"
+    ],
+    "toolAndSharedHelperPinsMatchedByPublisher": true,
+    "exactCurrentReadmeLineWasBoundAtPreflight": true,
+    "actualUserAppDataPathsPermittedOrCopied": false,
+    "allOriginalStrictGuardsZeroClaimed": false,
+    "originalAuditorStillWouldRejectTheDocumentedRelativeToken": true,
+    "runtimePrivacyFullCertification": false
+  },
+  "staticGalleryLinkAndCanvasSourceAudit": {
+    "schemaVersion": 1,
+    "kind": "explicit-static-gallery-local-link-and-white-canvas-source-check-not-rendering-acceptance",
+    "reportCount": 15,
+    "localLinkBindings": 1887,
+    "records": [
+      {
+        "file": "docs/screenshots/issue37-continuation/index.html",
+        "sha256": "1aa59451bbc715f0bf541e62f36c2e87a8c42348b42466c36e52cc7e7429d986",
+        "actualLocalLinkBindings": 19,
+        "explicitWhiteLightCanvasSource": true
+      },
+      {
+        "file": "docs/screenshots/issue37-main83/index.html",
+        "sha256": "611439c268138d12961da12c54516c68358d67096ec919615f2a0ac11f4d9d28",
+        "actualLocalLinkBindings": 316,
+        "explicitWhiteLightCanvasSource": true
+      },
+      {
+        "file": "docs/screenshots/issue37-shell-top83/index.html",
+        "sha256": "28d875c23542ef6fb8876723f17b8c791b16b944c7b5308eff79f6eeea2d6e47",
+        "actualLocalLinkBindings": 8,
+        "explicitWhiteLightCanvasSource": true
+      },
+      {
+        "file": "docs/screenshots/issue37-kernel-proxy83/index.html",
+        "sha256": "0a90e0aa0c3457df8cbb0314664ddb5523f2d8c24241e89226ccc4a10b3d4432",
+        "actualLocalLinkBindings": 480,
+        "explicitWhiteLightCanvasSource": true
+      },
+      {
+        "file": "docs/screenshots/issue37-local83/index.html",
+        "sha256": "430d6e269f857a868d5e65b06717d1ad7cedf3653e2cdf802a04aadc3c760e38",
+        "actualLocalLinkBindings": 244,
+        "explicitWhiteLightCanvasSource": true
+      },
+      {
+        "file": "docs/screenshots/issue37-guide83/index.html",
+        "sha256": "a182afb4b1c9c88f1eab43e891f9ea05422472f8fa5aff18fd1b128a814c80b4",
+        "actualLocalLinkBindings": 36,
+        "explicitWhiteLightCanvasSource": true
+      },
+      {
+        "file": "docs/screenshots/issue37-repairs9de/index.html",
+        "sha256": "e9df0ddeb55a545dad46fcd4152b4f67c14d69f54f5d301dbb3dd43a51b259a8",
+        "actualLocalLinkBindings": 20,
+        "explicitWhiteLightCanvasSource": true
+      },
+      {
+        "file": "docs/screenshots/issue37-migration9de/index.html",
+        "sha256": "4cfc0fb0f3adb14b9c040ecfd702ff880e005e961c4d31f60a329171f8e2209a",
+        "actualLocalLinkBindings": 124,
+        "explicitWhiteLightCanvasSource": true
+      },
+      {
+        "file": "docs/screenshots/issue37-kernel-repairs75/index.html",
+        "sha256": "6af1cb0d07db3c93f6d2d158e4ca382cd328d1cd08ed08953a6698edef5bb7f0",
+        "actualLocalLinkBindings": 60,
+        "explicitWhiteLightCanvasSource": true
+      },
+      {
+        "file": "docs/screenshots/issue37-proxy-row-repairs/index.html",
+        "sha256": "2b01e1c9dec349799c9a9cf2c5a62523fc3966434ec9ca890dc7fe3312de0e4d",
+        "actualLocalLinkBindings": 12,
+        "explicitWhiteLightCanvasSource": true
+      },
+      {
+        "file": "docs/screenshots/issue37-contextual-gaps/index.html",
+        "sha256": "3c693058700998519b3f1fce4de58b0020c5e53a4a0e9e42ad45d66252cd2c6f",
+        "actualLocalLinkBindings": 44,
+        "explicitWhiteLightCanvasSource": true
+      },
+      {
+        "file": "docs/screenshots/issue37-contextual-proxy-bottom/index.html",
+        "sha256": "5d81cde473ae459b6f02da78f964c9ef109370ca266e5835a6d832e75d16e47c",
+        "actualLocalLinkBindings": 8,
+        "explicitWhiteLightCanvasSource": true
+      },
+      {
+        "file": "docs/screenshots/issue37-environment-gaps/index.html",
+        "sha256": "7d4e823f635fce4b5bf05bd758ebbd2bcdcec428de40c80772cb2070237ba950",
+        "actualLocalLinkBindings": 372,
+        "explicitWhiteLightCanvasSource": true
+      },
+      {
+        "file": "docs/screenshots/issue37-environment-repairs/index.html",
+        "sha256": "c02ecd7febfe0fd6eb13771ef1c3c2cde3f6ec688c4fc8cec3e91981bbcc320e",
+        "actualLocalLinkBindings": 72,
+        "explicitWhiteLightCanvasSource": true
+      },
+      {
+        "file": "docs/screenshots/issue37-drawer-repairs/index.html",
+        "sha256": "7ad3173809dbd7c1b2f27e1a70294d1264a114546f154cbb46c1639004a55096",
+        "actualLocalLinkBindings": 72,
+        "explicitWhiteLightCanvasSource": true
+      }
+    ],
+    "originalOrPrivateReferenceFilesRead": 0,
+    "realBrowserNavigationOrComputedStylesCheckedByThisTool": false,
+    "pngsProduced": 0,
+    "strictVisualPass": false,
+    "realDesktopAcceptance": false,
+    "exactRootSpaLinkBoundToExistingIndexHtml": true,
+    "retainedFirstMetadataCheckerFailure": {
+      "exitCode": 1,
+      "error": "Report link leaves the project",
+      "cause": "Original checker mistook the exact local SPA root fragment ../../../#/environments for an escaped/empty file path.",
+      "originalCheckerPreserved": true,
+      "publicHtmlOrProductCodeChanged": false
+    },
+    "originalPrivateReceiptSha256": "86003c01de4fc9aaaf4318c328f12689442cff7469b22a14f335106b03d49c14"
+  },
+  "originalReadOnlyReferenceIntegrity": {
+    "schemaVersion": 1,
+    "kind": "readonly-existing-reference-hash-audit-not-new-reference-or-visual-review",
+    "referenceRelease": "202609160208",
+    "originalStateCount": 40,
+    "originalImageHashesMatched": 80,
+    "originalIndexSha256": "be7e0db8c107fb3079ac8ee2d4444821866247ec71390333629db1c9bbf7a3d1",
+    "originalEvidenceManifestSha256": "045684fa1d9e090c1609d57b2c559586f7b58e22a36b0044b63586d33f856fb9",
+    "sourceMapSha256": "b04f79b265d023251f8a5615eb10544208eaefebf4dd7331d8e2bfd92320e687",
+    "originalSourceHashesMatched": 647,
+    "originalHistoricMatches": 136,
+    "originalExistingBytesOnly": 511,
+    "settingsCandidateImageHashesMatched": 6,
+    "settingsManifestSha256": "5874e8424c81afcb1ac8e1f3afe1d0ffa0322ac681209e62a75733b21e32c6a2",
+    "settingsSourceHashesMatched": 145,
+    "settingsRecordedHistoricMatches": 19,
+    "settingsExistingBytesOnly": 126,
+    "sourceChanges": 0,
+    "commercialFilesCopiedOrExecuted": false,
+    "commercialNetworkAccess": false,
+    "completeOriginalGuideRecovered": false,
+    "newOriginalVisualReviewClaimed": false,
+    "strictVisualPass": false,
+    "realDesktopAcceptance": false,
+    "originalPrivateReceiptSha256": "cc701b182b747086420b2996e8cd0304453e86fa8a3de3d4f6347e9163c070e5"
+  },
+  "galleryNavigationReceiptSha256": "dfdbb6e40126005dbfcb008fdeafa6f98b3ff2dd941aff5c8fae0f6137c88c98",
+  "actualBrowserReportNavigationAndReadability": {
+    "schemaVersion": 1,
+    "kind": "main-browser-panel-report-navigation-and-computed-readability-not-product-acceptance",
+    "reportsActuallyReachedByNaturalGalleryLinks": [
+      {
+        "folder": "issue37-environment-gaps",
+        "bodyBackground": "rgb(255, 255, 255)",
+        "bodyTextColor": "rgb(38, 38, 38)",
+        "bodyFont": "14px system-ui, sans-serif",
+        "headerLabelMatched": true
+      },
+      {
+        "folder": "issue37-environment-repairs",
+        "bodyBackground": "rgb(255, 255, 255)",
+        "bodyTextColor": "rgb(38, 38, 38)",
+        "bodyFont": "14px system-ui, sans-serif",
+        "headerLabelMatched": true
+      },
+      {
+        "folder": "issue37-drawer-repairs",
+        "bodyBackground": "rgb(255, 255, 255)",
+        "bodyTextColor": "rgb(38, 38, 38)",
+        "bodyFont": "14px system-ui, sans-serif",
+        "headerLabelMatched": true
+      }
+    ],
+    "galleryActuallyDisplayedPackets": 14,
+    "galleryActuallyDisplayedRecordTotal": 906,
+    "returnedToGallery": true,
+    "existingConsoleErrorRetained": "Static report CSP default-src 'none' blocks the Vite env.mjs development-script injection; observed on the gallery and drawer report. No policy was relaxed and no zero-console certificate is claimed.",
+    "productDevelopmentPageReachable": true,
+    "liveBrowserPanelAppViewNotCountedAsFixedViewportEvidence": true,
+    "pngsProduced": 0,
+    "newProductActionsOrWholeCellPasses": 0,
+    "realDesktopAcceptance": false,
+    "strictVisualPass": false,
+    "originalPrivateReceiptSha256": "822213e35bffd7709cd9c2e8bbf4a8ea7d56f795c2dca9f0d87d7a7944c35434"
+  },
+  "exactPublicVerificationInputs": [
+    {
+      "file": "docs/verification/issue37-supplementary-environment.json",
+      "sha256": "09295291c4a90dd33ab227d0956cbf8ad9d6e26cac13c01f28b5b520a72e3728"
+    },
+    {
+      "file": "docs/verification/issue37-supplementary-environment-repairs.json",
+      "sha256": "cfddcabf6b9d3a1824b4fa9863d3ca003772eb3eeeda7189cac1e437666b78d8"
+    },
+    {
+      "file": "docs/verification/issue37-environment-contract-review.json",
+      "sha256": "5a5d700f854c7821a735927f91706c0a08f0f2fa3797bbdf326b861ab8ebd187"
+    },
+    {
+      "file": "docs/verification/issue37-environment-css-contract-review.json",
+      "sha256": "f7335611967461c88325bcb5a32c227a0d2f1c8c0d8e354742680ad17df3f408"
+    },
+    {
+      "file": "docs/verification/issue37-environment-drawer-contract-review.json",
+      "sha256": "8ac21db6d369e9d2bfc517ef147297d96d6f0705f65508768a17aad6e8901b82"
+    },
+    {
+      "file": "docs/verification/issue37-environment-css-source-review.json",
+      "sha256": "2781b20b62f128e2bfb79968256be4382c54067a300fc9f6b89ccef2c01cb3ca"
+    },
+    {
+      "file": "docs/verification/issue37-environment-drawer-source-review.json",
+      "sha256": "8fa15380f7a28b0c4cc270d0b72435d14c7d245f52caabb081c8e0bc8a8c9ef1"
+    },
+    {
+      "file": "docs/verification/issue37-environment-css-checks.json",
+      "sha256": "8315ecfe06c7de5363970662e6a7b3611679deab45cad3b6b6d29dc391feb3b2"
+    },
+    {
+      "file": "docs/verification/issue37-environment-drawer-checks.json",
+      "sha256": "665f9df7b2f9870aa9e5318f381c34373980c1352a8d47b6a4af77a0c4c7bea6"
+    }
+  ],
+  "imageEvidenceNotAcceptance": {
+    "previousElevenPackets": 654,
+    "environment340Records": 184,
+    "css03RepairRecords": 34,
+    "drawer8caRepairRecords": 34,
+    "totalNewContinuationRecords": 906,
+    "original346Plus24RetainedSeparately": 370,
+    "classifications": {
+      "ADAPTED": 154,
+      "MAPPED": 616,
+      "MISSING": 50,
+      "FAIL": 86
+    },
+    "samePngHashCanHaveDifferentObservedContextsAndMustNotBeCountedAsWholeCellPass": true
+  },
+  "savedContractScopeNotNativeAuthority": {
+    "environment340StandaloneActions": 38,
+    "environment340ImageOwnedCallbacks": 66,
+    "environment340OriginalCaseFailures": 8,
+    "css03ImageOwnedCallbacks": 14,
+    "drawer8caImageOwnedCallbacks": 16,
+    "extraStandaloneActionsFromCssAndDrawerRepairs": 0,
+    "extraResultPngsFromCallbacks": 0,
+    "drawerPreflightGlobalRefusalSeparatelyRetained": 1,
+    "forcePositiveDispatchReturnsSyntheticValidationRefusalNotSuccessfulTermination": true
+  },
+  "normalizedFiniteDefinitionsNotWholeCellAcceptance": {
+    "originalRemainingDefinitionDenominator": 47,
+    "immutableEnvironmentBaselineFiniteDefinitionsAddressed": 35,
+    "immutableEnvironmentBaselineRemaining": 12,
+    "separatelyAddressedSourceRowDefinitions": [
+      "F13",
+      "F15"
+    ],
+    "derivedFiniteDefinitionsAddressed": 37,
+    "derivedRemainingOriginalDefinitionCount": 10,
+    "derivedRemainingOriginalDefinitionIDs": [
+      "E18",
+      "F07",
+      "F11",
+      "F26",
+      "F32",
+      "B08",
+      "R09",
+      "P07",
+      "M22",
+      "H19"
+    ],
+    "newOriginalDefinitions": 0,
+    "wholeCellPassesAdded": 0,
+    "newRepairImagesOrCallbacksMergedInto184Plus38Plus66Baseline": false
+  },
+  "cleanup": {
+    "stoppedExactOwnPorts": [
+      5196,
+      5197,
+      5199
+    ],
+    "preservedMainAndReferencePorts": [
+      5173,
+      5190,
+      5198
+    ],
+    "completedWorktreeRegistrationsRemoved": 3,
+    "mainDependencyJunctionTargetPreserved": true,
+    "eightOccupiedEmptyDirectoriesPreservedWithoutForce": true,
+    "unrelatedV1WorktreesSessionsProcessesOrEvidenceTouched": false,
+    "cssCleanupReceiptSha256": "bf1015a6e3ea12df2d9127de49987408c80d6eac8f77fa16e187f3112dce6896",
+    "drawerCleanupReceiptSha256": "0a9146e16afb915a6c4a8fb86b6c834900cc28dc9ebde6cdac864e9aef49bb03"
+  },
+  "retainedAcceptance": {
+    "original274Counts": {
+      "COVERED": 113,
+      "PARTIAL": 60,
+      "MISSING": 101
+    },
+    "wholeCellPassesAdded": 0,
+    "formalDesktop": "4/21",
+    "legacyBinaryIncludesThisUi": false,
+    "completeOriginalGuideMissing": true,
+    "settingsCandidatesSubstituteForOriginalGuide": false,
+    "stableFirstHelpFallbackPngAcquired": false,
+    "demo256ByteProxyPrecommitRefusalProven": false,
+    "unknownDiscardRecoveryEntryProven": false,
+    "strictVisualPass": false,
+    "completeProductAcceptance": false,
+    "realDesktopAcceptance": false
+  },
+  "executedCheckBoundaries": {
+    "shared196SuiteSource": "681f823",
+    "sharedSuiteReruns": 0,
+    "lastUiMainNoEmitChecks": 2,
+    "productionBuildPackagingInstallationGoWailsUiaOrRealKernelNetworkDirectoryProbes": 0
+  },
+  "retainedPublisherOnlyFailure": {
+    "exitCode": 1,
+    "error": "ENOENT",
+    "cause": "Publisher initially expected the navigation receipt as a flat JSON filename. Corrected to the actual new directory manifest before any public output was written.",
+    "existingReceiptEditedOrNavigationRerun": false,
+    "productOrAcquisitionExecution": false
+  },
+  "scope": "Exact local-links, PNG/source hashes and privacy/source checks protect bounded evidence provenance. They are not a pixel/native/full-security certificate. Per-image independent ADAPTED/MAPPED/MISSING/FAIL conclusions and limited saved-contract judgments remain separate; all original failures, direct-reference gaps, original274 accounting and unchanged formal desktop count are retained."
+}

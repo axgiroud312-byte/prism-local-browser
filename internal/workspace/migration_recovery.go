@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"path/filepath"
+	"regexp"
 	"time"
 
 	"github.com/axgiroud312-byte/prism-local-browser/internal/backup"
@@ -47,6 +48,27 @@ func (s *Service) recoverMigration(ctx context.Context, task *migrationTask) {
 	// Recovery never relaunches a trial and never turns an interrupted user trial
 	// into approval. An uncommitted attempt returns to its original complete state.
 	s.finishMigrationRecovery(ctx, task, context.Canceled)
+}
+
+var migrationCauseCode = regexp.MustCompile(`^[A-Z][A-Z0-9_]{0,63}$`)
+var migrationCauseReason = regexp.MustCompile(`^[a-z][a-z0-9-]{0,95}$`)
+
+// Retain only classification tags. Messages and raw errors can contain file
+// paths or JavaScript exceptions and must never become migration diagnostics.
+func migrationRecoveryCause(cause error) map[string]any {
+	if cause == nil {
+		return nil
+	}
+	classified := runtimeError(cause)
+	code, reason := classified.Code, "unclassified"
+	var problem *kernel.Problem
+	if !migrationCauseCode.MatchString(code) || code == "PROCESS_START_FAILED" && !errors.As(cause, &problem) {
+		code = "MIGRATION_CAUSE_UNKNOWN"
+	}
+	if value, ok := classified.Details["reason"].(string); ok && migrationCauseReason.MatchString(value) {
+		reason = value
+	}
+	return map[string]any{"code": code, "reason": reason, "retryable": classified.Retryable}
 }
 
 func (s *Service) finishMigrationRecovery(_ context.Context, task *migrationTask, cause error) {
@@ -154,6 +176,9 @@ func (s *Service) finishMigrationRecovery(_ context.Context, task *migrationTask
 		op.State = "failed"
 		op.Stage = "original-retained"
 		op.Error = &Error{Code: "MIGRATION_INCOMPLETE", Message: "迁移未提交，原完整数据与原构建已核对保留；试用副本及已有备份保留。", Retryable: true}
+		if !task.startup && cause != nil {
+			op.Error.Details = map[string]any{"cause": migrationRecoveryCause(cause)}
+		}
 		if errors.Is(cause, context.Canceled) || cancelled {
 			op.State = "cancelled"
 		}

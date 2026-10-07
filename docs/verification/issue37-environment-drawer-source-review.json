@@ -1,0 +1,611 @@
+{
+  "schemaVersion": 1,
+  "kind": "public-independent-drawer-source-reviews-with-separate-main-integration-and-order-correction",
+  "date": "2026-10-07",
+  "originalSourceReview": {
+    "verdict": "SCOPED_SOURCE_CONSISTENT",
+    "findings": [],
+    "findingCounts": {
+      "P1": 0,
+      "P2": 0,
+      "newAdmissionToolGaps": 0
+    },
+    "originalReportSha256": "0f1f3f7a4b12dfbddd232a8d085a340b29005611a14d2ae9c635d6295796a24f",
+    "sourceBinding": {
+      "integrationBase": "03d0f6836399a9eae83895424c6a13e4d00c0abd",
+      "observedMainHead": "03d0f6836399a9eae83895424c6a13e4d00c0abd",
+      "observedMainBranch": "codex/issue32-37-ui-integration",
+      "declaredRendererGitStatus": [],
+      "mainIndexFiles": [],
+      "unrelatedTrackedDirtyDocumentationCount": 6,
+      "unrelatedDocumentationInspectedOrDiscarded": false,
+      "priorRenderHash79": "df5b45f48531cbff945dc13eb0eac1d51fc91b8789aea7608c640b2110c46d3e",
+      "priorBaseRenderHash78": "023e5f5bdeac450a0bb3e5c1dd0983b2f0d2a539332ea3834efd733713f5719a",
+      "originalAuthorSourceHead": "340a22c1e8489fad2db091a25bb14bb7d2e66984",
+      "originalAuthorRenderHash": "0df5a445b4a16f1984f2944ac7367d1202322b892876f2d31b9e853d9a8708ce",
+      "ownUiCommit": "10b0820edd5c68fa20e85b2436b3e9c317fd1021",
+      "ownCommitSoleParent": "340a22c1e8489fad2db091a25bb14bb7d2e66984",
+      "completedCandidateTip": "b01d17d960560f2504f817f8ce57d8dd493f270e",
+      "ordinaryMergeParents": [
+        "10b0820edd5c68fa20e85b2436b3e9c317fd1021",
+        "03d0f6836399a9eae83895424c6a13e4d00c0abd"
+      ],
+      "candidateBranch": "codex/issue34-drawer-capacity",
+      "candidateWorktreeGitStatus": [],
+      "completeDiffPaths": [
+        "src/components/EnvironmentForm.tsx",
+        "src/components/EnvironmentKernelSelect.tsx",
+        "src/components/environment-windows.css"
+      ],
+      "insertions": 14,
+      "deletions": 5,
+      "appOwnChange": false,
+      "stylesCssOwnChange": false,
+      "stylesBaseAndTipBlob": "66a8cbae0779f6c59989d377979eb4bf09ae1d25",
+      "incomingTableRulesPreservedByIdenticalBlob": true,
+      "incomingBatch60pxRuleRetainedVerbatim": true,
+      "incomingBatchRuleCandidateLine": 77,
+      "pr31Ancestor": "e170099bc25aa15ecb9a8456d782394a2139ec20",
+      "pr31AncestorVerifiedInObservedMain": true,
+      "issueOrPrActions": 0
+    },
+    "candidateFiles": [
+      {
+        "file": "src/components/EnvironmentForm.tsx",
+        "insertions": 1,
+        "deletions": 1,
+        "changedCandidateLine": 85,
+        "baseCanonical": {
+          "blobSha1": "5cc555e6b71406c5485950cbea1f2a79b4f1d3a7",
+          "sha256": "503fa744ee9be9de6efa2d1461691d662498b357fe659a4b4fd640fced3490bc",
+          "bytes": 12587
+        },
+        "baseMainRawSha256": "534745651d46b7d2815c82fb6c5a09ee75eae3feb593b1cef038e4036b7cfc70",
+        "baseMainRawMatchesPriorFreeze": true,
+        "candidateCanonical": {
+          "blobSha1": "a34073c019339f119581edd406b65f0d97113561",
+          "sha256": "8f4f8603d9d28a98e2d045be6080b74dff450cc0f2784dbd8b204d0d89f122de",
+          "bytes": 12644
+        },
+        "candidateWorktreeCanonicalBlob": "a34073c019339f119581edd406b65f0d97113561",
+        "candidateRawSha256": "0bf81e43ddc3ef96bf14188e30fb7e6bca744075dec0ba568173ea4e5375b733",
+        "candidateRawBytes": 12743,
+        "candidateRawMatchesAuthorReport": true
+      },
+      {
+        "file": "src/components/EnvironmentKernelSelect.tsx",
+        "insertions": 4,
+        "deletions": 4,
+        "changedCandidateLines": [
+          9,
+          19,
+          20,
+          21
+        ],
+        "baseCanonical": {
+          "blobSha1": "90d9e0baa46002da743b1c27c6197c3d0205caab",
+          "sha256": "5b6309e87a984e2a72e4c96b226ad24cb49944fc52f436a9676f981245dce6c8",
+          "bytes": 3430
+        },
+        "baseMainRawSha256": "350d384b2d0f792a748f7544a3346b5b43e7e7a82c8caacb0344f538b0a9c91c",
+        "baseMainRawMatchesPriorFreeze": true,
+        "candidateCanonical": {
+          "blobSha1": "a8ef0e08de1e9d443544dbf53991114b296af6ca",
+          "sha256": "7b723e17cb9759af56d2bb6040b93355677a3b21deafe2ae02876aade1563bf7",
+          "bytes": 3563
+        },
+        "candidateWorktreeCanonicalBlob": "a8ef0e08de1e9d443544dbf53991114b296af6ca",
+        "candidateRawSha256": "2d513f0bee6d4585534583a578e6f025550c8a4c8597a06866aa077126447282",
+        "candidateRawBytes": 3594,
+        "candidateRawMatchesAuthorReport": true
+      },
+      {
+        "file": "src/components/environment-windows.css",
+        "insertions": 9,
+        "deletions": 0,
+        "changedCandidateLines": [
+          41,
+          78,
+          79,
+          80,
+          81,
+          82,
+          83,
+          84,
+          85
+        ],
+        "baseCanonical": {
+          "blobSha1": "86853c131d411b07c81149c7be6826f25bb06d1b",
+          "sha256": "c55cb49fc69639837131c0f93e219583c4a66e4ff0a4d256bfdca8c8e792dc68",
+          "bytes": 8205
+        },
+        "baseMainRawSha256": "0801d55b58e6e4bafaabdd7037283fd1990a3c90e868541210ceb46f41868fa0",
+        "baseMainRawMatchesPriorFreeze": true,
+        "candidateCanonical": {
+          "blobSha1": "66f32d1c86af7a30e98585aaca7af687b78c1168",
+          "sha256": "555d6e797965e924ba7863a6e0c298dc3365c1ae3145ce764fbf0d774df60c5b",
+          "bytes": 8878
+        },
+        "candidateWorktreeCanonicalBlob": "66f32d1c86af7a30e98585aaca7af687b78c1168",
+        "candidateRawSha256": "c5051171d9a71deeeb97e08f8d500660b83c936251ef9bd3cae374f528c84fc1",
+        "candidateRawBytes": 8970,
+        "candidateRawMatchesAuthorReport": true
+      }
+    ],
+    "sourceChecks": [
+      {
+        "id": "DRAWER-NATIVE-LABEL-AND-LOCK",
+        "disposition": "SOURCE_CONSISTENT",
+        "locations": [
+          "src/components/EnvironmentKernelSelect.tsx:9,19-33",
+          "src/components/EnvironmentForm.tsx:10-11,85-86",
+          "src/components/environment-windows.css:16,40-41"
+        ],
+        "notes": "Remove native redundant family prefix only; retain full version/status and title, visible full family helper including locked native. Same IDs/values/API/disabled/saved build and menu handlers. Unavailable placeholder remains truthful. Demo wording/selection unchanged; shared added title and arrow padding also apply to demo, so no claim of identical demo DOM/style bytes."
+      },
+      {
+        "id": "DRAWER-FOREGROUND-AND-FEEDBACK",
+        "disposition": "SOURCE_CONSISTENT_DESKTOP_ONLY_NOT_PIXEL_PASS",
+        "locations": [
+          "src/components/environment-windows.css:78-85",
+          "src/App.tsx:1584-1606,1689-1706,1770-1788",
+          "src/styles.css:248-249,286-290",
+          "src/components/EnvironmentEditorWindow.tsx:11-16"
+        ],
+        "notes": "Only later feedback siblings of non-inert real-form environment overlay relocate. Desktop preserves centered transform/y semantics and reserves 660px drawer plus 40px rail. All existing text/cancel/close controls retained; no mask/opacity/hiding/timer/state/title/footer edit. Narrow fallback not separately verified and not inferred to fail."
+      },
+      {
+        "id": "DRAWER-SAFETY-AND-COMPOSITE",
+        "disposition": "SOURCE_CONSISTENT_NOT_RUNTIME_CERTIFIED",
+        "locations": [
+          "src/components/EnvironmentForm.tsx:69-75,88-97",
+          "src/components/FingerprintRevisionPanel.tsx:18-34",
+          "src/components/environment-windows.css:77-85",
+          "src/App.tsx:1587,1594-1605"
+        ],
+        "notes": "Failure/busy/unknown/proxy/seed/build/data and truthful capability-source semantics unchanged. No fabricated zero/1-of-1 persisted success. Incoming table blob and batch 60px rule retained; feedback rule does not target Cookie/recycle/batch windows lacking form marker or inert/suspended drawers. No source evidence of lost controls; no composite runtime/pixel PASS."
+      },
+      {
+        "id": "CASE-ONE-LINE-RAW-FORK",
+        "disposition": "SOURCE_CONSISTENT_WHOLE_BYTE_COMPARISON",
+        "locations": [
+          "environment-drawer-gap-cases.mjs:525-529",
+          "environment-drawer-capacity-original-cases.mjs:525-529"
+        ],
+        "notes": "Only line 526 changes two closed native option-text expectations, retaining both full versions/status. Menu expectation, IDs/options/selected flag/returned owner/guard/reply/raw ledger/budget and every other byte including EOL unchanged."
+      },
+      {
+        "id": "CASE-LITERAL-17-FAIL-SCOPE",
+        "disposition": "SOURCE_CONSISTENT_EXISTING_VERDICT_BOOKKEEPING_ONLY",
+        "locations": [
+          "environment-drawer-capacity-gap-cases.mjs:4-18,46-49",
+          "environment-drawer-capacity-gap-plan.md:3-9",
+          "environment-drawer-capacity-gap-plan.json:3-20",
+          "environment-drawer-capacity-original-cases.mjs:883-920"
+        ],
+        "notes": "17 unique image IDs exactly equal old 34 FAIL-record IDs across two views. No full52/F32/new callback photograph/standalone-action scope. Delegates only to unchanged precise original safety; no success fallback or weakened finite bounds."
+      },
+      {
+        "id": "CASE-V02-REAL-BODY-WHEEL",
+        "disposition": "SOURCE_CONSISTENT_NOT_EXECUTED",
+        "locations": [
+          "environment-drawer-capacity-gap-cases.mjs:15,20-43",
+          "environment-drawer-capacity-original-cases.mjs:577-599",
+          "src/components/FingerprintRevisionPanel.tsx:31",
+          "src/application/fingerprint-model.ts:35-43"
+        ],
+        "notes": "Only native-generated/demo-technical after original action: centered genuine body wheel480/600, actual movement/scroll reads and all actual source-row bounds required fully inside body. No DOM/scrollTop/focus/style/hash/timer/geometry assignment. Native toast required by original action may naturally expire later; an absent final toast is not feedback pixel proof. Demo four source rows are checked as actual rows, not replaced with native fixture rows."
+      },
+      {
+        "id": "RUNNER-V2-ADMISSION-LINEAGE",
+        "disposition": "SOURCE_CONSISTENT_RAW_BLOCK_COMPARISON_NOT_EXECUTED",
+        "locations": [
+          "capture-environment-drawer-repairs.mjs:109-220",
+          "capture-environment-css-repairs.mjs:105-215",
+          "capture-authored-environment-gaps-atomic.mjs:173-203"
+        ],
+        "notes": "Per-pair execution differs from CSS only by declared provenance flag rename. Final source/tool/reference/archive/PNG-publication block and manifest admission/global refusal tail are raw-identical to CSS and V2. Retains archived-input checks before final publication, immediate-final record/image removal, original callbacks and pair failures on overriding global refusal."
+      },
+      {
+        "id": "RUNNER-ACTUAL-NEW-SOURCE",
+        "disposition": "SOURCE_CONSISTENT_NOT_EXECUTED",
+        "locations": [
+          "capture-environment-drawer-repairs.mjs:18-57,60-88,116-154,132-135,187-219"
+        ],
+        "notes": "Exact requested future HEAD/freeze and drawer factory/images, retained340 author and03 predecessor bindings, wholecommit3 delta/identical79 path family/only3 raw changes/new actual79 freeze. Original guards remain precise; new actual source/render is recorded separately from original authored source/render. Exact-candidate guard remains prerequisite; no future MAIN run asserted passed. Inherited CSS wording in generic usage error does not weaken literal drawer admission."
+      },
+      {
+        "id": "GUARD-EXACT-ORDINARY-INTEGRATION",
+        "disposition": "SOURCE_CONSISTENT_NOT_EXECUTED",
+        "locations": [
+          "environment-drawer-integration-guard.mjs:8-39"
+        ],
+        "notes": "Literal03/b01/three paths; MAIN branch/empty index/clean renderer/exact initial base; full candidate path diff, protected raw/canonical receipts, merged-tip ancestry and exact final blobs, PR31 ancestor. Private exclusive-create receipts only; no Git mutation or unrelated docs discard."
+      }
+    ],
+    "originalCaseForkProof": {
+      "originalFile": "environment-drawer-gap-cases.mjs",
+      "originalSha256": "32cfe5db485cb62614281279c26bca17839c0f99953da315741f19fd54fe46af",
+      "originalBytes": 87262,
+      "forkFile": "environment-drawer-capacity-original-cases.mjs",
+      "forkSha256": "3277a39d7d5e2711122b5d97449d6317b3f4cdf76b72582f1ea1918edaf3300d",
+      "forkBytes": 87220,
+      "approvedLine": 526,
+      "oldLine": "    await expect(select.locator('option')).toHaveText(['fingerprint-chromium 148.0.7778.215 · 已核验', 'fingerprint-chromium 151.0.9000.11 · 已核验']);",
+      "newLine": "    await expect(select.locator('option')).toHaveText(['148.0.7778.215 · 已核验', '151.0.9000.11 · 已核验']);",
+      "oldLineOccursExactlyOnce": true,
+      "expectedForkRawSha256": "3277a39d7d5e2711122b5d97449d6317b3f4cdf76b72582f1ea1918edaf3300d",
+      "everyOtherByteIncludingEolIdentical": true,
+      "originalEdited": false,
+      "moduleImportedOrExecuted": false
+    },
+    "runnerRawBlockProof": {
+      "executionAndPerPairSafetyBlockMatchesCssExceptDeclaredProvenanceFlag": true,
+      "cssExecutionBlockSha256": "f7cba5236b67b95f95f465ac4d0464cfbab0c6ef5ac61fe03f81886942fb51fe",
+      "finalSourceToolReferenceArchiveAndPngPublicationBlockMatchesCssAndV2": true,
+      "finalGuardBlockSha256": "400cb8ec746282388f79aad776b4fafc32e534eb7d70826af0ac70f7caa6a4c0",
+      "manifestAdmissionAndGlobalRefusalTailMatchesCssAndV2": true,
+      "admissionAndGlobalRefusalTailSha256": "28d577997372ce6458061f4a62c2824be9309ac21b285fe4d611a36c4709de3d",
+      "staticComparisonOnly": true
+    },
+    "protectedInputQualification": {
+      "declaredSourceFamilyCount": 79,
+      "ownedPathCount": 3,
+      "protectedCanonicalInputCount": 76,
+      "canonicalBasis": "Complete03-to-b01 three-file Git diff; no full raw/source/tool rescan",
+      "all76RawHashesIndependentlyRecomputed": false,
+      "futureRunnerMustEnforceOnlyThreeRawChangesAndActual79Freeze": true,
+      "broaderGuardTrackedProtectedCountObserved": 358,
+      "declaredProtectedCoveredByBroadGuard": 72,
+      "embeddedDocsOutsideBroadGuard": [
+        "docs/DEVELOPMENT.md",
+        "docs/KERNEL.md",
+        "docs/PRD.md",
+        "docs/USER_GUIDE.md"
+      ],
+      "embeddedDocsStillCoveredByRunnerRawAndWholeCommitGates": true,
+      "eolNormalizedHashesNotSubstitutedForRawFreeze": true,
+      "author78SnapshotNotMain79Freeze": true
+    },
+    "finiteRepairPlan": {
+      "factory": "environmentDrawerCapacityGapCases",
+      "suppliedStatus": "MAIN_AUTHORED_NOT_EXECUTED",
+      "executedByReviewer": false,
+      "imageStates": 17,
+      "viewports": [
+        {
+          "width": 1440,
+          "height": 900
+        },
+        {
+          "width": 1280,
+          "height": 800
+        }
+      ],
+      "defaultPlannedImages": 34,
+      "existingDrawerFailRecords": 34,
+      "existingUniqueFailIds": 17,
+      "literalIdsExactlyMatchExistingFailIds": true,
+      "oldVerdictsReclassified": 0,
+      "newStandaloneActions": 0,
+      "newCallbackPhotos": 0,
+      "full52ImageReviewRerun": false,
+      "f32Selected": false,
+      "ids": [
+        "env-drawer-native-idle-create-proxy",
+        "env-drawer-native-idle-create-preferences",
+        "env-drawer-native-idle-create-fingerprint",
+        "env-drawer-native-idle-create-bottom",
+        "env-drawer-native-kernel-select-real-scope",
+        "env-drawer-native-saved-build-lock",
+        "env-drawer-native-automatic-preview-busy",
+        "env-drawer-native-preview-failure-exact-retry",
+        "env-drawer-native-generated-preview-capability-source",
+        "env-drawer-native-known-create-refusal",
+        "env-drawer-native-known-profile-revision-refusal",
+        "env-drawer-native-history-read-error-on-form",
+        "env-drawer-native-create-terminal-zero-editable-draft",
+        "env-drawer-native-create-persistence-pending-no-success",
+        "env-drawer-demo-technical-source-labels",
+        "env-drawer-demo-rollback-preview-new-revision",
+        "env-drawer-native-rollback-and-incompatible-history"
+      ],
+      "v02SupplementIds": [
+        "env-drawer-native-generated-preview-capability-source",
+        "env-drawer-demo-technical-source-labels"
+      ],
+      "v02BodySelector": ".environment-dialog-body",
+      "v02NaturalWheelDeltas": [
+        480,
+        600
+      ],
+      "v02AllActualSourceBlocksMustFitRealBody": true,
+      "originalSafetyDelegatedWithoutFallback": true,
+      "nativeToastMayNaturallyExpireDuringWheel": true,
+      "absentFinalToastIsNotNewV04PixelProof": true,
+      "actualFutureMainHeadOrRenderHashClaimed": null
+    },
+    "reviewedInputHashes": [
+      {
+        "file": "capture-environment-drawer-repairs.mjs",
+        "sha256": "14401e46a79d5ca0453d6542036707a11ac8f68548289cdebd9f015b369e82ca",
+        "bytes": 21830
+      },
+      {
+        "file": "environment-drawer-integration-guard.mjs",
+        "sha256": "03b838a6393a310b320ddf89b88539ceed95cf27e2b70cd22c98be76cf52b9b3",
+        "bytes": 3957
+      },
+      {
+        "file": "environment-drawer-capacity-gap-cases.mjs",
+        "sha256": "f39feb489dcba1edf5fcb302878190df4cd56ee7f26b081df4e208de8db23f0d",
+        "bytes": 3758
+      },
+      {
+        "file": "environment-drawer-capacity-original-cases.mjs",
+        "sha256": "3277a39d7d5e2711122b5d97449d6317b3f4cdf76b72582f1ea1918edaf3300d",
+        "bytes": 87220
+      },
+      {
+        "file": "environment-drawer-capacity-gap-plan.md",
+        "sha256": "3d1cee00260aa519732f6131013e6ef7739538d02fefc19a28f52d6f5e2f9ade",
+        "bytes": 1703
+      },
+      {
+        "file": "environment-drawer-capacity-gap-plan.json",
+        "sha256": "b2e3e310822cfa934c26202be71055effb5e9ab608097e560a5037c0de222fad",
+        "bytes": 1130
+      },
+      {
+        "file": "environment-drawer-gap-cases.mjs",
+        "sha256": "32cfe5db485cb62614281279c26bca17839c0f99953da315741f19fd54fe46af",
+        "bytes": 87262
+      },
+      {
+        "file": "capture-environment-css-repairs.mjs",
+        "sha256": "13e8aa2509792ea820751812dedbe20f57d77c32426239905443700994787531",
+        "bytes": 21133
+      },
+      {
+        "file": "capture-authored-environment-gaps-atomic.mjs",
+        "sha256": "ec11cddfa5dfcf3d088c61579ba5446e2aeda77d0be0c1bac21f326bbc5c4ca0",
+        "bytes": 19266
+      },
+      {
+        "file": "drawer-capacity-fix-author/drawer-capacity-fix-author-report.md",
+        "sha256": "07d2ce2fc03be5e83c4738c70c5af396277ee0a7c6d78b5e55dda69ee18a3631",
+        "bytes": 8627
+      },
+      {
+        "file": "drawer-capacity-fix-author/drawer-capacity-fix-author-report.json",
+        "sha256": "81ceac7672efff4a0db927f9aaa51960730a868364e6c48a6880376d2df9d226",
+        "bytes": 108192
+      },
+      {
+        "file": "frozen-render-inputs-03d0f68/render-inputs.json",
+        "sha256": "f8fd47e5be03405ac065f9841573d1d9d05ab6a11bf27de42570503826015c1e",
+        "bytes": 34437
+      },
+      {
+        "file": "environment-drawer-gap-visual-review.json",
+        "sha256": "4b670d6043612329d35d010321dbd74177b02a8ff232e60abf3a4a5e5c343c55",
+        "bytes": 60526
+      }
+    ],
+    "sourceOnly": true,
+    "originalPendingExecutionFieldsNotEdited": true,
+    "qualification": "The original source-only review did not identify the raw-changed-path ordering mistake. Its predictions are not a certificate that the later preflight ran. The rejected run and new ordering-correction review are recorded separately."
+  },
+  "authorChecksNotIndependentMainAcceptance": {
+    "reportMd": "drawer-capacity-fix-author/drawer-capacity-fix-author-report.md",
+    "reportJson": "drawer-capacity-fix-author/drawer-capacity-fix-author-report.json",
+    "reportedSuccessfulFiniteChecks": 10,
+    "reportedFinalFailedChecks": 0,
+    "observedReportRecordCount": 10,
+    "requiredPairs": 8,
+    "necessaryActualSelectMenuPairs": 2,
+    "pngs": 0,
+    "reportedNoEmitChecks": [
+      {
+        "command": "node node_modules/typescript/bin/tsc --noEmit -p tsconfig.json",
+        "reportedExitCode": 0
+      },
+      {
+        "command": "node node_modules/typescript/bin/tsc --noEmit -p tsconfig.tests.json",
+        "reportedExitCode": 0
+      }
+    ],
+    "reviewerExecutedOrIndependentlyCertifiedTheseChecks": false,
+    "reportedStableAuthorRenderHash": "273e1606b77b935750ace44019d657447b7a3b5f4bf4e02b99dae7f02d726483",
+    "authorRenderInputCount": 78,
+    "nativeObservationsFiniteInMemoryOnly": true,
+    "authorAfterCaptureFlagsAllFalse": true,
+    "authorDemoTechnicalSourceLabelsStateSeparatelyExecuted": false,
+    "preservedFailures": [
+      "8 RED original340 failures",
+      "adjacent CSS ordinary-merge conflict resolved preserving incoming repairs",
+      "metadata-only missing optional-chain failure and metadata-only retry"
+    ],
+    "taskOneOfOneNotPersistedSuccess": true,
+    "pendingOriginalReadAndDemoRevisionPreviewNotPromotedToDurableAcceptance": true
+  },
+  "orderingCorrection": {
+    "verdict": "SCOPED_SOURCE_FIX_CONSISTENT",
+    "findings": [],
+    "originalIndependentReportSha256": "6ab7f36af68cf3e1165223d6ed0d14338ca64b2f1b302c07dcde8fdfbfa9b204",
+    "inputIdentities": [
+      {
+        "file": "capture-environment-drawer-repairs.mjs",
+        "sha256": "14401e46a79d5ca0453d6542036707a11ac8f68548289cdebd9f015b369e82ca"
+      },
+      {
+        "file": "capture-environment-drawer-repairs-order-safe.mjs",
+        "sha256": "4fc67c08f989566c638cfc26bf3b4bdbca98ce4a18b4785c5afaf246869b5986"
+      },
+      {
+        "file": "environment-drawer-order-safe-plan.md",
+        "sha256": "e1882d12888fa2717376aef861c87e1e6078f84f990f567b1781393dd2239920"
+      },
+      {
+        "file": "environment-drawer-capacity-images-first/global-admission-failure.json",
+        "sha256": "99b3be68000ca9bbee2be95f92b9b90ec0ebbd0ddc0480a1e06c740234dedb07"
+      }
+    ],
+    "priorReviewCorrection": {
+      "completedReview": "environment-drawer-independent-source-review.md/json",
+      "reviewerMissedSequenceSensitiveRawChangeComparison": true,
+      "originalRunnerLine": 54,
+      "cause": "Exact same three changed paths enumerated in Git/default order versus localeCompare freeze order were incorrectly compared as sequences.",
+      "qualification": "Separate correction to prior runner-admissibility finding; prior UI/case review not reopened and prior report bytes not edited.",
+      "toolAdmissionIssueNotProductOrNativeDefect": true
+    },
+    "exactByteForkProof": {
+      "originalRunner": "capture-environment-drawer-repairs.mjs",
+      "newRunner": "capture-environment-drawer-repairs-order-safe.mjs",
+      "oldRunnerMatchesCompletedShaBinding": true,
+      "oldComparatorFragmentOccursExactlyOnce": true,
+      "archiveInsertionAnchorOccursExactlyOnce": true,
+      "newFileEqualsOldAfterOnlyTwoAuthorizedByteEdits": true,
+      "changedComparatorLine": 54,
+      "oldComparatorFragment": ".map(([file]) => file).join('|') !== expectedChangedInputs.join('|')",
+      "newComparatorFragment": ".map(([file]) => file).sort().join('|') !== [...expectedChangedInputs].sort().join('|')",
+      "additionalArchiveLine": 76,
+      "additionalArchiveStatement": "await collect('capture-environment-drawer-repairs.mjs');",
+      "allOtherBytesIncludingEolUnchanged": true,
+      "sourceOrHashObjectsSortedByThisFix": false,
+      "expectedArrayMutated": false,
+      "caseOrCountEqualityRelaxed": false,
+      "deduplicationOrLowercasingAdded": false,
+      "gitPathSequenceOrderedKeyAndExact79HashChecksUnchanged": true,
+      "originalSafetyCallbacksFinalArchiveAndGlobalRefusalGuardsUnchanged": true
+    },
+    "pureMetadataComparatorObservations": {
+      "noAppCaseRunnerOrTestSuiteExecuted": true,
+      "oldSequenceComparatorRejectsExactLocaleOrder": true,
+      "accepted": [
+        "exact Git order",
+        "exact locale/freeze order",
+        "same paths reversed"
+      ],
+      "rejected": [
+        "wrong path",
+        "missing path",
+        "extra path",
+        "case change",
+        "duplicate instead of required path",
+        "duplicate extra path"
+      ],
+      "allObservedDecisionsMatchExpected": true,
+      "inputAndExpectedArraysUnchanged": true,
+      "notProductCaseChecksOrAcceptanceCounters": true
+    },
+    "cause": "Git changed paths used case-sensitive code-point ordering; frozen source maps use localeCompare ordering. Exact same three changed paths were incorrectly compared as differently ordered sequences.",
+    "change": "Sort copies of only the raw changed-path collection and expected path collection before exact comparison, plus archive the predecessor runner. Retain exact path case/count, full Git-diff check, all79 keys/hashes, actualHEAD/freeze and all original safety/admission predicates.",
+    "sourceHashObjectOrderChanged": false,
+    "originalRunnerOrReportsEdited": false,
+    "retainedGlobalRefusal": {
+      "schemaVersion": 1,
+      "phase": "continuation1-authored-environment-images",
+      "requestedHead": "8ca2e79a13c90dcc1fc293447376380763747c5e",
+      "module": "environment-drawer-capacity-gap-cases.mjs",
+      "factory": "environmentDrawerCapacityGapCases",
+      "kind": "images",
+      "sourceHead": "8ca2e79a13c90dcc1fc293447376380763747c5e",
+      "renderHash": "a83d927c931dd81b76656f98d6616aafe5f8e8df9b168d68953bab9d193537f2",
+      "exactFilter": null,
+      "selectedViewports": [
+        {
+          "width": 1440,
+          "height": 900
+        },
+        {
+          "width": 1280,
+          "height": 800
+        }
+      ],
+      "recordsAdmitted": 0,
+      "strictVisualPass": false,
+      "realDesktopAcceptance": false,
+      "status": "GLOBAL_ADMISSION_REFUSED",
+      "stage": "preflight-or-global-guard",
+      "message": "Only the three separately owned drawer deltas are admitted; the other 76 raw render inputs must stay exact",
+      "originalAttemptsEdited": false,
+      "mainRunnerVersion": "immutable-v2-atomic-admission",
+      "previousPerPairFailuresRetainedUnchanged": [],
+      "previouslySuccessfulButNotAdmittedRecordIdentities": [],
+      "nativeIO": false,
+      "screenshotOrActionAcceptanceClaimed": false,
+      "artifactSha256": "99b3be68000ca9bbee2be95f92b9b90ec0ebbd0ddc0480a1e06c740234dedb07",
+      "originalAttempt": "environment-drawer-capacity-images-first",
+      "browserOrCaseExecutions": 0,
+      "admittedPngs": 0,
+      "admissionOverridden": false,
+      "partOfOriginalEightCaseFailures": false
+    }
+  },
+  "mainOrdinaryIntegration": {
+    "sourceHead": "8ca2e79a13c90dcc1fc293447376380763747c5e",
+    "renderHash": "a83d927c931dd81b76656f98d6616aafe5f8e8df9b168d68953bab9d193537f2",
+    "rawRenderHash78": "e988efcf211ffa781655c99c6e7db6aa187c133b8e1ab4e9aed9e9bb725ea0a0",
+    "exactThreeChangedFiles": [
+      "src/components/EnvironmentForm.tsx",
+      "src/components/EnvironmentKernelSelect.tsx",
+      "src/components/environment-windows.css"
+    ],
+    "other76RendererInputsProtected": true,
+    "broaderTrackedNonDocNonOwnedRawAndCanonicalInputs": 358,
+    "beforeReceiptSha256": "22220a29edc61090947534e29f8f55e38daecc01fbe6cbc51fb428e4413f435d",
+    "afterReceiptSha256": "6c3e5ecfdb3772eb0cb227440b2859d3502a35a73cd43058455022186bfd4c4a",
+    "frozen79ManifestSha256": "5ff40038ad34bbe7b82583ac048eec232c8638a6f0743fbfaff6c4dd1ea4aa4c",
+    "exactReviewedCandidateCanonicalBlobsMatched": true,
+    "exactPR31AncestorPreserved": true,
+    "previousBatchAndTableCssPreserved": true,
+    "unrelatedDocumentationDiscarded": false
+  },
+  "mainExecutedChecks": {
+    "schemaVersion": 1,
+    "kind": "main-executed-two-needed-typescript-checks-not-browser-or-native-acceptance",
+    "sourceHead": "8ca2e79a13c90dcc1fc293447376380763747c5e",
+    "renderHash79": "a83d927c931dd81b76656f98d6616aafe5f8e8df9b168d68953bab9d193537f2",
+    "checks": [
+      {
+        "command": "node node_modules/typescript/bin/tsc --noEmit -p tsconfig.json",
+        "exitCode": 0
+      },
+      {
+        "command": "node node_modules/typescript/bin/tsc --noEmit -p tsconfig.tests.json",
+        "exitCode": 0
+      }
+    ],
+    "mainExecutedAfterOrdinaryIntegration": true,
+    "sharedFullSuiteReruns": 0,
+    "pngsProducedByTypechecks": 0,
+    "realDesktopAcceptance": false,
+    "strictVisualPass": false,
+    "originalReceiptSha256": "bca2c3d480744f92d9c220b48569fd52eddb4104e5115c73e54037ac503bb5cb"
+  },
+  "retainedBoundaries": {
+    "old34DrawerFailRecordsUntouched": true,
+    "otherFailMissingSourceLimitRecordsAndCountersUntouched": true,
+    "oldOriginalCasesPlansReviewsAndAttemptsUntouched": true,
+    "nine83To340AuditRepeated": false,
+    "tableBatchReviewRepeated": false,
+    "full79InputOrToolScanRepeated": false,
+    "independentPixelReviewPerformed": false,
+    "savedArtifactContractsReviewed": false,
+    "narrowLayoutSeparatelyVerified": false,
+    "narrowFailureInferred": false
+  },
+  "retainedPublisherOnlyFailure": {
+    "attempt": 1,
+    "exitCode": 1,
+    "error": "TypeError: Cannot read properties of undefined (reading 'length')",
+    "cause": "Publisher expected findings; completed incremental review uses newScopedFindings. Fixed exact schema mapping before any public output was written.",
+    "productOrAcquisitionExecution": false,
+    "oldReportsEdited": false
+  },
+  "wholeCellPassesAdded": 0,
+  "strictVisualPass": false,
+  "realDesktopAcceptance": false,
+  "scope": "Source review, MAIN integration, actual compiler results and rejected/new tool source identities are separate facts. Pixel and saved-artifact review require their own later bindings. Old34 drawer FAILs are not erased; narrow layout and real Wails/WebView remain unverified."
+}

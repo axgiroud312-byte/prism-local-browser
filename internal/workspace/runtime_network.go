@@ -12,15 +12,19 @@ import (
 	"github.com/axgiroud312-byte/prism-local-browser/internal/proxy"
 )
 
+func proxyChannelUnavailable() error {
+	return &proxy.CheckError{Code: "PROXY_BRIDGE_UNAVAILABLE", Message: "本次代理通道尚未准备完成，已阻止启动且未改为直连；请检查本机服务后重试原环境。", Retryable: true}
+}
+
 func (s *Service) prepareRuntimeNetwork(ctx context.Context, slot *runtimeSlot, input RuntimeLaunch) (RuntimeProxyChannel, error) {
-	if err := s.runtimeStage(slot, "network-protection"); err != nil {
+	if err := s.runtimeStage(slot, "proxy-channel"); err != nil {
 		return nil, err
 	}
 	// LaunchRuntime is a trusted host-only synthetic seam. It cannot make the
-	// real kernel launcher bypass its independent protection gate, and desktop
-	// production never injects it. RPC has no unsafe/protection-ready override.
+	// real kernel launcher bypass its exact channel-owner check, and desktop
+	// production never injects it. RPC has no channel-ready override.
 	if s.options.LaunchRuntime == nil && s.networkStore == nil {
-		return nil, kernel.RequireProxyNetworkBoundary()
+		return nil, proxyChannelUnavailable()
 	}
 	if err := s.runtimeStage(slot, "proxy-preflight"); err != nil {
 		return nil, err
@@ -51,7 +55,7 @@ func (s *Service) prepareRuntimeNetwork(ctx context.Context, slot *runtimeSlot, 
 	factory := s.options.OpenProxyChannel
 	if s.options.LaunchRuntime == nil {
 		// The provider prepares the real data directory before browser creation.
-		// Persist that initialization fact before granting any access to it.
+		// Persist that initialization fact before acquiring its session lock.
 		if err := s.claimRuntimeData(ctx, slot); err != nil {
 			return nil, err
 		}

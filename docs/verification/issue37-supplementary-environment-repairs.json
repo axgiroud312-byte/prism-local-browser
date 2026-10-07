@@ -1,0 +1,576 @@
+{
+  "schemaVersion": 1,
+  "kind": "public-append-only-F13-F15-finite-source-row-visual-repair-accounting-not-whole-cell-acceptance",
+  "date": "2026-10-07",
+  "originalDefinitionIDs": [
+    "F13",
+    "F15"
+  ],
+  "sourceHead": "8ca2e79a13c90dcc1fc293447376380763747c5e",
+  "renderHash": "a83d927c931dd81b76656f98d6616aafe5f8e8df9b168d68953bab9d193537f2",
+  "inputHashes": [
+    {
+      "scope": "repository",
+      "path": "docs/verification/issue37-supplementary-environment.json",
+      "bytes": 219199,
+      "sha256": "09295291c4a90dd33ab227d0956cbf8ad9d6e26cac13c01f28b5b520a72e3728",
+      "consumedScope": "Only original47Definitions and cellRelationUpdates indices16,17, frozen summary, and exact F15 history-case/pin references; no other45 definition assessment or ledger rescan.",
+      "hashAuthority": "Targeted metadata-file byte hash computed here."
+    },
+    {
+      "scope": "repository",
+      "path": "docs/screenshots/issue37-drawer-repairs/manifest.json",
+      "bytes": 759483,
+      "sha256": "b2e25642f014af00dc0e7b4474442684f1b74bb9cef4716bc792410cccc05b48",
+      "consumedScope": "Only records8,9,25,26, including their saved actionProof, measurement, finalSafety and pairedVisualReview.",
+      "hashAuthority": "Targeted metadata-file byte hash computed here; no PNG bytes read."
+    },
+    {
+      "scope": "repository",
+      "path": "docs/verification/issue37-environment-drawer-checks.json",
+      "bytes": 241427,
+      "sha256": "665f9df7b2f9870aa9e5318f381c34373980c1352a8d47b6a4af77a0c4c7bea6",
+      "consumedScope": "Only four exact binding records, four naturalTechnicalSourceViewpoints, source/render identity and reported packet totals.",
+      "hashAuthority": "Computed here and equal to completed independent contract inputHashes[2]."
+    },
+    {
+      "scope": "repository",
+      "path": "docs/verification/issue37-environment-drawer-contract-review.json",
+      "bytes": 33805,
+      "sha256": "8ac21db6d369e9d2bfc517ef147297d96d6f0705f65508768a17aad6e8901b82",
+      "consumedScope": "Completed verdict, bindings, naturalTechnicalSourceWheel, cases8,9, capability-source qualification and acceptance limits; no underlying source/tool archive audit.",
+      "hashAuthority": "Targeted metadata-file byte hash computed here."
+    },
+    {
+      "scope": "private",
+      "path": "notes/continuation1/environment-drawer-capacity-visual-review.json",
+      "bytes": 60397,
+      "sha256": "67684f39935b7cb2ba5990da2e610152adde2254b3a670af1074d5712f95b405",
+      "consumedScope": "Only actual independently inspected records8,9,25,26 and reported method/count qualifications; not a new pixel review or a reviewer PNG-byte certificate.",
+      "hashAuthority": "Computed here and equal to all four public pairedVisualReview.independentReviewSha256 fields."
+    },
+    {
+      "scope": "private",
+      "path": "notes/continuation1/environment-drawer-capacity-visual-review.md",
+      "bytes": 15759,
+      "sha256": "e3f5a509bef594d50ae6e5ac7e5c61241574f280ea463114a8f058059399bba7",
+      "consumedScope": "V02 source-block section, lines41-48, for F13/F15 only.",
+      "hashAuthority": "Targeted metadata-file byte hash computed here."
+    },
+    {
+      "scope": "private",
+      "path": "notes/continuation1/environment-drawer-capacity-images-order-safe-first/manifest.json",
+      "bytes": 723250,
+      "sha256": "1115a1d8116b476a3daf52cd90c37418a5872b19fc0286891d0ef018b9b87756",
+      "consumedScope": "Only actual original saved records8,9,25,26: recomputed four full original object signatures and compared actionProof, measurement, finalSafety and PNG hash metadata to publication.",
+      "hashAuthority": "Whole-file pin inherited from completed contract inputHashes[0] and public checks.originalCaptureManifestSha256, not rescanned here. Four original record-object signatures were independently recomputed."
+    },
+    {
+      "scope": "repository",
+      "path": "docs/screenshots/issue37-environment-gaps/manifest.json",
+      "bytes": 4129793,
+      "sha256": "770feea518f2fe1cae2e53c800b629b8aacf00c91d7de28b417d3ccfc684b46d",
+      "consumedScope": "Exact previously accepted F15 history visible-subset metadata at records144,170 only; no old photo reopening, record/array hash rescan or verdict revision.",
+      "hashAuthority": "Accepted immutable baseline.admittedInputHashes pin; whole-file SHA256 not recomputed here."
+    }
+  ],
+  "baselineLayerFrozen": {
+    "path": "docs/verification/issue37-supplementary-environment.json",
+    "finiteOriginalGapDefinitionsAddressed": 35,
+    "remainingOriginalDefinitionCount": 12,
+    "remainingOriginalDefinitionIDs": [
+      "E18",
+      "F07",
+      "F11",
+      "F13",
+      "F15",
+      "F26",
+      "F32",
+      "B08",
+      "R09",
+      "P07",
+      "M22",
+      "H19"
+    ],
+    "original47InputCount": 47,
+    "originalDefinitionSHA256InheritedNotRecomputed": "bc454d893302d01e64cf2ac769aa32cacd4cb2855e74c885dc4568f254c1f399",
+    "originalPrivateAccountingSHA256InheritedNotRecomputed": "437323887b73c4b39d84eb77c73d4408a2b9230acae963d82da96ce24ad6388d",
+    "sourceHead": "340a22c1e8489fad2db091a25bb14bb7d2e66984",
+    "renderHash": "0df5a445b4a16f1984f2944ac7367d1202322b892876f2d31b9e853d9a8708ce",
+    "statusCounts": {
+      "FINITE_ORIGINAL_GAP_DEFINITION_ADDRESSED": 35,
+      "PARTIALLY_OBSERVED": 7,
+      "UNSUPPORTED_CLAUSE": 2,
+      "SOURCE_LIMIT": 3,
+      "UNPROVEN": 0
+    },
+    "baselineImageStates": 92,
+    "baselineImageLedgerRecords": 184,
+    "baselineImageVerdicts": {
+      "ADAPTED": 70,
+      "MAPPED": 34,
+      "MISSING": 18,
+      "FAIL": 62
+    },
+    "standaloneActionLedgerRecords": 38,
+    "standaloneCaseIDs": 19,
+    "postImageCallbackLedgerRecords": 66,
+    "callbackCaseIDs": 33,
+    "preservedOriginalFailureObjects": 8,
+    "historical274": {
+      "total": 274,
+      "COVERED": 113,
+      "PARTIAL": 60,
+      "MISSING": 101
+    },
+    "formalDesktopCountUnchanged": "4/21",
+    "originalReportsAndPublicPriorPending8caFieldsEdited": false,
+    "priorPending8caMeaning": "Historical review cutoff retained literally in prior reports, not the status of this completed append-only layer."
+  },
+  "completedDrawerLayerReportedNotRecounted": {
+    "reportedImages": 34,
+    "reportedImageVerdicts": {
+      "ADAPTED": 34,
+      "FAIL": 0
+    },
+    "reportedImageOwnedCallbacks": 16,
+    "selectedOriginalDefinitions": 2,
+    "selectedImageBindings": 4,
+    "selectedCallbacks": 0,
+    "independentContractVerdict": "SCOPED_CONTRACT_CONSISTENT",
+    "independentContractFindingCount": 0,
+    "visualReviewerActuallyOpenedNewImages": 34,
+    "visualReviewerActuallyOpenedMappedOriginals": 12,
+    "visualReviewerIndependentlyRehashedPNGBytes": false,
+    "completedContractReportsActualPNGByteAndDimensionChecks": 34,
+    "pngByteAuthority": "Completed independent saved-contract checks and MAIN publication, not the visual review's supplied hash metadata or this accountant.",
+    "additionalBaselineImages": 0,
+    "additionalBaselineStandaloneActions": 0,
+    "additionalBaselineCallbacks": 0
+  },
+  "recordResolution": {
+    "recordsPolicy": "The following four objects are literal public checks.records entries at indices8,9,25,26, in that order. originalManifestRecordIndex resolves the same index in the completed raw and public drawer manifests and in the independent visual review.",
+    "originalSignatureRecipe": "SHA256(UTF8(JSON.stringify(fullOriginalSavedRecord))) preserving parsed property order.",
+    "publicMutationQualification": "Only pairedVisualReview differs between each saved original and its public record. The original value is the literal string not-reviewed; deleting the public field is not the original-record signature recipe.",
+    "identityVersusAuthority": "Saved sourceHead/renderHash and originalRecordSha256 identify this finite acquisition. They are not a current Git head, executable/native-generator, storage or live-kernel certificate."
+  },
+  "records": [
+    {
+      "id": "env-drawer-native-generated-preview-capability-source",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sourceHead": "8ca2e79a13c90dcc1fc293447376380763747c5e",
+      "renderHash": "a83d927c931dd81b76656f98d6616aafe5f8e8df9b168d68953bab9d193537f2",
+      "originalAuthorSourceHead": "340a22c1e8489fad2db091a25bb14bb7d2e66984",
+      "originalManifestRecordIndex": 8,
+      "originalRecordSha256": "b2ab9f720df7a32d1818ed308790fbcaae578aa9713890cf66db8bca2ea2426c",
+      "pngSha256": "157c0cd201dda90471a96ee13e870de4ee11df37b9c6ae035575f14ff183b881",
+      "finalSafetySha256": "ca1a3460318308324d3db7081b7b42fa9d66502c33a6a3d893f6bd0967ffa588",
+      "toolingHash": "b91219286ae57487eba4c106f80b84890a711af12c09f8c16f3c7bfc54f4625b",
+      "pictureIsNotVisualPass": true
+    },
+    {
+      "id": "env-drawer-demo-technical-source-labels",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sourceHead": "8ca2e79a13c90dcc1fc293447376380763747c5e",
+      "renderHash": "a83d927c931dd81b76656f98d6616aafe5f8e8df9b168d68953bab9d193537f2",
+      "originalAuthorSourceHead": "340a22c1e8489fad2db091a25bb14bb7d2e66984",
+      "originalManifestRecordIndex": 9,
+      "originalRecordSha256": "19a10c2dc0574c5f69259455e6c772ae68cb5b47b981f651e703ec6d172d042f",
+      "pngSha256": "98ad9c0ab0e0b86ed784d0419af9934e78be31cb7c06b55e53914615bf935fb6",
+      "finalSafetySha256": "c2d3d34957da7688a07c1cd4eb3ac505c4c63894007d4a8b1f9eabf1893bb8ea",
+      "toolingHash": "b91219286ae57487eba4c106f80b84890a711af12c09f8c16f3c7bfc54f4625b",
+      "pictureIsNotVisualPass": true
+    },
+    {
+      "id": "env-drawer-native-generated-preview-capability-source",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "sourceHead": "8ca2e79a13c90dcc1fc293447376380763747c5e",
+      "renderHash": "a83d927c931dd81b76656f98d6616aafe5f8e8df9b168d68953bab9d193537f2",
+      "originalAuthorSourceHead": "340a22c1e8489fad2db091a25bb14bb7d2e66984",
+      "originalManifestRecordIndex": 25,
+      "originalRecordSha256": "b2570444fcf47eaf23d3940ca56f2662a524be7dab769ca3df7e035a599968e5",
+      "pngSha256": "b7d3d6ea77478fd412b10506f834c92e4524ae366dc0ee70badec3f987718032",
+      "finalSafetySha256": "ca1a3460318308324d3db7081b7b42fa9d66502c33a6a3d893f6bd0967ffa588",
+      "toolingHash": "b91219286ae57487eba4c106f80b84890a711af12c09f8c16f3c7bfc54f4625b",
+      "pictureIsNotVisualPass": true
+    },
+    {
+      "id": "env-drawer-demo-technical-source-labels",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "sourceHead": "8ca2e79a13c90dcc1fc293447376380763747c5e",
+      "renderHash": "a83d927c931dd81b76656f98d6616aafe5f8e8df9b168d68953bab9d193537f2",
+      "originalAuthorSourceHead": "340a22c1e8489fad2db091a25bb14bb7d2e66984",
+      "originalManifestRecordIndex": 26,
+      "originalRecordSha256": "4fd083b99152df28f1df17a08b286e525737babf75cb936a933840732bf7b0d6",
+      "pngSha256": "fd730cfda7907828722e9330b3eacbcd1df15750acf3c2b2fdc0c5f76ef4a77d",
+      "finalSafetySha256": "c2d3d34957da7688a07c1cd4eb3ac505c4c63894007d4a8b1f9eabf1893bb8ea",
+      "toolingHash": "b91219286ae57487eba4c106f80b84890a711af12c09f8c16f3c7bfc54f4625b",
+      "pictureIsNotVisualPass": true
+    }
+  ],
+  "targetedProofMetadata": [
+    {
+      "recordIndex": 8,
+      "actionProofSHA256": "a4d7d41be6c6964aafd64390d9a319fb013e856eda748cc7eac08cb11178fd07",
+      "measurementSHA256": "ea4bc863e59a8139d0dd7cc15471efd2000cd507437fce0bd44020f454808db1",
+      "sourceBlocks": 3,
+      "bodyScrollTops": [
+        709,
+        1189,
+        1495
+      ],
+      "bodyClientHeight": 741,
+      "bodyScrollHeight": 2236,
+      "allSourceBlocksInsideMeasuredRealBody": true,
+      "independentVisualRecordRef": "/records/8",
+      "independentVisualVerdict": "ADAPTED"
+    },
+    {
+      "recordIndex": 9,
+      "actionProofSHA256": "de88ea35cb1155cc81160b543dbb7e50fae53bd47dc29bf671bd442a98d62780",
+      "measurementSHA256": "90eba49dfad707dc5475d5cd6a815bf16c0c9cd7de05b922a2acf20bf15f8519",
+      "sourceBlocks": 4,
+      "bodyScrollTops": [
+        629,
+        1109,
+        1436
+      ],
+      "bodyClientHeight": 741,
+      "bodyScrollHeight": 2177,
+      "allSourceBlocksInsideMeasuredRealBody": true,
+      "independentVisualRecordRef": "/records/9",
+      "independentVisualVerdict": "ADAPTED"
+    },
+    {
+      "recordIndex": 25,
+      "actionProofSHA256": "9ca217f4171b378b6dc0887e1a163332f7455982961bb8fd39b2c3d6f35808d9",
+      "measurementSHA256": "c8f5a3d8497b93c7b5c5fb74cb8898fb6d3db319d11b6a1de7549878bdf6c555",
+      "sourceBlocks": 3,
+      "bodyScrollTops": [
+        809,
+        1289,
+        1595
+      ],
+      "bodyClientHeight": 641,
+      "bodyScrollHeight": 2236,
+      "allSourceBlocksInsideMeasuredRealBody": true,
+      "independentVisualRecordRef": "/records/25",
+      "independentVisualVerdict": "ADAPTED"
+    },
+    {
+      "recordIndex": 26,
+      "actionProofSHA256": "66f1ee849df094ddef6b29dbdc58d2cbf9ec9426ec760c6722dedc1c04846ca2",
+      "measurementSHA256": "e2c75f3676b14519817a1cc6f5351913c4cc43eb03ec39c365bc7cd9146f47dc",
+      "sourceBlocks": 4,
+      "bodyScrollTops": [
+        729,
+        1209,
+        1536
+      ],
+      "bodyClientHeight": 641,
+      "bodyScrollHeight": 2177,
+      "allSourceBlocksInsideMeasuredRealBody": true,
+      "independentVisualRecordRef": "/records/26",
+      "independentVisualVerdict": "ADAPTED"
+    }
+  ],
+  "cellRelationUpdates": [
+    {
+      "id": "F13",
+      "originalDefinitionIndex": 16,
+      "originalDefinition": {
+        "id": "F13",
+        "ticket": 34,
+        "mode": "native",
+        "historicalCoverage": "PARTIAL",
+        "historicalSupplementStatus": "unproven",
+        "originalRemainingSemanticGaps": [
+          "identical App toast text does not certify native generated preview/capability source"
+        ],
+        "predicateSourceQualifierRef": "/qualifications/untouched44",
+        "cellFullyCovered": false
+      },
+      "statusBefore": "PARTIALLY_OBSERVED",
+      "status": "FINITE_ORIGINAL_GAP_DEFINITION_ADDRESSED",
+      "baselineRemainingUnprovedClauses": [
+        "The intended native capability-source rows are outside the actual captured body in both views; generated metadata and a toast do not establish visibly rendered capability-source content."
+      ],
+      "recordIndices": [
+        8,
+        25
+      ],
+      "observedFiniteClauses": [
+        "Both actual independently viewed PNGs show all three native-synthetic capability/source blocks: CPU configurable with install-time/non-current-read and synthetic-not-real-observation disclosure; GPU/WebGL seed-generated/source-derived/non-current-read; location/other unverified and not-probed/no-edit.",
+        "Both views show the final preview-not-launch/no-fabricated-read/synthetic-bridge limitation. Saved original generatedPreviewMode=native, synthetic-build-a/version148.0.7778.215 and capabilitySources are bound to those exact records, not borrowed demo toast text.",
+        "Natural +480 then +600 body wheel reaches the measured body end; all three source rectangles are fully inside that body in each view. Independent actual-image notes, rather than DOM text or generated metadata alone, supply visual corroboration."
+      ],
+      "proofFieldRefs": [
+        "/actionProof/generatedPreviewMode",
+        "/actionProof/sourceRecordId",
+        "/actionProof/sourceVersion",
+        "/actionProof/capabilitySources",
+        "/actionProof/borrowedDemoToastEvidence",
+        "/actionProof/liveObservationsClaimed",
+        "/actionProof/mainNaturalSourceViewpoint",
+        "/measurement/frames/0/body",
+        "/finalSafety"
+      ],
+      "independentVisualRecordRefs": [
+        "/records/8",
+        "/records/25"
+      ],
+      "independentContractRefs": [
+        "/cases/8",
+        "/naturalTechnicalSourceWheel",
+        "/callbackIdentityAndClosureScope/capabilitySources",
+        "/bindings"
+      ],
+      "remainingUnprovedFiniteClauses": [],
+      "qualifications": [
+        "This closes the admitted finite source-row visibility clause only. The original definition, historical PARTIAL/unproven fields and earlier V02/V04 FAILs are not rewritten.",
+        "The generated toast is actually present in both new PNGs but is not source/capability proof and is not the reason for this status.",
+        "At1280 earlier revision/build-ID rows are above the current clip. Neither view is an all-technical-rows-at-once or selected-kernel-field claim.",
+        "The observed capability-source label is synthetic install-time metadata, not a live environment read. Fingerprint.Generate/Environment.Preview dispatches are synthetic; exactExecutableHashMatchedPrivately does not certify an actual executable or native generator here.",
+        "No native storage, kernel enforcement, real hardware observation, commit or desktop authority is added; direct business-state original remains MISSING."
+      ],
+      "cellFullyCovered": false
+    },
+    {
+      "id": "F15",
+      "originalDefinitionIndex": 17,
+      "originalDefinition": {
+        "id": "F15",
+        "ticket": 34,
+        "mode": "demo",
+        "historicalCoverage": "MISSING",
+        "historicalSupplementStatus": "unproven",
+        "originalRemainingSemanticGaps": [
+          "demo technical details/history has distinct demo capability source labels"
+        ],
+        "predicateSourceQualifierRef": "/qualifications/untouched44",
+        "cellFullyCovered": false
+      },
+      "statusBefore": "PARTIALLY_OBSERVED",
+      "status": "FINITE_ORIGINAL_GAP_DEFINITION_ADDRESSED",
+      "baselineRemainingUnprovedClauses": [
+        "The targeted technical-details source rows are outside the technical capture. The history view only certifies its visible subset; full technical-details/history source-label content is not established by the metadata alone."
+      ],
+      "recordIndices": [
+        9,
+        26
+      ],
+      "observedFiniteClauses": [
+        "Both actual independently viewed PNGs show all four demo capability/source blocks: identity/seed/cpu/acceptLanguages/timezone is demo input/revision-only; gpu/memory/font/canvas/audio is unverified with no fabricated reads; screen/scale and window preference do not certify a screen fingerprint/read; browser-menu language is unverified and website language is not menu-language verification.",
+        "Both views show the final preview-not-launch/no-fabricated-read/synthetic-bridge warning and collapsed saved-history link. Saved capabilityEvidence=demo-only, nativeReadValuesClaimed=false, savedHistoryOpen=false and storageUnchanged=true agree with the finite technical viewpoint, not a newly expanded history view.",
+        "The complementary old accepted history#1 viewpoint already establishes its visible demo/unverified/not-screen-read labels. Combining only that existing bounded history subset with the newly visible four technical source blocks resolves the admitted finite label clause; it does not establish every historical entry or every technical row."
+      ],
+      "proofFieldRefs": [
+        "/actionProof/capabilityEvidence",
+        "/actionProof/nativeReadValuesClaimed",
+        "/actionProof/savedHistoryOpen",
+        "/actionProof/storageUnchanged",
+        "/actionProof/mainNaturalSourceViewpoint",
+        "/measurement/frames/0/body",
+        "/finalSafety"
+      ],
+      "independentVisualRecordRefs": [
+        "/records/9",
+        "/records/26"
+      ],
+      "independentContractRefs": [
+        "/cases/9",
+        "/naturalTechnicalSourceWheel",
+        "/callbackIdentityAndClosureScope/capabilitySources",
+        "/bindings"
+      ],
+      "acceptedHistoricalVisibleSubsetCarry": {
+        "role": "Already accepted source340 F15 history evidence, not a new binding, new image, status revision or source8ca projection.",
+        "baselineRelationRef": "docs/verification/issue37-supplementary-environment.json#/cellRelationUpdates/17",
+        "manifest": "docs/screenshots/issue37-environment-gaps/manifest.json",
+        "manifestSHA256Authority": "Immutable baseline.admittedInputHashes accepted pin, not a new whole-file hash scan.",
+        "sourceHead": "340a22c1e8489fad2db091a25bb14bb7d2e66984",
+        "renderHash": "0df5a445b4a16f1984f2944ac7367d1202322b892876f2d31b9e853d9a8708ce",
+        "records": [
+          {
+            "recordIndex": 144,
+            "id": "env-drawer-demo-history-source-labels",
+            "viewport": {
+              "width": 1440,
+              "height": 900
+            },
+            "pngSha256": "0cecbcefb47c8aff09376a2f63a584bd435df3cbe073a1458b2e06b1aa7aadc6",
+            "acceptedVerdict": "ADAPTED",
+            "savedHistoryOpen": true,
+            "capabilityEvidence": "demo-only",
+            "nativeReadValuesClaimed": false,
+            "storageUnchanged": true,
+            "acceptedVisibleSubsetNote": "ADAPTED readable demo-only/unverified capability boundaries, not-screen-measurement explanation and saved history #1 row; visible detail/history/Save areas fit."
+          },
+          {
+            "recordIndex": 170,
+            "id": "env-drawer-demo-history-source-labels",
+            "viewport": {
+              "width": 1280,
+              "height": 800
+            },
+            "pngSha256": "de2e698831d8c9293134b19c242203bf7ce9f65304cd8aaa0419a075c8aca150",
+            "acceptedVerdict": "ADAPTED",
+            "savedHistoryOpen": true,
+            "capabilityEvidence": "demo-only",
+            "nativeReadValuesClaimed": false,
+            "storageUnchanged": true,
+            "acceptedVisibleSubsetNote": "ADAPTED demo/unverified capability explanations and saved #1 history row are readable; visible rows, history action and Save fit at 1280."
+          }
+        ],
+        "upperTechnicalRowsAtOldHistoryViewClaimed": false,
+        "newHistoryExpansionClaimed": false,
+        "allHistoryEntriesOrRollbackExecutionClaimed": false
+      },
+      "remainingUnprovedFiniteClauses": [],
+      "qualifications": [
+        "Technical source labels are independently visually corroborated at both viewports; the new collapsed history link is not treated as expanded-history proof. Only the exact previously accepted visible history subset is carried.",
+        "At1280 earlier revision/build/actual-version rows are above the current clip and are not borrowed from1440. Visibility across complementary viewpoints does not mean all technical/history rows are simultaneously visible.",
+        "Upper/other history content, full historical data, rollback execution and actual storage/native capability reads remain unclaimed beyond this finite source-label definition, not newly invented frontier requirements.",
+        "Historical technical FAIL and history ADAPTED remain distinct and unchanged. Direct original technical/history-state comparator remains MISSING; no real kernel read or native authority is added."
+      ],
+      "cellFullyCovered": false
+    }
+  ],
+  "remainingOriginalDefinitionIDs": [
+    "E18",
+    "F07",
+    "F11",
+    "F26",
+    "F32",
+    "B08",
+    "R09",
+    "P07",
+    "M22",
+    "H19"
+  ],
+  "summary": {
+    "baselineFiniteOriginalDefinitionsAddressed": 35,
+    "newFiniteOriginalDefinitionsAddressed": 2,
+    "newFiniteOriginalDefinitionIDsAddressed": [
+      "F13",
+      "F15"
+    ],
+    "derivedFiniteOriginalDefinitionsAddressed": 37,
+    "originalDefinitionDenominator": 47,
+    "baselineRemainingOriginalDefinitions": 12,
+    "derivedRemainingOriginalDefinitions": 10,
+    "derivedStatusCounts": {
+      "FINITE_ORIGINAL_GAP_DEFINITION_ADDRESSED": 37,
+      "PARTIALLY_OBSERVED": 5,
+      "UNSUPPORTED_CLAUSE": 2,
+      "SOURCE_LIMIT": 3,
+      "UNPROVEN": 0
+    },
+    "other45OriginalDefinitionDecisions": 0,
+    "newOriginalDefinitions": 0,
+    "wholeCellPassesAdded": 0,
+    "strictVisualPass": false,
+    "realDesktopAcceptance": false,
+    "formalDesktopAcceptanceUnchanged": "4/21",
+    "baseline184Images38Actions66CallbacksUnchanged": true,
+    "baselineFAILImagesStillRetained": 62,
+    "referencedOldCSSFAILSubsetStillRetained": 28,
+    "old28IsSubsetNotAdditionalFAILs": true,
+    "css34Images14CallbacksRemainSeparateCorrectionReferences": true,
+    "drawer34Images16CallbacksRemainSeparateNewLayer": true,
+    "allPriorLayersAndEightOriginalFailuresReclassified": false,
+    "oldReportsRewritten": false,
+    "publicationPerformedHere": false,
+    "mainPublisherChoosesFinalPublicShapeAfterReady": true
+  },
+  "sourceAndNativeLimits": [
+    "Only finite UI/in-memory synthetic bridge and demo evidence is accounted. Source/build/version/capability strings and supplied executable-match flags are not native generator, storage, executable/kernel enforcement or hardware observation authority.",
+    "Source8ca/rendera83 identify only the completed new repair layer. Baseline source340/render0df and CSS source03/renderdf5b remain their own historical bindings; no source, raw endpoint, tool/archive or current-head audit was performed.",
+    "Four source-focused pictures and their saved observations do not prove B08 lookup outcomes, F07 independent bottom content, any other frontier clause, callback execution or native acceptance. Equal hashes and similar pictures are not cross-case proof.",
+    "All prior ledgers, failure signatures, historical classifications and pending-cutoff strings remain unchanged. This report appends two finite-clause decisions, not whole-cell PASSes or an evidence-ledger extension."
+  ],
+  "integrity": {
+    "method": "Bounded read-only metadata comparisons, four original saved-record object signatures, actual proof/measurement/finalSafety equality, four independent visual-note bindings, two literal original definitions and arithmetic subtraction of only F13/F15 from the immutable12-ID list.",
+    "fourOriginalSavedRecordSignaturesMatchExactPublicBindings": true,
+    "fourSavedProofMeasurementsFinalSafetyMatchPublication": true,
+    "fourFinalSafetySignaturesMatchBindings": true,
+    "fourPNGHashMetadataAndVisualReviewHashesMatch": true,
+    "fourSourceViewpointsMatchPublicAndCompletedIndependentContract": true,
+    "all14SourceBlockRectanglesInsideActualMeasuredBodies": true,
+    "actualIndependentNotesReadAllRequiredSourceBlocksAndFinalCaveats": true,
+    "originalAuthoredNotExecutedAndSavedNotReviewedFieldsRewritten": false,
+    "originalDefinitionObjectsAndGapStringsCopiedLiterally": true,
+    "ownedNewOutputs": [
+      "notes/continuation1/supplementary-crosswalk-environment-repairs.md",
+      "notes/continuation1/supplementary-crosswalk-environment-repairs.json"
+    ],
+    "other45DefinitionsOrWholeLedgersReassessed": false,
+    "oldFullHashOrOriginal47ObjectHashRescans": false,
+    "PNGBytesOrPixelsOpenedHere": false,
+    "sourceToolArchiveOrCaseModuleFilesReadOrExecuted": false,
+    "productTestsBrowserNativeNetworkGitRemoteTrackerOperations": 0,
+    "publicSourceExistingReportsOrHistoryEdited": false,
+    "otherPendingReviewsSessionsWorktreesInspected": false,
+    "newAgents": 0
+  },
+  "publicationProvenance": {
+    "originalPrivateAccountingSha256": "bd4fe91dfd05a5a805707f9f72a13ddee91ce075ebd9d3296d6b946ea613c3b2",
+    "sixTargetedMetadataFileIdentitiesMatched": [
+      {
+        "path": "docs/verification/issue37-supplementary-environment.json",
+        "sha256": "09295291c4a90dd33ab227d0956cbf8ad9d6e26cac13c01f28b5b520a72e3728"
+      },
+      {
+        "path": "docs/screenshots/issue37-drawer-repairs/manifest.json",
+        "sha256": "b2e25642f014af00dc0e7b4474442684f1b74bb9cef4716bc792410cccc05b48"
+      },
+      {
+        "path": "docs/verification/issue37-environment-drawer-checks.json",
+        "sha256": "665f9df7b2f9870aa9e5318f381c34373980c1352a8d47b6a4af77a0c4c7bea6"
+      },
+      {
+        "path": "docs/verification/issue37-environment-drawer-contract-review.json",
+        "sha256": "8ac21db6d369e9d2bfc517ef147297d96d6f0705f65508768a17aad6e8901b82"
+      },
+      {
+        "path": "notes/continuation1/environment-drawer-capacity-visual-review.json",
+        "sha256": "67684f39935b7cb2ba5990da2e610152adde2254b3a670af1074d5712f95b405"
+      },
+      {
+        "path": "notes/continuation1/environment-drawer-capacity-visual-review.md",
+        "sha256": "e3f5a509bef594d50ae6e5ac7e5c61241574f280ea463114a8f058059399bba7"
+      }
+    ],
+    "twoInheritedPinsValidatedAgainstCompletedIndependentOrMainReceipts": [
+      {
+        "path": "notes/continuation1/environment-drawer-capacity-images-order-safe-first/manifest.json",
+        "sha256": "1115a1d8116b476a3daf52cd90c37418a5872b19fc0286891d0ef018b9b87756",
+        "authority": "Completed independent drawer contract and MAIN checks; raw archive not rescanned for publication."
+      },
+      {
+        "path": "docs/screenshots/issue37-environment-gaps/manifest.json",
+        "sha256": "770feea518f2fe1cae2e53c800b629b8aacf00c91d7de28b417d3ccfc684b46d",
+        "authority": "Completed public-artifact audit; old baseline manifest and ledgers not rescanned for this delta."
+      }
+    ],
+    "originalPrivateReportOrBaselineLayerEdited": false,
+    "other45OriginalDefinitionsReassessed": false,
+    "rawSourceOrToolArchiveOrOldLedgerOrPngAuditRepeated": false,
+    "productOrBrowserOrNativeExecutions": 0
+  },
+  "wholeCellPassesAdded": 0,
+  "strictVisualPass": false,
+  "realDesktopAcceptance": false
+}

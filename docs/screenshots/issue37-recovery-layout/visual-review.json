@@ -1,0 +1,287 @@
+{
+  "schemaVersion": 1,
+  "kind": "public-independent-actual-image-review-projection",
+  "sourceHead": "4a2afbf053352760dddbdb7baa24a368c659878f",
+  "reviewer": "ses_eec1333e3ffeYOm3ng0DDrr0R9",
+  "candidateSHA256": "560844df31c20dfdc6a253708a162344e7e09144ca4f18ac8c7d34bfc57fd815",
+  "rawReviewSHA256": "a32e369831ee3407eeff80f0dcb756576b7cecf46487ae8c2467c1df25087154",
+  "indexSHA256": "d21951c385feb5eb55f67eca5a84ba15e3f20d8511fdae7571ee1db39b115cdb",
+  "classification": {
+    "ADAPTED": 11,
+    "MAPPED": 0,
+    "MISSING": 0,
+    "FAIL": 7
+  },
+  "records": [
+    {
+      "id": "toolbar-before-environment-normal-toolbar-1024x720",
+      "sha256": "18b3ffcb176fe87b4c0d891a13c3d02f261d711828d5f945de3a55c6f7bfd2c7",
+      "verdict": "ADAPTED",
+      "phase": "before",
+      "viewport": {
+        "width": 1024,
+        "height": 720
+      },
+      "notes": [
+        "Normal toolbar controls and pagination are visible in this healthy before image.",
+        "Narrow-state adaptation only; not a strict original-state PASS."
+      ]
+    },
+    {
+      "id": "toolbar-before-environment-selected-toolbar-1024x720",
+      "sha256": "37a29a58698f0f1417bef11d51b28cf68fd79d6f5e5df6225590dbee5dc4e117",
+      "verdict": "FAIL",
+      "phase": "before",
+      "viewport": {
+        "width": 1024,
+        "height": 720
+      },
+      "notes": [
+        "Selected actions extend beyond the right image edge; more-actions is cut and refresh is off-image.",
+        "Historical before defect deliberately retained, not an after-state finding."
+      ]
+    },
+    {
+      "id": "toolbar-before-environment-normal-toolbar-900x720",
+      "sha256": "e641da91a9b7dca0230bf93ccc80b455c7b32931729bc77a7354e81d81781543",
+      "verdict": "FAIL",
+      "phase": "before",
+      "viewport": {
+        "width": 900,
+        "height": 720
+      },
+      "notes": [
+        "Search and advanced-search escape the right edge of the unwrapped top toolbar.",
+        "Rightmost table actions are also internally clipped; that separate limitation remains unchanged after."
+      ]
+    },
+    {
+      "id": "toolbar-before-environment-selected-toolbar-900x720",
+      "sha256": "a791e3033ccb809ecadd6750705dcdd63d21553751dc53775c7969c13632935e",
+      "verdict": "FAIL",
+      "phase": "before",
+      "viewport": {
+        "width": 900,
+        "height": 720
+      },
+      "notes": [
+        "Top search and selected action rows extend off-image; later selected actions cannot be read in this frame.",
+        "Historical before defect deliberately retained, not an after-state finding."
+      ]
+    },
+    {
+      "id": "toolbar-after-environment-normal-toolbar-1024x720",
+      "sha256": "9335a21c6f967d5cd2053120c6a44fd2d7ebbd04dd27ac6814a3eb38b5702b3e",
+      "verdict": "ADAPTED",
+      "phase": "after",
+      "viewport": {
+        "width": 1024,
+        "height": 720
+      },
+      "notes": [
+        "Search and advanced-search occupy a readable second row; create, import, group, more-actions, and refresh remain visible.",
+        "Table shifts downward as intended; pagination remains inside the frame without toolbar overlap."
+      ]
+    },
+    {
+      "id": "toolbar-after-environment-selected-toolbar-1024x720",
+      "sha256": "b8413f4fff670013abb0017f056ce2396624fc912162af6396083998092c2ed2",
+      "verdict": "ADAPTED",
+      "phase": "after",
+      "viewport": {
+        "width": 1024,
+        "height": 720
+      },
+      "notes": [
+        "Selection count and cancel are clear; batch open, batch close, regroup, more-actions, and refresh wrap into a contained row.",
+        "No new clipping or overlap in the repaired toolbar; pagination remains visible."
+      ]
+    },
+    {
+      "id": "toolbar-after-environment-normal-toolbar-900x720",
+      "sha256": "1e3df08bf931395ccb22c5211515497ad1c04af30cda6c9ae34a7b932347c6f4",
+      "verdict": "ADAPTED",
+      "phase": "after",
+      "viewport": {
+        "width": 900,
+        "height": 720
+      },
+      "notes": [
+        "Wrapped search and advanced-search labels fit; normal list actions and pagination are readable.",
+        "The table still internally clips its rightmost row actions, as before; this review does not call that repaired."
+      ]
+    },
+    {
+      "id": "toolbar-after-environment-selected-toolbar-900x720",
+      "sha256": "854b0a32cb332f0d07cc5dd712cda975e007c920c314d431ceb14bce794c703e",
+      "verdict": "ADAPTED",
+      "phase": "after",
+      "viewport": {
+        "width": 900,
+        "height": 720
+      },
+      "notes": [
+        "Selection count/cancel and all targeted batch, regroup, more-actions, and refresh controls are visible on wrapped rows.",
+        "No repaired-control overlap; unchanged internal table clipping is outside this toolbar repair claim."
+      ]
+    },
+    {
+      "id": "title-before-proxy-details-long-title-1440x900",
+      "sha256": "a68f7193f2d72b955d27f14d2fcb969916c33e3148361af31f4bc70bf8a48d08",
+      "verdict": "FAIL",
+      "phase": "before",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "notes": [
+        "Long heading streak crosses both modal edges and the close-button region; its heading prefix is not readable in-frame.",
+        "Historical title defect deliberately preserved."
+      ]
+    },
+    {
+      "id": "title-before-proxy-usage-long-title-1440x900",
+      "sha256": "b06cb389ac306574fcabe8d18cbdbecb02ed73853ec29ef6a7abc02db38380e8",
+      "verdict": "FAIL",
+      "phase": "before",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "notes": [
+        "Usage heading runs outside both modal edges and intrudes into the close region, losing its readable prefix.",
+        "Historical title defect deliberately preserved."
+      ]
+    },
+    {
+      "id": "title-before-proxy-details-long-title-1280x800",
+      "sha256": "c80624cfa9713b5a211c7a24b09fffcb6fc75738bb404aeacea33baf6e76bb21",
+      "verdict": "FAIL",
+      "phase": "before",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "notes": [
+        "Long details heading spills across the modal and image edges, including the close region.",
+        "Body message and confirmation remain distinct; the retained defect is the heading overflow."
+      ]
+    },
+    {
+      "id": "title-before-proxy-usage-long-title-1280x800",
+      "sha256": "01d40aac7d95856ec635aec2f2495c6bd418d0d8050eeb54cfd56b640b008dc3",
+      "verdict": "FAIL",
+      "phase": "before",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "notes": [
+        "Usage heading crosses modal edges and the close region; its prefix is lost outside the frame.",
+        "Historical title defect deliberately preserved."
+      ]
+    },
+    {
+      "id": "title-after-proxy-details-long-title-1440x900",
+      "sha256": "3b29e6ec868f2764b78da46c5112368510f47aacb0414dfde2e360427551ecfb",
+      "verdict": "ADAPTED",
+      "phase": "after",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "notes": [
+        "Readable details prefix and ellipsis stay inside the heading; close icon is separated from text.",
+        "Message and confirmation remain clear; measured title is 536x18 with 8px close clearance."
+      ]
+    },
+    {
+      "id": "title-after-proxy-usage-long-title-1440x900",
+      "sha256": "7f89c00000cfa0fa50f400965ab9d42a85febc1cd57cc1de3b357a6f365b9572",
+      "verdict": "ADAPTED",
+      "phase": "after",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "notes": [
+        "Readable usage prefix and ellipsis fit the header with a clear close icon.",
+        "Search, rows, and footer remain separated; measured title is 956x18 with 16px close clearance."
+      ]
+    },
+    {
+      "id": "title-after-proxy-details-long-title-1280x800",
+      "sha256": "3e9e0cd05d8c7f6195e00cde3947660ccf53924e69d0a26a4c52b6cefebf2779",
+      "verdict": "ADAPTED",
+      "phase": "after",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "notes": [
+        "Details prefix and ellipsis are readable and contained; close icon and body are unobscured.",
+        "Measured title is 536x18, header 40px, and close clearance 8px; no direct original long-name state is claimed."
+      ]
+    },
+    {
+      "id": "title-after-proxy-usage-long-title-1280x800",
+      "sha256": "5f32bc9722996f6c63c80d0b8b44bd635e7f500a96bf28e2e653b7c44851291e",
+      "verdict": "ADAPTED",
+      "phase": "after",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "notes": [
+        "Usage prefix and ellipsis fit with the close icon clear; search, rows, selection controls, and confirmation remain readable.",
+        "Measured title is 956x18, header 40px, and close clearance 16px; safe adaptation only."
+      ]
+    },
+    {
+      "id": "preview-after-demo-edit-invalid-width-accurate-save-blocker-1440x900",
+      "sha256": "0a05b05c67ca493de53f91ad318ec94422ef482e60f0a16d014068c5c06137cc",
+      "verdict": "ADAPTED",
+      "phase": "after",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "notes": [
+        "Validation error/retry and preview-failed footer status are readable; no false missing-kernel status appears.",
+        "Change-set, cancel, and disabled save fit the fixed footer without overlap at natural scroll bottom."
+      ]
+    },
+    {
+      "id": "preview-after-demo-edit-invalid-width-accurate-save-blocker-1280x800",
+      "sha256": "dfefd895b8ef4c07e7f11036411c5021c927394a4d50d4b370424ca7658903be",
+      "verdict": "ADAPTED",
+      "phase": "after",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "notes": [
+        "Error/retry and preview-failed status remain readable in the shorter drawer.",
+        "Footer controls remain separated and save visibly disabled; cropped upper scrolled content is not a new footer overlap."
+      ]
+    }
+  ],
+  "limits": [
+    "Only these exact source/candidate/index/PNG identities and captured repair states are approved; identity changes require revalidation.",
+    "Seven before FAILs remain FAIL. The healthy 1024px normal before image is ADAPTED, never strict PASS.",
+    "The frozen original frames have no direct narrow-window, long-name, or validation-error business-state counterpart; proxy/editor mappings are contextual containers and safe adaptations.",
+    "No private original frame was opened or copied in this phase. No original image, credential, private absolute path, or URL is included in these reviewer records.",
+    "At 900px, existing internal table action clipping persists unchanged; only the repaired toolbar controls are cleared by this scoped comparison.",
+    "Eight unchanged geometry comparisons are not pixel PASSes, additional PNGs, or additional tests. HTML was read as data, not browser-rendered.",
+    "Staged metadata files are prospective finalizer outputs; safe projections must exist before publication. Public navigation is not certified.",
+    "The normal-Vite 77-input render binding is distinct from old 398/81 bindings; no older render was relabeled or reused as this acquisition.",
+    "Baseline input readback is post-diagnosis evidence, not a retrospective pre-capture freeze.",
+    "The 40-case report and two exit-0 noEmit receipts are MAIN-recorded data, not reviewer reruns or whole-suite checks; empty logs alone do not prove exit status.",
+    "Kernel install/verify/delete interactions are synthetic bridge calls, not real native execution. Cookie double-effect and final kernel route-unmount retain source-reasoned qualifications.",
+    "Very short windows, zoom, arbitrary banner/outcome combinations, all modals, and uncaptured business states are not newly certified.",
+    "No strict full-product 1:1, real-native, whole-suite, or whole-goal PASS. Formal desktop acceptance remains 4/21; no issue or PR state is changed.",
+    "Historical visual/source reports and their existing 9 FAIL, 34 MISSING, and 22 counts remain untouched and are not recounted by this 18-image layer."
+  ],
+  "strictFullProductOneToOne": false,
+  "realDesktopAcceptanceAdded": false
+}

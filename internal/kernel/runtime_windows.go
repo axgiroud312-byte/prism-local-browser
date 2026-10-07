@@ -197,9 +197,6 @@ func LaunchManagedProfile(ctx context.Context, root string, record Record, profi
 	}
 	args := []string{"--no-first-run", "--no-default-browser-check", "--user-data-dir=" + lock.path, "--window-size=" + strconv.Itoa(profile.Width) + "," + strconv.Itoa(profile.Height)}
 	args = append(args, networkArgs...)
-	if protected != nil {
-		args = append(args, "--disable-features=RestartNetworkServiceUnsandboxedForFailedLaunch")
-	}
 	if profile.RestoreTabs {
 		args = append(args, "--restore-last-session")
 	}
@@ -213,7 +210,6 @@ func LaunchManagedProfile(ctx context.Context, root string, record Record, profi
 				return problem("PROXY_BRIDGE_UNAVAILABLE", "caller-guard-unavailable", "本次代理调用进程无法安全核对，未关闭沙箱或切为直连。")
 			}
 			networkGuard = guard
-			guard.packageSID = protected.sid
 			return profile.Network.BindBrowser(guard.allow)
 		}
 	}
@@ -224,7 +220,7 @@ func LaunchManagedProfile(ctx context.Context, root string, record Record, profi
 		resource := NetworkResourceIntent{ResourceID: "job", Kind: "job", ObjectIdentity: protected.intent.JobName, Locator: protected.intent.JobName}
 		err = protected.store.journal.ApplyResource(ctx, profile.SessionID, resource, func(context.Context) error {
 			var startErr error
-			p, startErr = startPipeWithSecurity(executable, args, profile.SessionID, bindJob, protected.sid)
+			p, startErr = startPipeWithBinding(executable, args, profile.SessionID, bindJob)
 			return startErr
 		})
 	}
@@ -244,6 +240,8 @@ func LaunchManagedProfile(ctx context.Context, root string, record Record, profi
 		go func() {
 			select {
 			case <-profile.Network.Failed():
+				_ = process.closeOwned(false)
+			case <-protected.bridge.Done():
 				_ = process.closeOwned(false)
 			case <-process.done:
 			}
@@ -296,8 +294,8 @@ func LaunchManagedProfile(ctx context.Context, root string, record Record, profi
 		return process, problem("PROCESS_READY_TIMEOUT", "no-page-target", "真实进程尚无可响应的网页目标，未报告运行中。")
 	}
 	if protected != nil {
-		if err = verifyNetworkTree(p, protected.sid); err != nil {
-			return process, problem("NETWORK_PROTECTION_UNAVAILABLE", "tree-identity-unconfirmed", "浏览器进程树隔离身份未通过核对，已停止本环境；请保留诊断并重试。")
+		if err = verifyNetworkTree(p, nil); err != nil {
+			return process, problem("NETWORK_PROTECTION_UNAVAILABLE", "tree-identity-unconfirmed", "浏览器进程树与本次代理会话未通过核对，已停止本环境；请保留诊断并重试。")
 		}
 	}
 	if err = VerifyFiles(directory, record.Files); err != nil {

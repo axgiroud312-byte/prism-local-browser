@@ -2,11 +2,59 @@
 
 # 需求到实现的追踪表
 
-版本：1.0 · 更新日期：2026-10-06
+2026-10-07 合并增量：UX-001 只在最上层工作区阻断遮罩的空白区域阻止鼠标默认失焦，保留合法 Tab 与窗口返回目标；全局 `focusout` 微任务方案造成的回归已撤回。BKP-001 的普通恢复来源检查更新为原请求 `requestId` 的准确选择/丢弃契约，取消结果未知时保持原来源锁定，可靠清理后才允许继续。原 CI 失败与本轮检查见[合并记录](ACCEPTANCE.md#pr-38-合并检查2026-10-07)。这项 UI 增量不包含在下面已构建的 preview10 中，不改变其源码身份或正式桌面计数。
 
-当前流程调整：UX-001 / DOC-001 对应 [#28 浏览器点击 CI](https://github.com/axgiroud312-byte/prism-local-browser/issues/28)，`53ac883` 保留，本地/远程 13/13 已有结果；默认 `tests/ui` 由 Vite 提供页面，不构建或打包，报告在 `output/playwright/`。ENV-001 / ENV-002 / ENV-003 / FP-001 / PRX-001 / CORE-001 / UX-001 的环境表与统一窗口由 [#30](https://github.com/axgiroud312-byte/prism-local-browser/issues/30) 唯一实现，[#29](https://github.com/axgiroud312-byte/prism-local-browser/issues/29) 六项分别核对；本地 **21/21** 和新截图已通过对应范围检查，最新远程与待合并交付见 [逐票证据](verification/issue28-30.md)，不增加桌面验收计数。
+**最新追踪（2026-10-07；0.3.0-preview.10 / `95a600f`）：** CORE-001/ENV-003/PRX-001 已以新真实桌面程序核对同一精确 148 的直连与两个代理三开、代理运行期间直连关开、Clash 环境关开且其他环境原 PID 不变；旧共享 ACL 引起的本机多开 GPU 崩溃触发条件已修复。新会话按 Ant-Browser 标准共享内核，不使用额外 AppContainer、共享 ACL 修改或每会话内核副本，约 425 MiB 副本方案未交付。PRX-001/ENV-003 的受控代理故障只停止目标、不回退直连，故障前检 `no-process-created` 及恢复后原 ID/seed/profile 重试通过。UX-001 两次正常退出 `exit0`，自有 Chrome、未闭合网络会话及未释放资源均为 0；重启 204 项配置身份不变，原代理环境真实页面数据读回及 SQLite 完整性核对通过。见[148 多开修复](verification/desktop-148-isolation-fix.md)。
+
+正式 **4/21** 保持。150/跨版本迁移在当前只用 148 的范围内不适用，不算通过；FP-002 的真实自然连续等待/迟到回复等未证条件仍保留，不合并为原 21 项全通过。用户取消 1:1，下面保留所有旧失败、未证与检查来源。
+
+## 历史：preview9 与更早追踪摘要
+
+2026-10-07 后续增量：BKP-001/UX-001 的原请求来源恢复、准确 scratch 清理重试及退出失败反馈已修复并在 preview9 实际验证；ENV-001/002 的原生 128 项取消/剩余续做、ENV-003 的创建后打开失败仅原 ID 重试、PRX-001 的 148 + Clash 及受控故障关闭、FP-001 的普通编辑身份保持、BKP-001 的实际三存储恢复均有新证据。CORE-001/ENV-003 的 148 多实例重开仍有崩溃，FP-002 连续等待/迟到回复没有新真实时序证明，不能按局部成功判整项通过。见[148 修复验收](verification/desktop-148-repair.md)，正式计数仍 4/21。下文旧来源/未证结果保留。
+
+版本：1.0 · 更新日期：2026-10-07
+
+本轮真实证据的边界：ENV-001/002 的 native 多项批次在 preview8 发生自然名称冲突，2 成功/1 失败后仅续做原失败项，所有预分配身份与旧成功项保持；ENV-003 的 148 启停和故障后重开通过，但 150 普通打开及原 ID 重试失败。FP-001/002 的保存身份、运行中关键字段保护实际核对，连续等待/迟到回复仍仅有定向自动化证据。DATA-001 的 `Recycle.ReadPage` 原回收历史、回收后恢复及三存储读回通过；BKP-001 的 preview7 完整恢复及 preview8 已知来源预检丢弃/73 项记录不变通过，丢失来源标识的可靠恢复仍阻塞。PRX-001 在 preview8 的 Clash 本机 `7897` 真实 HTTPS 访问通过，preview7 受控本机代理故障停止/原 ID 恢复范围通过；实际 Clash 节点链和全协议无旁路尚未证实。CORE-001 的精确内核/独立目录已核对，迁移原 148 身份和数据失败保护通过，真实 GUI 迁移至 150 仍崩溃。UX-001 的新程序退出重开和资源清理已实读。各项详见下方报告，不合并为完整需求或正式 T05–T21 全项通过；正式计数仍 4/21。
+
+当前指派转为桌面可用性收口，用户取消1:1要求。ENV-001/002/003、FP-001/002、DATA-001、BKP-001、CORE-001、PRX-001、CK-001、UX-001 的本轮新程序与实际流程另见 [桌面收口验收](verification/desktop-closeout.md)。批次精确执行范围见 [批次报告](verification/desktop-batch-closeout.md)，指纹请求归属见 [指纹报告](verification/desktop-fingerprint-closeout.md)，回收历史和迁移清理见 [回收与迁移报告](verification/desktop-recycle-migration-closeout.md)。旧视觉差异和来源保留；自动化服务、模拟 bridge、不适用条款及真实新桌面证据分开计数。
+
+当前流程：UX-001 / DOC-001 保留 [#28浏览器点击CI](https://github.com/axgiroud312-byte/prism-local-browser/issues/28) 的 `53ac883`；默认 `tests/ui` 由Vite提供页面，不构建或打包，报告在 `output/playwright/`。#29/#30的环境与统一窗口功能基线由PR #31精确 `e170099` 保留；旧 **21/21** 为 [历史逐票证据](verification/issue28-30.md)，不是本轮结果，不增加桌面验收计数。
 
 本表关联12项需求、原型与native入口。源码入口不代表完整验收；[本轮逐票矩阵](verification/V1-final.md)明确区分服务回归、真实桌面、本机/独立网络及候选交付。[ACCEPTANCE](ACCEPTANCE.md)为实际结果索引；正式计数仍4/21。
+
+CK-001 / ENV-001 / FP-002 / CORE-001 / PRX-001 / UX-001：[4a2五项续修](verification/issue37-recovery-and-layout.md)保护demo文件读取窗口/目标/最新输入、继承内核替换链返回焦点、显示真正保存阻断原因，恢复≤1279px工具栏动作及合法长标题边界。保存/生成条件、原请求核实、稳定身份和准确范围不变。MAIN39新＋原390px一例40/40，两项noEmit；新18图单列原时点与独立结论，旧账本不倒改，不增加严格1:1或正式桌面通过数。
+
+UX-001 / PRX-001 的后续批次预览焦点、旧修订报告标签与primary恢复按钮修复已合入 `9de0e2a`，实际38/38新定向及两项noEmit通过；BKP-001 / DATA-001 / CORE-001 / DOC-001的新支持窗口逐图来源与失败边界见 [补核证据](verification/issue37-continuation-evidence.md)。旧 `83eafe1` 图包保持原source/render，不自动给后来源码或274项清单增加验收通过数。
+
+CORE-001 / PRX-001 / UX-001的密集列表分页、未知请求提示容量、待保存文案与工作区晚到portal所有权修复已合入 `75bc58d`，仅新22/22定向一次及两项noEmit通过。新图须在准确源绑定下独立复核；原始FAIL与未验真实能力不回写成成功。
+
+PRX-001的背景行成功文案防御修正已合入 `340a22c`，已有13场景双视口26/26定向一次及两项noEmit通过；不声称正常Go陈旧回复回归、Runtime授权或全状态验收。准确来源和274项冻结补证层见[增量账本](verification/issue37-continuation-evidence.md)。
+
+ENV-001 / ENV-003 / CK-001 / FP-002 / UX-001的[环境窗口细分补证](verification/issue37-environment-evidence.md)另绑定340：184图独立70 ADAPTED / 34 MAPPED / 18 MISSING / 62 FAIL，38动作与66图后回调保存合同独立限定一致、0问题。编号与环境表整行/分页边界CSS续修已普通合入 `03d0f68`，[源码与精确集成守卫](verification/issue37-environment-css-source-review.json)一致；34新图独立34 ADAPTED、14图后回调保存合同限定一致。创建编辑容量/浮层最小修复另合入 `8ca2e79`，MAIN两项noEmit通过，新34图独立34 ADAPTED / 0 FAIL，[34记录/16回调保存合同](verification/issue37-environment-drawer-contract-review.json)限定一致、0问题，15份实际工具身份匹配。图像、动作、源码和真实native分别记账，不改原113/60/101或增加正式通过数。
+
+原47剩余定义另经[环境层](verification/issue37-supplementary-environment.json)35个有限缺口及[F13/F15续层](verification/issue37-supplementary-environment-repairs.json)2个有限来源说明补证，派生37/47、剩10，whole-cell PASS新增0；原274、600/32/22/2、旧35层与全部失败保留。[最终审计](verification/issue37-final-evidence.json)只证明准确来源与公开材料一致，不代替后台/native、像素或完整原指南。
+
+PRX-001 / CORE-001 / DATA-001 / UX-001：P07与M22候选普通合入 `4eadba4`、`398314c`。[源码与检查](verification/issue37-frontier-code.json)分别绑定十责任路径及作者/MAIN结果：SOCKS5替换认证和解码导入行共用1–255 UTF-8字节，超限保留草稿、修正后只保存原所选行；迁移清理未确认时保留原来源/原预检，隐藏重开仍仅核实原对，有效discarded回执才释放。tokenless丢失来源仍阻断，代理失败不直连回退。MAIN398两项noEmit成功，不重标作者候选检查或681的唯一196全套。
+
+[本轮20图](verification/issue37-frontier-evidence.md)独立10 ADAPTED / 10 MAPPED，另4独立动作与16同图恢复链；[保存合同索引](verification/issue37-frontier-contracts.json)限定一致、0P1/P2。新[有限续层](verification/issue37-frontier-finite.json)按原定义追加7个独立决定，实际派生44/47、剩E18/F11/R09；继承37/47层、原274、历史FAIL/MISSING均不改，whole-cell PASS新增0。F26只证明合成Create→Batch移交与保留，H19直接原指南仍缺；不认证单Create多项部分完成、native持久化或正式桌面能力。
+
+ENV-001 / PRX-001 / CORE-001 / UX-001所涉83→340九文件组合已有[独立固定源码复核](verification/issue37-final-source-review.json)，无可证明P1/P2；不将源码推导代替逐图、键盘或真实桌面结果。75/340的28/4图独立MAPPED保持各自来源，历史FAIL不倒改。
+
+UX-001 / DOC-001另绑定340来源[七路由与指南冷加载动作](verification/issue37-native-route340-actions.json)：双视口2份有限合成记录、0PNG、每份精确5次Workspace.Read。拒绝getter0→1→1但不给Storage，原严格0合同及6条工具失败保留；S02/H19局部行为不提升为整项或原指南内容/真实桌面验收。
+
+当前视觉增量由 [#33](https://github.com/axgiroud312-byte/prism-local-browser/issues/33) 承接：「完整代码」冻结标识 `202609160208` 唯一基准，替换旧 shell/统计卡/工具栏，增加 `/#/groups` 派生标签页。来源/40 状态/能力映射见 [UI_REFERENCE](UI_REFERENCE.md)，公共责任见 [UI_CONTRACT](UI_CONTRACT.md)，定向点击与两视口视觉分别见 [#33 记录](verification/issue33.md)。不覆盖上方 #29/#30 历史 21/21 或增加真实桌面计数。
+
+[#34](https://github.com/axgiroud312-byte/prism-local-browser/issues/34) 连续环境表单、660px窗口、Cookie/批次/回收模块合入 `590a993`；正式App挂载、400px未保存/强制结束确认合入 `0d67ea5`，在 `12303a1` **49/49** 定向及16张实际源码图核对，见 [正式接入](verification/issue34-integration.md)。旧72张组件预览不当作主入口。统一由 [PR #38](https://github.com/axgiroud312-byte/prism-local-browser/pull/38) 交付，#37统一收尾，不因源码合入关闭票。
+
+PRX-001 / CORE-001 / FP-002 / UX-001：[#35模块](verification/issue35.md) 合入 `c6371eb`，唯一 [`ProxyImportWindow`](../src/components/ProxyImportWindow.tsx) / [`内存session`](../src/components/proxy-import-session.ts) 正式用于代理页和环境窗口；保留输入/所选/错误/原未知请求，成功消费已提交行。在途禁止关闭，未知允许隐藏后原请求核实；认证keep/replace/clear与精确修订不变。内核 [`任务owner`](../src/components/kernel-task-owner.ts) 保留受理/待保存/历史重试/迟到保护，受控迁移入口不重复，读取saved策略/revision、不猜direct。组件原限定12+4+2及两份noEmit通过；正式App双视口跨页26项含这些边界，最终视觉/共享检查与真实桌面仍分别记录，100张旧harness图不代替最终App。
+
+BKP-001 / DATA-001 / DOC-001 / UX-001：[#36模块](verification/issue36.md) 合入 `3c93a2a`，demo备份/恢复、活动/帮助已正式替换旧页。native完整包/只读预检/恢复/诊断保留原请求、维护保护和结果发布规则；活动精确会话动作、四文档下载保留。#37跨页定向26/26和既有必要回归8/8通过；公共 [`modal-lifecycle`](../src/components/modal-lifecycle.ts) 统一滚动与portal背景引用计数，低层按键不抢高层，Cookie→故障→诊断保留输入及实际可编辑返回，相关10/10定向通过。
+
+ENV-001/002/003、FP-001/002、PRX-001、CORE-001、CK-001、BKP-001、DATA-001、UX-001、DOC-001：[#37整组](verification/issue37.md) 已完成正式App接线和审查修复；准确native代理模式/ID/修订报告、预检取消失败原上下文恢复、DOM替换/禁用焦点与最高单遮罩均有RED→GREEN记录。一次共享 `npm run check` 在 `681f823` **196/196，4.7分钟**；之后Cookie hover/空预览合成夹具及通知位置小修分别定向6/6、5/5通过，不把共享结果冒称最新head全套。PRD取证等待正文后重拍及native密集备份第二页仅补取证/检查，不改App；当前 `70943b0` 的 **346张实际App图** 绑定全部源码/4份文档及合成夹具，逐项参考适配、映射和缺参考见 [视觉结论](screenshots/issue37/visual-review.json)。后台、ApplicationService/适配层、RPC/SQLite/格式/依赖相对 `e170099` 未改；正式4/21、旧exe不含本轮UI和真实桌面未验边界不变。
+
+ENV-003 / UX-001 / BKP-001 / DOC-001 完整目标复查：普通控制通道不等于准确Job强制归属资格；备份导入头部hover需保持可见；活动详情上的force确认必须屏蔽下层portal。独立审查及修复前24图保留22 MAPPED/2 FAIL，精确原预检重读/最高确认取消4/4。#33–#35恢复OPEN，当前源码入口→语义状态→证据交叉表及迁移实际App合成链继续补齐；原346图和共享196/196不代表全部支持态。最新实际结果见 [继续补核](verification/issue37-continuation.md)。
+
+ENV-003 / CORE-001 / BKP-001 / UX-001：继续修复已集成 `0f7a233`，准确force/低层portal/上传hover与迁移旧确认资格定向62/62及两项noEmit通过。新增 [274项支持入口交叉表](verification/issue37-supported-states.md) 单独绑定读取时源码与旧图，不等于全量通过；帮助比例修正、新源码补图和独立视觉复核另记，完整原帮助缺失与正式4/21不变。
 
 路由是运行应用后的 hash 路由。源码链接指向文件，函数名用于定位；前端持续修改时不依赖易失效的固定行号。领域逻辑自动测试入口为 [`tests/domain.test.ts`](../tests/domain.test.ts)，页面流程仍需真实浏览器操作检查。
 
@@ -14,20 +62,26 @@
 
 | 需求 ID                       | 原型路由与交互入口                                        | 源码定位                                                                                                                                                       | 建议验收；不表示已执行                                                                                                                                     |
 | ----------------------------- | --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ENV-001 环境列表与批量操作    | `/#/environments`；表格、分组/搜索/状态筛选、多选及直接行操作 | [`App.tsx`](../src/App.tsx)：`visible`、`pageItems`、`selected`、`launch`、`stop`、`assignSelectedGroup`、`setOutcome` | 网络/精确版本/状态分列；空结果可恢复；筛选/翻页不扩大所选 ID；单项失败保其他成功，逐项可重试；无产品数量配额。 |
-| ENV-002 创建与编辑环境        | `/#/environments`；统一常用窗口，创建/创建并打开/保存 | [`App.tsx`](../src/App.tsx)：`openCreate`、`openEdit`、`patchDraft`、`saveEnvironment`；#30 的 `src/components/EnvironmentForm.tsx`；[`契约`](../src/application/contract.ts) | 同窗选名称/分组/服务内核/网络；单个不进批次计划；取消不写入；保存失败保旧记录/草稿；创建已提交而打开失败只重试原 ID；native 忙状态安全元数据/关键字段保护不变。 |
+| ENV-001 环境列表与批量操作    | `/#/environments`；密集表/10条分页、筛选、多选、行操作；`/#/groups` 派生标签 | [`App.tsx`](../src/App.tsx)：`pageItems`、`selected`、`launch`、`stop`、`openGroupAssignment`、`assignSelectedGroup`；[`EnvironmentFilters`](../src/components/EnvironmentFilters.tsx)、[`EnvironmentGroups`](../src/components/EnvironmentGroups.tsx) | 表体单独滚动；空结果可恢复；跨页/筛选不扩大所选 ID；分组失败只重试准确失败项；无独立组实体/产品数量配额。 |
+| ENV-002 创建与编辑环境        | `/#/environments`；连续四区窗口，创建/创建并打开/保存 | [`App.tsx`](../src/App.tsx)：`openCreate`、`openEdit`、`patchDraft`、`saveEnvironment`；[`EnvironmentForm`](../src/components/EnvironmentForm.tsx)；[`契约`](../src/application/contract.ts) | 同窗选名称/分组/服务内核/网络；单个不进批次计划；取消不写入；保存失败保旧记录/草稿；创建已提交而打开失败只重试原ID；native运行字段保护，未保存提醒冻结原草稿。 |
 | ENV-003 启动停止与失败保护    | `/#/environments`；打开/关闭、批量及逐项结果；`/#/activity` 查看原因 | [`App.tsx`](../src/App.tsx)：`launch`、`stop`、`applyRuntimeOperation`；[`精确启动计划`](../src/application/runtime-start-plan.ts)；[`domain.ts`](../src/domain.ts)：`launchError` | 单个无需 ID/修订技术确认；按保存 direct/proxy 与修订启动；读不到配置不作直连；失败不重复创建或覆盖其他成功；重复点击及正常关闭/取消保护保留；模式明确。 |
-| FP-001 固定设备档案           | `/#/environments`；自动摘要/换一套，高级设置内 seed/历史 | [`App.tsx`](../src/App.tsx)：`generateProfile`、`applyProfilePreview`、`previewProfileRestore`、`saveEnvironment`；[`档案服务`](../internal/workspace/fingerprints.go)；[`DemoAdapter`](../src/application/demo-adapter.ts) | 自动编译/预览重试 `regenerate:false`；换一套只改草稿，取消不提交；普通编辑/代理变化/关闭重开/刷新 seed 不变；精确内核/数据引用不自动替换或清空。 |
-| FP-002 指纹能力分层           | `/#/environments` 摘要及高级技术详情；`/#/kernels` 能力说明 | #30 的 `src/components/EnvironmentForm.tsx`；[`FingerprintRevisionPanel`](../src/components/FingerprintRevisionPanel.tsx)；[`NativeKernelManager`](../src/components/NativeKernelManager.tsx) | 高级默认收起且不阻断主流程；区分可配置/seed/真实环境/待核对，不伪造硬件读值；窗口非屏幕指纹；新预览不冒充真实探测。 |
+| FP-001 固定设备档案           | `/#/environments`；指纹分区自动摘要/换一套，技术详情/历史 | [`App.tsx`](../src/App.tsx)：`generateProfile`、`applyProfilePreview`、`previewProfileRestore`、`saveEnvironment`；[`档案服务`](../internal/workspace/fingerprints.go)；[`DemoAdapter`](../src/application/demo-adapter.ts) | 自动编译/预览重试 `regenerate:false`；换一套只改草稿，取消不提交；普通编辑/代理变化/关闭重开/刷新seed不变；精确内核/数据引用不自动替换或清空。 |
+| FP-002 指纹能力分层           | `/#/environments` 摘要及技术详情；`/#/kernels` 能力说明 | [`EnvironmentForm`](../src/components/EnvironmentForm.tsx)；[`FingerprintRevisionPanel`](../src/components/FingerprintRevisionPanel.tsx)；[`NativeKernelManager`](../src/components/NativeKernelManager.tsx) | 四区连续，技术/历史可收起且不阻断；区分可配置/seed/真实环境/待核对，不伪造硬件读值；窗口非屏幕指纹；新预览不冒充真实探测。 |
 | PRX-001 代理导入检测与分配    | `/#/proxies`；导入/编辑/检查；统一窗口内导入及绑定 | [`domain.ts`](../src/domain.ts)：`parseProxyText`、`launchError`；[`App.tsx`](../src/App.tsx)：`openProxyImport`、`checkProxy`；[`NativeProxyManager`](../src/components/NativeProxyManager.tsx) | 同窗导入成功/取消/失败返回保留名称/分组/内核/seed/其他草稿，焦点只作用最上层；代理秘密保护及原导入校验保留；改代理不换 seed、失败不回退直连；demo 检查标模拟。 |
 | CK-001 Cookie 导入            | `/#/environments`；环境行“导入 Cookie”                    | [`App.tsx`](../src/App.tsx)：`openCookies`、Cookie 预览及提交；[`domain.ts`](../src/domain.ts)：`parseCookies`、`mergeCookies`                                 | JSON/Netscape 格式可预览；错误数据不提交；空 value、会话属性、到期字段及分区信息保留；按完整身份键合并；写入只影响选定示例环境，预览和日志隐藏值。         |
 | CORE-001 固定内核版本         | `/#/kernels`；统一环境窗口服务内核选择及无内核引导 | [`App.tsx`](../src/App.tsx)：`usableKernels`、`openCreate`、`saveEnvironment`；[`WailsAdapter`](../src/application/wails-adapter.ts)；[`NativeKernelManager`](../src/components/NativeKernelManager.tsx) | 不硬编码参考版本；demo 可用演示/native 同 ID installed+verified 记录；无可用内核阻断新建/打开并保草稿；保存精确 ID、旧环境不随默认变；普通编辑不能绕迁移换内核。 |
-| BKP-001 快照备份与恢复        | `/#/backups`；创建、导出、导入、确认恢复                  | [`App.tsx`](../src/App.tsx)：`newBackup`、`confirmRestore`、`download`；[`domain.ts`](../src/domain.ts)：`createSnapshot`、`parseSnapshot`、`restoreSnapshot`  | 导出排除代理密码；坏格式、重复 ID、断引用、非法字段被拒绝；运行环境未停止时不恢复；有效恢复保留 seed、重置代理检查、保留原型历史记录；无真实目录备份承诺。 |
-| DATA-001 数据隔离与删除       | `/#/environments`；单个与批量移除；Cookie 目标环境        | [`domain.ts`](../src/domain.ts)：`Environment.id`、`mergeCookies`；[`App.tsx`](../src/App.tsx)：`removeEnvironments`、Cookie 提交                              | A 环境修改不改变 B 的记录或 Cookie；运行中的环境不能移除；移除前展示数量与数据含义；原型不操作文件，不声称已验证 Chromium 目录隔离或回收区。               |
-| UX-001 可访问性与本地持久演示 | 六个页面；统一窗口、叠加代理导入、逐项反馈及存储提示 | [`App.tsx`](../src/App.tsx)：键盘/焦点 effects、`notify`、表单校验/空状态；[`styles.css`](../src/styles.css) | 高级默认收起，常用按钮无遮挡；最上层 Escape/焦点返回不丢下层草稿；刷新保保存配置；坏存储/多标签页保护不变；普通与窄窗口均可创建并打开、关闭及重试。 |
-| DOC-001 文档与页面可追踪      | `/#/guide`；文档页签及下载入口                            | [`App.tsx`](../src/App.tsx)：`docTab`、指南页 Markdown 展示、`download`；[`PRD.md`](PRD.md)、[`DEVELOPMENT.md`](DEVELOPMENT.md)、[`KERNEL.md`](KERNEL.md)      | 页面可读三份主文档并下载；12 个 ID 在 PRD 和本表一致；相对链接有效；当前原型与后续桌面目标明确分开；实际检查结果可追溯到验收记录。                         |
+| BKP-001 快照备份与恢复        | `/#/backups`；demo JSON / native完整包明确分流，创建/导入/预检/恢复 | [`DemoBackupPage / DemoRestoreWindow`](../src/components/DemoBackupPage.tsx)；[`NativeBackupManager`](../src/components/NativeBackupManager.tsx)、[`NativeRestoreManager`](../src/components/NativeRestoreManager.tsx)、[`NativeRestoreExecution`](../src/components/NativeRestoreExecution.tsx) | demo格式/seed/历史/密码排除不变；native准确范围/原请求/备份摘要、只读预检不提交，停止失败不强杀，回滚/未知/待保存不冒称成功；真实桌面恢复另验。 |
+| DATA-001 数据隔离与删除       | `/#/environments`；单个/批量移除与回收；Cookie准确目标 | [`domain.ts`](../src/domain.ts)：`Environment.id`、`mergeCookies`；[`NativeRecycleManager`](../src/components/NativeRecycleManager.tsx)、[`NativeCookieImport`](../src/components/NativeCookieImport.tsx)、[`DemoEnvironmentRemoveWindow`](../src/components/DemoEnvironmentWindows.tsx) | A修改不影响B；明确ID/数量/数据含义，运行/未知保持保护；native找回原身份、永久删除授权不扩大。demo不操作文件，页面注入不证明真实目录隔离或回收。 |
+| UX-001 可访问性与本地持久演示 | 原六个目标及派生分组页；统一窗口、浮层、逐项反馈及存储提示 | [`App.tsx`](../src/App.tsx)：键盘/焦点 effects；[`ReferenceUi`](../src/components/ReferenceUi.tsx)、[`EnvironmentRuntimeDetails`](../src/components/EnvironmentRuntimeDetails.tsx)、[`styles.css`](../src/styles.css) | portal 菜单无遮挡、Escape/焦点返回；窗口不丢下层草稿；reconcile/cleanup/force/pending/FIFO 保留；坏存储与 demo/native 边界不变。 |
+| DOC-001 文档与页面可追踪      | `/#/guide`；四份文档页签/下载、帮助导航 | [`HelpPage`](../src/components/HelpPage.tsx)；[`App.tsx`](../src/App.tsx)：`docTab`、raw文档传入；[`USER_GUIDE.md`](USER_GUIDE.md)、[`PRD.md`](PRD.md)、[`DEVELOPMENT.md`](DEVELOPMENT.md)、[`KERNEL.md`](KERNEL.md) | 四文档可读可下载，文件名保留；12需求一致、链接有效；当前源码/合成native/真实桌面/旧候选分别标注；逐票实际结果可追溯。 |
 
 ## 已发布的桌面开发任务
+
+### #33 参考 shell 与环境表（2026-10-06；本地前端交付，待集成）
+
+- ENV-001/003、UX-001：公共几何、密集环境表/筛选/分页、派生分组、精确跨页选择和逐项分组恢复接既有服务；未知创建/原 ID 打开/代理不直连链未重写。后台/格式/应用契约未改。
+- DOC-001：[40 状态索引](UI_REFERENCE.md) 区分直接参考、裁剪、本机容器映射与待核实；[公共组件责任](UI_CONTRACT.md) 给 #34–#36 插入约定，由集成负责人唯一修改共享文件。
+- 新增 [demo shell 用例](../tests/ui/reference-shell.spec.ts)、[合成 native 用例](../tests/ui/native-reference-shell.spec.ts)，独立 Prism 数据不是原商业接口。**7/7** 新用例与 **7/7** 既有受影响回归通过，类型通过；视觉与实际命令见 [验收](verification/issue33.md)。未运行本轮全套/生产构建/桌面探针；#37 和未核实能力保持待验。
 
 ### #29/#30 核心流程增量（2026-10-06；本地页面验收通过，待合并）
 

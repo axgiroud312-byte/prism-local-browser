@@ -2,7 +2,21 @@
 
 面向 Windows 本机多环境管理的桌面底座、独立前端原型及产品开发文档。
 
-**环境列表与统一创建/编辑窗口已完成本地页面验收。** [#28](https://github.com/axgiroud312-byte/prism-local-browser/issues/28) 的轻量 CI 直接复用；[#30](https://github.com/axgiroud312-byte/prism-local-browser/issues/30) 实现页面，[#29](https://github.com/axgiroud312-byte/prism-local-browser/issues/29) 的六项整体流程分别核对。`npm run check` **21/21，45.2 秒**，覆盖 demo 与合成注入 bridge；最新远程结果和待合并交付见 [本批次验收矩阵](docs/verification/issue28-30.md) 与关联 PR，不能当作真实桌面验收。
+**2026-10-07：用户取消1:1要求，本轮交付了新 Windows 桌面程序，但桌面可用性收口尚未完成。** `build/bin/prism-browser.exe` 为 **0.3.0-preview.8**，构建源码 `e349eeadaa92a83ce60d97ec2ef5b309fdf68d92`。本轮真实新程序验证了启动/正常退出/重开、148 环境和持久数据、真实批次部分失败后续做、Clash 本机 `7897` 代理的 HTTPS 访问、回收恢复与备份数据恢复等限定流程；preview7 与 preview8 的证据分别记录。**150 内核在普通打开和迁移试用时真实崩溃，根因尚未确认**；桌面在途取消、连续等待/迟到回复及丢失来源后的可靠恢复仍有缺口。通过、不适用和阻塞分别见 [桌面验收表](docs/verification/desktop-closeout.md)，程序来源和启动方式见 [桌面交付记录](docs/verification/desktop-release-closeout.md)。停止扩展视觉截图、参考恢复和图库审计；旧失败不改写成通过。正式计数仍 **4/21**，六票 OPEN、PR #38 草稿及原分支依赖保留。
+
+## 历史界面与桌面阶段记录（保留原结果与来源）
+
+**新版界面已整体接入可操作的 Vite 页面。** [#32–#37](docs/GOAL.md) 以「完整代码」冻结归档为唯一 [视觉基线](docs/UI_REFERENCE.md)，增量 [PR #38](https://github.com/axgiroud312-byte/prism-local-browser/pull/38) 保留 PR #31 的 `e170099` 成果与旧分支依赖，不自动合并。环境表/分组、连续环境窗口、唯一代理导入、内核/迁移、备份/恢复、记录/帮助/诊断均采用新界面。唯一共享 `npm run check` **196/196，4.7分钟** 属于 `681f823`；后续修复只做相关复验，不冒称全套跑在新提交。`70943b0` 的 **173状态×两视口＝346张** 实际App合成图保留历史来源，完整参考缺口与容器映射仍单列，**不是全产品1:1或桌面验收通过**。原阶段命令和逐项证据见 [整组记录](docs/verification/issue37.md)。
+
+后续修复已集成至 `398314c`：SOCKS5 认证字节校验、迁移原预检清理保护及[本轮独立证据](docs/verification/issue37-frontier-evidence.md)已追加；20张新图为10 ADAPTED / 10 MAPPED。[图库总入口](docs/screenshots/issue37-continuation/index.html)现有20包/926记录，旧FAIL/MISSING不改。原47个有限缺口实际派生44已补证/3有剩余，**不是完整功能或严格1:1通过**。
+
+[较早补核](docs/verification/issue37-continuation-evidence.md)与[环境窗口证据](docs/verification/issue37-environment-evidence.md)保留各自来源。六张票仍OPEN、PR保持草稿，完整原指南仍缺。开发入口为 `http://127.0.0.1:5173/#/environments`，没有重建桌面安装包。
+
+最新[五项输入/焦点/布局续修](docs/verification/issue37-recovery-and-layout.md)已普通合入 `4a2afbf`：Cookie迟到读取、内核窗口返回焦点、保存阻断误报、中间宽度工具栏及长标题；MAIN定向 **40/40**、两项noEmit成功。[18张修复对照](docs/screenshots/issue37-recovery-layout/index.html)单列新来源及独立逐图结论，修复前失败保留；旧20包/926记录及私有1300项不重算。完整1:1和真实桌面仍未验收。
+
+**当前修复已交付，停止新增截图及扩展审计。** [五类参考阻塞与补齐条件](docs/verification/issue37-reference-blockers.md)单列；等参考补齐再验收对应1:1，缺口不计通过。六票OPEN、PR #38草稿及正式4/21不变。
+
+此前 #28–#30 的 **21/21，45.2秒** 为 [历史页面验收](docs/verification/issue28-30.md)，不是本轮检查结果。日常 CI 仍只运行 Vite 浏览器点击，不构建或打包。
 
 既有正式验收仍为4/21。固定档案、独立会话、AppContainer代理保护、FIFO、Cookie、批次、完整备份/预检/恢复、回收、迁移和诊断均有本地实现。本机真实三存储隔离/重开、代理故障、双版本迁移和恢复已有证据；独立远端出口、人工新页面及干净Windows验收尚缺。候选身份、实际检查和逐票关闭条件见[验收报告](docs/verification/V1-final.md)。网页原型仍独立为demo，浏览器点击通过不等于原生能力验收通过。
 
@@ -14,13 +28,13 @@
 
 开发进度：[当前执行规则](docs/GOAL.md) · [实现与验收状态](docs/PROGRESS.md)。T01 应用契约与 DemoAdapter 已验收；T02 的 WailsAdapter 使用相同页面连接本地服务，各项能力分票验收，不以模拟成功替代。
 
-![当前环境列表（合成 demo 数据）](docs/screenshots/issue30-environments.png)
+![环境列表历史基线（70943b0；合成 demo 数据，非真实桌面）](docs/screenshots/issue37/1440x900/environment-list.png)
 
-[同一新建窗口](docs/screenshots/issue30-create.png) · [390px 窄窗口](docs/screenshots/issue30-narrow.png)。均来自当前 Vite 源码和合成数据，已核对可见布局；本批次没有重建候选安装包。
+[新建窗口历史基线](docs/screenshots/issue37/1440x900/environment-create.png) · [原346张实现图](docs/screenshots/issue37/index.html) · [原逐图结论](docs/screenshots/issue37/visual-review.html) · [后续图库](docs/screenshots/issue37-continuation/index.html)。图绑定各自注明的渲染源码及四份内嵌文档；原图和私有对照只留本机，不公开。本轮没有重建候选安装包，旧exe不含新UI。
 
 ## 当前可以做什么
 
-环境页以下描述 #29/#30 已检查的源码交互；不能当作旧候选安装包的功能清单。
+以下为源码交互入口；页面与模拟桥接证据不等于真实桌面能力，也不能当作旧候选安装包的功能清单。
 
 | 页面       | 原型交互                                                                                              |
 | ---------- | ----------------------------------------------------------------------------------------------------- |
@@ -31,7 +45,7 @@
 | 操作记录   | 查看和导出原型操作结果与错误说明。                                                                    |
 | 产品与开发 | 在页面内阅读产品需求、开发方案和内核适配文档。                                                        |
 
-新建窗口集中名称、分组、服务提供的可用 fingerprint-chromium 版本、直连/已有代理和自动指纹摘要；主操作是“创建”“创建并打开”，编辑用“保存”。高级设置默认收起，单个日常操作不要求查看批次计划、配置哈希或内部修订。没有可用内核时先按引导准备内核，不伪造安装成功。
+新建窗口按基础、代理、常用、指纹四区连续展示；外挂分区栏定位实际字段，标题和底部操作固定。主操作是“创建”“创建并打开”，编辑用“保存”，“换一套”只改草稿。技术详情和历史可收起，单个日常操作不要求查看批次计划或内部修订。内核只来自可用服务记录；没有可用内核时按引导准备，不伪造安装成功。
 
 首次保存后种子固定，“换一套”只改草稿、保存才生效；普通编辑、代理变化和关闭重开不换身份。代理导入返回仍保留环境草稿。创建已经成功但打开失败时，保留原环境并重试打开，不再次创建、不改直连。原型只演示这些关系，真实进程、数据目录和网络隔离仍按桌面证据单独验收。
 

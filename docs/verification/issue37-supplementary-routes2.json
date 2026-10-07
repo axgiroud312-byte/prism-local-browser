@@ -1,0 +1,1451 @@
+{
+  "schemaVersion": 1,
+  "kind": "public-derived-routes2-action-only-crosswalk-delta-not-whole-cell-acceptance",
+  "date": "2026-10-07",
+  "scope": {
+    "ownedNewFiles": [
+      "notes/continuation1/supplementary-crosswalk-routes2.md",
+      "notes/continuation1/supplementary-crosswalk-routes2.json"
+    ],
+    "cellIDsOnly": [
+      "S02",
+      "H19"
+    ],
+    "newActionRecords": 2,
+    "newPNGRecords": 0,
+    "metadataOnlyNotRepeatedContext22": true,
+    "sourceFilesToolFilesArchivesCompiledInputsPrivateResultOrWorkspaceDumpsRead": 0,
+    "oldPNGBytesReadOrImagesViewed": 0,
+    "269Inputs79Sources24ArchivedToolsRechecked": false,
+    "pendingEnvironmentAuthorsFilesSessionsWorktreesProgressInspected": false,
+    "other44EvidenceInspectedOrConsumed": false,
+    "other44OnlyInheritedDefinitionMetadataRead": true,
+    "productBrowserSourceToolTestsNetworkNativeKeyboardGitTrackerExecutions": 0,
+    "newAgents": 0,
+    "publicSourceToolHistoricalReportOrStatusWrites": 0,
+    "currentCleanHeadCertificate": false,
+    "wholeCellCurrentPassPromotions": 0,
+    "strictVisualPass": false,
+    "realDesktopAcceptance": false,
+    "pathPolicy": "Repository-relative docs/... and normalized notes/continuation1/... aliases only; no private author paths, credential values/hashes or workspace dumps."
+  },
+  "admittedMetadataInputs": [
+    {
+      "path": "docs/verification/issue37-native-route340-actions.json",
+      "sha256": "7e26ee9cc1d745e81b8d237c7282ac7811fc3aa4232ca537542ae74e36762c99",
+      "bytes": 354238,
+      "role": "new public two-record projection; only admitted action metadata read"
+    },
+    {
+      "path": "docs/verification/issue37-native-route340-contract-review.json",
+      "sha256": "215ede6c110a0297de7786e06d1a4dbbe376c7b4a0fe8ef16060c4e8514ce5fa",
+      "bytes": 31411,
+      "role": "new public independent-review projection and actual publication hash bindings"
+    },
+    {
+      "path": "notes/continuation1/native-route340-contract-review.json",
+      "sha256": "09088084985eddecf6df7b131c692fd943dfd7b5d0ad6801b681457792d42b5d",
+      "bytes": 27699,
+      "role": "actual independent ready private contract review; not source/archive rereview"
+    },
+    {
+      "path": "notes/continuation1/native-route340-contract-review.md",
+      "sha256": "935db03c8cb9a2e788e2e7cf97910f67a538bc082fc60570210391232a2ac13e",
+      "bytes": 17244,
+      "role": "actual independent ready qualifications"
+    },
+    {
+      "path": "notes/continuation1/supplementary-crosswalk-context22.json",
+      "sha256": "2029c582ed6bf7a66041d3f06f3e09b779c2baaa9104a22bbec6aec4f38f066d",
+      "bytes": 112062,
+      "role": "immutable original48 basis, original clauses/qualifications and separate old4 failure bindings"
+    },
+    {
+      "path": "notes/continuation1/supplementary-crosswalk-context22.md",
+      "sha256": "09c7208d896d6abee60ccc09fda645ae79c46ddc487e1d84a232e18ad94db99d",
+      "bytes": 25858,
+      "role": "byte-hash protection only; no repeated contextual review"
+    },
+    {
+      "path": "docs/verification/issue37-supplementary-crosswalk.json",
+      "sha256": "73171f07263db2a2d3212cd324057ca0a2b911367efd04d9c1e7b897fc83928f",
+      "bytes": 2814214,
+      "role": "frozen public600 byte-hash protection only; no image accounting replay"
+    },
+    {
+      "path": "docs/verification/issue37-supplementary-fixes32.json",
+      "sha256": "9c4c4e8b8b8bd91b325e83a080f192cb76033cc91315ecb3e5c587218b19ec28",
+      "bytes": 109646,
+      "role": "frozen publicFix32 byte-hash protection only; original60 selection not reinterpreted"
+    }
+  ],
+  "definitions": {
+    "recordAndObjectSHA256": "SHA-256 of UTF-8 JSON.stringify(the exact parsed admitted public record/object), preserving its property order. Whole public-file SHA independently binds original bytes. These are metadata hashes, not credentials, source certification or native effects.",
+    "waypoints": "One scenario at two viewports. Each record has entry plus35 natural clicks=36 saved waypoints;72 is neither business-case, control-test nor cell-completion count.",
+    "independentReview": "SCOPED_CONTRACT_CONSISTENT/0 findings belongs to the original saved private result and archived scope. Public review carries publisher assertions and actual public/private hashes. This accountant compares ready metadata fields, not original private result bytes or source/tool contents.",
+    "retainedOriginalDefinitions": "Filter the predecessor's original48 retained IDs by removing S02 only, keeping the remaining ID order and exact original predicate arrays. Original wording is historical; P07's already-addressed255-byte save and remaining unsupported256-byte refusal are separated by qualification, not erased.",
+    "wholeCellPolicy": "Every new cellFullyCovered flag is false. Historical274 coverage/statuses and all predecessor reports remain unchanged; no new PASS classification is made."
+  },
+  "reportedArchiveAndSourceBindingNotReread": {
+    "contract": "native-route340-seven-sidebar-cold-guide-action-v1",
+    "sourceHead": "340a22c1e8489fad2db091a25bb14bb7d2e66984",
+    "renderHash79": "0df5a445b4a16f1984f2944ac7367d1202322b892876f2d31b9e853d9a8708ce",
+    "rawRenderHash78": "819ebca00422211c9fe8863f04ae67f2e9149cdee0199e75a1ecb9747bcc4ee3",
+    "originalAttemptResult": {
+      "path": "notes/continuation1/native-route340-actions-init-mode-first/action-results.json",
+      "sha256": "2a7db0c0bcf779d1e201107764888ed336d7a86b7be91e9c801491f0c5248f7d",
+      "readByThisAccountant": false
+    },
+    "toolArchive": {
+      "path": "notes/continuation1/native-route340-tool-archive-final/manifest.json",
+      "sha256": "1a3fc2895227b99185d139d06b7e322f1e5ccbcc7499387a531c093b9f88304e",
+      "distinctInputCountReported": 24,
+      "readByThisAccountant": false
+    },
+    "frozenRenderInputManifestSHA256Reported": "d3e6938da18e184f1b9e2160d151196646f0cb22093e64390ea37afd5a66d83d",
+    "sourceStartSHA256Reported": "c7a175c93db8dec99d507396fa25c3340069b96087cde4b8a71180e403d740ef",
+    "freshBindingInputHashReported": "f6dd39b0f2a90fd573f0c9be6ace0b7a21c6b8a3df060f19d229a5bf5cd2e85a",
+    "finalToolingAggregateSHA256Reported": "1567eb01c7345d62683a573edb615a195e98ce268a64ca6185f141ea22d2416f",
+    "finalPrivateForkSHA256Reported": "49f8034890e25fedc69425b45e3e3f0676736b5eb7d40ac726104323ae9d1b10",
+    "originalAuthorToolSHA256Reported": "58967c952866ab6301953da39e1fa21566b044729e59747e9b77940da66f6c47",
+    "originalAuthoringStatus": "AUTHORED_NOT_EXECUTED",
+    "executedByAuthor": false,
+    "originalFinalResultStatus": "ACTION_GUARDS_SATISFIED_PENDING_INDEPENDENT_CONTRACT_REVIEW",
+    "mainExecutionStatus": "MAIN_EXECUTED_BOUNDED_SYNTHETIC_ACTION",
+    "independentReviewVerdict": "SCOPED_CONTRACT_CONSISTENT",
+    "independentReviewFindingCount": 0,
+    "actualRootEntryAndBrowserBytesAttestedInSavedContract": true,
+    "WailsOrGenuineGoBridgeDemonstrated": false,
+    "liveRootSourceEndProbeOrCleanHeadCertificateByThisAccountant": false
+  },
+  "finiteReadContract": {
+    "source": "admitted public exactReadCalls plus independent finiteReadContract; not new reads",
+    "exactEnvelopeKeys": [
+      "mode",
+      "method",
+      "payload"
+    ],
+    "allowedMethods": [
+      "Workspace.Read"
+    ],
+    "countsPerContext": {
+      "initial": 1,
+      "initialQuery": 1,
+      "migrationLookup": 3
+    },
+    "requiredOrderedCallsPerContext": 5,
+    "requiredCallsAcrossTwoContexts": 10,
+    "exactOrderedOriginalEnvelopes": [
+      {
+        "mode": "native",
+        "method": "Workspace.Read",
+        "payload": {}
+      },
+      {
+        "mode": "native",
+        "method": "Workspace.Read",
+        "payload": {
+          "environmentQuery": {
+            "page": 1,
+            "pageSize": 10,
+            "search": "",
+            "group": "",
+            "status": "all"
+          }
+        }
+      },
+      {
+        "mode": "native",
+        "method": "Workspace.Read",
+        "payload": {
+          "environmentQuery": {
+            "page": 1,
+            "pageSize": 25,
+            "search": "",
+            "group": "",
+            "status": "all"
+          }
+        }
+      },
+      {
+        "mode": "native",
+        "method": "Workspace.Read",
+        "payload": {
+          "environmentQuery": {
+            "page": 1,
+            "pageSize": 25,
+            "search": "",
+            "group": "",
+            "status": "all"
+          }
+        }
+      },
+      {
+        "mode": "native",
+        "method": "Workspace.Read",
+        "payload": {
+          "environmentQuery": {
+            "page": 1,
+            "pageSize": 25,
+            "search": "",
+            "group": "",
+            "status": "all"
+          }
+        }
+      }
+    ],
+    "orderedCallsSHA256": "35ada9d5492b24a3947b0a2aaa3ab4679d15a7a9225e18d7ec86c2d71e94d79f",
+    "size25OnlyOnActualKernelsWaypointIndices": [
+      16,
+      18,
+      20
+    ],
+    "oneDelegationPerOriginalRequestReported": true,
+    "originalReplyEnvelopeKeysReported": [
+      "ok",
+      "mode",
+      "data"
+    ],
+    "unchangedOriginalResponseComparisonsPerContextReported": 5,
+    "fullOriginalResponseAndBackingComparisonIsSavedInMemoryGuard": true,
+    "fullDataDumpExportedOrReadForThisReport": false,
+    "fixtureAuditGetterIdentitiesReportedIntact": true,
+    "cookieCleanupBudget": 0,
+    "cookieCleanupCalls": 0,
+    "runtimePollingAllowance": 0,
+    "nonReadEffects": 0,
+    "pendingCalls": 0,
+    "unknownMethods": 0,
+    "topOrLowerNestedScopeRelaxedByThisAccounting": false
+  },
+  "navigationAndStorageQualifications": {
+    "targetsInExactOrder": [
+      {
+        "route": "environments",
+        "label": "浏览器环境"
+      },
+      {
+        "route": "groups",
+        "label": "分组管理"
+      },
+      {
+        "route": "proxies",
+        "label": "代理管理"
+      },
+      {
+        "route": "kernels",
+        "label": "内核管理"
+      },
+      {
+        "route": "backups",
+        "label": "备份与恢复"
+      },
+      {
+        "route": "activity",
+        "label": "操作记录"
+      },
+      {
+        "route": "guide",
+        "label": "产品与开发"
+      }
+    ],
+    "perTargetSequence": [
+      "sidebar-target",
+      "bell-to-activity",
+      "sidebar-bell-return",
+      "help-to-guide",
+      "sidebar-help-return"
+    ],
+    "entryWaypointsPerContext": 1,
+    "naturalClicksPerContext": 35,
+    "waypointsPerContext": 36,
+    "waypointsAcrossTwoContexts": 72,
+    "scenarioCount": 1,
+    "contextCount": 2,
+    "kernelMountWaypointsPerContext": [
+      16,
+      18,
+      20
+    ],
+    "firstNaturalHelpWaypointIndex": 4,
+    "beforeGuideWaypoints": [
+      0,
+      3
+    ],
+    "beforeGuideRawTotalKnown": 0,
+    "postGuideWaypoints": [
+      4,
+      35
+    ],
+    "postGuideAndClosureRawTotalKnown": 1,
+    "rawGetterTimeline": [
+      0,
+      1,
+      1
+    ],
+    "appOrUnknownGetterAttempts": 0,
+    "storageHandlesGranted": 0,
+    "firstReadyUserGuideH1Reported": "棱镜浏览器使用指南",
+    "passivePreAppMutationObserverReported": true,
+    "classificationAfterFreshCachedServedAndBrowserBytesAttestedOnly": "ATTESTED_BLOCKED_KNOWN_CONSTRUCTOR",
+    "originalGetterAlwaysThrowsAndOwnNonConfigurableDescriptorIntactReported": true,
+    "rawCounterNeverResetReported": true,
+    "unchangedLowerInitializerSHA256Reported": "480c461ec3d09308e806bdb66564a719e833ce22d25452604428d8cf5bf2fe04",
+    "compiledStockScriptInputSHA256Reported": "b762b0682b709c0390a3dc2a38988ff34a7e08c1cd31e695f4098ecfa22db9ab",
+    "compiledStockScriptInputValuesSerialized": false,
+    "compiledStockInputRecompiledByReviewerOrAccountant": false,
+    "fallbackObservedBothContexts": true,
+    "fallbackOptionalAndNotForced": true,
+    "stableFirstLazyFallbackImageAcquired": false,
+    "fallbackRecoveryClaimed": false,
+    "noNewPerCallbackPNGOrForcedPermanentLoadingRequirement": true,
+    "noFutureCapturePlanAdded": true,
+    "oldStrictZeroGetterContractStillWouldFail": true,
+    "historical83ClassifierControlsReported": 50,
+    "classifierControlsRerunAt340": 0,
+    "legacy26Actions16CapturesOrFailuresRerunReboundOrRewritten": false,
+    "allH01ThroughH19DirectOriginalReferencesRemainMissing": true,
+    "rootStaticRequestsPerContextReported": 83,
+    "rootStaticRequestBudgetReported": 256,
+    "blockedRootHmrAttemptsPerContextReported": 2,
+    "webSocketConnectionsAllowed": 0,
+    "exactFourDerivedMarkdownUrlsOnlyReported": true,
+    "broadDocOrNetworkPermissionAdded": false,
+    "savedNoOverflowNoModalNoInertNaturalVisibleFocusGuardIsNotPixelOrKeyboardProof": true,
+    "noForcedClickFocusHashReactPresentationWritesReported": true,
+    "nativeBadgeMeansSyntheticRendererNotGoOrWindows": true,
+    "currentCleanHeadNativeProviderOrSecurityCertificate": false
+  },
+  "actionLedger": [
+    {
+      "id": "native-route340-1440x900",
+      "publicRecordIndex": 0,
+      "publicRecordPointer": "/records/0",
+      "cells": [
+        "S02",
+        "H19"
+      ],
+      "viewport": "1440x900",
+      "publicActionsPath": "docs/verification/issue37-native-route340-actions.json",
+      "publicActionsSHA256": "7e26ee9cc1d745e81b8d237c7282ac7811fc3aa4232ca537542ae74e36762c99",
+      "recordSHA256": "1b5012006e0f156df5e38f6c6ce50090e4cbd8a025575a7b5ed7104192206631",
+      "sourceHead": "340a22c1e8489fad2db091a25bb14bb7d2e66984",
+      "renderHash79": "0df5a445b4a16f1984f2944ac7367d1202322b892876f2d31b9e853d9a8708ce",
+      "rawRenderHash78": "819ebca00422211c9fe8863f04ae67f2e9149cdee0199e75a1ecb9747bcc4ee3",
+      "originalAttempt": "native-route340-actions-init-mode-first",
+      "originalAttemptResultSHA256": "2a7db0c0bcf779d1e201107764888ed336d7a86b7be91e9c801491f0c5248f7d",
+      "sourceStartSHA256": "c7a175c93db8dec99d507396fa25c3340069b96087cde4b8a71180e403d740ef",
+      "toolArchiveSHA256": "1a3fc2895227b99185d139d06b7e322f1e5ccbcc7499387a531c093b9f88304e",
+      "toolingAggregateSHA256": "1567eb01c7345d62683a573edb615a195e98ce268a64ca6185f141ea22d2416f",
+      "actualIndependentPrivateReviewSHA256": "09088084985eddecf6df7b131c692fd943dfd7b5d0ad6801b681457792d42b5d",
+      "publicIndependentReviewSHA256": "215ede6c110a0297de7786e06d1a4dbbe376c7b4a0fe8ef16060c4e8514ce5fa",
+      "freshBindingInputHashReported": "f6dd39b0f2a90fd573f0c9be6ace0b7a21c6b8a3df060f19d229a5bf5cd2e85a",
+      "waypointsSHA256": "d5baee3ab5c45498a43f25ccdde3b3a08cb6d81b5bc80a5ef4fbfe5674c897df",
+      "waypointCount": 36,
+      "helpClicks": 7,
+      "allSevenBellAndHelpReturnsPreserved": true,
+      "exactReadCallsRef": "/finiteReadContract/exactOrderedOriginalEnvelopes",
+      "exactReadCallsSHA256": "35ada9d5492b24a3947b0a2aaa3ab4679d15a7a9225e18d7ec86c2d71e94d79f",
+      "exactReadBudget": {
+        "initial": 1,
+        "initialQuery": 1,
+        "migrationLookup": 3
+      },
+      "originalReadResponsesAndBackingUnchanged": true,
+      "fullResponseProofIsSavedGuardNotNewDump": true,
+      "coldAcquisition": {
+        "beforeGuideRawGetter": 0,
+        "firstGuideKnownDeniedGetter": 1,
+        "secondHelpRawGetter": 1,
+        "storageHandleGranted": false,
+        "beforeFirstMarkdownRenderObserved": true
+      },
+      "fallbackObserved": true,
+      "stableFirstFallbackPNG": false,
+      "originalStrictZeroWouldFail": true,
+      "rawBlockedStorageGetterAttempts": 1,
+      "appOrUnknownGetterAttempts": 0,
+      "storageHandleGranted": false,
+      "executionStatus": "MAIN_EXECUTED_BOUNDED_SYNTHETIC_ACTION",
+      "originalIndependentContractReviewStatus": "SEPARATE_REPORT_REQUIRED",
+      "separateIndependentReviewVerdict": "SCOPED_CONTRACT_CONSISTENT",
+      "finallyGuardReported": {
+        "rawGetterTotal": 1,
+        "total": 1,
+        "knownDenied": 1,
+        "appOrUnknown": 0,
+        "storageHandleGranted": false,
+        "readCounts": {
+          "initial": 1,
+          "initialQuery": 1,
+          "migrationLookup": 3
+        },
+        "errors": 0,
+        "unknownMethods": 0,
+        "rootStaticRequests": 83,
+        "blockedRootHmrAttempts": 2,
+        "webSocketConnectionsAllowed": 0
+      },
+      "pngCount": 0,
+      "notImageVerified": true,
+      "nativeIO": false,
+      "nativeAcceptance": false,
+      "visualAcceptanceAdded": false,
+      "cellFullyCovered": false
+    },
+    {
+      "id": "native-route340-1280x800",
+      "publicRecordIndex": 1,
+      "publicRecordPointer": "/records/1",
+      "cells": [
+        "S02",
+        "H19"
+      ],
+      "viewport": "1280x800",
+      "publicActionsPath": "docs/verification/issue37-native-route340-actions.json",
+      "publicActionsSHA256": "7e26ee9cc1d745e81b8d237c7282ac7811fc3aa4232ca537542ae74e36762c99",
+      "recordSHA256": "1710df507f6fcad8992871041003c5b766e2744f85805676555b594de0563b52",
+      "sourceHead": "340a22c1e8489fad2db091a25bb14bb7d2e66984",
+      "renderHash79": "0df5a445b4a16f1984f2944ac7367d1202322b892876f2d31b9e853d9a8708ce",
+      "rawRenderHash78": "819ebca00422211c9fe8863f04ae67f2e9149cdee0199e75a1ecb9747bcc4ee3",
+      "originalAttempt": "native-route340-actions-init-mode-first",
+      "originalAttemptResultSHA256": "2a7db0c0bcf779d1e201107764888ed336d7a86b7be91e9c801491f0c5248f7d",
+      "sourceStartSHA256": "c7a175c93db8dec99d507396fa25c3340069b96087cde4b8a71180e403d740ef",
+      "toolArchiveSHA256": "1a3fc2895227b99185d139d06b7e322f1e5ccbcc7499387a531c093b9f88304e",
+      "toolingAggregateSHA256": "1567eb01c7345d62683a573edb615a195e98ce268a64ca6185f141ea22d2416f",
+      "actualIndependentPrivateReviewSHA256": "09088084985eddecf6df7b131c692fd943dfd7b5d0ad6801b681457792d42b5d",
+      "publicIndependentReviewSHA256": "215ede6c110a0297de7786e06d1a4dbbe376c7b4a0fe8ef16060c4e8514ce5fa",
+      "freshBindingInputHashReported": "f6dd39b0f2a90fd573f0c9be6ace0b7a21c6b8a3df060f19d229a5bf5cd2e85a",
+      "waypointsSHA256": "ddf8345da2280e2a37cda24337a980c70199eab9a061fcfec75f00ce514a0b06",
+      "waypointCount": 36,
+      "helpClicks": 7,
+      "allSevenBellAndHelpReturnsPreserved": true,
+      "exactReadCallsRef": "/finiteReadContract/exactOrderedOriginalEnvelopes",
+      "exactReadCallsSHA256": "35ada9d5492b24a3947b0a2aaa3ab4679d15a7a9225e18d7ec86c2d71e94d79f",
+      "exactReadBudget": {
+        "initial": 1,
+        "initialQuery": 1,
+        "migrationLookup": 3
+      },
+      "originalReadResponsesAndBackingUnchanged": true,
+      "fullResponseProofIsSavedGuardNotNewDump": true,
+      "coldAcquisition": {
+        "beforeGuideRawGetter": 0,
+        "firstGuideKnownDeniedGetter": 1,
+        "secondHelpRawGetter": 1,
+        "storageHandleGranted": false,
+        "beforeFirstMarkdownRenderObserved": true
+      },
+      "fallbackObserved": true,
+      "stableFirstFallbackPNG": false,
+      "originalStrictZeroWouldFail": true,
+      "rawBlockedStorageGetterAttempts": 1,
+      "appOrUnknownGetterAttempts": 0,
+      "storageHandleGranted": false,
+      "executionStatus": "MAIN_EXECUTED_BOUNDED_SYNTHETIC_ACTION",
+      "originalIndependentContractReviewStatus": "SEPARATE_REPORT_REQUIRED",
+      "separateIndependentReviewVerdict": "SCOPED_CONTRACT_CONSISTENT",
+      "finallyGuardReported": {
+        "rawGetterTotal": 1,
+        "total": 1,
+        "knownDenied": 1,
+        "appOrUnknown": 0,
+        "storageHandleGranted": false,
+        "readCounts": {
+          "initial": 1,
+          "initialQuery": 1,
+          "migrationLookup": 3
+        },
+        "errors": 0,
+        "unknownMethods": 0,
+        "rootStaticRequests": 83,
+        "blockedRootHmrAttempts": 2,
+        "webSocketConnectionsAllowed": 0
+      },
+      "pngCount": 0,
+      "notImageVerified": true,
+      "nativeIO": false,
+      "nativeAcceptance": false,
+      "visualAcceptanceAdded": false,
+      "cellFullyCovered": false
+    }
+  ],
+  "preservedRouteToolAttempts": [
+    {
+      "publicAttemptIndex": 0,
+      "name": "native-route340-actions-first",
+      "sourceHead": "340a22c1e8489fad2db091a25bb14bb7d2e66984",
+      "renderHash": "0df5a445b4a16f1984f2944ac7367d1202322b892876f2d31b9e853d9a8708ce",
+      "resultSHA256": "869b643d16eb0e56f35f6a5f280d046027a98eb11ae63e73ecb3de30f34dd3ce",
+      "sourceStartSHA256": "fc820ca5c653611d05b6341043a4c0d8686901e9170410eff14e5f92e23c4a68",
+      "toolingHash": "67ba7cdb395179d3a63ddc69a052e7e2955df82e9289f7031f73dbd844228dfd",
+      "originalStatus": "FAIL_CLOSED",
+      "successfulActionRecords": 0,
+      "failureCount": 1,
+      "oldFailureBytesEdited": false,
+      "reviewFailureClass": "preflight-real-main-numeric-timestamp-refused"
+    },
+    {
+      "publicAttemptIndex": 1,
+      "name": "native-route340-actions-vite-first",
+      "sourceHead": "340a22c1e8489fad2db091a25bb14bb7d2e66984",
+      "renderHash": "0df5a445b4a16f1984f2944ac7367d1202322b892876f2d31b9e853d9a8708ce",
+      "resultSHA256": "8a74afe5354a70e6dcf5995dbfb93b7a1053cc7d77f097c85b956288dc9c8230",
+      "sourceStartSHA256": "0c3ba7893e6426d6bdbc021d58d123ca751c863109ecc3d6b5ef18f6074f8a42",
+      "toolingHash": "6c31d3dbda8d8d2d36e3325b426bf36f15e6b1e196bac2af9b9b296011a43db7",
+      "originalStatus": "FAIL_CLOSED",
+      "successfulActionRecords": 0,
+      "failureCount": 2,
+      "oldFailureBytesEdited": false,
+      "reviewFailureClass": "sidebar-absent-with-three-static-markdown-imports-denied-per-context",
+      "absentSetupPageErrorsFieldIsNotZero": true
+    },
+    {
+      "publicAttemptIndex": 2,
+      "name": "native-route340-actions-vite-docs-first",
+      "sourceHead": "340a22c1e8489fad2db091a25bb14bb7d2e66984",
+      "renderHash": "0df5a445b4a16f1984f2944ac7367d1202322b892876f2d31b9e853d9a8708ce",
+      "resultSHA256": "37a83593d2840da3c77a7c808732142231a4d02f3cf3e97feec7e22143b89e74",
+      "sourceStartSHA256": "b0f86b65e03d89a678dbca044f8f4c63f92397e52243eb3960be4b9278e48b73",
+      "toolingHash": "3fbac15d29146fd1a1619dc14482dab93bcd86f035e5ebf5e34034f6451066b8",
+      "originalStatus": "FAIL_CLOSED",
+      "successfulActionRecords": 0,
+      "failureCount": 1,
+      "oldFailureBytesEdited": false,
+      "reviewFailureClass": "preflight-valid-markdown-export-without-semicolon-misparsed"
+    },
+    {
+      "publicAttemptIndex": 3,
+      "name": "native-route340-actions-md-export-first",
+      "sourceHead": "340a22c1e8489fad2db091a25bb14bb7d2e66984",
+      "renderHash": "0df5a445b4a16f1984f2944ac7367d1202322b892876f2d31b9e853d9a8708ce",
+      "resultSHA256": "2173cc739f92c56874e0d5825a1fe7e2ef31a584f7363a3f8042a62d1c2424c6",
+      "sourceStartSHA256": "a71ad485a140e2341523824ff8be3755cf2e1e02713923b6e08fa50af60c7bed",
+      "toolingHash": "d6c24d1fdbe49ce3742aaff304f63b079a526a6c24741eb6d7c18cae51a4a288",
+      "originalStatus": "FAIL_CLOSED",
+      "successfulActionRecords": 0,
+      "failureCount": 2,
+      "oldFailureBytesEdited": false,
+      "reviewFailureClass": "unchanged-lower-initializer-refuses-omitted-outer-mode",
+      "twoSetupErrorsPerViewportAreNotFailureObjectCount": true
+    },
+    {
+      "publicAttemptIndex": 4,
+      "name": "native-route340-actions-init-mode-first",
+      "sourceHead": "340a22c1e8489fad2db091a25bb14bb7d2e66984",
+      "renderHash": "0df5a445b4a16f1984f2944ac7367d1202322b892876f2d31b9e853d9a8708ce",
+      "resultSHA256": "2a7db0c0bcf779d1e201107764888ed336d7a86b7be91e9c801491f0c5248f7d",
+      "sourceStartSHA256": "c7a175c93db8dec99d507396fa25c3340069b96087cde4b8a71180e403d740ef",
+      "toolingHash": "1567eb01c7345d62683a573edb615a195e98ce268a64ca6185f141ea22d2416f",
+      "originalStatus": "ACTION_GUARDS_SATISFIED_PENDING_INDEPENDENT_CONTRACT_REVIEW",
+      "successfulActionRecords": 2,
+      "failureCount": 0,
+      "oldFailureBytesEdited": false,
+      "separateIndependentReview": "SCOPED_CONTRACT_CONSISTENT",
+      "originalStatusNotRewritten": true
+    }
+  ],
+  "preservedRouteToolFailuresFull": [
+    {
+      "attempt": "native-route340-actions-first",
+      "ordinal": 1,
+      "publicPointer": "/attempts/0/failures/0",
+      "failureObjectSHA256": "eac604dc4745d8794b8e07282f6e8b03833a6a7b18e0833aa731ffdd6b0e6ae3",
+      "status": "FAIL_RETAINED",
+      "originalObject": {
+        "id": "run",
+        "phase": "preflight-or-run",
+        "message": "Not the actual ROOT production entry",
+        "admissible": false
+      }
+    },
+    {
+      "attempt": "native-route340-actions-vite-first",
+      "ordinal": 1,
+      "publicPointer": "/attempts/1/failures/0",
+      "failureObjectSHA256": "f6c123122184310bcced961d9dbd75c95459ced3c0f13411983c36974e31f3de",
+      "status": "FAIL_RETAINED",
+      "originalObject": {
+        "id": "native-route340-1440x900",
+        "phase": "natural-action-or-initialization",
+        "message": "expect(locator).toBeVisible() failed\n\nLocator: locator('.sidebar')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n  - Expect \"toBeVisible\" locator('.sidebar') with timeout 5000ms\n  - waiting for locator('.sidebar')\n",
+        "admissible": false
+      }
+    },
+    {
+      "attempt": "native-route340-actions-vite-first",
+      "ordinal": 2,
+      "publicPointer": "/attempts/1/failures/1",
+      "failureObjectSHA256": "9ca9cf32343c546e002f0262cd77f133a7c45cd05eb673dc9f1deb4ffdabbb33",
+      "status": "FAIL_RETAINED",
+      "originalObject": {
+        "id": "native-route340-1280x800",
+        "phase": "natural-action-or-initialization",
+        "message": "expect(locator).toBeVisible() failed\n\nLocator: locator('.sidebar')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n  - Expect \"toBeVisible\" locator('.sidebar') with timeout 5000ms\n  - waiting for locator('.sidebar')\n",
+        "admissible": false
+      }
+    },
+    {
+      "attempt": "native-route340-actions-vite-docs-first",
+      "ordinal": 1,
+      "publicPointer": "/attempts/2/failures/0",
+      "failureObjectSHA256": "0790bfa62b60591169a99d2a547b0097aba463bfb9ca851eb4e4d6e38c41aadb",
+      "status": "FAIL_RETAINED",
+      "originalObject": {
+        "id": "run",
+        "phase": "preflight-or-run",
+        "message": "Actual imported Markdown differs from the frozen independent document",
+        "admissible": false
+      }
+    },
+    {
+      "attempt": "native-route340-actions-md-export-first",
+      "ordinal": 1,
+      "publicPointer": "/attempts/3/failures/0",
+      "failureObjectSHA256": "8cd1232503cfc1132feed0067c691a39bd49f02dd97f37b5870ef2396e08f1e3",
+      "status": "FAIL_RETAINED",
+      "originalObject": {
+        "id": "native-route340-1440x900",
+        "phase": "natural-action-or-initialization",
+        "message": "page.waitForFunction: TypeError: Cannot read properties of undefined (reading 'responses')\n    at eval (eval at predicate (eval at evaluate (:311:30)), <anonymous>:1:32)\n    at predicate (eval at evaluate (:311:30), <anonymous>:7:27)\n    at next (eval at evaluate (:311:30), <anonymous>:29:33)\n    at eval (eval at evaluate (:311:30), <anonymous>:42:13)\n    at UtilityScript.evaluate (<anonymous>:313:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)",
+        "admissible": false
+      }
+    },
+    {
+      "attempt": "native-route340-actions-md-export-first",
+      "ordinal": 2,
+      "publicPointer": "/attempts/3/failures/1",
+      "failureObjectSHA256": "d9f177398fb26bcb8c79dfc7ce4c426a2622a74ecf3abc0f635f75d38d7b294d",
+      "status": "FAIL_RETAINED",
+      "originalObject": {
+        "id": "native-route340-1280x800",
+        "phase": "natural-action-or-initialization",
+        "message": "page.waitForFunction: TypeError: Cannot read properties of undefined (reading 'responses')\n    at eval (eval at predicate (eval at evaluate (:311:30)), <anonymous>:1:32)\n    at predicate (eval at evaluate (:311:30), <anonymous>:7:27)\n    at next (eval at evaluate (:311:30), <anonymous>:29:33)\n    at eval (eval at evaluate (:311:30), <anonymous>:42:13)\n    at UtilityScript.evaluate (<anonymous>:313:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)",
+        "admissible": false
+      }
+    }
+  ],
+  "oldContextualFourFailuresSeparateNotRereviewed": {
+    "immutableContext22SHA256": "2029c582ed6bf7a66041d3f06f3e09b779c2baaa9104a22bbec6aec4f38f066d",
+    "originalPublicActionsPath": "docs/verification/issue37-contextual-actions.json",
+    "originalPublicActionsSHA256Inherited": "cfccb5ae3b0a2e28031ec83845f934c9574255620cd9477d75bc2d23b7ddfbf9",
+    "failureCount": 4,
+    "references": [
+      {
+        "publicPointer": "/attempts/0/failures/0",
+        "failureObjectSHA256": "32715492e0e55f102f5cfc78b4a7883f52c64067f3803aaadb2c5e00503b1c01"
+      },
+      {
+        "publicPointer": "/attempts/0/failures/1",
+        "failureObjectSHA256": "a7dbed992237a4742aae7642fde449735c82931076d911b13cce53c7a6c96cd7"
+      },
+      {
+        "publicPointer": "/attempts/1/failures/0",
+        "failureObjectSHA256": "1c5159842b113b39eeb882d5b4de4e3be7a6a15145db590edb26be92cbcb577d"
+      },
+      {
+        "publicPointer": "/attempts/1/failures/1",
+        "failureObjectSHA256": "d933394ed6a39aa41c2cde9e976df1a032ef4d34b002054fb60ba348587d6051"
+      }
+    ],
+    "classifiedSeparatelyFromNewSixToolSetupFailures": true,
+    "tenBusinessFailuresClaimed": false,
+    "oldFailuresReclassified": false
+  },
+  "cellRelationUpdates": [
+    {
+      "id": "S02",
+      "ticket": 33,
+      "historicalMode": "native",
+      "actualEvidenceMode": "finite synthetic-native actual ROOT/no Wails",
+      "historicalCoverage": "PARTIAL",
+      "historicalSupplementStatus": "partly-supplemented",
+      "originalRemainingSemanticGaps": [
+        "Native shell is pictured on several routes, but all seven sidebar transitions plus topbar help/bell are not jointly asserted. Guide function links are not the seven-route/topbar action predicate."
+      ],
+      "actionLedgerIndices": [
+        0,
+        1
+      ],
+      "disposition": "ORIGINAL_FINITE_JOINT_NAVIGATION_PREDICATE_ADDRESSED_ONLY",
+      "originalGapRetained": false,
+      "boundedAddressed": [
+        "One natural scenario at each specified viewport jointly covers seven exact sidebar routes, bell-to-activity and return, help-to-guide and return for every target;36 guarded saved waypoints each/72 total.",
+        "Admitted original two record/waypoint hashes, five-read scopes and independent SCOPED_CONTRACT_CONSISTENT review bind this actual synthetic-native ROOT context. No guide-link inference or old83/50-control rebind is used."
+      ],
+      "remainingOriginalPredicateClauses": [],
+      "qualifications": [
+        "72 is waypoint count, not business-case/control/cell-completion count.",
+        "The new denial-aware contract retains raw getter1. It does not pass the old strict-zero getter guard or certify Storage permission, Go/Wails/Windows/provider/native execution, pixels, keyboard, current clean HEAD or whole S02."
+      ],
+      "reviewRefs": [
+        "notes/continuation1/native-route340-contract-review.md:62-78,104-108"
+      ],
+      "cellFullyCovered": false,
+      "newCurrentOrNativePass": false
+    },
+    {
+      "id": "H19",
+      "ticket": 36,
+      "historicalMode": "both",
+      "actualEvidenceMode": "finite synthetic-native cold guide only",
+      "historicalCoverage": "MISSING",
+      "historicalSupplementStatus": "reference-open",
+      "originalRemainingSemanticGaps": [
+        "Lazy recovery actions exist in both modes, but a stable first lazy-loading fallback snapshot is not acquired. Keep acquisition source-limited/undecidable; do not fabricate permanent loading UI."
+      ],
+      "actionLedgerIndices": [
+        0,
+        1
+      ],
+      "disposition": "FINITE_COLD_ACQUISITION_PARTIAL_ORIGINAL_IMAGE_LIMIT_RETAINED",
+      "originalGapRetained": true,
+      "boundedAddressed": [
+        "Both actual saved contexts have fallbackObserved=true from passive observation, natural cold user-guide readiness/tab/h1 and repeated help visits.",
+        "Original constructor getter remains denied/always throwing, raw0 before guide→1 at first h1→1 thereafter; app/unknown0 and Storage handles0. Classification requires fresh cached/served/actual-browser byte attestation in the admitted contract, not permission to return a Storage handle."
+      ],
+      "remainingOriginalPredicateClauses": [
+        "Stable first lazy-loading fallback PNG is still not acquired; acquisition remains source-limited/undecidable."
+      ],
+      "qualifications": [
+        "fallbackObserved=true is saved transient DOM acquisition evidence, not a stable first fallback image, pixel verdict, recovery or demo-mode acceptance.",
+        "Original raw1 still WOULD FAIL the old strict-zero contract; old83 modules/50 controls and legacy actions/captures/failures are not rerun or rebound.",
+        "No new mandatory per-callback photo, future capture plan, forced permanent loading UI, new feature/model or native/provider/source certificate follows.",
+        "H01–H19 direct original references remain MISSING; all19 historical reference-open statuses stay unchanged."
+      ],
+      "reviewRefs": [
+        "notes/continuation1/native-route340-contract-review.md:68-78,104-108"
+      ],
+      "cellFullyCovered": false,
+      "newCurrentOrNativePass": false
+    }
+  ],
+  "qualifications": {
+    "untouched44": "Exact inherited original predicate arrays and historical mode/coverage/status only. Pending Environment evidence/authors remain uninspected. No business proof is borrowed from this route-only scenario; no new supported feature, implementation or required image is inferred.",
+    "P07": "Original demo256-byte refusal remains UNSUPPORTED_SOURCE_NO_BYTE_GATE; context22 already addressed selected255-byte single-row gate/save. Unsupported refusal is not passed or a new mandatory implementation/photo.",
+    "M22": "SOURCE_LIMIT/unknown cleanup unconfirmed; original discard returns ok=false while source/preview stay active, with no observable unknown-discard receipt/retry entry. No safety certification or required recovery screen.",
+    "H19": "Cold native guide tab/h1 and passive fallbackObserved=true are finite additions only. Stable first fallback PNG remains unacquired/source-limited/undecidable; direct original guide reference remains MISSING. No permanent loading UI, new per-callback image or capture plan."
+  },
+  "remaining47Definitions": [
+    {
+      "id": "E07",
+      "ticket": 33,
+      "mode": "native",
+      "historicalCoverage": "MISSING",
+      "historicalSupplementStatus": "partly-supplemented",
+      "originalRemainingSemanticGaps": [
+        "Native filtered no-results is exact. Native truly empty workspace, query-busy and query-read-error control predicates remain unproved; occluded list backgrounds do not certify a normal unobstructed list state."
+      ],
+      "predicateSourceQualifierRef": "/qualifications/untouched44",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "E13",
+      "ticket": 33,
+      "mode": "both",
+      "historicalCoverage": "PARTIAL",
+      "historicalSupplementStatus": "partly-supplemented",
+      "originalRemainingSemanticGaps": [
+        "Group-search-empty popovers exist in both modes. Applied compound filters and actual reset/service scope remain unproved; merely showing a Reset button is insufficient."
+      ],
+      "predicateSourceQualifierRef": "/qualifications/untouched44",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "E17",
+      "ticket": 33,
+      "mode": "demo",
+      "historicalCoverage": "MISSING",
+      "historicalSupplementStatus": "unproven",
+      "originalRemainingSemanticGaps": [
+        "starting/stopping storage write failure→模拟结果待保存 and retry open/close"
+      ],
+      "predicateSourceQualifierRef": "/qualifications/untouched44",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "E18",
+      "ticket": 33,
+      "mode": "both",
+      "historicalCoverage": "PARTIAL",
+      "historicalSupplementStatus": "unproven",
+      "originalRemainingSemanticGaps": [
+        "mixed pending/accepted/success/error/skipped per-item outcomes, retry and collapse; one failure is not mixed-bulk proof"
+      ],
+      "predicateSourceQualifierRef": "/qualifications/untouched44",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "E19",
+      "ticket": 33,
+      "mode": "native",
+      "historicalCoverage": "MISSING",
+      "historicalSupplementStatus": "unproven",
+      "originalRemainingSemanticGaps": [
+        "starting queued FIFO bar/cancel queue, starting active/cancel start and stopping disabled; phases in same table, not extra windows"
+      ],
+      "predicateSourceQualifierRef": "/qualifications/untouched44",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "E20",
+      "ticket": 33,
+      "mode": "native",
+      "historicalCoverage": "PARTIAL",
+      "historicalSupplementStatus": "unproven",
+      "originalRemainingSemanticGaps": [
+        "normal running/resource cleanup/reconcile/persistence row affordances; those exact proofs are edit-drawer captures, not each list variant"
+      ],
+      "predicateSourceQualifierRef": "/qualifications/untouched44",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "E21",
+      "ticket": 33,
+      "mode": "native",
+      "historicalCoverage": "MISSING",
+      "historicalSupplementStatus": "unproven",
+      "originalRemainingSemanticGaps": [
+        "missing saved proxy renders refusal not direct; missing/unavailable exact core is 未就绪"
+      ],
+      "predicateSourceQualifierRef": "/qualifications/untouched44",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "E23",
+      "ticket": 33,
+      "mode": "native",
+      "historicalCoverage": "PARTIAL",
+      "historicalSupplementStatus": "unproven",
+      "originalRemainingSemanticGaps": [
+        "direct-policy/error-only popup; NativeRuntimeNetwork intentionally absent for direct; not proven by proxy popup"
+      ],
+      "predicateSourceQualifierRef": "/qualifications/untouched44",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "E24",
+      "ticket": 33,
+      "mode": "native",
+      "historicalCoverage": "MISSING",
+      "historicalSupplementStatus": "unproven",
+      "originalRemainingSemanticGaps": [
+        "current same-channel precheck in progress/pass/fail/write-pending labels; expanded phases contain channel/target/observed IP"
+      ],
+      "predicateSourceQualifierRef": "/qualifications/untouched44",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "E25",
+      "ticket": 33,
+      "mode": "native",
+      "historicalCoverage": "MISSING",
+      "historicalSupplementStatus": "unproven",
+      "originalRemainingSemanticGaps": [
+        "historical report and reconcile disclaimer do not claim live bridge ownership"
+      ],
+      "predicateSourceQualifierRef": "/qualifications/untouched44",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "E26",
+      "ticket": 33,
+      "mode": "native",
+      "historicalCoverage": "MISSING",
+      "historicalSupplementStatus": "unproven",
+      "originalRemainingSemanticGaps": [
+        "NETWORK_PROTECTION_UNAVAILABLE versus containment stopped/exit-unconfirmed alerts; preserved proxy policy, no separate modal"
+      ],
+      "predicateSourceQualifierRef": "/qualifications/untouched44",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "F28",
+      "ticket": 33,
+      "mode": "native",
+      "historicalCoverage": "PARTIAL",
+      "historicalSupplementStatus": "unproven",
+      "originalRemainingSemanticGaps": [
+        "native created-then-open-failure/retry exact ID must be separately exercised, not borrowed from demo"
+      ],
+      "predicateSourceQualifierRef": "/qualifications/untouched44",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "F07",
+      "ticket": 34,
+      "mode": "native",
+      "historicalCoverage": "PARTIAL",
+      "historicalSupplementStatus": "unproven",
+      "originalRemainingSemanticGaps": [
+        "idle native create top/proxy/preferences/fingerprint/bottom and idle edit top require exact mode/content pairs; locked create/history are not those states"
+      ],
+      "predicateSourceQualifierRef": "/qualifications/untouched44",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "F08",
+      "ticket": 34,
+      "mode": "both",
+      "historicalCoverage": "MISSING",
+      "historicalSupplementStatus": "partly-supplemented",
+      "originalRemainingSemanticGaps": [
+        "Native create with zero usable cores is pictured. Demo no-core, unavailable saved-core edit and allowed native kernel-pending metadata edit/return-to-retained-draft branches remain unproved."
+      ],
+      "predicateSourceQualifierRef": "/qualifications/untouched44",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "F10",
+      "ticket": 34,
+      "mode": "native",
+      "historicalCoverage": "PARTIAL",
+      "historicalSupplementStatus": "unproven",
+      "originalRemainingSemanticGaps": [
+        "same select API but native version labels and saved-build lock differ; demo dropdown does not prove native"
+      ],
+      "predicateSourceQualifierRef": "/qualifications/untouched44",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "F11",
+      "ticket": 34,
+      "mode": "both",
+      "historicalCoverage": "MISSING",
+      "historicalSupplementStatus": "unproven",
+      "originalRemainingSemanticGaps": [
+        "automatic preview busy, stale device input and preview failure/retry are same drawer branches, not new windows"
+      ],
+      "predicateSourceQualifierRef": "/qualifications/untouched44",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "F13",
+      "ticket": 34,
+      "mode": "native",
+      "historicalCoverage": "PARTIAL",
+      "historicalSupplementStatus": "unproven",
+      "originalRemainingSemanticGaps": [
+        "identical App toast text does not certify native generated preview/capability source"
+      ],
+      "predicateSourceQualifierRef": "/qualifications/untouched44",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "F15",
+      "ticket": 34,
+      "mode": "demo",
+      "historicalCoverage": "MISSING",
+      "historicalSupplementStatus": "unproven",
+      "originalRemainingSemanticGaps": [
+        "demo technical details/history has distinct demo capability source labels"
+      ],
+      "predicateSourceQualifierRef": "/qualifications/untouched44",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "F16",
+      "ticket": 34,
+      "mode": "both",
+      "historicalCoverage": "PARTIAL",
+      "historicalSupplementStatus": "unproven",
+      "originalRemainingSemanticGaps": [
+        "rollback preview/restoredFrom/change list/new revision and incompatible-history disabled buttons are not pictured by history list alone"
+      ],
+      "predicateSourceQualifierRef": "/qualifications/untouched44",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "F19",
+      "ticket": 34,
+      "mode": "native",
+      "historicalCoverage": "MISSING",
+      "historicalSupplementStatus": "unproven",
+      "originalRemainingSemanticGaps": [
+        "known create/edit/profile revision refusal retains mutable draft; history-read failure sets form error"
+      ],
+      "predicateSourceQualifierRef": "/qualifications/untouched44",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "F21",
+      "ticket": 34,
+      "mode": "native",
+      "historicalCoverage": "PARTIAL",
+      "historicalSupplementStatus": "unproven",
+      "originalRemainingSemanticGaps": [
+        "same validation but native count>1 routes plan and source capture absent for invalid native quantity"
+      ],
+      "predicateSourceQualifierRef": "/qualifications/untouched44",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "F26",
+      "ticket": 34,
+      "mode": "both",
+      "historicalCoverage": "MISSING",
+      "historicalSupplementStatus": "unproven",
+      "originalRemainingSemanticGaps": [
+        "create terminal no-completed-IDs returns editable draft; partial completion retains created IDs; persistence pending cannot prematurely close as success"
+      ],
+      "predicateSourceQualifierRef": "/qualifications/untouched44",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "F30",
+      "ticket": 34,
+      "mode": "native",
+      "historicalCoverage": "PARTIAL",
+      "historicalSupplementStatus": "unproven",
+      "originalRemainingSemanticGaps": [
+        "byte-identical dirty child message; native cancellation/preview ownership not proven by demo"
+      ],
+      "predicateSourceQualifierRef": "/qualifications/untouched44",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "F32",
+      "ticket": 34,
+      "mode": "native",
+      "historicalCoverage": "PARTIAL",
+      "historicalSupplementStatus": "partly-supplemented",
+      "originalRemainingSemanticGaps": [
+        "Owned/control-lost force warning and zero-dispatch stack are pictured. This accounting has no raw exact positive ForceStop payload or fresh negative-target payload proof in the 62-case summary; its test titles do not certify the whole revalidation cell."
+      ],
+      "predicateSourceQualifierRef": "/qualifications/untouched44",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "C02",
+      "ticket": 34,
+      "mode": "demo",
+      "historicalCoverage": "MISSING",
+      "historicalSupplementStatus": "unproven",
+      "originalRemainingSemanticGaps": [
+        "demo empty text, parse invalid rows, selected file returning raw text and save write failure; no native file subwindow or explicit File.text rejection alert is invented"
+      ],
+      "predicateSourceQualifierRef": "/qualifications/untouched44",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "C07",
+      "ticket": 34,
+      "mode": "native",
+      "historicalCoverage": "PARTIAL",
+      "historicalSupplementStatus": "unproven",
+      "originalRemainingSemanticGaps": [
+        "input-key conflicts/expired/partition attributes, parser error/observation failure and dense body bottom require explicit fixture branch coverage"
+      ],
+      "predicateSourceQualifierRef": "/qualifications/untouched44",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "C08",
+      "ticket": 34,
+      "mode": "native",
+      "historicalCoverage": "MISSING",
+      "historicalSupplementStatus": "unproven",
+      "originalRemainingSemanticGaps": [
+        "no controlled writer: explicit direct startup consent versus saved proxy refusal; starting/unknown session cannot write"
+      ],
+      "predicateSourceQualifierRef": "/qualifications/untouched44",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "C09",
+      "ticket": 34,
+      "mode": "native",
+      "historicalCoverage": "MISSING",
+      "historicalSupplementStatus": "unproven",
+      "originalRemainingSemanticGaps": [
+        "replace-all destructive checkbox inline in same window, not separate alertdialog; retry must never re-clear"
+      ],
+      "predicateSourceQualifierRef": "/qualifications/untouched44",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "C13",
+      "ticket": 34,
+      "mode": "native",
+      "historicalCoverage": "MISSING",
+      "historicalSupplementStatus": "unproven",
+      "originalRemainingSemanticGaps": [
+        "durable all-verified/already-matched result, cancelled-remainder and persistence-pending differ from partial/unknown; original effects preserved"
+      ],
+      "predicateSourceQualifierRef": "/qualifications/untouched44",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "C14",
+      "ticket": 34,
+      "mode": "native",
+      "historicalCoverage": "PARTIAL",
+      "historicalSupplementStatus": "unproven",
+      "originalRemainingSemanticGaps": [
+        "only retry selected unverified keys/merge, close then reopen safe report; an available retry button is not retry result proof"
+      ],
+      "predicateSourceQualifierRef": "/qualifications/untouched44",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "B03",
+      "ticket": 34,
+      "mode": "native",
+      "historicalCoverage": "MISSING",
+      "historicalSupplementStatus": "partly-supplemented",
+      "originalRemainingSemanticGaps": [
+        "The reviewed native two-ID preview shows just one unchecked shared-consent guard and disabled execution. Direct-policy acknowledgement, checked/shared transitions and unset per-ID mapping errors are not established by this pair or its no-commit focus proof; these are existing B03 predicates, not a new demo batch feature."
+      ],
+      "predicateSourceQualifierRef": "/qualifications/untouched44",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "B06",
+      "ticket": 34,
+      "mode": "native",
+      "historicalCoverage": "PARTIAL",
+      "historicalSupplementStatus": "unproven",
+      "originalRemainingSemanticGaps": [
+        "old-result title and active/persist-pending/final mixed result footers are not all proven by same frame"
+      ],
+      "predicateSourceQualifierRef": "/qualifications/untouched44",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "B08",
+      "ticket": 34,
+      "mode": "native",
+      "historicalCoverage": "MISSING",
+      "historicalSupplementStatus": "unproven",
+      "originalRemainingSemanticGaps": [
+        "successful page two, dense table bottom, ID lookup empty/error and old/current handoff"
+      ],
+      "predicateSourceQualifierRef": "/qualifications/untouched44",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "B09",
+      "ticket": 34,
+      "mode": "native",
+      "historicalCoverage": "MISSING",
+      "historicalSupplementStatus": "unproven",
+      "originalRemainingSemanticGaps": [
+        "accepted active/cancelRequested, persistence pending and missing final detail after confirmed counts preserve phase/authority; no new modal"
+      ],
+      "predicateSourceQualifierRef": "/qualifications/untouched44",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "B10",
+      "ticket": 34,
+      "mode": "native",
+      "historicalCoverage": "PARTIAL",
+      "historicalSupplementStatus": "unproven",
+      "originalRemainingSemanticGaps": [
+        "known/unknown commit refusal and continue-not-completed only; must observe real synthetic calls/new attempt without duplicating completed IDs"
+      ],
+      "predicateSourceQualifierRef": "/qualifications/untouched44",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "B11",
+      "ticket": 34,
+      "mode": "demo",
+      "historicalCoverage": "PARTIAL",
+      "historicalSupplementStatus": "unproven",
+      "originalRemainingSemanticGaps": [
+        "demo App batch status bar/progress/cancel/mixed saved results not certified by multi-count drawer"
+      ],
+      "predicateSourceQualifierRef": "/qualifications/untouched44",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "R02",
+      "ticket": 34,
+      "mode": "native",
+      "historicalCoverage": "MISSING",
+      "historicalSupplementStatus": "unproven",
+      "originalRemainingSemanticGaps": [
+        "unread/read-error/empty list branches and explicit retry"
+      ],
+      "predicateSourceQualifierRef": "/qualifications/untouched44",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "R03",
+      "ticket": 34,
+      "mode": "native",
+      "historicalCoverage": "MISSING",
+      "historicalSupplementStatus": "unproven",
+      "originalRemainingSemanticGaps": [
+        "dense bottom/page two/selected IDs/original identity details"
+      ],
+      "predicateSourceQualifierRef": "/qualifications/untouched44",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "R06",
+      "ticket": 34,
+      "mode": "native",
+      "historicalCoverage": "MISSING",
+      "historicalSupplementStatus": "unproven",
+      "originalRemainingSemanticGaps": [
+        "multi-page target confirmation/body bottom and restore identity details expanded; all total IDs require consent, not current page"
+      ],
+      "predicateSourceQualifierRef": "/qualifications/untouched44",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "R08",
+      "ticket": 34,
+      "mode": "native",
+      "historicalCoverage": "MISSING",
+      "historicalSupplementStatus": "unproven",
+      "originalRemainingSemanticGaps": [
+        "admission unknown/pending original request in confirmation; active/cancelled/failed-unprotected/completed results and per-item details differ"
+      ],
+      "predicateSourceQualifierRef": "/qualifications/untouched44",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "R09",
+      "ticket": 34,
+      "mode": "native",
+      "historicalCoverage": "PARTIAL",
+      "historicalSupplementStatus": "unproven",
+      "originalRemainingSemanticGaps": [
+        "retry exact protected task and read/cancel historical operation cannot infer success from preseeded result"
+      ],
+      "predicateSourceQualifierRef": "/qualifications/untouched44",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "R11",
+      "ticket": 34,
+      "mode": "demo",
+      "historicalCoverage": "MISSING",
+      "historicalSupplementStatus": "unproven",
+      "originalRemainingSemanticGaps": [
+        "demo running refusal and save-write failure stay same remove window"
+      ],
+      "predicateSourceQualifierRef": "/qualifications/untouched44",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "S08",
+      "ticket": 37,
+      "mode": "both",
+      "historicalCoverage": "MISSING",
+      "historicalSupplementStatus": "unproven",
+      "originalRemainingSemanticGaps": [
+        "suspended draft notice→continue or abandon; resume usable native kernel without clearing draft"
+      ],
+      "predicateSourceQualifierRef": "/qualifications/untouched44",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "I05",
+      "ticket": 35,
+      "mode": "both",
+      "historicalCoverage": "PARTIAL",
+      "historicalSupplementStatus": "unproven",
+      "originalRemainingSemanticGaps": [
+        "page importer hide/reopen is related, not both actual-App draft cancel/Escape/reopen focus and identical inputs proof"
+      ],
+      "predicateSourceQualifierRef": "/qualifications/untouched44",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "P07",
+      "ticket": 35,
+      "mode": "both",
+      "historicalCoverage": "MISSING",
+      "historicalSupplementStatus": "partly-supplemented",
+      "originalRemainingSemanticGaps": [
+        "Both modes have authenticated/invalid/existing-duplicate preview snapshots and native 256-byte SOCKS refusal. Demo byte-limit refusal and the selected single-row save outcome are not proved by zero-commit preview records; use bounded action evidence, not invented dialogs."
+      ],
+      "predicateSourceQualifierRef": "/qualifications/P07",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "M22",
+      "ticket": 35,
+      "mode": "native",
+      "historicalCoverage": "MISSING",
+      "historicalSupplementStatus": "partly-supplemented",
+      "originalRemainingSemanticGaps": [
+        "SOURCE_LIMIT: an exact Backup.DiscardRestore attempt returns ok=false while original source/preview stay active. Frozen evidence says migration has no observable unknown-discard receipt/retry entry. Keep the cleanup outcome unconfirmed; do not certify safety or invent a required recovery screen.",
+        "Hide/reopen, known discard, expired/count/hash refusal and accepted/unknown restore authority are separately bounded or pending. None removes the unknown-cleanup limit."
+      ],
+      "predicateSourceQualifierRef": "/qualifications/M22",
+      "cellFullyCovered": false
+    },
+    {
+      "id": "H19",
+      "ticket": 36,
+      "mode": "both",
+      "historicalCoverage": "MISSING",
+      "historicalSupplementStatus": "reference-open",
+      "originalRemainingSemanticGaps": [
+        "Lazy recovery actions exist in both modes, but a stable first lazy-loading fallback snapshot is not acquired. Keep acquisition source-limited/undecidable; do not fabricate permanent loading UI."
+      ],
+      "predicateSourceQualifierRef": "/qualifications/H19",
+      "cellFullyCovered": false
+    }
+  ],
+  "preservationAndSummary": {
+    "predecessorOriginalDefinitionCount": 48,
+    "finiteOriginalDefinitionIDsRemovedOnly": [
+      "S02"
+    ],
+    "remainingOriginalDefinitionCount": 47,
+    "remainingOriginalDefinitionIDs": [
+      "E07",
+      "E13",
+      "E17",
+      "E18",
+      "E19",
+      "E20",
+      "E21",
+      "E23",
+      "E24",
+      "E25",
+      "E26",
+      "F28",
+      "F07",
+      "F08",
+      "F10",
+      "F11",
+      "F13",
+      "F15",
+      "F16",
+      "F19",
+      "F21",
+      "F26",
+      "F30",
+      "F32",
+      "C02",
+      "C07",
+      "C08",
+      "C09",
+      "C13",
+      "C14",
+      "B03",
+      "B06",
+      "B08",
+      "B09",
+      "B10",
+      "B11",
+      "R02",
+      "R03",
+      "R06",
+      "R08",
+      "R09",
+      "R11",
+      "S08",
+      "I05",
+      "P07",
+      "M22",
+      "H19"
+    ],
+    "remainingByTicket": {
+      "33": 12,
+      "34": 30,
+      "35": 3,
+      "36": 1,
+      "37": 1
+    },
+    "unchangedOther44DefinitionCount": 44,
+    "separateOriginalSourceLimitedOrUndecidableIDs": [
+      "P07",
+      "M22",
+      "H19"
+    ],
+    "remaining47NotAllMandatoryImplementationOrImageRequirements": true,
+    "context22ExactSourceScopeAnd13QualificationsPreservedBySHA256": "2029c582ed6bf7a66041d3f06f3e09b779c2baaa9104a22bbec6aec4f38f066d",
+    "context22Original13IDsUnchanged": [
+      "G03",
+      "G05",
+      "P07",
+      "P20",
+      "M14",
+      "M20",
+      "M21",
+      "D03",
+      "N03",
+      "A02",
+      "A12",
+      "S07",
+      "S09"
+    ],
+    "newActionRecords": 2,
+    "scenarioCount": 1,
+    "contexts": 2,
+    "savedWaypoints": 72,
+    "newPNGRecords": 0,
+    "oldImageTotalsInheritedNotRecalculated": {
+      "records": 654,
+      "distinctPNGHashes": 634,
+      "verdicts": {
+        "ADAPTED": 16,
+        "MAPPED": 582,
+        "MISSING": 32,
+        "FAIL": 24
+      }
+    },
+    "historical274CoverageUnchanged": {
+      "COVERED": 113,
+      "PARTIAL": 60,
+      "MISSING": 101
+    },
+    "historical600StatusCountsUnchanged": {
+      "supplemented-bounded": 190,
+      "partly-supplemented": 20,
+      "unproven": 39,
+      "reference-open": 19,
+      "image-fail-retained": 6,
+      "pending-review": 0
+    },
+    "oldSixFailStatusCellsAndP20TopTwoImageFailsPreserved": true,
+    "original350IndexAndOldAcquisitionFailuresUnchanged": true,
+    "newRouteToolFailureObjectsRetainedFull": 6,
+    "oldContextualAutomationFailureObjectsRetainedSeparately": 4,
+    "noTenBusinessFailureDenominator": true,
+    "allH01H19DirectOriginalReferencesStillMissing": true,
+    "oldClassifierControlsRerunAt340": 0,
+    "formalDesktopAcceptanceUnchanged": "4/21",
+    "wholeCellCurrentPassPromotions": 0,
+    "strictVisualPass": false,
+    "realDesktopAcceptance": false,
+    "metadataContractDiscrepancyCount": 0,
+    "metadataContractDiscrepancies": [],
+    "recommendations": []
+  },
+  "integrity": {
+    "approvedNonPNGMetadataInputHashes": 8,
+    "publicReviewBindsActualPrivateReviewAndPublicActionsHashes": true,
+    "sharedPrivatePublicReviewFieldsEqualExceptExpectedKind": 24,
+    "publicPublisherFullOriginalRecordMatchIsReportedNotPrivateResultReread": true,
+    "twoFullPublicRecordHashesAndTwoWaypointArrayHashesBound": true,
+    "twoOrderedFiveNativeEnvelopesAnd72StoredCounterWaypointsMatch": true,
+    "sixFullRouteFailureObjectsMatchPublicFieldsAndHashes": true,
+    "oldFourFailurePointersAndHashesInheritedExactly": true,
+    "remaining47IDsOriginalPredicateArraysAndHistoricalQualifiersCopiedExactly": true,
+    "allEightAdmittedInputsUnchangedAtDelivery": true,
+    "original600Fix32Context22AndAllOldReportsLeftUntouched": true,
+    "thisJobWritesOnlyTwoNewRoutes2Reports": true,
+    "sourceToolArchiveOriginalPrivateResultCompiledInputPNGReads": 0,
+    "codePixelContractReviewExecutionRepeated": false
+  },
+  "publicationProvenance": {
+    "independentMapperReportSha256": "2865722d6d4c727f9c1598a8e1ee3582c0f769f19dcfe1a23b5cbecc723c330e",
+    "privateMapperBytesEdited": false,
+    "publicActionsSha256": "7e26ee9cc1d745e81b8d237c7282ac7811fc3aa4232ca537542ae74e36762c99",
+    "publicIndependentReviewSha256": "215ede6c110a0297de7786e06d1a4dbbe376c7b4a0fe8ef16060c4e8514ce5fa",
+    "original274Or600OrFix32OrContext22Edited": false,
+    "pendingEnvironmentEvidenceIncluded": false,
+    "stableFirstFallbackImageAcquired": false,
+    "newGapRequirementsInvented": 0,
+    "wholeCellPassesAdded": 0
+  }
+}

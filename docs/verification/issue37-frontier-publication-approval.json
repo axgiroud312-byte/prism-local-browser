@@ -1,0 +1,502 @@
+{
+  "schemaVersion": 1,
+  "kind": "independent-approved-frontier-artifact-identities-not-publication-or-acceptance-result",
+  "status": "SCOPED_PUBLICATION_READY",
+  "packets": [
+    {
+      "folder": "issue37-frontier-bottoms",
+      "capture": "environment-frontier-images-first",
+      "stage": "issue37-frontier-bottoms-stage",
+      "family": "early79",
+      "images": 4,
+      "sourceHead": "b424b21f9881ded7c0c53314f9f70a8bdea78734",
+      "renderHash": "a83d927c931dd81b76656f98d6616aafe5f8e8df9b168d68953bab9d193537f2",
+      "sourceInputCount": 79,
+      "captureManifestSha256": "1dd678f213e8fe1a26d046b8a2e0b2d69f4118407d2200f148335d252a02c79d",
+      "stageManifestSha256": "b335c40a9abe48442283e2ceeea5739112f264a2ab0efaac533e7764f4499bdc",
+      "stageHtmlSha256": "a08137b0bc95c8190373197dbcbf9faba83c8e0223ac9ae72950ead5fd156fc4",
+      "frozenManifestSha256": "296854fb7ce9e616bdaa136e4e728cb740a00239d7e53f25052d9740699d5503",
+      "visualReviewSha256": "a499445da861e4f36ae40df10b8f26756f5b5b875ef12150a1a1e29133893371",
+      "contractReviewSha256": "ec042960e27e5bb5af69f71c14fe93bf47c6afe75082a4f778e71edae9054c80",
+      "verdictCounts": {
+        "ADAPTED": 2,
+        "MAPPED": 2,
+        "MISSING": 0,
+        "FAIL": 0
+      },
+      "records": [
+        {
+          "id": "env-frontier-f07-native-idle-create-bottom",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "file": "1440x900/env-frontier-f07-native-idle-create-bottom.png",
+          "png": {
+            "sha256": "a51c69d7406795ec39ffbe0f1bf5111395c1f2c614ec58cf0088da01e28b3aed",
+            "bytes": 92296,
+            "width": 1440,
+            "height": 900
+          },
+          "recordSha256": "a093f443a7e1ad8a26d3ccda565aab720e8c53bed3f8b749d9f35a6dc284e496",
+          "pairedVisualReviewSha256": "1a56077288298e1c25d33b7792f4a551daca47e2ffc14d689ba3ecb147660c8d"
+        },
+        {
+          "id": "env-frontier-b08-native-dense-bottom",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "file": "1440x900/env-frontier-b08-native-dense-bottom.png",
+          "png": {
+            "sha256": "c64b3366d1af020fdf5939472443b7cdaa0845734baf453f5d85fc6f12e661dd",
+            "bytes": 88571,
+            "width": 1440,
+            "height": 900
+          },
+          "recordSha256": "56b89db29c748a3a304e89efbf4d19a6823ccf274de8657f85eb7db7ffe85725",
+          "pairedVisualReviewSha256": "be2f8dc43dac280ed20fba8bb936a9d2124bb5656378eb5ec6a98f49223acf42"
+        },
+        {
+          "id": "env-frontier-f07-native-idle-create-bottom",
+          "viewport": {
+            "width": 1280,
+            "height": 800
+          },
+          "file": "1280x800/env-frontier-f07-native-idle-create-bottom.png",
+          "png": {
+            "sha256": "204d1e71997b049fc2ee7d9a09d01af20d58491b0bf4b9d96e2cc57790a71a4b",
+            "bytes": 75894,
+            "width": 1280,
+            "height": 800
+          },
+          "recordSha256": "e0e4742775b578124aecaaf6e1cad116aaee12a77b6abf61f5e20c668169cd97",
+          "pairedVisualReviewSha256": "42d7f0b98d8a5caf0ad6af447b31cc11fdeae6c9797e7b9ef153910378a6182a"
+        },
+        {
+          "id": "env-frontier-b08-native-dense-bottom",
+          "viewport": {
+            "width": 1280,
+            "height": 800
+          },
+          "file": "1280x800/env-frontier-b08-native-dense-bottom.png",
+          "png": {
+            "sha256": "70449ab2661e9770d112a7314d472067e92759c3f82ca232e0d15425a6164eb3",
+            "bytes": 78907,
+            "width": 1280,
+            "height": 800
+          },
+          "recordSha256": "77489171b1ed7f901725085f3009136f1ec77f8dc5cf4150b63ea321dc7634bf",
+          "pairedVisualReviewSha256": "18382ec946218329bb94eddf8b24f003b403e377fa10390a3d1e3fcffdcaa470"
+        }
+      ]
+    },
+    {
+      "folder": "issue37-frontier-demo-preview",
+      "capture": "demo-preview-frontier-images-first",
+      "stage": "issue37-frontier-demo-preview-stage",
+      "family": "early79",
+      "images": 2,
+      "sourceHead": "b424b21f9881ded7c0c53314f9f70a8bdea78734",
+      "renderHash": "a83d927c931dd81b76656f98d6616aafe5f8e8df9b168d68953bab9d193537f2",
+      "sourceInputCount": 79,
+      "captureManifestSha256": "3e2767ed5467beb3c30b9efb8bf32f4d3b58c0caeb39dfd002d4b9bbbed5a385",
+      "stageManifestSha256": "e22486de392e28d9f9ec8524b6c8c49a3244bbdd229ad6b60ae2aa40541078ef",
+      "stageHtmlSha256": "6a37f0d559253be8a7fd57a7f112f0728ea2328ab44e569b97e18c96f2b8ee72",
+      "frozenManifestSha256": "296854fb7ce9e616bdaa136e4e728cb740a00239d7e53f25052d9740699d5503",
+      "visualReviewSha256": "4fa9a2309851c984e0591a5aba1ff1d0653ccceaf8e3a923c76388533b59f3dc",
+      "contractReviewSha256": "1bd162c77549ad8238e227149cac3fa29dfcadb334b6c29f232c22ced9279417",
+      "verdictCounts": {
+        "ADAPTED": 2,
+        "MAPPED": 0,
+        "MISSING": 0,
+        "FAIL": 0
+      },
+      "records": [
+        {
+          "id": "env-frontier-f11-demo-stale-failure-retry",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "file": "1440x900/env-frontier-f11-demo-stale-failure-retry.png",
+          "png": {
+            "sha256": "8935018825a0e9fba5a38551b0aec7ddd6dce748d7043d93da7186c09ebe68c0",
+            "bytes": 128279,
+            "width": 1440,
+            "height": 900
+          },
+          "recordSha256": "f06f3b05f8ca502855b70c0a78bc4869f12c21d2f53437877737e6a7f917b307",
+          "pairedVisualReviewSha256": "e0eb6b6b5681b450f2bf62511df2af591d016ddca08e6bafa134ed9b6c0d981e"
+        },
+        {
+          "id": "env-frontier-f11-demo-stale-failure-retry",
+          "viewport": {
+            "width": 1280,
+            "height": 800
+          },
+          "file": "1280x800/env-frontier-f11-demo-stale-failure-retry.png",
+          "png": {
+            "sha256": "8fd811524365d649d278cfe9a83c6ed2edc822048a55cb5f5309d9ed8120f9db",
+            "bytes": 98229,
+            "width": 1280,
+            "height": 800
+          },
+          "recordSha256": "7072525a060f40caf66fef8629d30b9727aa1347b6ff8bcdcac65c05277ff621",
+          "pairedVisualReviewSha256": "f2fbbba768ac3bebda220a55802276861b4232fea08129f68727b24536fe8b42"
+        }
+      ]
+    },
+    {
+      "folder": "issue37-frontier-proxy-bytes",
+      "capture": "proxy-byte-complete-exact-source-first",
+      "stage": "issue37-frontier-proxy-bytes-stage",
+      "family": "merged81",
+      "images": 4,
+      "sourceHead": "398314c7d4f300576850df78d2a0631c9fdc3b38",
+      "renderHash": "c6e6a49fee35afe42d1a3bf27e72e2fe200eddacf88c164e94eb04cae6bc65fc",
+      "sourceInputCount": 81,
+      "captureManifestSha256": "f3f0dc4540f8afb509c3d372f7cc1aa66b15b7e63a4d935b80d14e02b44f02b4",
+      "stageManifestSha256": "26d2b6fe5eb59a4c527cf1ba777ef95c3ca5c4708e6d37c8cbab21be1f3eafe7",
+      "stageHtmlSha256": "9a8428d6346f70d1de395f32adf0ee83954d84f319a4e814654db7b4e399dff1",
+      "frozenManifestSha256": "85a6d9580990c5037ed208624004628161ee612d54beb4f035d49f473d3a48fd",
+      "visualReviewSha256": "db1fc0e8fe7d3fdf4f2fc754c441cacd969ceba6392f9d16b8a54e4f81352b57",
+      "contractReviewSha256": "df1695102aec18ff783994ce7fdf63a30f9af5dea58005dbe329c70ccec14c50",
+      "verdictCounts": {
+        "ADAPTED": 0,
+        "MAPPED": 4,
+        "MISSING": 0,
+        "FAIL": 0
+      },
+      "records": [
+        {
+          "id": "proxy-byte-frontier-demo-edit-256-utf8",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "file": "1440x900/proxy-byte-frontier-demo-edit-256-utf8.png",
+          "png": {
+            "sha256": "66d3427b521471218394a2face7a084dac4165803e11e44185ab37de51d4ff5b",
+            "bytes": 69714,
+            "width": 1440,
+            "height": 900
+          },
+          "recordSha256": "63b4c234a98e1d907f831bd6e6dfbd72e4593c75d8ee424a4d41965bc3a8f854",
+          "pairedVisualReviewSha256": "690302e3378494b020601e271208c44685d481014850aeb0c4c7d3e545961712"
+        },
+        {
+          "id": "proxy-byte-frontier-demo-import-decoded-256-utf8",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "file": "1440x900/proxy-byte-frontier-demo-import-decoded-256-utf8.png",
+          "png": {
+            "sha256": "71696929f7497caa78e1da35ffd377784eeb63c3156fbb94ed6cf9c3c8e335de",
+            "bytes": 84295,
+            "width": 1440,
+            "height": 900
+          },
+          "recordSha256": "e1a56b81daf69a0c490820a364a54d4da9640fcba9e5b6f501378c52d1bf322f",
+          "pairedVisualReviewSha256": "f895f04066c359c300bad98df9934dcd1d7dbaa6491a8def319e2025dcbb23cf"
+        },
+        {
+          "id": "proxy-byte-frontier-demo-edit-256-utf8",
+          "viewport": {
+            "width": 1280,
+            "height": 800
+          },
+          "file": "1280x800/proxy-byte-frontier-demo-edit-256-utf8.png",
+          "png": {
+            "sha256": "222df6cfbb18a43fb575278d61e6fedda533b74f8cb842e5d2321feddff7d56b",
+            "bytes": 63634,
+            "width": 1280,
+            "height": 800
+          },
+          "recordSha256": "59239e3c6259b17e42862d7e44a5c5edbba6195431229612deb48e7a767235d9",
+          "pairedVisualReviewSha256": "cef05d7d700ab7b03de448d274a68f89ef1f314ea1f21b3a9eef0b97b966f5c6"
+        },
+        {
+          "id": "proxy-byte-frontier-demo-import-decoded-256-utf8",
+          "viewport": {
+            "width": 1280,
+            "height": 800
+          },
+          "file": "1280x800/proxy-byte-frontier-demo-import-decoded-256-utf8.png",
+          "png": {
+            "sha256": "6765ae6bdbd60e960f92fb2e55703ac36e6ee4549f25f8a7dff4f044e0cb7edb",
+            "bytes": 76485,
+            "width": 1280,
+            "height": 800
+          },
+          "recordSha256": "9a2a931c36ccde05d646541caa64abb4438e38102e0ee3dc610efc385d64ab7b",
+          "pairedVisualReviewSha256": "f75a4945041b29b84577cad0cf4e1520711db55645f82a9b37041f0c766162ec"
+        }
+      ]
+    },
+    {
+      "folder": "issue37-frontier-migration-cleanup",
+      "capture": "migration-discard-process-absence-first",
+      "stage": "issue37-frontier-migration-cleanup-stage",
+      "family": "merged81",
+      "images": 4,
+      "sourceHead": "398314c7d4f300576850df78d2a0631c9fdc3b38",
+      "renderHash": "c6e6a49fee35afe42d1a3bf27e72e2fe200eddacf88c164e94eb04cae6bc65fc",
+      "sourceInputCount": 81,
+      "captureManifestSha256": "521e5eacdbe9220b0e9c70cb8193a3185f710e3815c26ae7226a548ede2d8cca",
+      "stageManifestSha256": "aa66ecc64503b83064dee1c545b905cfa3403120656e4d6138849b243498caee",
+      "stageHtmlSha256": "8c38dd8b1bf15c1bdf81c6f71d2aa347f072697d65b51872f03c29fc7f198bdb",
+      "frozenManifestSha256": "85a6d9580990c5037ed208624004628161ee612d54beb4f035d49f473d3a48fd",
+      "visualReviewSha256": "c073472287197992db276ab90329ed6fffb50afcac633e3413a684cf690844b8",
+      "contractReviewSha256": "0da34441ebbaba0ba2ebbcff40b094efb9b408ba7515f537eb00369b929d0c3f",
+      "verdictCounts": {
+        "ADAPTED": 0,
+        "MAPPED": 4,
+        "MISSING": 0,
+        "FAIL": 0
+      },
+      "records": [
+        {
+          "id": "migration-discard-frontier-native-unknown-cleanup",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "file": "1440x900/migration-discard-frontier-native-unknown-cleanup.png",
+          "png": {
+            "sha256": "c0a4802b5e83e56fa7c0649c5b949af4162ea6d34275a62fd86375805c498a68",
+            "bytes": 96125,
+            "width": 1440,
+            "height": 900
+          },
+          "recordSha256": "0793869911fb034c2caac44f3be456f262b7caa815d80d9fadd1a074eeb8d3d4",
+          "pairedVisualReviewSha256": "4b221479b7fa97b86f30fdf4474f90145565afdeea2ba17a2ddbfba8523a410b"
+        },
+        {
+          "id": "migration-discard-frontier-native-held-retry-pending",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "file": "1440x900/migration-discard-frontier-native-held-retry-pending.png",
+          "png": {
+            "sha256": "50575421053bd2d808a66c1522dd612eabe5c70bf7b0978503f7807eb9057674",
+            "bytes": 92463,
+            "width": 1440,
+            "height": 900
+          },
+          "recordSha256": "4838ea1f2999e83a8389cbbe71d14982622456b486e1f2c5181392f724aeb523",
+          "pairedVisualReviewSha256": "7f4b16e86deba31e6897c1a66f7cd0bee35b2c923884c42a0017416a68fc6ba1"
+        },
+        {
+          "id": "migration-discard-frontier-native-unknown-cleanup",
+          "viewport": {
+            "width": 1280,
+            "height": 800
+          },
+          "file": "1280x800/migration-discard-frontier-native-unknown-cleanup.png",
+          "png": {
+            "sha256": "b6f0ed0d4cdac0d9c7f33e2fa02a7a2488102d8146f021be3f2e514f4eae4d8e",
+            "bytes": 83216,
+            "width": 1280,
+            "height": 800
+          },
+          "recordSha256": "e27ef493640ed46f42146aed003ea8d47d38cc062d4f24e2ea5103f9fdf33e1a",
+          "pairedVisualReviewSha256": "a37bcfe4592f715e29f043f7566cc497f0b8c79432ea7e9d410b2e8862fde7dc"
+        },
+        {
+          "id": "migration-discard-frontier-native-held-retry-pending",
+          "viewport": {
+            "width": 1280,
+            "height": 800
+          },
+          "file": "1280x800/migration-discard-frontier-native-held-retry-pending.png",
+          "png": {
+            "sha256": "6793f913ec9fb2b6697affecf29587d8d1acb88599866843fe6dc54585cd2b06",
+            "bytes": 79066,
+            "width": 1280,
+            "height": 800
+          },
+          "recordSha256": "73be5e221dcbbc6005b3a732ab4e7f5a86d0cdf44c9704ac28e5b00b79b3ed5e",
+          "pairedVisualReviewSha256": "85f6b8516f8a909f84aad28cb7549f57e0830f75e8ce4e85742ed1aed49a6e90"
+        }
+      ]
+    },
+    {
+      "folder": "issue37-frontier-partial-create",
+      "capture": "native-partial-create-exact-source-first",
+      "stage": "issue37-frontier-partial-create-stage",
+      "family": "merged81",
+      "images": 2,
+      "sourceHead": "398314c7d4f300576850df78d2a0631c9fdc3b38",
+      "renderHash": "c6e6a49fee35afe42d1a3bf27e72e2fe200eddacf88c164e94eb04cae6bc65fc",
+      "sourceInputCount": 81,
+      "captureManifestSha256": "8f8b8eb60742fca64fb7dd74b64bec5037f1a1fa724c3c250454ca8979e543f9",
+      "stageManifestSha256": "e8cb13d4482c946b3bf3b41beae8d4622a6b1ef7ffc4c910a3cec13ecf9e31c2",
+      "stageHtmlSha256": "2410e880943c894ce4e7eee88c2b923277b96b7f69f4b572cf3f34b55461029a",
+      "frozenManifestSha256": "85a6d9580990c5037ed208624004628161ee612d54beb4f035d49f473d3a48fd",
+      "visualReviewSha256": "95ae72805868094b1d7e7a11118f9a3395f01193c6fb083cd65f567aea2f3217",
+      "contractReviewSha256": "b5de0caf2482a9874bcc8b4e4ea4b0d542978658317820c8fafa55f74c1b9004",
+      "verdictCounts": {
+        "ADAPTED": 2,
+        "MAPPED": 0,
+        "MISSING": 0,
+        "FAIL": 0
+      },
+      "records": [
+        {
+          "id": "env-frontier-f26-native-partial-create-retained",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "file": "1440x900/env-frontier-f26-native-partial-create-retained.png",
+          "png": {
+            "sha256": "25e6826f94201fdc551be288de63c9bec2a24bc9bc7814955e191ada5c445ee0",
+            "bytes": 95029,
+            "width": 1440,
+            "height": 900
+          },
+          "recordSha256": "02fbdfb0b89836f6b3b83d5b26ee96f09d7bde99790a4f9317b9d699eb684081",
+          "pairedVisualReviewSha256": "8a54ec5b33027ecdd7b2469beebc1688af86330cc3f8e0dfe73bb967260be49c"
+        },
+        {
+          "id": "env-frontier-f26-native-partial-create-retained",
+          "viewport": {
+            "width": 1280,
+            "height": 800
+          },
+          "file": "1280x800/env-frontier-f26-native-partial-create-retained.png",
+          "png": {
+            "sha256": "66698bd856784e8a9f425ee324ce28005bfa1cc00fa1474da29ffac31840bcac",
+            "bytes": 80856,
+            "width": 1280,
+            "height": 800
+          },
+          "recordSha256": "6b44c5bbf7a8372f463e22676f976543e1d3905f03f2290f55f9979af2d3c771",
+          "pairedVisualReviewSha256": "9bedffdbee3d8333ceefafb3fd520d3fe81ef6eff725c710e3047e3cfdb4e702"
+        }
+      ]
+    },
+    {
+      "folder": "issue37-frontier-cold-help",
+      "capture": "help-cold-loading-verified-current-first",
+      "stage": "issue37-frontier-cold-help-public-stage",
+      "family": "early79",
+      "images": 4,
+      "sourceHead": "b424b21f9881ded7c0c53314f9f70a8bdea78734",
+      "renderHash": "a83d927c931dd81b76656f98d6616aafe5f8e8df9b168d68953bab9d193537f2",
+      "sourceInputCount": 79,
+      "captureManifestSha256": "488f03d35cf36fd014419cf3d1e637f98c7eae8a718326abeb1274cabf865413",
+      "stageManifestSha256": "d3a80136f7ec0438e46b6127a53b5e04b01bc27dd738565d68852136e0bf48e1",
+      "stageHtmlSha256": "446c9bf1bf1ce15a4b9be51fdc87c3a19eeca5c1e3fca948a85054b5c99f3a0d",
+      "frozenManifestSha256": "296854fb7ce9e616bdaa136e4e728cb740a00239d7e53f25052d9740699d5503",
+      "visualReviewSha256": "6db597d998aa34906000130acc580acecac2ed85c002ef59a819bdc44519e76f",
+      "contractReviewSha256": "e698f88e768d0a5413de6be5aa3ec9704c212bee1a3a8318ec22bbe2e61d2a57",
+      "verdictCounts": {
+        "ADAPTED": 4,
+        "MAPPED": 0,
+        "MISSING": 0,
+        "FAIL": 0
+      },
+      "records": [
+        {
+          "id": "help-cold-demo-first-loading",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "file": "1440x900/help-cold-demo-first-loading.png",
+          "png": {
+            "sha256": "96f5e45131ba5dcc656f1371aad5e13a4aab34ab063987aa034794fa0f38ceb7",
+            "bytes": 48915,
+            "width": 1440,
+            "height": 900
+          },
+          "recordSha256": "134628a74065e812098a642827652fc9289f7a88b371835ab02bf55dd3d9c851",
+          "pairedVisualReviewSha256": "140f10b81f683eae7e328942b6af3a2576b98de5d34a9f5f2f371345d229d1fd"
+        },
+        {
+          "id": "help-cold-native-first-loading",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "file": "1440x900/help-cold-native-first-loading.png",
+          "png": {
+            "sha256": "34fd664be28a3a89ff81f93d7e95f1808674b640b7a137c1218340513fa76430",
+            "bytes": 48384,
+            "width": 1440,
+            "height": 900
+          },
+          "recordSha256": "4345c5f191424a7d62c0f7faf0f32de6645a89524b54bd01249ff6b46d243cf4",
+          "pairedVisualReviewSha256": "0e8e72426a04dd18c8b0572a6fe0c16717bd7f022405ce76012c73b1f4982769"
+        },
+        {
+          "id": "help-cold-demo-first-loading",
+          "viewport": {
+            "width": 1280,
+            "height": 800
+          },
+          "file": "1280x800/help-cold-demo-first-loading.png",
+          "png": {
+            "sha256": "9d0a0fa4292d64715ce272f2a20939866b8399d79ad6569037a466e36b384be9",
+            "bytes": 47079,
+            "width": 1280,
+            "height": 800
+          },
+          "recordSha256": "084204eb16dd3d1c055eb1324c1acf657bd8296231e7946b1d1a065e59010755",
+          "pairedVisualReviewSha256": "1c33980a38e1ce262c775740aa34a2554b718a1ba3aa1e87754a1fce3af47976"
+        },
+        {
+          "id": "help-cold-native-first-loading",
+          "viewport": {
+            "width": 1280,
+            "height": 800
+          },
+          "file": "1280x800/help-cold-native-first-loading.png",
+          "png": {
+            "sha256": "194614294e0308435bddd4a2b44c33df93e984b99bacb1f3f4d1f91070f31e54",
+            "bytes": 46547,
+            "width": 1280,
+            "height": 800
+          },
+          "recordSha256": "b23432b75abb9bc030a93916e06456f8ba6ac01302cb0f7fa457de6f17810a15",
+          "pairedVisualReviewSha256": "06598ac306613e0059dca841f6d4ededd82b3bb67777f6b2c22454fd76ac11c6"
+        }
+      ]
+    }
+  ],
+  "toolPins": {
+    "private:notes/continuation3/literal-note-frontier-publication-guard.mjs": {
+      "sha256": "56974e5ac66c404d49fce6d73d131e28dabb3fa4df86f2a8f70653a454037cc1",
+      "bytes": 64967
+    },
+    "private:notes/continuation3/stage-literal-note-frontier-packet.mjs": {
+      "sha256": "3d605e9078e6d2b616319ac5b01e3cd4e1bf1bd7fa5a88f00dcb46922c48ec56",
+      "bytes": 3982
+    },
+    "private:notes/continuation3/publish-literal-note-frontier.mjs": {
+      "sha256": "18b69b013451e9b7aa791876ac70d1fb556b093b0b06ba2985b1694902dd8bff",
+      "bytes": 5896
+    },
+    "private:notes/continuation3/append-literal-note-frontier-gallery.mjs": {
+      "sha256": "69c1b2318337ace97a813bf67e8d09a447122f6be5b52d3fa529687dbbac2b48",
+      "bytes": 2981
+    },
+    "private:notes/continuation3/append-literal-note-cold-help-comparison.mjs": {
+      "sha256": "abf072c19a6e1201c25280c8aded19af7fe38f9c5388b2ac43459f604f0014ce",
+      "bytes": 6328
+    },
+    "private:notes/continuation3/audit-literal-note-frontier-publication.mjs": {
+      "sha256": "2d796c18aaac50fadd8b056c0466e0258a92c026310eecff18b6874edb6f8a63",
+      "bytes": 4730
+    }
+  },
+  "imagesApprovedForPublication": 20,
+  "wholeCellPassesAdded": 0,
+  "strictVisualPass": false,
+  "realDesktopAcceptance": false,
+  "formalDesktopCountUnchanged": "4/21"
+}

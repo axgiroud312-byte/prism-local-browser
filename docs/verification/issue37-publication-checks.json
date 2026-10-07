@@ -1,0 +1,370 @@
+{
+  "schemaVersion": 1,
+  "kind": "actual-final-documentation-and-public-text-checks-not-browser-native-acceptance",
+  "date": "2026-10-07",
+  "lastUiAcquisitionHead": "8ca2e79a13c90dcc1fc293447376380763747c5e",
+  "executed": [
+    {
+      "command": "npm run check:docs",
+      "exitCode": 0,
+      "actualOutput": "PASS: 71 documents, local links, 12 requirements, 6 routes, 4 embedded documents."
+    },
+    {
+      "command": "git diff --check",
+      "exitCode": 0,
+      "qualifications": "Existing LF-to-CRLF Git warnings retained; not an error or zero-warning certificate."
+    },
+    {
+      "command": "check-final-public-text-closure.mjs final-text-closure-8ca-before-stage",
+      "exitCode": 0,
+      "actualPublicTextFiles": 63,
+      "rendererChanges": 0,
+      "repeatedSourceOrPngAudits": 0
+    }
+  ],
+  "finalTextClosure": {
+    "schemaVersion": 1,
+    "kind": "final-public-text-byte-closure-after-source-and-png-audit-not-visual-native-acceptance",
+    "rendererChangesSince8ca": 0,
+    "textFiles": 63,
+    "files": [
+      {
+        "file": "README.md",
+        "sha256": "a23f481934d813982362187c52ac49715496dd6f6e0dd18e2dde76d7bce2126c",
+        "bytes": 15797
+      },
+      {
+        "file": "docs/ACCEPTANCE.md",
+        "sha256": "8d7ac476d6f31b24ad98295e2443e95ce834581398fb4582e6214520f286e11a",
+        "bytes": 61190
+      },
+      {
+        "file": "docs/PROGRESS.md",
+        "sha256": "62d8b2387da4abdb3a26d7b1998b4377020f3186656a4d1afcc93f3c81f48bae",
+        "bytes": 77560
+      },
+      {
+        "file": "docs/TRACEABILITY.md",
+        "sha256": "afea1afeb75a7155eb01176be6b1027565f2c80f0044296a87b6a20b83233f62",
+        "bytes": 64003
+      },
+      {
+        "file": "docs/UI_REFERENCE.md",
+        "sha256": "ad270710002b360ef6944f248992e5974071558749fca1d1e9912c7634ed4bb5",
+        "bytes": 15323
+      },
+      {
+        "file": "docs/screenshots/issue37-contextual-gaps/index.html",
+        "sha256": "3c693058700998519b3f1fce4de58b0020c5e53a4a0e9e42ad45d66252cd2c6f",
+        "bytes": 17784
+      },
+      {
+        "file": "docs/screenshots/issue37-contextual-gaps/manifest.json",
+        "sha256": "f783e9e2230e072accf55681ad0679bb9625fb02d47fe83bc711331da6766254",
+        "bytes": 251038
+      },
+      {
+        "file": "docs/screenshots/issue37-contextual-proxy-bottom/index.html",
+        "sha256": "5d81cde473ae459b6f02da78f964c9ef109370ca266e5835a6d832e75d16e47c",
+        "bytes": 3813
+      },
+      {
+        "file": "docs/screenshots/issue37-contextual-proxy-bottom/manifest.json",
+        "sha256": "f3a1ad9d796cfcc6658f858e55812ff050784e40802be4d3a964e3a10e33d299",
+        "bytes": 42424
+      },
+      {
+        "file": "docs/screenshots/issue37-continuation/index.html",
+        "sha256": "1aa59451bbc715f0bf541e62f36c2e87a8c42348b42466c36e52cc7e7429d986",
+        "bytes": 5420
+      },
+      {
+        "file": "docs/screenshots/issue37-drawer-repairs/index.html",
+        "sha256": "7ad3173809dbd7c1b2f27e1a70294d1264a114546f154cbb46c1639004a55096",
+        "bytes": 43600
+      },
+      {
+        "file": "docs/screenshots/issue37-drawer-repairs/manifest.json",
+        "sha256": "b2e25642f014af00dc0e7b4474442684f1b74bb9cef4716bc792410cccc05b48",
+        "bytes": 759483
+      },
+      {
+        "file": "docs/screenshots/issue37-environment-gaps/index.html",
+        "sha256": "7d4e823f635fce4b5bf05bd758ebbd2bcdcec428de40c80772cb2070237ba950",
+        "bytes": 170240
+      },
+      {
+        "file": "docs/screenshots/issue37-environment-gaps/manifest.json",
+        "sha256": "770feea518f2fe1cae2e53c800b629b8aacf00c91d7de28b417d3ccfc684b46d",
+        "bytes": 4129793
+      },
+      {
+        "file": "docs/screenshots/issue37-environment-repairs/index.html",
+        "sha256": "c02ecd7febfe0fd6eb13771ef1c3c2cde3f6ec688c4fc8cec3e91981bbcc320e",
+        "bytes": 34110
+      },
+      {
+        "file": "docs/screenshots/issue37-environment-repairs/manifest.json",
+        "sha256": "b56c730cacac0c3c0da4d0ae94f41d07afe76f701773c3947b2fcbf1184355cc",
+        "bytes": 568407
+      },
+      {
+        "file": "docs/screenshots/issue37-guide83/index.html",
+        "sha256": "a182afb4b1c9c88f1eab43e891f9ea05422472f8fa5aff18fd1b128a814c80b4",
+        "bytes": 11833
+      },
+      {
+        "file": "docs/screenshots/issue37-guide83/manifest.json",
+        "sha256": "35f119eac3c93eb0eda0cde604c03df62a47a6032539d00761e4e7ee890d06ab",
+        "bytes": 518553
+      },
+      {
+        "file": "docs/screenshots/issue37-kernel-proxy83/index.html",
+        "sha256": "0a90e0aa0c3457df8cbb0314664ddb5523f2d8c24241e89226ccc4a10b3d4432",
+        "bytes": 168801
+      },
+      {
+        "file": "docs/screenshots/issue37-kernel-proxy83/manifest.json",
+        "sha256": "62e93413846cc7157d1616c4fad7616fe8ebb06b3a11392c8d259c50cc306974",
+        "bytes": 2925122
+      },
+      {
+        "file": "docs/screenshots/issue37-kernel-repairs75/index.html",
+        "sha256": "6af1cb0d07db3c93f6d2d158e4ca382cd328d1cd08ed08953a6698edef5bb7f0",
+        "bytes": 23307
+      },
+      {
+        "file": "docs/screenshots/issue37-kernel-repairs75/manifest.json",
+        "sha256": "ebe25fcdaa076443d2b7f9431352414d8f51b8d59a92ffbfcebedfee3c227474",
+        "bytes": 381574
+      },
+      {
+        "file": "docs/screenshots/issue37-local83/index.html",
+        "sha256": "430d6e269f857a868d5e65b06717d1ad7cedf3653e2cdf802a04aadc3c760e38",
+        "bytes": 83676
+      },
+      {
+        "file": "docs/screenshots/issue37-local83/manifest.json",
+        "sha256": "ebdbfad1741cdafe2aad4f014806cd06cadbf35fe19f3c4cad535368ae8f1f39",
+        "bytes": 1618300
+      },
+      {
+        "file": "docs/screenshots/issue37-main83/index.html",
+        "sha256": "611439c268138d12961da12c54516c68358d67096ec919615f2a0ac11f4d9d28",
+        "bytes": 112845
+      },
+      {
+        "file": "docs/screenshots/issue37-main83/manifest.json",
+        "sha256": "0b2a78b53e3665106f6086c18ab8eef52e7972952f838d5b72c3c2cea7b975cd",
+        "bytes": 2153064
+      },
+      {
+        "file": "docs/screenshots/issue37-migration9de/index.html",
+        "sha256": "4cfc0fb0f3adb14b9c040ecfd702ff880e005e961c4d31f60a329171f8e2209a",
+        "bytes": 44433
+      },
+      {
+        "file": "docs/screenshots/issue37-migration9de/manifest.json",
+        "sha256": "44d7be6186a4f80cb5fe62aaf8ae8cc96b0a9149ceb4de399ba83b9a58ed90e1",
+        "bytes": 5542343
+      },
+      {
+        "file": "docs/screenshots/issue37-proxy-row-repairs/index.html",
+        "sha256": "2b01e1c9dec349799c9a9cf2c5a62523fc3966434ec9ca890dc7fe3312de0e4d",
+        "bytes": 6043
+      },
+      {
+        "file": "docs/screenshots/issue37-proxy-row-repairs/manifest.json",
+        "sha256": "a81456c2f924da52904d55ea46dab1cd038d1679c1fd6b0c60ff94cee644c5cc",
+        "bytes": 65801
+      },
+      {
+        "file": "docs/screenshots/issue37-repairs9de/index.html",
+        "sha256": "e9df0ddeb55a545dad46fcd4152b4f67c14d69f54f5d301dbb3dd43a51b259a8",
+        "bytes": 9525
+      },
+      {
+        "file": "docs/screenshots/issue37-repairs9de/manifest.json",
+        "sha256": "a153e6ba6504e20528487252b700f82fc21751ec7f03e10c0f2169559310f693",
+        "bytes": 122302
+      },
+      {
+        "file": "docs/screenshots/issue37-shell-top83/index.html",
+        "sha256": "28d875c23542ef6fb8876723f17b8c791b16b944c7b5308eff79f6eeea2d6e47",
+        "bytes": 3510
+      },
+      {
+        "file": "docs/screenshots/issue37-shell-top83/manifest.json",
+        "sha256": "e6e019894bbab6815c4bc8a5826e2d9d1814b8f53d88ccff8fb8340b4ab6f44c",
+        "bytes": 32073
+      },
+      {
+        "file": "docs/verification/issue37-contextual-actions.json",
+        "sha256": "cfccb5ae3b0a2e28031ec83845f934c9574255620cd9477d75bc2d23b7ddfbf9",
+        "bytes": 241320
+      },
+      {
+        "file": "docs/verification/issue37-contextual-contract-review.json",
+        "sha256": "b2823dc0ac0262314410e72062904b464ee4043da674f28507cd61fa9fcd0377",
+        "bytes": 21849
+      },
+      {
+        "file": "docs/verification/issue37-continuation-actions.json",
+        "sha256": "e5120e4d76db9284f9632e2037ed0b4adf2154c94c37301c9dea54b13851fd5c",
+        "bytes": 775640
+      },
+      {
+        "file": "docs/verification/issue37-continuation-evidence.md",
+        "sha256": "814a3ceda3feafde91c30f3640c6469dc38e5f9738160d3dcc848e29d1d37c33",
+        "bytes": 23945
+      },
+      {
+        "file": "docs/verification/issue37-continuation-tool-controls.json",
+        "sha256": "e3a38c06bc48f5780caf21801dacad088ca933c9e91282c2655fb8aa0c1bfa3d",
+        "bytes": 16964
+      },
+      {
+        "file": "docs/verification/issue37-continuation.md",
+        "sha256": "d1d10e65a08c0c86c2c136d1aa5bcde7b208bbf10c857281f0fac8126b5f7186",
+        "bytes": 10950
+      },
+      {
+        "file": "docs/verification/issue37-environment-actions.json",
+        "sha256": "cb973850ba59e56c31cec16b20b77dff9b84b37d9147c14a41b5b61d82239781",
+        "bytes": 1800859
+      },
+      {
+        "file": "docs/verification/issue37-environment-contract-review.json",
+        "sha256": "5a5d700f854c7821a735927f91706c0a08f0f2fa3797bbdf326b861ab8ebd187",
+        "bytes": 41993
+      },
+      {
+        "file": "docs/verification/issue37-environment-css-checks.json",
+        "sha256": "8315ecfe06c7de5363970662e6a7b3611679deab45cad3b6b6d29dc391feb3b2",
+        "bytes": 174554
+      },
+      {
+        "file": "docs/verification/issue37-environment-css-contract-review.json",
+        "sha256": "f7335611967461c88325bcb5a32c227a0d2f1c8c0d8e354742680ad17df3f408",
+        "bytes": 22946
+      },
+      {
+        "file": "docs/verification/issue37-environment-css-source-review.json",
+        "sha256": "2781b20b62f128e2bfb79968256be4382c54067a300fc9f6b89ccef2c01cb3ca",
+        "bytes": 18967
+      },
+      {
+        "file": "docs/verification/issue37-environment-drawer-checks.json",
+        "sha256": "665f9df7b2f9870aa9e5318f381c34373980c1352a8d47b6a4af77a0c4c7bea6",
+        "bytes": 241427
+      },
+      {
+        "file": "docs/verification/issue37-environment-drawer-contract-review.json",
+        "sha256": "8ac21db6d369e9d2bfc517ef147297d96d6f0705f65508768a17aad6e8901b82",
+        "bytes": 33805
+      },
+      {
+        "file": "docs/verification/issue37-environment-drawer-source-review.json",
+        "sha256": "8fa15380f7a28b0c4cc270d0b72435d14c7d245f52caabb081c8e0bc8a8c9ef1",
+        "bytes": 29557
+      },
+      {
+        "file": "docs/verification/issue37-environment-evidence.md",
+        "sha256": "76d7f5fb9b39e544d048b032f642fc8e54bca941953b3ac9f1527661107687cb",
+        "bytes": 12286
+      },
+      {
+        "file": "docs/verification/issue37-final-evidence.json",
+        "sha256": "fb30d24c38007c8dbd4df39c90e0f02fb6429fff88ca0568376914522255f421",
+        "bytes": 25215
+      },
+      {
+        "file": "docs/verification/issue37-final-source-review.json",
+        "sha256": "073f9744d69da039a59fcfc292c2c89a4217337278dd14c34803f359f1c0c3b4",
+        "bytes": 17414
+      },
+      {
+        "file": "docs/verification/issue37-integrated-directed-checks.json",
+        "sha256": "d7e03fc6a4e10766960ead8250a7ca0ada32171b96f2d3d2c91171077a145d47",
+        "bytes": 6821
+      },
+      {
+        "file": "docs/verification/issue37-migration-actions.json",
+        "sha256": "81e496dac0b726520a6e3c8c671882cdd3f24b55f4a4e2fb3852542dde25dad1",
+        "bytes": 3807745
+      },
+      {
+        "file": "docs/verification/issue37-native-route340-actions.json",
+        "sha256": "7e26ee9cc1d745e81b8d237c7282ac7811fc3aa4232ca537542ae74e36762c99",
+        "bytes": 354238
+      },
+      {
+        "file": "docs/verification/issue37-native-route340-contract-review.json",
+        "sha256": "215ede6c110a0297de7786e06d1a4dbbe376c7b4a0fe8ef16060c4e8514ce5fa",
+        "bytes": 31411
+      },
+      {
+        "file": "docs/verification/issue37-original-integrity.json",
+        "sha256": "cc701b182b747086420b2996e8cd0304453e86fa8a3de3d4f6347e9163c070e5",
+        "bytes": 1114
+      },
+      {
+        "file": "docs/verification/issue37-supplementary-context22.json",
+        "sha256": "fb0711e9844519da26aab75af0293d3f98743173e116150722eb9b751f5ad803",
+        "bytes": 136474
+      },
+      {
+        "file": "docs/verification/issue37-supplementary-crosswalk.json",
+        "sha256": "73171f07263db2a2d3212cd324057ca0a2b911367efd04d9c1e7b897fc83928f",
+        "bytes": 2814214
+      },
+      {
+        "file": "docs/verification/issue37-supplementary-crosswalk.md",
+        "sha256": "766a373b23159203220b15799d8410eb71ec7ee7761e98a52d24af52fe38e09b",
+        "bytes": 5174
+      },
+      {
+        "file": "docs/verification/issue37-supplementary-environment-repairs.json",
+        "sha256": "cfddcabf6b9d3a1824b4fa9863d3ca003772eb3eeeda7189cac1e437666b78d8",
+        "bytes": 29349
+      },
+      {
+        "file": "docs/verification/issue37-supplementary-environment.json",
+        "sha256": "09295291c4a90dd33ab227d0956cbf8ad9d6e26cac13c01f28b5b520a72e3728",
+        "bytes": 219199
+      },
+      {
+        "file": "docs/verification/issue37-supplementary-fixes32.json",
+        "sha256": "9c4c4e8b8b8bd91b325e83a080f192cb76033cc91315ecb3e5c587218b19ec28",
+        "bytes": 109646
+      },
+      {
+        "file": "docs/verification/issue37-supplementary-routes2.json",
+        "sha256": "6425de5c1f77145a7df592337b6cb18b91eeb334e02573fdc39f6dc46c9b76e1",
+        "bytes": 60235
+      }
+    ],
+    "projectRelativeReadmeTokenClassifiedOnlyOnSameOldCanonicalLine": true,
+    "actualPrivateOrCommercialPathsPermitted": false,
+    "pngOrOriginalReferenceBytesRead": 0,
+    "full79SourceAuditRepeated": false,
+    "wholeCellPassesAdded": 0,
+    "strictVisualPass": false,
+    "realDesktopAcceptance": false,
+    "originalPrivateReceiptSha256": "099dbaf69bd7525c517d369e842a47eb07567e4bb2a69118caf3c093db31e4ac",
+    "rawFileHashesAtCheckTimeNotPortableCheckoutEolPromises": true
+  },
+  "extraThisPublicRecord": {
+    "generatedAfterOriginal63FileClosure": true,
+    "independentlyRunsOriginalPublicTextGuardOnItsEntireSerializedContents": true,
+    "selfHashRecursionClaimed": false,
+    "changesToAlreadyClosed63Files": false
+  },
+  "gitStagingAndPublicationCommitMustNotRebindImages": true,
+  "sharedFullSuiteReruns": 0,
+  "noEmitOrBrowserChecksRepeatedForDocumentation": 0,
+  "sourceOrPngOrOriginalReferenceOrNativeOperations": 0,
+  "wholeCellPassesAdded": 0,
+  "strictVisualPass": false,
+  "realDesktopAcceptance": false
+}

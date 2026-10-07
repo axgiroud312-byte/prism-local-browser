@@ -265,6 +265,9 @@ func (s *Service) confirmMigrationAcceptance(task *migrationTask) Result {
 }
 
 func (s *Service) startMigrationWorker(task *migrationTask, worker func(context.Context, *migrationTask)) {
+	if s.closed || s.closeRequested.Load() {
+		return
+	}
 	ctx, cancel := context.WithCancel(context.Background())
 	task.running = true
 	task.cancel = cancel
@@ -300,7 +303,7 @@ func (s *Service) selectMigrationRollback(payload json.RawMessage) Result {
 		return failure("VALIDATION_FAILED", "请选择原迁移备份。", false)
 	}
 	s.mu.Lock()
-	if !s.recycleIdle() || s.closed || s.closeRequested.Load() {
+	if !s.recycleIdle() || s.restoreScratch != "" || s.closed || s.closeRequested.Load() {
 		s.mu.Unlock()
 		return failure("PROFILE_BUSY", "请先完成当前维护。", true)
 	}

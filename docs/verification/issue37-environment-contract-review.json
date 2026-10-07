@@ -1,0 +1,1556 @@
+{
+  "schemaVersion": 1,
+  "kind": "public-independent-saved-environment-contract-review-projection-not-new-acceptance",
+  "date": "2026-10-07",
+  "verdict": "SCOPED_CONTRACT_CONSISTENT",
+  "findingCount": 0,
+  "findings": [],
+  "sourceHead": "340a22c1e8489fad2db091a25bb14bb7d2e66984",
+  "renderHash": "0df5a445b4a16f1984f2944ac7367d1202322b892876f2d31b9e853d9a8708ce",
+  "sourceAnchor": {
+    "head": "340a22c1e8489fad2db091a25bb14bb7d2e66984",
+    "renderHash79": "0df5a445b4a16f1984f2944ac7367d1202322b892876f2d31b9e853d9a8708ce",
+    "rawRenderHash78": "819ebca00422211c9fe8863f04ae67f2e9149cdee0199e75a1ecb9747bcc4ee3",
+    "manifest": "frozen-render-inputs-340a22c/render-inputs.json",
+    "manifestSha256": "d3e6938da18e184f1b9e2160d151196646f0cb22093e64390ea37afd5a66d83d",
+    "manifestBytes": 34193,
+    "frozenSourceByteHashesMatched": 79,
+    "appSha256": "4869c8a3174d97ec64482033a9da58f71a9436182df0b200401ea2ef2bbf1bb1",
+    "referenceIndexSha256": "be7e0db8c107fb3079ac8ee2d4444821866247ec71390333629db1c9bbf7a3d1",
+    "currentHeadCertified": false,
+    "legacyBinaryCertified": false
+  },
+  "reviewedPublicInput": {
+    "path": "docs/verification/issue37-environment-actions.json",
+    "sha256": "cb973850ba59e56c31cec16b20b77dff9b84b37d9147c14a41b5b61d82239781",
+    "bytes": 1800859,
+    "pendingReviewStringsUnchanged": true
+  },
+  "publicationProvenance": {
+    "privateIndependentReviewSha256": "7be4610598b182112b00d0c32a446223bf211538287e929cb5f00f3dc404d4ee",
+    "publicActionsSha256": "cb973850ba59e56c31cec16b20b77dff9b84b37d9147c14a41b5b61d82239781",
+    "originalAttemptAndArchiveManifestHashesMatchedByPublisher": true,
+    "rawPrivateNotesRootAndInputTablesOmitted": true,
+    "originalActionPacketOrPendingReviewFieldsEdited": false,
+    "originalPrivateReviewEdited": false,
+    "caseImportsOrExecutionsByPublisher": 0
+  },
+  "reviewOperations": {
+    "readOnlyMetadataAndHashScripts": true,
+    "executedEvidenceModulesImportedOrEvaluated": 0,
+    "newAcquisitions": 0,
+    "browserOperations": 0,
+    "imagesViewed": 0,
+    "newCaptures": 0,
+    "testsBuildsNoEmit": 0,
+    "goWailsUIAOperations": 0,
+    "networkOperations": 0,
+    "newAgents": 0,
+    "gitWrites": 0,
+    "filesWritten": [
+      "environment-contract-review.md",
+      "environment-contract-review.json"
+    ],
+    "existingAuthorProductPublicAndHistoricalFilesEdited": false
+  },
+  "derivedAccounting": {
+    "standaloneActions": 38,
+    "standaloneCaseIds": 19,
+    "imageOwnedCallbacks": 66,
+    "callbackOwningCaseIds": 33,
+    "rawSuccessfulRecords": 222,
+    "savedOriginalPngsByteHashedWithoutViewing": 184,
+    "originalFailureRecords": 8,
+    "viewportsInPairOrder": [
+      {
+        "width": 1440,
+        "height": 900
+      },
+      {
+        "width": 1280,
+        "height": 800
+      }
+    ],
+    "additionalContextsFromCallbacks": 0,
+    "additionalResultPngs": 0,
+    "mandatoryPerCallbackPhotoRequirementAdded": false,
+    "byFamily": [
+      {
+        "family": "batch",
+        "actions": 6,
+        "callbacks": 2
+      },
+      {
+        "family": "table",
+        "actions": 4,
+        "callbacks": 22
+      },
+      {
+        "family": "cookie",
+        "actions": 4,
+        "callbacks": 6
+      },
+      {
+        "family": "recycle",
+        "actions": 4,
+        "callbacks": 14
+      },
+      {
+        "family": "drawer-excluding-force",
+        "actions": 18,
+        "callbacks": 22
+      },
+      {
+        "family": "force",
+        "actions": 2,
+        "callbacks": 0
+      }
+    ]
+  },
+  "rawSignatureBindings": {
+    "recipe": "sig(x)=SHA256(UTF8(JSON.stringify(x))). Iterate attempts in public attempt order, original record/failure arrays in index order. Hash the JSON.stringify of the specified resulting ordered array.",
+    "standaloneArrayShape": "{attempt,index,sha256:sig(fullOriginalRecord)} for action-attempt records",
+    "standaloneArraySha256": "60ddfd1a1fa0ecf561ee1a5081a098e6a8e098790388f603f12ce6de10425029",
+    "callbackArrayShape": "{attempt,index,sha256:sig(fullOriginalImageRecord),png:originalRecord.png.sha256} for original records containing postCaptureActionProof",
+    "callbackArraySha256": "bf030f355ec2e84cbe30d9be8f84d014972adafde91d88e7ff4d60995cf6cba5",
+    "failureArrayShape": "{attempt,index,sha256:sig(fullOriginalFailure)}",
+    "failureArraySha256": "96659c0e851c2adf2b6d3e8c7bd27acd8c1e59b4c8cb9d2e6d66e9e3cdb947ae",
+    "pngArrayShape": "{attempt,index,file,sha256,bytes} for every original record with a saved file",
+    "pngArraySha256": "ad50506e27ac37009119a93e5cba920796411beac23cf1252f9e779e0c168c7d",
+    "publicActionFieldsMatchedExceptDeclaredPublicationAnnotations": 38,
+    "callbackFullRecordSignaturesAndPngAssociationsMatched": 66,
+    "failureFullObjectsIncludingMessagesAndFinalSafetyErrorsMatched": 8
+  },
+  "standaloneCases": [
+    {
+      "id": "env-batch-lookup-refusal-handoff",
+      "publicRecordIndices": [
+        0,
+        3
+      ],
+      "ownedCountsBothViews": {
+        "Workspace.Read": 4,
+        "Batch.ReadPage": 6,
+        "Operation.Read": 5,
+        "Cookie.DiscardImport": 0
+      },
+      "rawDispatches": [
+        15,
+        15
+      ],
+      "stockEntries": [
+        15,
+        15
+      ],
+      "maximumNativeCalls": 35
+    },
+    {
+      "id": "env-batch-pending-admission-original",
+      "publicRecordIndices": [
+        1,
+        4
+      ],
+      "ownedCountsBothViews": {
+        "Workspace.Read": 5,
+        "Batch.Preview": 1,
+        "Batch.Commit": 1,
+        "Batch.ReadPage": 2,
+        "Operation.Read": 2,
+        "Cookie.DiscardImport": 0
+      },
+      "rawDispatches": [
+        11,
+        11
+      ],
+      "stockEntries": [
+        11,
+        11
+      ],
+      "maximumNativeCalls": 60
+    },
+    {
+      "id": "env-batch-unknown-commit-exact-original",
+      "publicRecordIndices": [
+        2,
+        5
+      ],
+      "ownedCountsBothViews": {
+        "Workspace.Read": 6,
+        "Batch.Preview": 1,
+        "Batch.Commit": 2,
+        "Batch.ReadPage": 2,
+        "Operation.Read": 2,
+        "Cookie.DiscardImport": 0
+      },
+      "rawDispatches": [
+        13,
+        13
+      ],
+      "stockEntries": [
+        13,
+        13
+      ],
+      "maximumNativeCalls": 61
+    },
+    {
+      "id": "env-table-native-mixed-exact-retry-collapse-actions",
+      "publicRecordIndices": [
+        6,
+        8
+      ],
+      "ownedCountsBothViews": {
+        "Workspace.Read": 5,
+        "Environment.Preview": 4,
+        "Preview.Discard": 4,
+        "Runtime.Start": 4,
+        "Operation.Read": 1
+      },
+      "rawDispatches": [
+        20,
+        20
+      ],
+      "stockEntries": [
+        15,
+        15
+      ],
+      "maximumNativeCalls": 54,
+      "stockBootstrapReadsPerView": 2
+    },
+    {
+      "id": "env-table-native-exact-resource-session-actions",
+      "publicRecordIndices": [
+        7,
+        9
+      ],
+      "ownedCountsBothViews": {
+        "Workspace.Read": 3,
+        "Runtime.Reconcile": 2
+      },
+      "rawDispatches": [
+        7,
+        7
+      ],
+      "stockEntries": [
+        7,
+        7
+      ],
+      "maximumNativeCalls": 28,
+      "stockBootstrapReadsPerView": 2
+    },
+    {
+      "id": "env-cookie-native-starting-unknown-no-write",
+      "publicRecordIndices": [
+        10,
+        12
+      ],
+      "ownedCountsBothViews": {
+        "Workspace.Read": 6,
+        "Cookie.DiscardImport": 3,
+        "Cookie.ParseImport": 2
+      },
+      "rawDispatches": [
+        11,
+        11
+      ],
+      "stockEntries": [
+        9,
+        9
+      ],
+      "maximumNativeCalls": 40
+    },
+    {
+      "id": "env-cookie-native-result-all-matched",
+      "publicRecordIndices": [
+        11,
+        13
+      ],
+      "ownedCountsBothViews": {
+        "Workspace.Read": 5,
+        "Cookie.DiscardImport": 1,
+        "Cookie.ParseImport": 1,
+        "Cookie.CommitImport": 1,
+        "Operation.Read": 0
+      },
+      "rawDispatches": [
+        8,
+        8
+      ],
+      "stockEntries": [
+        6,
+        6
+      ],
+      "maximumNativeCalls": 40
+    },
+    {
+      "id": "env-recycle-r09-actual-historical-page-read-and-exact-cancel-actions",
+      "publicRecordIndices": [
+        14,
+        16
+      ],
+      "ownedCountsBothViews": {
+        "Workspace.Read": 4,
+        "Recycle.ReadPage": 9,
+        "Recycle.Preview": 1,
+        "Recycle.Commit": 1,
+        "Operation.Cancel": 1
+      },
+      "rawDispatches": [
+        16,
+        16
+      ],
+      "stockEntries": [
+        4,
+        4
+      ],
+      "maximumNativeCalls": 31
+    },
+    {
+      "id": "env-recycle-r11-demo-write-failure-exact-retry-actions",
+      "publicRecordIndices": [
+        15,
+        17
+      ],
+      "ownedCountsBothViews": {},
+      "rawDispatches": [
+        0,
+        0
+      ],
+      "stockEntries": [
+        0,
+        0
+      ],
+      "maximumNativeCalls": 0
+    },
+    {
+      "id": "env-drawer-native-stale-device-response-old-owner",
+      "publicRecordIndices": [
+        18,
+        25
+      ],
+      "ownedCountsBothViews": {
+        "Workspace.Read": 3,
+        "Environment.Preview": 2,
+        "Fingerprint.Generate": 1,
+        "Preview.Discard": 1
+      },
+      "rawDispatches": [
+        7,
+        7
+      ],
+      "stockEntries": [
+        3,
+        3
+      ],
+      "maximumNativeCalls": 14
+    },
+    {
+      "id": "env-drawer-native-known-metadata-update-refusal",
+      "publicRecordIndices": [
+        19,
+        26
+      ],
+      "ownedCountsBothViews": {
+        "Workspace.Read": 3,
+        "Environment.Preview": 1,
+        "Fingerprint.ListRevisions": 1,
+        "Environment.Update": 1
+      },
+      "rawDispatches": [
+        6,
+        6
+      ],
+      "stockEntries": [
+        3,
+        3
+      ],
+      "maximumNativeCalls": 13
+    },
+    {
+      "id": "env-drawer-demo-create-partial-retains-actual-ids",
+      "publicRecordIndices": [
+        20,
+        27
+      ],
+      "ownedCountsBothViews": {},
+      "rawDispatches": [
+        0,
+        0
+      ],
+      "stockEntries": [
+        0,
+        0
+      ],
+      "maximumNativeCalls": 0
+    },
+    {
+      "id": "env-drawer-native-created-open-failure-exact-id-retry",
+      "publicRecordIndices": [
+        21,
+        28
+      ],
+      "ownedCountsBothViews": {
+        "Workspace.Read": 6,
+        "Environment.Preview": 3,
+        "Environment.Create": 1,
+        "Preview.Discard": 3,
+        "Runtime.Start": 2
+      },
+      "rawDispatches": [
+        15,
+        15
+      ],
+      "stockEntries": [
+        6,
+        6
+      ],
+      "maximumNativeCalls": 19
+    },
+    {
+      "id": "env-drawer-demo-suspended-continue-abandon",
+      "publicRecordIndices": [
+        22,
+        29
+      ],
+      "ownedCountsBothViews": {},
+      "rawDispatches": [
+        0,
+        0
+      ],
+      "stockEntries": [
+        0,
+        0
+      ],
+      "maximumNativeCalls": 0
+    },
+    {
+      "id": "env-drawer-demo-actual-draft-proxy-cancel-escape-reopen",
+      "publicRecordIndices": [
+        23,
+        30
+      ],
+      "ownedCountsBothViews": {},
+      "rawDispatches": [
+        0,
+        0
+      ],
+      "stockEntries": [
+        0,
+        0
+      ],
+      "maximumNativeCalls": 0
+    },
+    {
+      "id": "env-drawer-native-actual-draft-proxy-cancel-escape-reopen",
+      "publicRecordIndices": [
+        24,
+        31
+      ],
+      "ownedCountsBothViews": {
+        "Workspace.Read": 3,
+        "Environment.Preview": 1
+      },
+      "rawDispatches": [
+        4,
+        4
+      ],
+      "stockEntries": [
+        3,
+        3
+      ],
+      "maximumNativeCalls": 11
+    },
+    {
+      "id": "env-drawer-native-suspended-continue-abandon",
+      "publicRecordIndices": [
+        32,
+        34
+      ],
+      "ownedCountsBothViews": {
+        "Workspace.Read": 5,
+        "Environment.Preview": 1,
+        "Fingerprint.Generate": 1,
+        "Preview.Discard": 1
+      },
+      "rawDispatches": [
+        8,
+        8
+      ],
+      "stockEntries": [
+        5,
+        5
+      ],
+      "maximumNativeCalls": 13
+    },
+    {
+      "id": "env-drawer-native-suspended-notice-abandon",
+      "publicRecordIndices": [
+        33,
+        35
+      ],
+      "ownedCountsBothViews": {
+        "Workspace.Read": 5,
+        "Environment.Preview": 1,
+        "Preview.Discard": 1
+      },
+      "rawDispatches": [
+        7,
+        7
+      ],
+      "stockEntries": [
+        5,
+        5
+      ],
+      "maximumNativeCalls": 12
+    },
+    {
+      "id": "env-drawer-force-original-session-revalidation",
+      "publicRecordIndices": [
+        36,
+        37
+      ],
+      "ownedCountsBothViews": {
+        "Workspace.Read": 9,
+        "Environment.Preview": 5,
+        "Fingerprint.ListRevisions": 5,
+        "Preview.Discard": 4,
+        "Runtime.ForceStop": 1
+      },
+      "rawDispatches": [
+        24,
+        24
+      ],
+      "stockEntries": [
+        18,
+        18
+      ],
+      "maximumNativeCalls": 95
+    }
+  ],
+  "callbackCases": [
+    {
+      "id": "env-batch-old-result-title",
+      "publicCallbackIndices": [
+        0,
+        1
+      ],
+      "rawDispatches": [
+        13,
+        13
+      ],
+      "stockEntries": [
+        13,
+        13
+      ]
+    },
+    {
+      "id": "env-table-native-query-busy-controls",
+      "publicCallbackIndices": [
+        2,
+        13
+      ],
+      "rawDispatches": [
+        4,
+        4
+      ],
+      "stockEntries": [
+        4,
+        4
+      ]
+    },
+    {
+      "id": "env-table-native-query-refusal-blocker",
+      "publicCallbackIndices": [
+        3,
+        14
+      ],
+      "rawDispatches": [
+        5,
+        5
+      ],
+      "stockEntries": [
+        5,
+        5
+      ]
+    },
+    {
+      "id": "env-table-demo-compound-applied",
+      "publicCallbackIndices": [
+        4,
+        15
+      ],
+      "rawDispatches": [
+        0,
+        0
+      ],
+      "stockEntries": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "env-table-native-compound-applied",
+      "publicCallbackIndices": [
+        5,
+        16
+      ],
+      "rawDispatches": [
+        7,
+        7
+      ],
+      "stockEntries": [
+        7,
+        7
+      ]
+    },
+    {
+      "id": "env-table-demo-start-completion-write-refused",
+      "publicCallbackIndices": [
+        6,
+        17
+      ],
+      "rawDispatches": [
+        0,
+        0
+      ],
+      "stockEntries": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "env-table-demo-stop-completion-write-refused",
+      "publicCallbackIndices": [
+        7,
+        18
+      ],
+      "rawDispatches": [
+        0,
+        0
+      ],
+      "stockEntries": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "env-table-demo-mixed-terminal",
+      "publicCallbackIndices": [
+        8,
+        19
+      ],
+      "rawDispatches": [
+        0,
+        0
+      ],
+      "stockEntries": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "env-table-native-mixed-pending",
+      "publicCallbackIndices": [
+        9,
+        20
+      ],
+      "rawDispatches": [
+        16,
+        16
+      ],
+      "stockEntries": [
+        12,
+        12
+      ]
+    },
+    {
+      "id": "env-table-native-mixed-accepted",
+      "publicCallbackIndices": [
+        10,
+        21
+      ],
+      "rawDispatches": [
+        16,
+        16
+      ],
+      "stockEntries": [
+        12,
+        12
+      ]
+    },
+    {
+      "id": "env-table-native-fifo-active-queued",
+      "publicCallbackIndices": [
+        11,
+        22
+      ],
+      "rawDispatches": [
+        21,
+        21
+      ],
+      "stockEntries": [
+        13,
+        13
+      ]
+    },
+    {
+      "id": "env-table-native-fifo-stopping-disabled",
+      "publicCallbackIndices": [
+        12,
+        23
+      ],
+      "rawDispatches": [
+        21,
+        21
+      ],
+      "stockEntries": [
+        13,
+        13
+      ]
+    },
+    {
+      "id": "env-cookie-demo-invalid-and-file-save-failure",
+      "publicCallbackIndices": [
+        24,
+        27
+      ],
+      "rawDispatches": [
+        0,
+        0
+      ],
+      "stockEntries": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "env-cookie-native-direct-consent",
+      "publicCallbackIndices": [
+        25,
+        28
+      ],
+      "rawDispatches": [
+        8,
+        8
+      ],
+      "stockEntries": [
+        6,
+        6
+      ]
+    },
+    {
+      "id": "env-cookie-native-replace-all-inline",
+      "publicCallbackIndices": [
+        26,
+        29
+      ],
+      "rawDispatches": [
+        16,
+        15
+      ],
+      "stockEntries": [
+        12,
+        11
+      ]
+    },
+    {
+      "id": "env-recycle-r02-unread-pending-list",
+      "publicCallbackIndices": [
+        30,
+        37
+      ],
+      "rawDispatches": [
+        4,
+        4
+      ],
+      "stockEntries": [
+        2,
+        2
+      ]
+    },
+    {
+      "id": "env-recycle-r03-dense-bottom-selected-original-identities",
+      "publicCallbackIndices": [
+        31,
+        38
+      ],
+      "rawDispatches": [
+        5,
+        5
+      ],
+      "stockEntries": [
+        2,
+        2
+      ]
+    },
+    {
+      "id": "env-recycle-r03-page-two-selected-original-identities",
+      "publicCallbackIndices": [
+        32,
+        39
+      ],
+      "rawDispatches": [
+        6,
+        6
+      ],
+      "stockEntries": [
+        2,
+        2
+      ]
+    },
+    {
+      "id": "env-recycle-r06-thirty-explicit-targets-confirm-body-bottom",
+      "publicCallbackIndices": [
+        33,
+        40
+      ],
+      "rawDispatches": [
+        9,
+        9
+      ],
+      "stockEntries": [
+        6,
+        6
+      ]
+    },
+    {
+      "id": "env-recycle-r06-restore-exact-original-details-expanded",
+      "publicCallbackIndices": [
+        34,
+        41
+      ],
+      "rawDispatches": [
+        6,
+        6
+      ],
+      "stockEntries": [
+        2,
+        2
+      ]
+    },
+    {
+      "id": "env-recycle-r08-original-admission-unknown-confirmation",
+      "publicCallbackIndices": [
+        35,
+        42
+      ],
+      "rawDispatches": [
+        8,
+        8
+      ],
+      "stockEntries": [
+        4,
+        4
+      ]
+    },
+    {
+      "id": "env-recycle-r09-protected-original-recovery-unknown",
+      "publicCallbackIndices": [
+        36,
+        43
+      ],
+      "rawDispatches": [
+        17,
+        15
+      ],
+      "stockEntries": [
+        7,
+        6
+      ]
+    },
+    {
+      "id": "env-drawer-native-automatic-preview-busy",
+      "publicCallbackIndices": [
+        44,
+        54
+      ],
+      "rawDispatches": [
+        5,
+        5
+      ],
+      "stockEntries": [
+        3,
+        3
+      ]
+    },
+    {
+      "id": "env-drawer-native-preview-failure-exact-retry",
+      "publicCallbackIndices": [
+        45,
+        55
+      ],
+      "rawDispatches": [
+        6,
+        6
+      ],
+      "stockEntries": [
+        3,
+        3
+      ]
+    },
+    {
+      "id": "env-drawer-demo-rollback-preview-new-revision",
+      "publicCallbackIndices": [
+        46,
+        56
+      ],
+      "rawDispatches": [
+        0,
+        0
+      ],
+      "stockEntries": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "env-drawer-native-rollback-and-incompatible-history",
+      "publicCallbackIndices": [
+        47,
+        57
+      ],
+      "rawDispatches": [
+        8,
+        8
+      ],
+      "stockEntries": [
+        4,
+        4
+      ]
+    },
+    {
+      "id": "env-drawer-native-known-create-refusal",
+      "publicCallbackIndices": [
+        48,
+        58
+      ],
+      "rawDispatches": [
+        5,
+        5
+      ],
+      "stockEntries": [
+        3,
+        3
+      ]
+    },
+    {
+      "id": "env-drawer-native-known-profile-revision-refusal",
+      "publicCallbackIndices": [
+        49,
+        59
+      ],
+      "rawDispatches": [
+        6,
+        6
+      ],
+      "stockEntries": [
+        3,
+        3
+      ]
+    },
+    {
+      "id": "env-drawer-native-create-terminal-zero-editable-draft",
+      "publicCallbackIndices": [
+        50,
+        60
+      ],
+      "rawDispatches": [
+        6,
+        6
+      ],
+      "stockEntries": [
+        4,
+        4
+      ]
+    },
+    {
+      "id": "env-drawer-native-create-persistence-pending-no-success",
+      "publicCallbackIndices": [
+        51,
+        61
+      ],
+      "rawDispatches": [
+        8,
+        8
+      ],
+      "stockEntries": [
+        4,
+        4
+      ]
+    },
+    {
+      "id": "env-drawer-demo-create-zero-real-write-refusal",
+      "publicCallbackIndices": [
+        52,
+        62
+      ],
+      "rawDispatches": [
+        0,
+        0
+      ],
+      "stockEntries": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "env-drawer-native-dirty-child-exact-preview-ownership",
+      "publicCallbackIndices": [
+        53,
+        63
+      ],
+      "rawDispatches": [
+        5,
+        5
+      ],
+      "stockEntries": [
+        3,
+        3
+      ]
+    },
+    {
+      "id": "env-drawer-native-kernel-pending-metadata-return",
+      "publicCallbackIndices": [
+        64,
+        65
+      ],
+      "rawDispatches": [
+        8,
+        8
+      ],
+      "stockEntries": [
+        5,
+        5
+      ]
+    }
+  ],
+  "endpointProfiles": {
+    "count": 104,
+    "actionMeasurements": 38,
+    "postCaptureMeasurements": 66,
+    "nativeSyntheticEndpoints": 82,
+    "nativeStorageGetterAttempts": 0,
+    "unknownMethods": 0,
+    "demoEndpoints": 22,
+    "demoNativeDispatches": 0,
+    "highestModalFocusMaskAndInertnessMatched": 56,
+    "noModalZeroEffectiveMaskEndpoints": 48,
+    "documentOverflowFalseCount": 104,
+    "exactViewportDpr1VisualScale1Zoom1Count": 104,
+    "rawSyntheticDispatchesAcrossTheseEndpointsOnly": 819,
+    "stockLedgerEntries": 552,
+    "separateInterceptionEntries": 267,
+    "standaloneEndpointRawDispatches": 344,
+    "callbackEndpointRawDispatches": 475,
+    "counterScope": "Final cumulative finite counters at104 distinct reviewed action or image-owned callback endpoints, including Table's two untouched stock prelude reads each; not real backend calls and not a total for all184 image contexts.",
+    "stockAuditFieldShape": [
+      "storageBlocked",
+      "storageAttempts",
+      "methodCounts",
+      "unsupportedMethods"
+    ],
+    "originalStockFieldShapesAndCountsNotRewritten": true,
+    "oldGuideClassifierExceptionBorrowed": false,
+    "observedOnlyFromSavedMeasurements": true
+  },
+  "originalAttempts": [
+    {
+      "name": "environment-batch-images-first",
+      "manifestSha256": "7e400d80ccf98457595968828ca9737a2a133e630f3ee922cd982e8d8044f02b",
+      "manifestBytes": 381164,
+      "frozenInputsSha256": "3a222082a9e938124bb971330999ddbed678943466148185d0db35c1f2c3d486",
+      "runner": "V1",
+      "images": 24,
+      "actions": 0,
+      "callbacks": 2,
+      "failures": 0,
+      "complete": true
+    },
+    {
+      "name": "environment-batch-actions-first",
+      "manifestSha256": "32df1544b090fac4ff5a80a19365968ead8b88f3e8cdc20327bc0bceb3456ee7",
+      "manifestBytes": 99326,
+      "frozenInputsSha256": "3a222082a9e938124bb971330999ddbed678943466148185d0db35c1f2c3d486",
+      "runner": "V1",
+      "images": 0,
+      "actions": 6,
+      "callbacks": 0,
+      "failures": 0,
+      "complete": true
+    },
+    {
+      "name": "environment-table-images-first",
+      "manifestSha256": "e43bf3e0f5c849e88b11776602314f23ead6f998e77ceb8ff9ea4b80357f2133",
+      "manifestBytes": 818178,
+      "frozenInputsSha256": "ed99cef07a94372e355acd7f0db0e6454fb0e759995454933e8ba92339ecdf0c",
+      "runner": "V1",
+      "images": 56,
+      "actions": 0,
+      "callbacks": 22,
+      "failures": 0,
+      "complete": true
+    },
+    {
+      "name": "environment-table-actions-first",
+      "manifestSha256": "45f7dc51388245be00493ae06b3b8a56074606a9cdbfe43db6fab214cf88dc48",
+      "manifestBytes": 55989,
+      "frozenInputsSha256": "ed99cef07a94372e355acd7f0db0e6454fb0e759995454933e8ba92339ecdf0c",
+      "runner": "V1",
+      "images": 0,
+      "actions": 4,
+      "callbacks": 0,
+      "failures": 0,
+      "complete": true
+    },
+    {
+      "name": "environment-cookie-images-first",
+      "manifestSha256": "4d37db9fcf65e75cfce55d7d255c41ebc7ca0bfce84c3f160593c8ddd4b2c2bb",
+      "manifestBytes": 452046,
+      "frozenInputsSha256": "cba656d826c7da2790499f77423163a79c2dfd3abc9bce47ffa7df6b22a2dcac",
+      "runner": "immutable-v2-atomic-admission",
+      "images": 18,
+      "actions": 0,
+      "callbacks": 6,
+      "failures": 2,
+      "complete": false
+    },
+    {
+      "name": "environment-cookie-images-locator",
+      "manifestSha256": "57b0a9fc2a54a8d7ce9f515779cfaf33452def7701113eecb6b62b186c9c4637",
+      "manifestBytes": 49057,
+      "frozenInputsSha256": "efddebfd89c01fb7554d112cbe563c85163d45f8f7fe0888b1f17208f83a9686",
+      "runner": "immutable-v2-atomic-admission",
+      "images": 2,
+      "actions": 0,
+      "callbacks": 0,
+      "failures": 0,
+      "complete": true
+    },
+    {
+      "name": "environment-cookie-actions-first",
+      "manifestSha256": "c428ecc0e60c9aba921798ab8641a5b2264a1697433d4b04f166f860b56c1c92",
+      "manifestBytes": 86746,
+      "frozenInputsSha256": "cba656d826c7da2790499f77423163a79c2dfd3abc9bce47ffa7df6b22a2dcac",
+      "runner": "immutable-v2-atomic-admission",
+      "images": 0,
+      "actions": 4,
+      "callbacks": 0,
+      "failures": 0,
+      "complete": true
+    },
+    {
+      "name": "environment-recycle-images-first",
+      "manifestSha256": "cb9160bc2634d3ad8012df5091778e9096f1655475a87b8af221e851d3466c90",
+      "manifestBytes": 1255690,
+      "frozenInputsSha256": "d223a985cbdadde6287ea64c36f3b24bae91e5c157223b2af493f05fe0b2c1ef",
+      "runner": "immutable-v2-atomic-admission",
+      "images": 30,
+      "actions": 0,
+      "callbacks": 14,
+      "failures": 0,
+      "complete": true
+    },
+    {
+      "name": "environment-recycle-actions-first",
+      "manifestSha256": "39b698af1ba0f906cbb2cf3d997b13180ec22157dd99f6ec7e915c166832d9be",
+      "manifestBytes": 119930,
+      "frozenInputsSha256": "d223a985cbdadde6287ea64c36f3b24bae91e5c157223b2af493f05fe0b2c1ef",
+      "runner": "immutable-v2-atomic-admission",
+      "images": 0,
+      "actions": 4,
+      "callbacks": 0,
+      "failures": 0,
+      "complete": true
+    },
+    {
+      "name": "environment-drawer-images-first",
+      "manifestSha256": "0ce0207420b096562dbc88727fc453a8e16addfa75664efacde1d96ac5044f7a",
+      "manifestBytes": 1026374,
+      "frozenInputsSha256": "5aa605d6735187d8dfa855a83cc6516211f9a38831ec64ba838a147f25636913",
+      "runner": "immutable-v2-atomic-admission",
+      "images": 52,
+      "actions": 0,
+      "callbacks": 20,
+      "failures": 2,
+      "complete": false
+    },
+    {
+      "name": "environment-drawer-images-routes",
+      "manifestSha256": "58eaf19894620bbc6ab341fc078faff767b355569d496b7637e4ec170d7ac926",
+      "manifestBytes": 59813,
+      "frozenInputsSha256": "2a610015dd753b2d03a857b3b78c9b23b35c40346ea475dc7a3da6dd1de34d94",
+      "runner": "immutable-v2-atomic-admission",
+      "images": 2,
+      "actions": 0,
+      "callbacks": 2,
+      "failures": 0,
+      "complete": true
+    },
+    {
+      "name": "environment-drawer-actions-first",
+      "manifestSha256": "948b72af8bafa8776c7e363a529c5f5891a1de20c65a81847c50b401f9e0f599",
+      "manifestBytes": 224277,
+      "frozenInputsSha256": "5aa605d6735187d8dfa855a83cc6516211f9a38831ec64ba838a147f25636913",
+      "runner": "immutable-v2-atomic-admission",
+      "images": 0,
+      "actions": 14,
+      "callbacks": 0,
+      "failures": 4,
+      "complete": false
+    },
+    {
+      "name": "environment-drawer-actions-routes",
+      "manifestSha256": "861fca2aae8be4c1d19b91555303bceb942366f18569884d63c4e65b2e9f97d9",
+      "manifestBytes": 55912,
+      "frozenInputsSha256": "2a610015dd753b2d03a857b3b78c9b23b35c40346ea475dc7a3da6dd1de34d94",
+      "runner": "immutable-v2-atomic-admission",
+      "images": 0,
+      "actions": 4,
+      "callbacks": 0,
+      "failures": 0,
+      "complete": true
+    },
+    {
+      "name": "environment-drawer-force-actions-first",
+      "manifestSha256": "5103f6d3051088801d60a8755b13c6b45e18a24e786084e40d290bf7cedb4e05",
+      "manifestBytes": 58926,
+      "frozenInputsSha256": "7c85e5d843a4382dad74725ddd75d7659e8b1a5d823d55117f5e62ff12dc3658",
+      "runner": "immutable-v2-atomic-admission",
+      "images": 0,
+      "actions": 2,
+      "callbacks": 0,
+      "failures": 0,
+      "complete": true
+    }
+  ],
+  "preservedFailures": [
+    {
+      "attempt": "environment-cookie-images-first",
+      "originalFailureIndex": 0,
+      "id": "env-cookie-native-parser-dense-bottom",
+      "viewportWidth": 1440,
+      "sha256": "bf5d96ed5416feddcea2c55892522202382df151de56b28f3e32fc29f3ad5ac9",
+      "kind": "wrong-relative-has-locator-5000ms-no-original-PNG"
+    },
+    {
+      "attempt": "environment-cookie-images-first",
+      "originalFailureIndex": 1,
+      "id": "env-cookie-native-parser-dense-bottom",
+      "viewportWidth": 1280,
+      "sha256": "88b9613a8049ebca6230ed614758d1e467f99084affdb45deed40e444087dcb7",
+      "kind": "wrong-relative-has-locator-5000ms-no-original-PNG"
+    },
+    {
+      "attempt": "environment-drawer-images-first",
+      "originalFailureIndex": 0,
+      "id": "env-drawer-native-kernel-pending-metadata-return",
+      "viewportWidth": 1440,
+      "sha256": "192bd403a8be4af3f9d4ef56c402d24551225d87cf24535fda496802d4a08d11",
+      "kind": "original-boundary-refused-known-kernel-page25-query"
+    },
+    {
+      "attempt": "environment-drawer-images-first",
+      "originalFailureIndex": 1,
+      "id": "env-drawer-native-kernel-pending-metadata-return",
+      "viewportWidth": 1280,
+      "sha256": "24c891cf40820acd54fed1b7e16c0b4072427e70c481edcaa17eec7e22b10cfa",
+      "kind": "original-boundary-refused-known-kernel-page25-query"
+    },
+    {
+      "attempt": "environment-drawer-actions-first",
+      "originalFailureIndex": 0,
+      "id": "env-drawer-native-suspended-continue-abandon",
+      "viewportWidth": 1440,
+      "sha256": "0b25a0d52829be1bf4339bbcf16b043a17364ef6af053643b0860e4bdcab4e33",
+      "kind": "original-boundary-refused-known-kernel-page25-query"
+    },
+    {
+      "attempt": "environment-drawer-actions-first",
+      "originalFailureIndex": 1,
+      "id": "env-drawer-native-suspended-notice-abandon",
+      "viewportWidth": 1440,
+      "sha256": "bb3fcb7a0435450c431113c715fbf1b3da0e0e6c8e0360340881eeec166c10ae",
+      "kind": "original-boundary-refused-known-kernel-page25-query"
+    },
+    {
+      "attempt": "environment-drawer-actions-first",
+      "originalFailureIndex": 2,
+      "id": "env-drawer-native-suspended-continue-abandon",
+      "viewportWidth": 1280,
+      "sha256": "e45cf5ef49e99a3004b05a9ca461d5122dc9d4ae880b2c8bafd96aca35a4e85c",
+      "kind": "original-boundary-refused-known-kernel-page25-query"
+    },
+    {
+      "attempt": "environment-drawer-actions-first",
+      "originalFailureIndex": 3,
+      "id": "env-drawer-native-suspended-notice-abandon",
+      "viewportWidth": 1280,
+      "sha256": "7ba3ce8c9a3b2efd1dbbc9300127a4bfd39d12da19534d865f304d13b546207e",
+      "kind": "original-boundary-refused-known-kernel-page25-query"
+    }
+  ],
+  "boundedForks": {
+    "cookie": {
+      "originalSha256": "0de2a981c54ae4ab6c12e775ac28b7506f1cd8ad3206888954f52346971681ef",
+      "executedLocatorForkSha256": "65b9da8dddb1de768f4b6894ee647b97dc16afc30a7197cf0ba92075916703a6",
+      "changes": "Three exact checkbox ancestor::tr observations plus explanatory comments; expected Unix秒1/expired/Secure None strings, IDs, requests, replies and budgets unchanged.",
+      "originalLines": [
+        457,
+        458,
+        459
+      ],
+      "forkLines": [
+        459,
+        460,
+        461
+      ]
+    },
+    "drawer": {
+      "originalSha256": "32cfe5db485cb62614281279c26bca17839c0f99953da315741f19fd54fe46af",
+      "executedRouteForkSha256": "dfb207ca3c30750bab2c38a3eb1a71f7c962ae52b07357c0eec6415443ad8d0c",
+      "variants": [
+        "pending-metadata",
+        "suspended"
+      ],
+      "extraKnownQuery": {
+        "page": 1,
+        "pageSize": 25,
+        "search": "",
+        "group": "",
+        "status": "all"
+      },
+      "knownQueryMaximum": 3,
+      "originalWorkspaceReadMaximumIncludingBootstrap": 10,
+      "otherMethodAndEffectLimitsUnchanged": true,
+      "expectedIdsAndStringsUnchanged": true,
+      "forkLines": [
+        198,
+        199,
+        200,
+        201
+      ]
+    },
+    "force": {
+      "originalUnexecutedSha256": "05f36e2e852ecb5261ff767127a8152b3c41c65422a8e23a233dc885056b0cc0",
+      "executedLabelForkSha256": "9488f054cf7e152a50edbea912080156d702c3bb0e1da77e6a12033ec440000c",
+      "existingStaticFinding": "F32-SRC-P2-1 remains historical on original source",
+      "change": "Revoked visible-label waiter only: 关闭 to 已打开, plus comments; no service/payload/budget/owner predicate change.",
+      "originalLine": 250,
+      "forkLine": 252,
+      "originalModuleExecuted": false,
+      "sourceFixReviewNotRuntimeProof": true
+    }
+  },
+  "forceContract": {
+    "publicRecordIndices": [
+      36,
+      37
+    ],
+    "originalAttempt": "environment-drawer-force-actions-first",
+    "originalRawRecordIndices": [
+      0,
+      1
+    ],
+    "target": {
+      "environmentId": "synthetic-reference-6",
+      "sessionId": "synthetic-session-6"
+    },
+    "rounds": [
+      {
+        "name": "cancel",
+        "candidate": "original eligible session",
+        "consent": "actual Cancel button",
+        "cumulativeForceDispatches": 0
+      },
+      {
+        "name": "stale",
+        "candidate": "absent; original session resource owner retained, not replaced",
+        "cumulativeForceDispatches": 0
+      },
+      {
+        "name": "revoked",
+        "candidate": "original session canForce=false",
+        "cumulativeForceDispatches": 0
+      },
+      {
+        "name": "reconcile",
+        "candidate": "original session needsReconcile=true",
+        "cumulativeForceDispatches": 0
+      },
+      {
+        "name": "positive",
+        "candidate": "exact original eligible session after fresh revalidation",
+        "cumulativeForceDispatches": 1
+      }
+    ],
+    "eachRoundActualDrawerUnderHighestWarning": true,
+    "eachRoundOriginalDraftControlsMaskFocusRetained": true,
+    "actualPreviewCountPerView": 5,
+    "actualCleanDiscardCountPerView": 4,
+    "onePreviewAcrossAllRoundsClaimed": false,
+    "actualCountsPerView": {
+      "Workspace.Read": 9,
+      "Environment.Preview": 5,
+      "Fingerprint.ListRevisions": 5,
+      "Preview.Discard": 4,
+      "Runtime.ForceStop": 1
+    },
+    "actualRawDispatchesPerView": 24,
+    "actualStockEntriesPerView": 18,
+    "actualSeparateInterceptionsPerView": 6,
+    "maximumNativeCallsPerView": 95,
+    "positiveRawEnvelope": {
+      "mode": "native",
+      "method": "Runtime.ForceStop",
+      "payloadKeys": [
+        "environmentId",
+        "sessionId",
+        "requestId"
+      ]
+    },
+    "positiveBoundToOriginalCandidateAndFifthPreview": true,
+    "positiveReply": "definite synthetic VALIDATION_FAILED refusal; dispatch only",
+    "successfulTerminationProved": false,
+    "activityEvidenceBorrowed": false,
+    "rowOnlyEvidenceBorrowed": false,
+    "replacementSessionCreated": false,
+    "unsupportedOrUnproven": [
+      "Direct drawer force control absent",
+      "Replacement-current-session variant",
+      "Cancel Escape path",
+      "Double confirm",
+      "Absent consent checkbox not invented",
+      "Real profile bytes",
+      "PID/Job/network/Go/process effects",
+      "Real Wails/UIA acceptance"
+    ]
+  },
+  "familyQualifications": {
+    "batch": [
+      "Actual selected-ID scope only; B03 all-plan/off-page consent unproven",
+      "Original request replay does not repeat modeled commit effect",
+      "Old page2 attempt retained; actual UI current-attempt handoff",
+      "B11 actual demo App runtime progress/cancel among8, saved2 running/1 failed/5 unexecuted each view; not old P24 or create-progress/native proof"
+    ],
+    "table": [
+      "Two natural stock bootstrap reads separately counted, not targeted interceptions",
+      "Mixed retry only original second ID with revision/proxy scope fixed",
+      "Exact original resource/session reconciliation; ForceStop0",
+      "Demo setter faults private-key-only, restored, and durable/runtime effects success-gated"
+    ],
+    "cookie": [
+      "CookieCommitImport draft exactly7 keys: previewId/environmentId/expectedRevision/sessionId/selectedRows/policy/requestId; no invented confirmClear or environment-patch wire field",
+      "Replace-all unknown request full exact replay, no second clear; new request/task merge row3 only",
+      "Row4 unknown excluded from narrowed retry; row5 never originally selected; replace-all row2 genuinely rewritten",
+      "Separate C14 merge has no clear and preserves already-matched row2 and original terminal report",
+      "Stock fingerprints/dataReferences absent and unchanged, not real profile/data preservation",
+      "Demo File.text and same-key write failure do not prove native file subwindow or invented file-read-error alert"
+    ],
+    "recycle": [
+      "R02 mount automatically reads; no invented independent idle-unread",
+      "R06 explicit30 remove targets do not establish cross-page restore/purge selection",
+      "R09 actual task created by Commit; historical Recycle.ReadPage and exact Operation.Cancel; Operation.Read0 remains unproven source clause",
+      "Protected recovery never releases protection on unknown result",
+      "R11 same actual confirmation, same two IDs, two exact-key write attempts/one saved success"
+    ],
+    "drawer": [
+      "Pending/locked metadata remains editable without identity regeneration or kernel install",
+      "Late preview response bound to genuinely discarded old owner",
+      "Same-build rollback creates revision4 restoredFrom1; incompatible history disabled",
+      "Demo partial25 actual saved distinct IDs and failed next slot, not native partial or quota",
+      "Created-open retry exact env-drawer-created-1, revision1, proxy policy, Create1/Start2, no new target/recreation/direct fallback",
+      "Persistence success only after qualifying confirmation for same created ID",
+      "Actual dirty-child/suspended parent ownership retained"
+    ]
+  },
+  "admissionHistory": {
+    "completedV1Attempts": [
+      "environment-batch-images-first",
+      "environment-batch-actions-first",
+      "environment-table-images-first",
+      "environment-table-actions-first"
+    ],
+    "v1VersionMarkerAbsentInOriginalManifestsAndNotRelabeled": true,
+    "v1OriginalStaticFindingsRetained": true,
+    "v2ArchivesCheckedBeforeManifest": true,
+    "v2EarlierPairFailuresRetainedOnGlobalRefusal": true,
+    "consumerRefusalAlwaysOverridesExistingManifest": true,
+    "consumerAnchors": [
+      "publish-environment-actions.mjs:11",
+      "combine-environment-image-attempts.mjs:14",
+      "stage-reviewed-environment-packet.mjs:14"
+    ],
+    "savedGlobalArtifactsAmong14Attempts": 0,
+    "globalAbortDynamicallyExercisedByThisReviewer": false,
+    "newGlobalArtifactsManufactured": 0,
+    "originalAuthoredNotExecutedAndPendingReviewStringsRetained": true,
+    "executionAttributedTo": "MAIN, not original author or reviewer"
+  },
+  "recycleErratum": {
+    "finding": "DOC-01, nonblocking original author-plan GOAL hash typo",
+    "originalJsonLocation": "environment-recycle-gap-plan.json:297",
+    "originalMarkdownLocation": "environment-recycle-gap-plan.md:130",
+    "originalMistypedHash": "a7362342152e57c07f950a970c3bb005bc0eea33902adeeefc1b866ea8bb7988",
+    "appendOnlyCorrectHash": "a7362342152e57c07f950a970c3bb005bc0eea33902aedeefc1b866ea8bb7988",
+    "originalPlanOrModuleEdited": false,
+    "sourceReviewAndErratumRetainedSeparately": true
+  },
+  "archiveScope": {
+    "exactInputBindings": 145,
+    "distinctExecutedByteIdentities": 32,
+    "centralCopiesVerified": 39,
+    "archives": [
+      {
+        "path": "environment-executed-tools-baseline/manifest.json",
+        "sha256": "0b8e120289ae65da1630f74c13337d6baf7468f9cb092b9064089b3265b43982",
+        "bytes": 82570,
+        "attempts": 13,
+        "bindings": 135,
+        "distinctByteIdentities": 29
+      },
+      {
+        "path": "environment-executed-tools-force/manifest.json",
+        "sha256": "72d4fabc9861181203eeacc87f305258eeec1f4ac9e0bbea6594c6f8272f333d",
+        "bytes": 4124,
+        "attempts": 1,
+        "bindings": 10,
+        "distinctByteIdentities": 10
+      }
+    ]
+  },
+  "independentFinalReadOnlyVerification": {
+    "checks": 550,
+    "mismatches": 0,
+    "publicInputHashUnchanged": true,
+    "originalManifestHashesUnchanged": 14,
+    "originalFrozenInputHashesUnchanged": 14,
+    "distinctExecutedInputIdentitiesUnchanged": 32,
+    "centralArchiveCopiesUnchanged": 39,
+    "canonicalFrozenSourceFilesUnchanged": 79,
+    "originalPngFilesUnchanged": 184,
+    "historicalAuxiliaryInputsUnchanged": 13,
+    "reportCaseIndicesMapsCountersAndSignaturesReconciled": true,
+    "reportSelfHashesNotEmbeddedRecursively": true,
+    "onlyReportMetadataAddedAfterThisFullReconciliation": true
+  },
+  "retainedAcceptance": {
+    "old274": {
+      "COVERED": 113,
+      "PARTIAL": 60,
+      "MISSING": 101
+    },
+    "old600Fix32Context22Routes2LayersReaudited": false,
+    "historicalFailMissingGuideLimitsUnchanged": true,
+    "remaining47QualificationsUnchanged": true,
+    "formalDesktopCount": "4/21",
+    "wholeCellPassesAdded": 0,
+    "strictVisualPass": false,
+    "realDesktopAcceptance": false,
+    "fullSecurityAudit": false,
+    "rawPathsAndAnyRealCredentialHashesForPublicPublication": false,
+    "sourceLimitsAreQualificationsNotNewMandatoryPhotosOrImplementationTasks": true
+  },
+  "strictVisualPass": false,
+  "realDesktopAcceptance": false,
+  "wholeCellPassesAdded": 0,
+  "scope": "38 saved standalone actions and 66 image-owned callbacks match the frozen original records in this independently reviewed bounded scope. Eight historical failures and all original not-reviewed/authoring fields remain exact. This is not pixel, current-HEAD, full-security, successful native termination or desktop acceptance."
+}

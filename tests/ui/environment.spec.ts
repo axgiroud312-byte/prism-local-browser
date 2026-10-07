@@ -30,11 +30,10 @@ async function denyWritesAfter(page: Page, allowed: number) {
     };
   }, allowed);
 }
-async function advanced(page: Page) {
-  const details = page.getByRole("dialog").locator("details").first();
-  if (await details.getAttribute("open") === null) await details.locator(":scope > summary").click();
-}
-test.beforeEach(async ({ page }) => {
+test.beforeEach(async ({ page, baseURL }) => {
+  const origin = new URL(baseURL!).origin;
+  await page.route("**/*", route => new URL(route.request().url()).origin === origin ? route.continue() : route.abort("blockedbyclient"));
+  await page.routeWebSocket("**/*", socket => socket.close());
   const initial = seedState();
   initial.environments.forEach(e => { e.status = "ready"; });
   await page.goto("/#/environments");
@@ -75,8 +74,8 @@ test("cancel regenerated edit leaves persistent state unchanged and restores foc
   const seed = await page.getByLabel("固定指纹种子").inputValue();
   await page.getByRole("button", { name: "换一套", exact: true }).click();
   await expect(page.getByLabel("固定指纹种子")).not.toHaveValue(seed);
-  page.once("dialog", dialog => dialog.accept());
   await page.keyboard.press("Escape");
+  await page.getByRole("alertdialog", { name: "放弃未保存修改？", exact: true }).getByRole("button", { name: "放弃修改", exact: true }).click();
   await expect(page.getByRole("dialog")).toHaveCount(0);
   expect(await stored(page)).toEqual(before);
   await page.reload();
@@ -95,7 +94,7 @@ test("invalid and duplicate names, URL and quantity are rejected without saving"
   await page.getByRole("button", { name: "创建", exact: true }).click();
   await expect(page.getByRole("alert")).toContainText("同名");
   await page.getByLabel("环境名称", { exact: true }).fill("校验样本");
-  await advanced(page);
+  await expect(page.getByRole("region", { name: "基础设置", exact: true }).getByLabel("创建数量")).toBeVisible();
   await page.getByLabel("创建数量").fill("0");
   await page.getByRole("button", { name: "创建", exact: true }).click();
   await expect(page.getByRole("alert")).toContainText("正整数");
@@ -152,11 +151,14 @@ test("compatibility snapshot and Cookie writes preserve inputs and never overrid
   await page.goto("/#/backups");
   await denyWrites(page);
   await page.getByRole("button", { name: "创建快照", exact: true }).first().click();
+  const createSnapshot = page.getByRole("dialog", { name: "创建演示快照", exact: true });
+  await createSnapshot.getByRole("button", { name: "创建快照", exact: true }).click();
   await expect(page.locator(".toast-error")).toContainText("未保存");
   expect((await stored(page)).backups).toHaveLength(0);
   await expect(page.getByText("原型快照已保存到当前浏览器", { exact: true })).toHaveCount(0);
   await restoreWrites(page);
-  await page.getByRole("button", { name: "创建快照", exact: true }).first().click();
+  await createSnapshot.getByRole("button", { name: "创建快照", exact: true }).click();
+  await expect(createSnapshot).toHaveCount(0);
   expect((await stored(page)).backups).toHaveLength(1);
   await page.goto("/#/environments");
   await page.getByRole("button", { name: "北美主店 更多操作", exact: true }).click();
@@ -200,7 +202,7 @@ test("a second tab blocks the stale editor without overwriting the newer workspa
 test("a large create batch can be cancelled and reopening retains only completed items", async ({ page }) => {
   await page.getByRole("button", { name: "新建环境", exact: true }).click();
   await page.getByLabel("环境名称", { exact: true }).fill("批次取消");
-  await advanced(page);
+  await expect(page.getByRole("region", { name: "基础设置", exact: true }).getByLabel("创建数量")).toBeVisible();
   await page.getByLabel("创建数量").fill("1000");
   await page.getByRole("button", { name: "创建 1000 个环境", exact: true }).click();
   await page.getByRole("button", { name: "取消余下任务", exact: true }).click();
@@ -277,6 +279,9 @@ test("proxy import returns to the unchanged environment draft", async ({ page })
   await page.getByRole("button", { name: "新建环境", exact: true }).click();
   await page.getByLabel("环境名称", { exact: true }).fill("代理往返草稿");
   await page.getByLabel("分组", { exact: true }).fill("合成往返分组");
+  await page.getByLabel("备注", { exact: true }).fill("代理往返仍保留的备注");
+  await page.getByLabel("创建数量").fill("2");
+  await page.getByLabel("启动网址").fill("https://example.invalid/retained-draft");
   const seed = await page.getByLabel("固定指纹种子").inputValue();
   const kernel = await page.getByLabel("浏览器内核").inputValue();
   await page.getByRole("button", { name: "导入代理", exact: true }).click();
@@ -284,23 +289,27 @@ test("proxy import returns to the unchanged environment draft", async ({ page })
   await expect(page.getByRole("dialog", { name: "新建浏览器环境" })).toBeVisible();
   await expect(page.getByLabel("环境名称", { exact: true })).toHaveValue("代理往返草稿");
   await page.getByRole("button", { name: "导入代理", exact: true }).click();
-  await page.getByLabel("代理文本").fill("socks5://192.0.2.99:1080");
+  await page.getByLabel("原始代理导入文本").fill("socks5://192.0.2.99:1080");
   await page.getByRole("button", { name: "解析预览", exact: true }).click();
   await denyWrites(page);
-  await page.getByRole("button", { name: /导入 1 个代理/ }).click();
-  await expect(page.locator(".toast-error")).toContainText("未保存");
-  await expect(page.getByLabel("代理文本")).toHaveValue("socks5://192.0.2.99:1080");
+  await page.getByRole("button", { name: "保存所选有效行", exact: true }).click();
+  await expect(page.getByRole("dialog", { name: "批量添加代理", exact: true }).getByRole("status")).toContainText("未保存");
+  await expect(page.getByLabel("原始代理导入文本")).toHaveValue("socks5://192.0.2.99:1080");
   expect((await stored(page)).proxies.some(p => p.host === "192.0.2.99")).toBe(false);
   await restoreWrites(page);
-  await page.getByRole("button", { name: /导入 1 个代理/ }).click();
+  await page.getByRole("button", { name: "保存所选有效行", exact: true }).click();
   await expect(page.getByRole("dialog", { name: "新建浏览器环境" })).toBeVisible();
   await expect(page.getByLabel("环境名称", { exact: true })).toHaveValue("代理往返草稿");
   await expect(page.getByLabel("分组", { exact: true })).toHaveValue("合成往返分组");
+  await expect(page.getByLabel("备注", { exact: true })).toHaveValue("代理往返仍保留的备注");
+  await expect(page.getByLabel("创建数量")).toHaveValue("2");
+  await expect(page.getByLabel("启动网址")).toHaveValue("https://example.invalid/retained-draft");
   await expect(page.getByLabel("固定指纹种子")).toHaveValue(seed);
   await expect(page.getByLabel("浏览器内核")).toHaveValue(kernel);
   await expect(page.getByRole("button", { name: "导入代理", exact: true })).toBeFocused();
   const imported = (await stored(page)).proxies.find(p => p.host === "192.0.2.99")!;
   await page.getByLabel("绑定代理").selectOption(imported.id);
+  await page.getByLabel("创建数量").fill("1");
   await page.getByRole("button", { name: "创建", exact: true }).click();
   await expect.poll(async () => (await stored(page)).environments.find(e => e.name === "代理往返草稿")?.proxyId).toBe(imported.id);
 });

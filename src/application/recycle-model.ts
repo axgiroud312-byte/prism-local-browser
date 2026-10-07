@@ -12,9 +12,12 @@ export function confirmsRecycleRequest(op: Operation, request: NativeRecycleRequ
   return !!request && op.kind === "recycle" && !invalidRecycleOperation(op) && op.stage !== "acceptance-pending" && op.recycleReport?.requestId === request.requestId && op.recycleReport.previewId === request.previewId;
 }
 export function validRecyclePage(page: NativeRecyclePage, request?: NativeRecyclePageRequest): boolean {
-  if (page.mode !== "native" || ![page.offset, page.pageSize, page.total].every(n => Number.isSafeInteger(n) && n >= 0) || page.pageSize < 1 || page.pageSize > 100 || !Array.isArray(page.items) || page.items.length > page.pageSize || page.offset + page.items.length > page.total) return false;
-  if (request && (page.offset !== request.offset || page.pageSize !== request.pageSize || request.previewId && page.preview?.previewId !== request.previewId || request.operationId && page.operation?.id !== request.operationId)) return false;
-  if (page.items.some(item => !item.id || !item.environmentId || typeof item.name !== "string" || typeof item.seed !== "string" || typeof item.dataPresent !== "boolean" || typeof item.backupRecorded !== "boolean" || !Number.isSafeInteger(item.revision) || item.revision < 1 || !["pending", "recycled", "restored", "purged", "failed", "protected"].includes(item.state))) return false;
+  if (!page || typeof page !== "object" || page.mode !== "native" || ![page.offset, page.pageSize, page.total].every(n => Number.isSafeInteger(n) && n >= 0) || page.pageSize < 1 || page.pageSize > 100 || !Array.isArray(page.items) || page.offset > page.total || page.items.length !== Math.min(page.pageSize, page.total - page.offset)) return false;
+  // ReadPage returns exactly one view: the live list, a preview, or a frozen
+  // operation. A short page or an unrelated view must not hide unexecuted items.
+  if (page.preview && page.operation) return false;
+  if (request && (page.offset !== request.offset || page.pageSize !== request.pageSize || (page.preview?.previewId ?? "") !== (request.previewId ?? "") || (page.operation?.id ?? "") !== (request.operationId ?? ""))) return false;
+  if (new Set(page.items.map(item => item?.id)).size !== page.items.length || page.items.some(item => !item || !item.id || !item.environmentId || typeof item.name !== "string" || typeof item.seed !== "string" || typeof item.kernelId !== "string" || !item.kernelId || typeof item.dataPresent !== "boolean" || typeof item.backupRecorded !== "boolean" || !Number.isSafeInteger(item.revision) || item.revision < 1 || !["pending", "recycled", "restored", "purged", "failed", "protected"].includes(item.state))) return false;
   if (page.preview && (page.preview.mode !== "native" || !page.preview.previewId || !["remove", "restore", "purge"].includes(page.preview.action) || page.preview.total !== page.total || ![page.preview.dataCount, page.preview.backupCount].every(n => Number.isSafeInteger(n) && n >= 0 && n <= page.total))) return false;
-  return !page.operation || page.operation.kind === "recycle" && !invalidRecycleOperation(page.operation);
+  return !page.operation || page.operation.kind === "recycle" && page.operation.total === page.total && !invalidRecycleOperation(page.operation);
 }

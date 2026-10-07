@@ -1,0 +1,228 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-07",
+  "kind": "public-independent-bounded-post-publication-byte-audit-not-full-acceptance",
+  "verdict": "SCOPED_PUBLISHED_BYTES_MATCH",
+  "reviewer": "ses_eebed8878ffexoSZeDCX6Eomia",
+  "credibleP1": 0,
+  "credibleP2": 0,
+  "publicationSourceHead": "4a2afbf053352760dddbdb7baa24a368c659878f",
+  "gitHeadAtAudit": "4a2afbf053352760dddbdb7baa24a368c659878f",
+  "approvalSHA256": "a5b5e135c061e6e2576c43f3620dfedde0d6d552a54655ac7a6f69d4e2a3c3f5",
+  "publishReceiptSHA256": "64886e1f4d1e10f54c2b80c9c0b0796930eac92cdb02d8b10cb6461b303ca04a",
+  "invocationSHA256": "5bc787cd90aa81c8915911066c11e7c1cd65957fb673ed69245fa8d3192cfa45",
+  "producerSHA256": "b83723223eda5451fd932f7c68808ff37c788d11e5663c5b33318d6b22c8d2ce",
+  "newhistoryGuardSHA256": "bd82f7fee3fbcdbde0e8b69da848bedab2aa3cf32e13789907b82456d5d20c4c",
+  "approvedFilesArraySHA256": "1d34171ca8fcc9d420528ba34c5f69cbe9ad5bddc9635b3b1ae6857b1e917c75",
+  "publishedFilesArraySHA256": "31052f3f5033154cf2f38bbc65afed35741b25a8c8ac44f1ca6de860f12c136c",
+  "publishedFilesArrayHashEncoding": "SHA-256 of compact UTF-8 JSON.stringify(files), in the recorded array/property order, without a trailing newline",
+  "actualPublishedFiles": 23,
+  "aggregatePublishedBytes": 1428215,
+  "all23ActualPublishedHashesAndLengthsMatchApprovalAndReceipt": true,
+  "actualInvocationGateBindingsMatch": true,
+  "files": [
+    {
+      "targetRelative": "docs/screenshots/issue37-recovery-layout/toolbar-before-1024x720-normal.png",
+      "sha256": "18b3ffcb176fe87b4c0d891a13c3d02f261d711828d5f945de3a55c6f7bfd2c7",
+      "bytes": 69511
+    },
+    {
+      "targetRelative": "docs/screenshots/issue37-recovery-layout/toolbar-before-1024x720-selected.png",
+      "sha256": "37a29a58698f0f1417bef11d51b28cf68fd79d6f5e5df6225590dbee5dc4e117",
+      "bytes": 71166
+    },
+    {
+      "targetRelative": "docs/screenshots/issue37-recovery-layout/toolbar-before-900x720-normal.png",
+      "sha256": "e641da91a9b7dca0230bf93ccc80b455c7b32931729bc77a7354e81d81781543",
+      "bytes": 64971
+    },
+    {
+      "targetRelative": "docs/screenshots/issue37-recovery-layout/toolbar-before-900x720-selected.png",
+      "sha256": "a791e3033ccb809ecadd6750705dcdd63d21553751dc53775c7969c13632935e",
+      "bytes": 65669
+    },
+    {
+      "targetRelative": "docs/screenshots/issue37-recovery-layout/toolbar-after-1024x720-normal.png",
+      "sha256": "9335a21c6f967d5cd2053120c6a44fd2d7ebbd04dd27ac6814a3eb38b5702b3e",
+      "bytes": 65627
+    },
+    {
+      "targetRelative": "docs/screenshots/issue37-recovery-layout/toolbar-after-1024x720-selected.png",
+      "sha256": "b8413f4fff670013abb0017f056ce2396624fc912162af6396083998092c2ed2",
+      "bytes": 68525
+    },
+    {
+      "targetRelative": "docs/screenshots/issue37-recovery-layout/toolbar-after-900x720-normal.png",
+      "sha256": "1e3df08bf931395ccb22c5211515497ad1c04af30cda6c9ae34a7b932347c6f4",
+      "bytes": 62727
+    },
+    {
+      "targetRelative": "docs/screenshots/issue37-recovery-layout/toolbar-after-900x720-selected.png",
+      "sha256": "854b0a32cb332f0d07cc5dd712cda975e007c920c314d431ceb14bce794c703e",
+      "bytes": 65693
+    },
+    {
+      "targetRelative": "docs/screenshots/issue37-recovery-layout/title-before-1440x900-details.png",
+      "sha256": "a68f7193f2d72b955d27f14d2fcb969916c33e3148361af31f4bc70bf8a48d08",
+      "bytes": 67733
+    },
+    {
+      "targetRelative": "docs/screenshots/issue37-recovery-layout/title-before-1440x900-usage.png",
+      "sha256": "b06cb389ac306574fcabe8d18cbdbecb02ed73853ec29ef6a7abc02db38380e8",
+      "bytes": 63306
+    },
+    {
+      "targetRelative": "docs/screenshots/issue37-recovery-layout/title-before-1280x800-details.png",
+      "sha256": "c80624cfa9713b5a211c7a24b09fffcb6fc75738bb404aeacea33baf6e76bb21",
+      "bytes": 67118
+    },
+    {
+      "targetRelative": "docs/screenshots/issue37-recovery-layout/title-before-1280x800-usage.png",
+      "sha256": "01d40aac7d95856ec635aec2f2495c6bd418d0d8050eeb54cfd56b640b008dc3",
+      "bytes": 58806
+    },
+    {
+      "targetRelative": "docs/screenshots/issue37-recovery-layout/title-after-1440x900-details.png",
+      "sha256": "3b29e6ec868f2764b78da46c5112368510f47aacb0414dfde2e360427551ecfb",
+      "bytes": 65976
+    },
+    {
+      "targetRelative": "docs/screenshots/issue37-recovery-layout/title-after-1440x900-usage.png",
+      "sha256": "7f89c00000cfa0fa50f400965ab9d42a85febc1cd57cc1de3b357a6f365b9572",
+      "bytes": 62193
+    },
+    {
+      "targetRelative": "docs/screenshots/issue37-recovery-layout/title-after-1280x800-details.png",
+      "sha256": "3e9e0cd05d8c7f6195e00cde3947660ccf53924e69d0a26a4c52b6cefebf2779",
+      "bytes": 64402
+    },
+    {
+      "targetRelative": "docs/screenshots/issue37-recovery-layout/title-after-1280x800-usage.png",
+      "sha256": "5f32bc9722996f6c63c80d0b8b44bd635e7f500a96bf28e2e653b7c44851291e",
+      "bytes": 58036
+    },
+    {
+      "targetRelative": "docs/screenshots/issue37-recovery-layout/preview-after-1440x900-preview-error-footer.png",
+      "sha256": "0a05b05c67ca493de53f91ad318ec94422ef482e60f0a16d014068c5c06137cc",
+      "bytes": 122477
+    },
+    {
+      "targetRelative": "docs/screenshots/issue37-recovery-layout/preview-after-1280x800-preview-error-footer.png",
+      "sha256": "dfefd895b8ef4c07e7f11036411c5021c927394a4d50d4b370424ca7658903be",
+      "bytes": 90100
+    },
+    {
+      "targetRelative": "docs/screenshots/issue37-recovery-layout/manifest.json",
+      "sha256": "548a15ca348a9b2db984f9279a6cbde3382d74826d3c6c3a17230ac24564ff36",
+      "bytes": 136928
+    },
+    {
+      "targetRelative": "docs/screenshots/issue37-recovery-layout/visual-review.json",
+      "sha256": "35618628e4cdcff9415d012f78fe9ccffdc05a4b0234be8a65719b22cead7398",
+      "bytes": 12155
+    },
+    {
+      "targetRelative": "docs/screenshots/issue37-recovery-layout/index.html",
+      "sha256": "d21951c385feb5eb55f67eca5a84ba15e3f20d8511fdae7571ee1db39b115cdb",
+      "bytes": 6383
+    },
+    {
+      "targetRelative": "docs/verification/issue37-recovery-and-layout-code.json",
+      "sha256": "0b5cd1d5afc570e4e5d82b33130f239c365508f28c544196d32b33143d6fe715",
+      "bytes": 12544
+    },
+    {
+      "targetRelative": "docs/verification/issue37-recovery-and-layout.md",
+      "sha256": "6ad2f69401eb9893aa83a5477f8cdddc220b8ca7865c439613df3728d8070766",
+      "bytes": 6169
+    }
+  ],
+  "rendererIdentity": {
+    "sourceHead": "4a2afbf053352760dddbdb7baa24a368c659878f",
+    "manifestSHA256": "c354986a3350a27e4f369d8590b7fc6de0e28aa5b617d586db061fbebe18b404",
+    "inputCount": 77,
+    "currentInputsMatched": 77,
+    "frozenInputsMatched": 77,
+    "trackedSelectorSetUnchanged": true,
+    "currentAndFrozenMapSHA256": "938e6d2a12861bdb5a0efee0d716b4bdf62af88cb098c42a6132453e93e81d52",
+    "mapIndependentlyRecomputed": true,
+    "normalViteOnly": true,
+    "nativeTransformHarnessIncluded": false,
+    "testOrRenderSourceRetokened": false
+  },
+  "textOnlyHistory": {
+    "textFilesMatched": 142,
+    "extensionCounts": { "html": 23, "json": 80, "md": 39 },
+    "hashOrLengthMismatches": 0,
+    "privateComparisonItems": 1300,
+    "privateComparisonBytes": 1871404,
+    "privateComparisonSHA256": "2eccc75951b52233d6252b6a8275d54e94aed3345761c47a5f32523f6c45049c",
+    "privateIndexHashAndLengthMatch": true,
+    "privateIndexContentsPublished": false,
+    "historicalPixelOrReferenceAuditRepeated": false
+  },
+  "retainedPriorP2": {
+    "priorMixedGuardEntries": 251,
+    "priorBaselinePNGHashesRecorded": 109,
+    "priorPNGHashesUnderVerification": 109,
+    "priorPNGHashesUnderOld906Gallery": 0,
+    "priorGuardZeroPNGReadClaimAccepted": false,
+    "oldGuardAndPublisherRemainRejected": true,
+    "priorPNGHashesRescannedByThisAudit": false,
+    "entireRoundZeroOldPNGReadClaim": false
+  },
+  "currentPublicationBoundary": {
+    "syntheticPNGByteIdentitiesMatched": 18,
+    "pixelReviewRepeated": false,
+    "currentPublicationOldPNGByteReads": 0,
+    "originalImagesPublished": 0,
+    "realNativeOperations": 0,
+    "boundaryEvidence": "Bound text-only publisher, actual invocation/receipt identities, and independently checked published bytes; not low-level system I/O or real-desktop instrumentation",
+    "old109PNGByteReadsByThisAudit": 0,
+    "old906GalleryPNGReadsByThisAudit": 0,
+    "publishedVisualDecisionsReclassified": false,
+    "reviewerProductPublicOrRemoteWrites": 0
+  },
+  "worktreeScope": {
+    "expectedDocumentationEdits": [
+      ".gitattributes",
+      "README.md",
+      "docs/ACCEPTANCE.md",
+      "docs/TRACEABILITY.md",
+      "docs/UI_REFERENCE.md"
+    ],
+    "approvedGeneratedArtifactPathsObserved": 23,
+    "unexpectedChangedPaths": 0,
+    "productSourceChangesObserved": 0,
+    "documentationBodiesReviewed": false,
+    "wholeCheckoutCleanClaimed": false
+  },
+  "preservedWorkflowState": {
+    "issues": [32, 33, 34, 35, 36, 37],
+    "issueState": "OPEN",
+    "pullRequest": 38,
+    "pullRequestState": "DRAFT",
+    "independentRemoteStateQueryPerformed": false,
+    "issueOrPullRequestStateChangedByReviewer": false
+  },
+  "acceptanceLimits": {
+    "wholeGoalPass": false,
+    "strictFullProductOneToOne": false,
+    "realDesktopAcceptanceAdded": false,
+    "wholeCellPassesAdded": 0,
+    "formalDesktopAcceptance": "4/21",
+    "testsTypechecksOrBuildsExecutedByReviewer": 0,
+    "browserGetOrNativeActionsByReviewer": 0
+  },
+  "limits": [
+    "This is a byte/data audit of the exact 23 generated repair artifacts, not a new pixel, behavior, source-combination, original-reference or whole-product review. This metadata projection is separate from that 23-file set.",
+    "Only the current text-only publication has zero old-PNG byte reads. The rejected prior guard recorded 109 baseline PNG hashes under docs/verification and had a false zero-PNG-read claim; that history remains qualified, not rewritten.",
+    "All published visual decisions and historical FAIL/MISSING layers retain their original bytes and scope; no old verdict or denominator is reclassified here.",
+    "At 900px, rightmost table row actions remain outside the initial horizontal viewport and are not certified repaired. Existing new toolbar tests scroll right and check Open plus fixed pagination, not every uncaptured row action.",
+    "The 77-input normal-Vite identity remains tied to source 4a2afbf; expected documentation/LF/link updates do not replace the original test or image source, and document contents are outside this audit.",
+    "The 142 historical text hashes and 1300-item private index hash are checked as metadata only. No old 109 PNG bytes, old 906-image gallery pixels or original images are rescanned; no private index contents are published.",
+    "The six OPEN issues and DRAFT PR are preserved task/documentation state, not a newly queried remote status. No status change or push is performed by this reviewer.",
+    "No test, noEmit, check suite, build, browser, GET, native operation, cleanup, source edit or product/public write was performed by this reviewer. The original 40-case/noEmit evidence is not rerun or retokened.",
+    "No strict 1:1, whole-goal, real-native, Windows-desktop or whole-cell acceptance is added. The complete original guide/reference gaps remain; formal acceptance is still 4/21."
+  ]
+}

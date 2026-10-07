@@ -9,7 +9,7 @@
     "build": "tsc -b && vite build",
     "build:desktop": "tsc -b && vite build --mode desktop",
     "preview": "vite preview --host 127.0.0.1",
-    "test": "node --experimental-strip-types --test tests/domain.test.ts tests/application.test.ts tests/wails-adapter.test.ts",
+    "test": "node --experimental-strip-types --test tests/domain.test.ts tests/application.test.ts tests/wails-adapter.test.ts tests/restore-source-owner.test.ts",
     "typecheck": "tsc -b && tsc -p tsconfig.tests.json",
     "test:ui": "playwright test",
     "check:docs": "node scripts/check-docs.mjs",

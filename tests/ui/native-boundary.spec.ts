@@ -3,6 +3,12 @@ import { seedState, type Environment } from "../../src/domain.ts";
 import type { DeviceProfile, EnvironmentPreview, Operation, RuntimeSession, WorkspaceView } from "../../src/application/contract.ts";
 import type { NativeRequest } from "../../src/application/wails-adapter.ts";
 
+test.beforeEach(async ({ page, baseURL }) => {
+  const origin = new URL(baseURL!).origin;
+  await page.route("**/*", route => new URL(route.request().url()).origin === origin ? route.continue() : route.abort("blockedbyclient"));
+  await page.routeWebSocket("**/*", socket => socket.close());
+});
+
 // This bridge is deliberately synthetic. It checks UI -> existing WailsAdapter
 // requests, not Windows processes, SQLite, installed kernels or proxy traffic.
 async function environmentBridge(page: Page, options: { failStart?: boolean; noKernels?: boolean } = {}) {
@@ -102,6 +108,15 @@ async function environmentBridge(page: Page, options: { failStart?: boolean; noK
 }
 
 const nativeView = (page: Page) => page.evaluate(() => (window as unknown as { __nativeUI: { calls: NativeRequest[]; view: WorkspaceView } }).__nativeUI);
+
+async function installKernel(page: Page) {
+  const progress = page.getByRole("dialog", { name: "内核任务", exact: true });
+  if (await progress.isVisible()) await progress.getByRole("button", { name: "关闭", exact: true }).click();
+  await page.getByRole("button", { name: "准备精确内核", exact: true }).click();
+  await page.getByLabel("精确发行版本").fill("148.0.7778.215");
+  await page.getByLabel("预期归档 SHA-256").fill("a".repeat(64));
+  await page.getByRole("button", { name: "安装并核验", exact: true }).click();
+}
 
 test("injected native bridge creates once, retries failed opening and preserves identity through save and reload", async ({ page }) => {
   await environmentBridge(page, { failStart: true });
@@ -208,7 +223,7 @@ test("injected native invalid quantities keep the draft editable without submitt
   await page.getByRole("button", { name: "新建环境", exact: true }).click();
   await page.getByLabel("环境名称", { exact: true }).fill("数量恢复合成样本");
   const editor = page.getByRole("dialog", { name: "新建浏览器环境" });
-  await editor.locator("details").first().locator(":scope > summary").click();
+  await expect(editor.getByRole("region", { name: "基础设置", exact: true }).getByLabel("创建数量")).toBeVisible();
   for (const invalid of ["0", "-1", "", "0.5", "1.5", "9007199254740992"]) {
     await page.getByLabel("创建数量").fill(invalid);
     await editor.getByRole("button", { name: Number(invalid) > 1 ? `查看 ${Number(invalid)} 项创建计划` : "创建", exact: true }).click();
@@ -253,12 +268,12 @@ test("late cancellation of an old kernel task cannot overwrite the next task", a
     } } } } });
   });
   await page.goto("/#/kernels");
-  await page.getByRole("button", { name: "安装并核验", exact: true }).click();
+  await installKernel(page);
   await expect(page.getByText("synthetic-task-1", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "取消此任务" }).click();
   await page.evaluate(() => (window as unknown as { __endOldKernel: () => void }).__endOldKernel());
   await expect(page.getByRole("button", { name: "取消此任务" })).toHaveCount(0);
-  await page.getByRole("button", { name: "安装并核验", exact: true }).click();
+  await installKernel(page);
   await expect(page.getByText("synthetic-task-2", { exact: true })).toBeVisible();
   await page.evaluate(() => (window as unknown as { __releaseOldCancel: () => void }).__releaseOldCancel());
   await expect(page.getByText("synthetic-task-1", { exact: true })).toHaveCount(0);
@@ -283,14 +298,15 @@ test("native kernel page waits for terminal service status and presents exact ev
   });
   await page.goto("/#/kernels");
   await expect(page.getByRole("heading", { name: "还没有已登记的真实内核" })).toBeVisible();
-  await page.getByRole("button", { name: "安装并核验", exact: true }).click();
+  await installKernel(page);
   await expect(page.getByText("任务：隔离探测实际身份和参数")).toBeVisible();
   await expect(page.getByText("真实诊断已核验", { exact: true })).toHaveCount(0);
   await page.evaluate(() => (window as unknown as { __finishKernelTask: () => void }).__finishKernelTask());
+  await page.getByRole("dialog", { name: "内核任务", exact: true }).getByRole("button", { name: "关闭", exact: true }).click();
   await expect(page.getByText("真实诊断已核验", { exact: true })).toBeVisible();
   await expect(page.getByText("synthetic-exact-id", { exact: true })).toBeVisible();
-  await expect(page.getByRole("button", { name: "移除此构建" })).toBeDisabled();
-  await page.getByText("查看该版本能力与实测读值").click();
+  await expect(page.getByRole("button", { name: /^移除此构建/ })).toBeDisabled();
+  await page.getByRole("button", { name: "能力详情", exact: true }).click();
   await expect(page.getByText("未验证 · 不开放编辑", { exact: true })).toBeVisible();
   await page.setViewportSize({ width: 820, height: 900 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
