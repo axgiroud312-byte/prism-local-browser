@@ -196,14 +196,14 @@ func (c *faultableRuntimeChannel) trip(code string) {
 	}
 }
 
-func TestProductionProxyStartGateCreatesNeitherBridgeNorBrowserAndPreservesIdentity(t *testing.T) {
+func TestMissingProxyChannelOwnerBlocksStartAndPreservesIdentity(t *testing.T) {
 	var factories, decodes atomic.Int32
 	s, root, kernelID := fingerprintFixture(t, Options{OpenProxyChannel: func(proxy.Configuration, *proxy.Credentials, proxy.BridgeOptions) (RuntimeProxyChannel, error) {
 		factories.Add(1)
-		return nil, errors.New("must not reach bridge before protection")
+		return nil, errors.New("must not reach bridge without its owner")
 	}})
 	record := importProxyFixture(t, s, "socks5://synthetic-user:synthetic-pass@localhost:1080")
-	environment := createRuntimeEnvironment(t, s, kernelID, "合成缺失隔离阻断")
+	environment := createRuntimeEnvironment(t, s, kernelID, "合成缺失代理通道阻断")
 	bindRuntimeProxyFixture(t, s, environment, record)
 	before := view(t, s)
 	store := s.networkStore
@@ -211,21 +211,21 @@ func TestProductionProxyStartGateCreatesNeitherBridgeNorBrowserAndPreservesIdent
 	s.networkStore = nil // Exercise missing provider rather than assuming all proxy starts fail.
 	s.options.UnprotectProxySecret = func(string, []byte) ([]byte, error) {
 		decodes.Add(1)
-		return nil, errors.New("must not decode before protection")
+		return nil, errors.New("must not decode without its owner")
 	}
 	request := runtimeRequest{EnvironmentID: environment.ID, RequestID: id(), NetworkPolicy: "proxy"}
 	operation := acceptRuntimeTest(t, s, "Runtime.Start", request)
 	final := waitKernel(t, s, operation.ID)
 	after := view(t, s)
 	session := after.RuntimeSessions[environment.ID]
-	if final.Error == nil || final.Error.Code != "NETWORK_PROTECTION_UNAVAILABLE" || final.Error.Retryable || session.PID != 0 || session.NetworkFault == nil || session.NetworkFault.State != "network_error" || session.ProxyReport != nil || factories.Load() != 0 || decodes.Load() != 0 {
-		t.Fatal("missing system protection performed network/native work or reported ready")
+	if final.Error == nil || final.Error.Code != "PROXY_BRIDGE_UNAVAILABLE" || !final.Error.Retryable || session.PID != 0 || session.NetworkFault == nil || session.NetworkFault.State != "network_error" || session.ProxyReport != nil || factories.Load() != 0 || decodes.Load() != 0 {
+		t.Fatal("missing channel owner performed network/native work or reported ready")
 	}
 	if replay := acceptRuntimeTest(t, s, "Runtime.Start", request); replay.ID != operation.ID || factories.Load() != 0 {
 		t.Fatal("retry bypassed gate or changed accepted request identity")
 	}
 	if after.Fingerprints[environment.ID].Profile.ConfigHash != before.Fingerprints[environment.ID].Profile.ConfigHash || after.DataReferences[environment.ID] != before.DataReferences[environment.ID] {
-		t.Fatal("protection failure modified device identity/data reference")
+		t.Fatal("channel preparation failure modified device identity/data reference")
 	}
 	s.networkStore = store
 	if err := s.Close(); err != nil {
@@ -236,7 +236,7 @@ func TestProductionProxyStartGateCreatesNeitherBridgeNorBrowserAndPreservesIdent
 		t.Fatal(err)
 	}
 	defer reopened.Close()
-	if saved := view(t, reopened).RuntimeSessions[environment.ID]; saved.NetworkFault == nil || saved.NetworkFault.Containment != "stopped" || saved.Error.Code != "NETWORK_PROTECTION_UNAVAILABLE" {
+	if saved := view(t, reopened).RuntimeSessions[environment.ID]; saved.NetworkFault == nil || saved.NetworkFault.Containment != "stopped" || saved.Error.Code != "PROXY_BRIDGE_UNAVAILABLE" {
 		t.Fatal("reopen cleared gate failure or revived a channel")
 	}
 }

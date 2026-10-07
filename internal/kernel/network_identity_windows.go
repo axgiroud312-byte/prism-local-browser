@@ -285,6 +285,8 @@ func verifyNetworkProcess(process windows.Handle, sid *windows.SID) error {
 	return nil
 }
 
+// A nil SID verifies the exact managed Job only. It makes no AppContainer or
+// system-wide egress claim; non-nil is retained for legacy token diagnostics.
 func verifyNetworkTree(p *pipeProcess, sid *windows.SID) error {
 	for size := 64; size <= 65536; size *= 2 {
 		list := make([]uintptr, size+1) // header is two DWORDs on Windows x64
@@ -310,7 +312,9 @@ func verifyNetworkTree(p *pipeProcess, sid *windows.SID) error {
 				windows.CloseHandle(h)
 				return errors.New("browser job membership changed")
 			}
-			err = verifyNetworkProcess(h, sid)
+			if sid != nil {
+				err = verifyNetworkProcess(h, sid)
+			}
 			windows.CloseHandle(h)
 			if err != nil {
 				return err

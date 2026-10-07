@@ -52,6 +52,8 @@ func (j *NetworkJournal) lockSession(sessionID string) func() {
 }
 
 type NetworkSessionIntent struct {
+	// Empty mode is the legacy AppContainer contract, retained for recovery.
+	Mode          string `json:"mode,omitempty"`
 	SessionID     string `json:"sessionId"`
 	EnvironmentID string `json:"environmentId"`
 	ChannelID     string `json:"channelId"`
@@ -185,9 +187,16 @@ func validNetworkSession(intent NetworkSessionIntent) bool {
 			return false
 		}
 	}
-	return intent.DataReference != "" && intent.ContainerName == "prism-session-"+intent.SessionID &&
+	if intent.Mode == proxyBridgeSessionMode {
+		return intent.DataReference == "environments/"+intent.EnvironmentID+"/user-data" &&
+			intent.JobName == `Global\PrismManagedSession-`+intent.SessionID &&
+			intent.ContainerName == "" && intent.PackageSID == "" && intent.LogonSID == "" && intent.BootID == ""
+	}
+	return intent.Mode == "" && intent.DataReference != "" && intent.ContainerName == "prism-session-"+intent.SessionID &&
 		intent.PackageSID != "" && intent.JobName != "" && intent.LogonSID != ""
 }
+
+const proxyBridgeSessionMode = "proxy-bridge-v1"
 
 // PrepareSession is idempotent only for the exact original intent. A completed
 // session ID is never reusable, and a second session cannot acquire its env.
@@ -249,9 +258,14 @@ func (j *NetworkJournal) prepareResource(ctx context.Context, sessionID string, 
 		return err
 	}
 	defer tx.Rollback()
-	var phase string
-	if err = tx.QueryRowContext(ctx, "SELECT phase FROM sessions WHERE session_id=?", sessionID).Scan(&phase); err != nil {
+	var phase, sessionJSON string
+	if err = tx.QueryRowContext(ctx, "SELECT phase,intent FROM sessions WHERE session_id=?", sessionID).Scan(&phase, &sessionJSON); err != nil {
 		return err
+	}
+	var session NetworkSessionIntent
+	if json.Unmarshal([]byte(sessionJSON), &session) != nil || !validNetworkSession(session) ||
+		(session.Mode == proxyBridgeSessionMode && intent.Kind != "job" && intent.Kind != "bridge") {
+		return ErrNetworkJournalConflict
 	}
 	if phase != "preparing" {
 		return ErrNetworkJournalConflict
@@ -346,8 +360,8 @@ func (j *NetworkJournal) PendingSessions(ctx context.Context, after string) ([]N
 // Cleanup waits for in-flight ApplyResource calls and prevents late creation;
 // callers retain their owner on any error. Undo cannot reenter same-session
 // ApplyResource/Cleanup. Other sessions remain independently operable.
-// Resource creation order must be container -> ACLs -> bridge -> Job so reverse
-// cleanup stops process ownership before revoking access or deleting identity.
+// New standard sessions create bridge -> Job. Legacy sessions retain
+// container -> ACLs -> bridge -> Job, with permission recovery after Job exit.
 func (j *NetworkJournal) Cleanup(ctx context.Context, sessionID string, confirmStopped func(context.Context) error, undo func(context.Context, NetworkResourceRecord) error) error {
 	if confirmStopped == nil || undo == nil {
 		return ErrNetworkJournalConflict

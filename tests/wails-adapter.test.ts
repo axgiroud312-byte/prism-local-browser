@@ -47,6 +47,15 @@ const migrationOperation = (): Operation => ({ id: "synthetic-migration", kind: 
 
 const diagnosticPreview = (): DiagnosticPreview => ({ reportId: "00000000-0000-4000-8000-000000000001", sha256: "a".repeat(64), bytes: 500, expiresAt: "2030-01-01T00:00:00Z", report: { format: "prism-local-diagnostics", schemaVersion: 1, generatedAt: "2026-10-02T00:00:00Z", application: { version: "0.3.0", platform: "windows", architecture: "amd64", goVersion: "go1.27.1", signature: "not-checked" }, proxyProtection: "unavailable", excluded: [], workspace: { status: "unavailable", counts: {}, maintenance: [], operations: [], sessions: [], kernels: [], unavailableSections: [], omittedRecords: 0, observationSource: "saved-records-and-host-maintenance-not-live-probe", operationLimit: 100, sessionLimit: 100, kernelLimit: 20 } } });
 
+test("diagnostic standard proxy mode and legacy modes remain readable without system-isolation claims", async () => {
+  for (const mode of ["standard-proxy-bridge", "available", "unavailable"] as const) {
+    const p = diagnosticPreview(); p.report.proxyProtection = mode;
+    const { app } = fixture(() => ok(p));
+    assert.ok((await app.previewDiagnostics()).ok);
+    assert.equal(app.getDiagnosticState().preview?.report.proxyProtection, mode);
+  }
+});
+
 test("diagnostic transport loss retains the original export across subscribers", async () => {
   const p = diagnosticPreview(); let attempt = 0;
   const { app, calls } = fixture(r => {
@@ -895,7 +904,7 @@ test("SOCKS5 safe reports keep fixed remote-DNS policy and share stage vocabular
 });
 
 test("network fault observations stay separate from historic preflight and cannot be request overrides", async () => {
-  const session: RuntimeSession = { mode: "native", environmentId: "synthetic-environment", sessionId: "synthetic-session", operationId: "synthetic-operation", state: "error", revision: 1, fingerprintRevision: 1, kernelId: "synthetic-kernel", userDataRef: "synthetic-ref", networkPolicy: "proxy", proxyId: "synthetic-proxy", proxyRevision: 1, proxyChannelId: "synthetic-channel", pid: 0, canControl: false, canForce: false, needsReconcile: false, persistencePending: false, networkFault: { state: "network_error", error: { code: "NETWORK_PROTECTION_UNAVAILABLE", message: "合成门禁缺失，不是已安装隔离组件。", retryable: false }, observedAt: "2026-10-01T00:00:00Z", containment: "stopped" } };
+  const session: RuntimeSession = { mode: "native", environmentId: "synthetic-environment", sessionId: "synthetic-session", operationId: "synthetic-operation", state: "error", revision: 1, fingerprintRevision: 1, kernelId: "synthetic-kernel", userDataRef: "synthetic-ref", networkPolicy: "proxy", proxyId: "synthetic-proxy", proxyRevision: 1, proxyChannelId: "synthetic-channel", pid: 0, canControl: false, canForce: false, needsReconcile: false, persistencePending: false, networkFault: { state: "network_error", error: { code: "PROXY_BRIDGE_UNAVAILABLE", message: "合成代理通道缺失。", retryable: true }, observedAt: "2026-10-01T00:00:00Z", containment: "stopped" } };
   const { app, calls } = fixture(request => request.method === "Workspace.Read" ? ok({ ...empty(), runtimeSessions: { [session.environmentId]: session } }) : rejected);
   assert.ok((await app.refresh()).ok); assert.equal(app.getSnapshot().runtimeSessions?.[session.environmentId].networkFault?.state, "network_error"); assert.equal(app.getSnapshot().runtimeSessions?.[session.environmentId].proxyReport, undefined);
   await app.startRuntime({ environmentId: session.environmentId, requestId: "synthetic-bypass-attempt", networkPolicy: "proxy", networkProtectionReady: true, networkFault: undefined, allowUnsafeProxy: true } as Parameters<WailsAdapter["startRuntime"]>[0]);

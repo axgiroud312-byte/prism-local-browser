@@ -9,7 +9,7 @@ function validPreview(p: DiagnosticPreview): boolean {
   const r = p?.report, w = r?.workspace;
   return !!p && uuid.test(p.reportId) && hash.test(p.sha256) && Number.isSafeInteger(p.bytes) && p.bytes > 0 && p.bytes <= 1024 * 1024 && Number.isFinite(Date.parse(p.expiresAt)) &&
     r?.format === "prism-local-diagnostics" && r.schemaVersion === 1 && r.application?.signature === "not-checked" &&
-    ["available", "unavailable"].includes(r.proxyProtection) && Array.isArray(r.excluded) &&
+    ["standard-proxy-bridge", "available", "unavailable"].includes(r.proxyProtection) && Array.isArray(r.excluded) &&
     !!w && ["available", "partial", "unavailable"].includes(w.status) && Array.isArray(w.operations) && Array.isArray(w.sessions) && Array.isArray(w.kernels) && Array.isArray(w.maintenance) && Array.isArray(w.unavailableSections);
 }
 

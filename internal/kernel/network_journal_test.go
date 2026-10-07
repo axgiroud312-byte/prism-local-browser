@@ -23,6 +23,67 @@ func journalIntent() NetworkSessionIntent {
 // exact named Job here, after creation has been sealed by the lifecycle lock.
 func noJournalTestProcesses(context.Context) error { return nil }
 
+func TestNetworkJournalStandardModePersistsAndCannotCreateLegacyPermissions(t *testing.T) {
+	ctx := context.Background()
+	path := filepath.Join(t.TempDir(), "network-resources.db")
+	j, err := OpenNetworkJournal(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	i := NetworkSessionIntent{Mode: proxyBridgeSessionMode, SessionID: uuid.NewString(), EnvironmentID: uuid.NewString(), ChannelID: uuid.NewString()}
+	i.DataReference = "environments/" + i.EnvironmentID + "/user-data"
+	i.JobName = `Global\PrismManagedSession-` + i.SessionID
+	if err = j.PrepareSession(ctx, i); err != nil {
+		t.Fatal(err)
+	}
+	called := false
+	for _, resource := range []NetworkResourceIntent{
+		{ResourceID: "container", Kind: "container", ObjectIdentity: "legacy-sid", Locator: "legacy-container"},
+		{ResourceID: "permission", Kind: "file-acl", ObjectIdentity: "volume:file-id", Locator: "synthetic/profile", Delta: "legacy-ace"},
+		{ResourceID: "station", Kind: "window-station-acl", ObjectIdentity: "legacy-login", Locator: "synthetic-station", Delta: "legacy-sid"},
+	} {
+		if err = j.ApplyResource(ctx, i.SessionID, resource, func(context.Context) error { called = true; return nil }); !errors.Is(err, ErrNetworkJournalConflict) || called {
+			t.Fatal("standard mode performed legacy permission/resource action", err)
+		}
+	}
+	for _, resource := range []NetworkResourceIntent{
+		{ResourceID: "bridge", Kind: "bridge", ObjectIdentity: i.ChannelID, Locator: i.ChannelID},
+		{ResourceID: "job", Kind: "job", ObjectIdentity: i.JobName, Locator: i.JobName},
+	} {
+		if err = j.ApplyResource(ctx, i.SessionID, resource, func(context.Context) error { return nil }); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err = j.Close(); err != nil {
+		t.Fatal(err)
+	}
+	j, err = OpenNetworkJournal(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer j.Close()
+	if saved, err := j.Session(ctx, i.SessionID); err != nil || saved != i {
+		t.Fatal("standard owner changed on reopen", saved, err)
+	}
+	var undone []string
+	if err = j.Cleanup(ctx, i.SessionID, noJournalTestProcesses, func(_ context.Context, r NetworkResourceRecord) error {
+		undone = append(undone, r.Kind)
+		return nil
+	}); err != nil || !reflect.DeepEqual(undone, []string{"job", "bridge"}) {
+		t.Fatal("standard recovery did not preserve exact reverse ownership", undone, err)
+	}
+	changed := i
+	changed.Mode = "unknown-mode"
+	if validNetworkSession(changed) {
+		t.Fatal("unknown network mode accepted")
+	}
+	changed = i
+	changed.PackageSID = "pretend-appcontainer"
+	if validNetworkSession(changed) {
+		t.Fatal("standard session pretended to own AppContainer identity")
+	}
+}
+
 func TestNetworkJournalRecoversUnacknowledgedResourcesAndRetainsFailedCleanup(t *testing.T) {
 	ctx := context.Background()
 	path := filepath.Join(t.TempDir(), "network-resources.db")

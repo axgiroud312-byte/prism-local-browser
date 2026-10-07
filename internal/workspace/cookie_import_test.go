@@ -330,7 +330,7 @@ func TestCookieImportPurposeSuppressesSavedTabsWithoutChangingIdentityOrBypassin
 	bindRuntimeProxyFixture(t, guarded, bound, record)
 	boundPreview := cookiePreviewFixture(t, guarded, bound.ID, `[{"name":"synthetic","value":"","domain":"example.test"}]`)
 	guardStart := acceptRuntimeTest(t, guarded, "Runtime.Start", runtimeRequest{EnvironmentID: bound.ID, RequestID: id(), NetworkPolicy: "proxy", Purpose: "cookie-import", ExpectedRevision: boundPreview.ExpectedRevision})
-	if final := waitKernel(t, guarded, guardStart.ID); final.Error == nil || final.Error.Code != "NETWORK_PROTECTION_UNAVAILABLE" {
-		t.Fatal("Cookie purpose bypassed production network protection gate")
+	if final := waitKernel(t, guarded, guardStart.ID); final.Error == nil || final.Error.Code != "PROXY_BRIDGE_UNAVAILABLE" || !final.Error.Retryable {
+		t.Fatal("Cookie purpose bypassed the missing production proxy channel owner")
 	}
 }

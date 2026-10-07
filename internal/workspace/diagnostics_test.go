@@ -40,6 +40,9 @@ func TestDiagnosticsReadsWhitelistWithoutFlushingPendingWrites(t *testing.T) {
 		t.Fatal(err)
 	}
 	r := buildDiagnosticReport(context.Background(), "0.3.0-preview.1", s, nil)
+	if r.ProxyProtection != "standard-proxy-bridge" {
+		t.Fatal("diagnostic did not identify the standard proxy bridge without claiming system isolation")
+	}
 	if r.Workspace.Status != "available" || r.Workspace.Counts["runtimePendingWrites"] != 1 {
 		t.Fatalf("incomplete diagnostic: %+v", r.Workspace)
 	}
@@ -73,7 +76,7 @@ func TestDiagnosticsReturnsMinimalOrPartialWithoutBlocking(t *testing.T) {
 	s.mu.Lock()
 	r := buildDiagnosticReport(context.Background(), "invalid-private-version", s, nil)
 	s.mu.Unlock()
-	if r.Workspace.Status != "unavailable" || r.Workspace.StartupCode != "PROFILE_BUSY" || r.Application.Version != "unknown" {
+	if r.Workspace.Status != "unavailable" || r.Workspace.StartupCode != "PROFILE_BUSY" || r.Application.Version != "unknown" || r.ProxyProtection != "unavailable" {
 		t.Fatal("busy service was not bounded")
 	}
 	if _, err := s.db.Exec("INSERT INTO operations(id,result_json) VALUES(?,?)", id(), "{"); err != nil {

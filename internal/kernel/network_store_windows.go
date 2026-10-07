@@ -10,15 +10,12 @@ import (
 	"fmt"
 	"net"
 	"path/filepath"
-	"runtime"
 	"strings"
 	"sync"
 
 	"github.com/axgiroud312-byte/prism-local-browser/internal/desktopbase"
 	"github.com/axgiroud312-byte/prism-local-browser/internal/proxy"
 	"golang.org/x/sys/windows"
-	"golang.org/x/sys/windows/svc"
-	"golang.org/x/sys/windows/svc/mgr"
 )
 
 // NetworkStore is workspace-private control state, not part of app.db exports.
@@ -159,11 +156,17 @@ func (s *NetworkStore) undo(ctx context.Context, intent NetworkSessionIntent, re
 		}
 		return nil
 	case "container":
+		if intent.Mode != "" {
+			return ErrNetworkJournalConflict
+		}
 		if resource.ObjectIdentity != intent.PackageSID || resource.Locator != intent.ContainerName {
 			return ErrNetworkJournalConflict
 		}
 		return deleteNetworkContainer(intent)
 	case "file-acl":
+		if intent.Mode != "" {
+			return ErrNetworkJournalConflict
+		}
 		var delta networkACLDelta
 		if json.Unmarshal([]byte(resource.Delta), &delta) != nil || delta.SID != intent.PackageSID || !delta.Tree {
 			return ErrNetworkJournalConflict
@@ -179,6 +182,9 @@ func (s *NetworkStore) undo(ctx context.Context, intent NetworkSessionIntent, re
 		}
 		return applyNetworkTree(ctx, resource.Locator, resource.ObjectIdentity, delta, false)
 	case "window-station-acl":
+		if intent.Mode != "" {
+			return ErrNetworkJournalConflict
+		}
 		if resource.Delta != intent.PackageSID || resource.ObjectIdentity != intent.LogonSID+":"+resource.Locator {
 			return ErrNetworkJournalConflict
 		}
@@ -254,61 +260,18 @@ func (s *NetworkStore) OpenProtectedProxy(ctx context.Context, record Record, pr
 	return s.openProtectedProxy(ctx, record, profile, channelID, config, credentials, proxy.BridgeOptions{TargetURL: check.TargetURL, RootCAs: check.RootCAs})
 }
 
-func networkWindowsReady() error {
-	handle, err := windows.OpenSCManager(nil, nil, windows.SC_MANAGER_CONNECT)
-	if err != nil {
-		return err
-	}
-	manager := mgr.Mgr{Handle: handle}
-	defer manager.Disconnect()
-	for _, name := range []string{"BFE", "MpsSvc", "Dnscache"} {
-		wide, _ := windows.UTF16PtrFromString(name)
-		h, err := windows.OpenService(manager.Handle, wide, windows.SERVICE_QUERY_STATUS)
-		if err != nil {
-			return err
-		}
-		service := mgr.Service{Name: name, Handle: h}
-		status, err := service.Query()
-		service.Close()
-		if err != nil || status.State != svc.Running {
-			return errors.New("required Windows network service unavailable")
-		}
-	}
-	return nil
-}
-
 func (s *NetworkStore) openProtectedProxy(ctx context.Context, record Record, profile ManagedProfile, channelID string, config proxy.Configuration, credentials *proxy.Credentials, bridgeOptions proxy.BridgeOptions) (p *ProtectedProxy, err error) {
-	stage := "windows-prerequisites"
+	stage := "kernel-evidence"
 	defer func() {
 		if err != nil {
 			err = fmt.Errorf("protected-%s: %w", stage, err)
 		}
 	}()
-	if runtime.GOARCH != "amd64" {
-		return nil, RequireProxyNetworkBoundary()
-	}
-	if err = networkWindowsReady(); err != nil {
-		return nil, err
-	}
 	if err = CheckRecord(record); err != nil {
 		return nil, err
 	}
-	name := "prism-session-" + profile.SessionID
-	stage = "derive-container"
-	sid, err := deriveNetworkSID(name)
-	if err != nil {
-		return nil, err
-	}
-	logon, station, err := networkLogonIdentity()
-	if err != nil {
-		return nil, err
-	}
-	boot, err := networkBootIdentity()
-	if err != nil {
-		return nil, err
-	}
-	intent := NetworkSessionIntent{SessionID: profile.SessionID, EnvironmentID: profile.EnvironmentID, ChannelID: channelID, DataReference: profile.UserDataRef, ContainerName: name, PackageSID: sid.String(), JobName: `Global\PrismManagedSession-` + profile.SessionID, LogonSID: logon, BootID: boot}
-	p = &ProtectedProxy{store: s, intent: intent, sid: sid, record: record, failed: make(chan struct{})}
+	intent := NetworkSessionIntent{Mode: proxyBridgeSessionMode, SessionID: profile.SessionID, EnvironmentID: profile.EnvironmentID, ChannelID: channelID, DataReference: profile.UserDataRef, JobName: `Global\PrismManagedSession-` + profile.SessionID}
+	p = &ProtectedProxy{store: s, intent: intent, record: record, failed: make(chan struct{})}
 	stage = "session-intent"
 	if err = s.journal.PrepareSession(ctx, intent); err != nil {
 		return p, err
@@ -330,60 +293,13 @@ func (s *NetworkStore) openProtectedProxy(ctx context.Context, record Record, pr
 	}
 	actualVersion, versionErr := FileVersion(filepath.Join(directory, filepath.FromSlash(record.ExecutableRelativePath)))
 	if versionErr != nil || actualVersion != record.Version {
-		return p, problem("KERNEL_INTEGRITY_FAILED", "version-mismatch", "固定内核文件版本不匹配，尚未创建容器或授权。")
+		return p, problem("KERNEL_INTEGRITY_FAILED", "version-mismatch", "固定内核文件版本不匹配，尚未建立代理通道或启动浏览器。")
 	}
-	if exists, checkErr := networkContainerExists(intent.PackageSID); checkErr != nil || exists {
-		return p, errors.New("new container identity already exists or cannot be queried")
-	}
-	resource := NetworkResourceIntent{ResourceID: "container", Kind: "container", ObjectIdentity: intent.PackageSID, Locator: name}
-	stage = "create-container"
-	if err = s.journal.ApplyResource(ctx, intent.SessionID, resource, func(context.Context) error { return createNetworkContainer(name, sid) }); err != nil {
-		return p, err
-	}
-	resource = NetworkResourceIntent{ResourceID: "station", Kind: "window-station-acl", ObjectIdentity: logon + ":" + station, Locator: station, Delta: intent.PackageSID}
-	stage = "window-station"
-	if err = s.journal.ApplyResource(ctx, intent.SessionID, resource, func(context.Context) error {
-		var err error
-		p.station, err = openNetworkStation(station, true)
-		if err != nil {
-			return err
-		}
-		unlock, err := lockNetworkACL(resource.ObjectIdentity)
-		if err != nil {
-			return err
-		}
-		defer unlock()
-		return changeNetworkACL(p.station, windows.SE_WINDOW_OBJECT, sid, windows.GENERIC_READ|8, 0, true)
-	}); err != nil {
-		return p, err
-	}
-	stage = "kernel-permissions"
-	if err = p.grantTree(ctx, directory, windows.FILE_GENERIC_READ|windows.FILE_GENERIC_EXECUTE); err != nil {
-		return p, err
-	}
-	stage = "profile-permissions"
-	if err = p.grantTree(ctx, p.lock.path, windows.FILE_GENERIC_READ|windows.FILE_GENERIC_WRITE|windows.FILE_GENERIC_EXECUTE|windows.DELETE); err != nil {
-		return p, err
-	}
-	stage = "lowbox-token"
-	if p.token, err = networkLowBox(sid); err != nil {
-		return p, err
-	}
-	resource = NetworkResourceIntent{ResourceID: "bridge", Kind: "bridge", ObjectIdentity: channelID, Locator: channelID}
+	resource := NetworkResourceIntent{ResourceID: "bridge", Kind: "bridge", ObjectIdentity: channelID, Locator: channelID}
 	stage = "identity-bridge"
 	if err = s.journal.ApplyResource(ctx, intent.SessionID, resource, func(context.Context) error {
-		var err error
-		p.listener, err = networkListener(p.token)
-		if err != nil {
-			return err
-		}
-		address := p.listener.Addr().String()
-		ingress := &proxy.BridgeIngress{Listener: p.listener, ProbeDial: func(ctx context.Context) (net.Conn, error) { return networkDial(p.token, address, ctx) }}
-		bridgeOptions.ChannelID, bridgeOptions.AuthorizeProbe, bridgeOptions.Ingress = channelID, AuthorizeProxyProbe, ingress
+		bridgeOptions.ChannelID, bridgeOptions.AuthorizeProbe, bridgeOptions.Ingress = channelID, AuthorizeProxyProbe, nil
 		p.bridge, err = proxy.OpenBridge(config, credentials, bridgeOptions)
-		if err == nil {
-			p.listener = nil
-		}
 		return err
 	}); err != nil {
 		return p, err
@@ -430,6 +346,7 @@ func (p *ProtectedProxy) Close() error {
 	if p.closed {
 		return nil
 	}
+	p.preflighted = false
 	if p.bridge != nil {
 		if err := p.bridge.Close(); err != nil {
 			return err
@@ -480,7 +397,7 @@ func (p *ProtectedProxy) Close() error {
 func (p *ProtectedProxy) validate(root string, record Record, profile ManagedProfile) error {
 	p.mu.Lock()
 	defer p.mu.Unlock()
-	if p.closed || !p.preflighted || p.bridge == nil || p.lock == nil || p.token == 0 || p.intent.SessionID != profile.SessionID || p.intent.EnvironmentID != profile.EnvironmentID || p.intent.DataReference != profile.UserDataRef || p.record.ID != record.ID || p.record.ExecutableSHA256 != record.ExecutableSHA256 || p.store.root != root {
+	if p.closed || !p.preflighted || p.bridge == nil || p.lock == nil || p.intent.Mode != proxyBridgeSessionMode || p.intent.SessionID != profile.SessionID || p.intent.EnvironmentID != profile.EnvironmentID || p.intent.DataReference != profile.UserDataRef || p.record.ID != record.ID || p.record.ExecutableSHA256 != record.ExecutableSHA256 || p.store.root != root {
 		return RequireProxyNetworkBoundary()
 	}
 	return nil

@@ -131,7 +131,7 @@ func diagnosticNumber(value int) int64 {
 }
 func diagnosticOperation(label string, op Operation) DiagnosticOperation {
 	r := DiagnosticOperation{Label: label, Kind: diagnosticEnum(op.Kind, "create edit kernel-install kernel-verify kernel-delete runtime-start runtime-stop runtime-force-stop runtime-reconcile proxy-check cookie-import batch-create batch-clone batch-assign backup-export backup-restore recycle migration"), State: diagnosticEnum(op.State, "accepted running completed failed cancelled"), Stage: diagnosticEnum(op.Stage, `queued accepted preparing starting running stopping completed failed cancelled interrupted protected storage-pending acceptance-pending
-	revalidating stopping-environments prepared swapping db-committing db-committed finalized rolled-back recovering workspace-recovery
+	revalidating stopping-environments prepared swapping db-committing db-committed finalized rolled-back recovering workspace-recovery proxy-channel proxy-preflight proxy-ready network-protection
 	backup-ready copy-ready trial-starting trial-running ready committed original-retained purging publishing acquiring-archive extracting probing verifying-files verifying-extracted-files
 	closing close-timeout application-interrupted finished configuration-snapshot copying-browser-data verifying-package`), ErrorCode: diagnosticError(op.Error), PersistencePending: op.PersistencePending, CancelRequested: op.CancelRequested, Total: diagnosticNumber(op.Total), Completed: diagnosticNumber(len(op.CompletedIDs)), ProgressMetric: "completed-records"}
 	switch {
@@ -162,8 +162,11 @@ func emptyDiagnosticWorkspace() DiagnosticWorkspace {
 
 func buildDiagnosticReport(ctx context.Context, version string, service *Service, startup *Error) DiagnosticReport {
 	r := DiagnosticReport{Format: diagnosticFormat, SchemaVersion: 1, GeneratedAt: timestamp(), Application: DiagnosticApplication{Version: diagnosticSafeVersion(version), Platform: runtime.GOOS, Architecture: runtime.GOARCH, GoVersion: runtime.Version(), Signature: "not-checked"}, Workspace: emptyDiagnosticWorkspace(), ProxyProtection: "unavailable", Excluded: []string{"credentials", "cookies-and-browser-data", "names-notes-urls", "paths-and-hostnames", "proxy-addresses-and-ips", "ids-seeds-and-command-lines", "raw-errors-and-logs"}}
-	if kernel.RequireProxyNetworkBoundary() == nil {
-		r.ProxyProtection = "available"
+	if service != nil && service.mu.TryLock() {
+		if !service.closed && !service.closeRequested.Load() && service.networkStore != nil {
+			r.ProxyProtection = "standard-proxy-bridge"
+		}
+		service.mu.Unlock()
 	}
 	if service == nil {
 		r.Workspace.StartupCode = diagnosticError(startup)

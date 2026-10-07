@@ -224,7 +224,7 @@ export interface NativeBackupExportRequest {
 export interface DiagnosticReport {
   format: "prism-local-diagnostics"; schemaVersion: 1; generatedAt: string;
   application: { version: string; platform: string; architecture: string; goVersion: string; signature: "not-checked" };
-  proxyProtection: "available" | "unavailable"; excluded: string[];
+  proxyProtection: "standard-proxy-bridge" | "available" | "unavailable"; excluded: string[];
   workspace: {
     status: "available" | "partial" | "unavailable"; startupCode?: string; schemaVersion?: number;
     counts: Record<string, number>; maintenance: DiagnosticOperation[]; operations: DiagnosticOperation[];

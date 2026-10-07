@@ -187,7 +187,9 @@ app-data/
 
 ### T11 网络故障监督与安全门禁（正式接入，本机验证，完整验收待补）
 
-正式provider按[六阶段计划](V1_DELIVERY.md)先持久记录容器、权限增量和准确Job归属，再授权/创建桥与浏览器；全树退出和权限/桥/容器清理确认后才释放环境，未知保持占用。恢复不按裸PID或旧字符串操作对象。正常隔离服务为首版支持条件；本机代理/桥/管理器故障与端口接管已有结果，外部全路径仍必验。以下早期条目不作为当前未接入声明，准确范围见[正式接入](verification/T11-production.md)和[资源恢复](verification/T11-recovery.md)。
+2026-10-07 用户要求按 Ant-Browser 的共享内核、独立 profile、逐环境代理方式替换额外系统隔离。当前实现目标不再创建 AppContainer 或修改共享内核/profile/窗口站 ACL，也不为代理环境复制内核；使用既有本机认证桥、精确会话前检及 Job 调用方核对，代理故障停止准确会话，不设置 DIRECT 备选。退出与原 ID 重试保护仍保留。旧资源日志和旧资源恢复必须兼容，不用删日志解除占用；结果见[148 多开修复](verification/desktop-148-isolation-fix.md)。新标准代理不宣称 OS 全路径隔离，旧模式的结果不能挪用为新实现通过。
+
+以下为旧 provider 历史：曾按[六阶段计划](V1_DELIVERY.md)持久记录容器、权限增量和准确 Job 归属，并以正常系统隔离服务为支持条件。历史实现及验证见[正式接入](verification/T11-production.md)和[资源恢复](verification/T11-recovery.md)，其中失败及未证项保留。
 
 [`NetworkJournal`](../internal/kernel/network_journal.go)已接workspace与provider。独立数据库FULL提交、冻结意图/环境唯一占用、prepared/applied/released资源及preparing/cleaning/closed会话不进入配置备份。按会话互斥整个创建/清理，封存后核对Job空，失败保持占用；差量ACL和container清理可重开或原地重试。实际证据见[T11恢复记录](verification/T11-recovery.md)。
 

@@ -10,7 +10,7 @@ import (
 
 func (s *Service) prepareMigrationNetwork(ctx context.Context, task *migrationTask, record kernel.Record, input kernel.ManagedProfile) (*kernel.ProtectedProxy, error) {
 	if s.networkStore == nil {
-		return nil, kernel.RequireProxyNetworkBoundary()
+		return nil, proxyChannelUnavailable()
 	}
 	s.mu.Lock()
 	bound, ref, err := s.savedProxy(task.plan.Environment.ProxyID)
@@ -50,7 +50,7 @@ func (s *Service) prepareMigrationNetwork(ctx context.Context, task *migrationTa
 func (s *Service) recoverMigrationNetwork(ctx context.Context, plan migrationPlan) error {
 	if s.networkStore == nil {
 		if plan.Environment.ProxyID != "" {
-			return kernel.RequireProxyNetworkBoundary()
+			return proxyChannelUnavailable()
 		}
 		return nil
 	}

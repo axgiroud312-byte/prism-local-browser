@@ -240,7 +240,7 @@ func validateSavedRuntime(session RuntimeSession, environmentID string) error {
 
 func (s *Service) inspectSavedRuntime(session RuntimeSession) (kernel.ManagedRecovery, error) {
 	if s.hasPendingNetwork(session.EnvironmentID) {
-		return kernel.ManagedRecovery{ProcessState: "unconfirmed"}, &kernel.Problem{Code: "NETWORK_CLEANUP_PENDING", Message: "原隔离资源尚未确认清理，请关闭原浏览器，检查目录权限后重开管理程序重试；原环境保持占用。", Retryable: true}
+		return kernel.ManagedRecovery{ProcessState: "unconfirmed"}, &kernel.Problem{Code: "NETWORK_CLEANUP_PENDING", Message: "原代理会话资源尚未确认清理，请关闭原浏览器，检查目录权限后重开管理程序重试；原环境保持占用。", Retryable: true}
 	}
 	return s.inspectRuntimeAfterNetworkRecovery(session)
 }
@@ -256,7 +256,7 @@ func (s *Service) inspectRuntimeAfterNetworkRecovery(session RuntimeSession) (ke
 	if err != nil {
 		return kernel.ManagedRecovery{ProcessState: "unconfirmed"}, err
 	}
-	return kernel.InspectExistingManagedProfile(s.root, session.EnvironmentID, session.SessionID, session.UserDataRef, session.RootPID, session.ProcessCreatedAt, session.LaunchStage == "queued" || session.LaunchStage == "network-protection" || session.LaunchStage == "proxy-preflight" || session.LaunchStage == "no-process-created", !target.DirectoryRequired, target.NeverUsed)
+	return kernel.InspectExistingManagedProfile(s.root, session.EnvironmentID, session.SessionID, session.UserDataRef, session.RootPID, session.ProcessCreatedAt, session.LaunchStage == "queued" || session.LaunchStage == "proxy-channel" || session.LaunchStage == "network-protection" || session.LaunchStage == "proxy-preflight" || session.LaunchStage == "no-process-created", !target.DirectoryRequired, target.NeverUsed)
 }
 
 func (s *Service) reconcileRuntimeSlot(slot *runtimeSlot) error {

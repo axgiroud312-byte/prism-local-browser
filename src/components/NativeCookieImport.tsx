@@ -186,7 +186,7 @@ export function NativeCookieImport({ application, workspace, environment, onClos
           </tr>)}</tbody></table></div>
           {!canWrite && <div className="info-strip native-cookie-start">
             <p>写入前需要指定环境的受控会话。启动只打开空白页，不恢复旧标签或保存网址；seed、数据目录、内核和代理绑定不变。</p>
-            {currentEnvironment.proxyId ? <p>启动仍使用已绑定代理，核对本次实际隔离资源、同通道前检及进程树；保护缺失、失败或未知时拒绝，不会切为直连。</p> : <label className="native-proxy-inline"><input type="checkbox" checked={confirmDirect} disabled={locked} onChange={event => setConfirmDirect(event.target.checked)} />我确认：这个环境未绑定代理，启动会使用本机直连网络。</label>}
+            {currentEnvironment.proxyId ? <p>启动仍使用已绑定代理，并核对本次代理通道、启动前检查及进程归属；通道缺失或检查失败时阻止启动，不会切为直连。</p> : <label className="native-proxy-inline"><input type="checkbox" checked={confirmDirect} disabled={locked} onChange={event => setConfirmDirect(event.target.checked)} />我确认：这个环境未绑定代理，启动会使用本机直连网络。</label>}
             <button className="button" disabled={locked || !canStart} onClick={() => { void start(); }}>{starting ? "正在启动，尚未写入…" : "明确启动空白环境（还不写Cookie）"}</button>
           </div>}
           <div className="native-proxy-actions">

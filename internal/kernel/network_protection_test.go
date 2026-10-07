@@ -25,10 +25,10 @@ func (*unverifiedManagedNetwork) Close() error             { return nil }
 func (*unverifiedManagedNetwork) Fault() *proxy.CheckError { return nil }
 func (*unverifiedManagedNetwork) Failed() <-chan struct{}  { return nil }
 
-func TestMissingSystemEgressBoundaryIsExplicitAndCannotBeRetriedIntoReady(t *testing.T) {
+func TestMissingProxySessionOwnerIsExplicitAndCannotBeRetriedIntoReady(t *testing.T) {
 	var failure *Problem
 	if err := RequireProxyNetworkBoundary(); !errors.As(err, &failure) || failure.Code != "NETWORK_PROTECTION_UNAVAILABLE" || failure.Retryable {
-		t.Fatal("unimplemented isolation became available or a retryable connection problem")
+		t.Fatal("missing verified proxy session became ready or a retryable connection problem")
 	}
 }
 func TestRealManagedLauncherRejectsUnverifiedNetworkBeforeAnyNativeResource(t *testing.T) {
