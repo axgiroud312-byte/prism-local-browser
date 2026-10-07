@@ -9,7 +9,9 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"testing"
+	"time"
 
 	"github.com/axgiroud312-byte/prism-local-browser/internal/backup"
 	"github.com/axgiroud312-byte/prism-local-browser/internal/kernel"
@@ -208,6 +210,154 @@ func TestRestoreReadPageDoesNotAcceptAnotherPreviewOrPath(t *testing.T) {
 	wantError(t, call(s, "Backup.PreviewRestore", map[string]string{"sourceToken": "synthetic", "path": "C:/outside"}), "VALIDATION_FAILED")
 	value[map[string]string](t, call(s, "Backup.DiscardRestore", map[string]string{"previewId": p.PreviewID, "sourceToken": ""}))
 	wantError(t, call(s, "Backup.ReadRestorePage", map[string]any{"previewId": p.PreviewID, "offset": 0, "pageSize": 25}), "PREVIEW_EXPIRED")
+}
+
+func TestRestoreDiscardWaitsForOriginalPreflightTermination(t *testing.T) {
+	s, _ := fixture(t, Options{})
+	token, unrelated := id(), id()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	owner := &restorePreflight{id: token, cancel: cancel}
+	s.restorePreflight = owner
+	s.restoreSources[token] = restoreSource{path: "synthetic-original.prismbackup"}
+	s.restoreSources[unrelated] = restoreSource{path: "synthetic-unrelated.prismbackup"}
+	request := map[string]string{"sourceToken": token, "previewId": ""}
+	wantError(t, call(s, "Backup.DiscardRestore", request), "PROFILE_BUSY")
+	if ctx.Err() == nil || s.restorePreflight != owner {
+		t.Fatal("original cancellation must not pretend that its worker ended")
+	}
+	if _, exists := s.restoreSources[token]; !exists {
+		t.Fatal("original source released before its worker termination")
+	}
+	if _, exists := s.restoreSources[unrelated]; !exists {
+		t.Fatal("original cancellation touched another source")
+	}
+	// Model the worker's final defer after its owned resources are cleaned.
+	s.mu.Lock()
+	s.restorePreflight = nil
+	s.mu.Unlock()
+	value[map[string]string](t, call(s, "Backup.DiscardRestore", request))
+	if _, exists := s.restoreSources[token]; exists {
+		t.Fatal("finished original source was not discarded by original retry")
+	}
+}
+
+func TestRestoreDiscardRetriesOnlyOriginalOwnedScratch(t *testing.T) {
+	s, root := fixture(t, Options{})
+	token, unrelated := id(), id()
+	directory := filepath.Join(root, "backups", "preflight", id())
+	if err := os.MkdirAll(directory, 0700); err != nil {
+		t.Fatal(err)
+	}
+	path := filepath.Join(directory, "configuration.sqlite")
+	if err := os.WriteFile(path, []byte("SYNTHETIC_PREFLIGHT_BYTES"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	s.restoreScratch = directory
+	s.restoreSources[token] = restoreSource{path: "synthetic-original.prismbackup", scratch: directory, expires: time.Now().Add(time.Hour)}
+	s.restoreSources[unrelated] = restoreSource{path: "synthetic-unrelated.prismbackup", expires: time.Now().Add(time.Hour)}
+	selections := 0
+	s.options.ChooseBackupSource = func() (string, error) {
+		selections++
+		return filepath.Join(t.TempDir(), "synthetic-next.prismbackup"), nil
+	}
+	wantError(t, call(s, "Backup.SelectRestoreSource", struct{}{}), "BACKUP_PREFLIGHT_FAILED")
+	wantError(t, call(s, "Migration.SelectRollback", map[string]string{"operationId": id()}), "PROFILE_BUSY")
+	for _, sourceToken := range []string{token, unrelated} {
+		wantError(t, call(s, "Backup.PreviewRestore", map[string]string{"sourceToken": sourceToken}), "BACKUP_PREFLIGHT_FAILED")
+	}
+	if selections != 0 || s.restoreSources[token].scratch != directory {
+		t.Fatal("new source or preflight replaced the only original scratch owner")
+	}
+	file, release, err := backup.FreezeFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { file.Close(); release() })
+	wantError(t, call(s, "Backup.DiscardRestore", map[string]string{"sourceToken": unrelated}), "BACKUP_PREFLIGHT_FAILED")
+	request := map[string]string{"sourceToken": token, "previewId": ""}
+	wantError(t, call(s, "Backup.DiscardRestore", request), "BACKUP_PREFLIGHT_FAILED")
+	if s.restoreSources[token].scratch != directory || s.restoreScratch != directory {
+		t.Fatal("failed original cleanup lost its exact ownership")
+	}
+	file.Close()
+	release()
+	value[map[string]string](t, call(s, "Backup.DiscardRestore", request))
+	if _, err := os.Stat(directory); !os.IsNotExist(err) || s.restoreScratch != "" {
+		t.Fatal("discard acknowledged without verifying original scratch removal", err)
+	}
+	if _, exists := s.restoreSources[unrelated]; !exists {
+		t.Fatal("original cleanup removed unrelated source")
+	}
+}
+
+func TestRestoreShutdownConfirmsWorkerAndOwnedScratchBeforeSafeReopen(t *testing.T) {
+	s, root := fixture(t, Options{})
+	e, _ := create(t, s, "合成预检关闭重开")
+	token := id()
+	directory := filepath.Join(root, "backups", "preflight", id())
+	if err := os.MkdirAll(directory, 0700); err != nil {
+		t.Fatal(err)
+	}
+	path := filepath.Join(directory, "configuration.sqlite")
+	if err := os.WriteFile(path, []byte("SYNTHETIC_OWNED_PREFLIGHT"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	s.restoreScratch = directory
+	s.restoreSources[token] = restoreSource{path: "synthetic-original.prismbackup", scratch: directory}
+	file, release, err := backup.FreezeFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { file.Close(); release() })
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	s.restorePreflight = &restorePreflight{id: token, cancel: cancel}
+	s.workers.Add(1)
+	workerRelease := make(chan struct{})
+	var workerReleaseOnce sync.Once
+	finishWorker := func() { workerReleaseOnce.Do(func() { close(workerRelease) }) }
+	t.Cleanup(finishWorker)
+	go func() {
+		defer s.workers.Done()
+		<-ctx.Done()
+		<-workerRelease
+		s.mu.Lock()
+		s.restorePreflight = nil
+		s.mu.Unlock()
+	}()
+	deadline, stop := context.WithTimeout(context.Background(), 50*time.Millisecond)
+	defer stop()
+	if err := s.CloseContext(deadline); err == nil {
+		t.Fatal("shutdown reported completion before original worker terminated")
+	}
+	if _, err := os.Stat(path); err != nil {
+		t.Fatal("shutdown touched scratch before the original worker ended", err)
+	}
+	finishWorker()
+	if err := s.Close(); err == nil || !strings.Contains(err.Error(), "scratch cleanup remains unconfirmed") {
+		t.Fatal("occupied original scratch was incorrectly reported cleaned", err)
+	}
+	if s.restoreScratch != directory || len(s.restoreSources) != 1 {
+		t.Fatal("failed shutdown released original ownership")
+	}
+	file.Close()
+	release()
+	if err := s.Close(); err != nil {
+		t.Fatal("original close retry did not confirm cleaned resources", err)
+	}
+	if _, err := os.Stat(directory); !os.IsNotExist(err) || s.restoreScratch != "" || len(s.restoreSources) != 0 {
+		t.Fatal("normal shutdown completion lacked original cleanup evidence", err)
+	}
+	reopened, err := Open(root, Options{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer reopened.Close()
+	after := preview(t, reopened, "edit", e.ID)
+	if after.Environment.Configuration != e.Configuration || len(reopened.restoreSources) != 0 {
+		t.Fatal("safe reopen changed original identity or reused old source authority")
+	}
 }
 
 func TestRestorePreviewCleansOwnedScratchOnSuccessAndFailure(t *testing.T) {

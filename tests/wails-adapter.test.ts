@@ -496,6 +496,44 @@ test("recycle page validates original preview or operation instead of accepting 
   assert.equal(validRecyclePage(page, { offset: 0, pageSize: 25, operationId: "other-task" }), false);
   assert.equal(validRecyclePage({ ...page, total: 0 }), false);
 });
+
+test("Recycle.ReadPage queries frozen history by its exact operation and page, without Operation.Read", async () => {
+  const operation: Operation = { ...recycleOperation(), total: 27, state: "cancelled", stage: "finished", persistencePending: false, recycleReport: { ...recycleOperation().recycleReport!, completed: 1, failed: 1, notExecuted: 25, protected: false } };
+  const items = Array.from({ length: 27 }, (_, index) => ({ id: `synthetic-trash-${index}`, environmentId: `synthetic-environment-${index}`, name: `合成回收 ${index}`, seed: String(123 + index), kernelId: "kernel-pending", revision: 2, dataPresent: true, backupRecorded: false, state: index === 0 ? "purged" as const : index === 1 ? "failed" as const : "pending" as const }));
+  const { app, calls } = fixture(request => {
+    assert.equal(request.method, "Recycle.ReadPage");
+    const input = request.payload as { offset: number; pageSize: number; operationId: string };
+    return ok({ mode: "native", offset: input.offset, pageSize: input.pageSize, total: items.length, items: items.slice(input.offset, input.offset + input.pageSize), operation });
+  });
+  const first = await app.readRecyclePage({ operationId: operation.id, offset: 0, pageSize: 25 });
+  const last = await app.readRecyclePage({ operationId: operation.id, offset: 25, pageSize: 25 });
+  assert.ok(first.ok && last.ok);
+  assert.equal(first.data.items.length, 25); assert.equal(last.data.items.length, 2);
+  assert.equal(new Set([...first.data.items, ...last.data.items].map(item => item.environmentId)).size, 27);
+  assert.equal(last.data.operation?.recycleReport?.notExecuted, 25);
+  assert.deepEqual(calls.map(call => call.payload), [{ offset: 0, pageSize: 25, operationId: operation.id }, { offset: 25, pageSize: 25, operationId: operation.id }]);
+});
+
+test("Recycle.ReadPage rejects incomplete, duplicate, mixed-view or wrong-total history without publishing it", async () => {
+  const operation = recycleOperation();
+  const item = { id: "synthetic-trash", environmentId: "synthetic-environment", name: "合成回收", seed: "123", kernelId: "kernel-pending", revision: 2, dataPresent: true, backupRecorded: false, state: "pending" as const };
+  const page: NativeRecyclePage = { mode: "native", offset: 0, pageSize: 25, total: 1, items: [item], operation };
+  for (const malformed of [
+    { ...page, items: [] }, { ...page, total: 2, items: [item, item] },
+    { ...page, operation: { ...operation, id: "unrelated-operation" } },
+    { ...page, total: 2, items: [item, { ...item, id: "second-trash" }] },
+    { ...page, offset: 1, items: [] }, { ...page, preview: { previewId: "unrelated-preview" } },
+    { ...page, items: [null] }, { mode: "native" },
+  ]) {
+    const { app } = fixture(() => ok(malformed));
+    const before = app.getSnapshot();
+    const result = await app.readRecyclePage({ operationId: operation.id, offset: 0, pageSize: 25 });
+    assert.equal(result.ok, false); if (!result.ok) assert.equal(result.error.code, "RECYCLE_RESULT_UNCONFIRMED");
+    assert.equal(app.getSnapshot(), before);
+  }
+  const { app } = fixture(() => ok(page));
+  assert.equal((await app.readRecyclePage({ offset: 0, pageSize: 25 })).ok, false, "live list must never become unrelated frozen history");
+});
 test("recycle acceptance recovery returns original operation and verified nonacceptance permits a fresh preview", async () => {
   let absent = false;
   const unknown: Operation = { ...recycleOperation(), state: "accepted", stage: "acceptance-pending" };

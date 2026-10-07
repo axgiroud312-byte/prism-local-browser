@@ -202,7 +202,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1280, height: 800
     await expect.poll(async () => (await snapshot(page)).held.length).toBe(1);
     await page.evaluate(() => window.__migrationDiscard.reply("synthetic-tokenless-selection", "unknown"));
     const recovery = dialog(page, "升级前预检清理待核实"); await expect(recovery).toBeVisible();
-    await expect(recovery).toContainText("若原来源标识未返回"); await verifyBlocked(page, 1, 0);
+    await expect(recovery).toContainText("若原来源标识未返回"); await expect(recovery).toContainText("本次会话没有安全恢复入口"); await verifyBlocked(page, 1, 0);
     await recovery.getByRole("button", { name: "重试清理原预检", exact: true }).click();
     await expect(recovery).toBeVisible(); expect(await calls(page, "Backup.DiscardRestore")).toHaveLength(0);
     await recovery.getByRole("button", { name: "仅隐藏，保留待核实", exact: true }).click();

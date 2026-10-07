@@ -300,7 +300,7 @@ func (s *Service) selectMigrationRollback(payload json.RawMessage) Result {
 		return failure("VALIDATION_FAILED", "请选择原迁移备份。", false)
 	}
 	s.mu.Lock()
-	if !s.recycleIdle() || s.closed || s.closeRequested.Load() {
+	if !s.recycleIdle() || s.restoreScratch != "" || s.closed || s.closeRequested.Load() {
 		s.mu.Unlock()
 		return failure("PROFILE_BUSY", "请先完成当前维护。", true)
 	}

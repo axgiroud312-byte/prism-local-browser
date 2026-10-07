@@ -4,6 +4,8 @@
 
 版本：1.0 · 更新日期：2026-10-07
 
+当前指派转为桌面可用性收口，用户取消1:1要求。ENV-001/002/003、FP-001/002、DATA-001、BKP-001、CORE-001、PRX-001、CK-001、UX-001 的本轮新程序与实际流程另见 [桌面收口验收](verification/desktop-closeout.md)。批次精确执行范围见 [批次报告](verification/desktop-batch-closeout.md)，指纹请求归属见 [指纹报告](verification/desktop-fingerprint-closeout.md)，回收历史和迁移清理见 [回收与迁移报告](verification/desktop-recycle-migration-closeout.md)。旧视觉差异和来源保留；自动化服务、模拟 bridge、不适用条款及真实新桌面证据分开计数。
+
 当前流程：UX-001 / DOC-001 保留 [#28浏览器点击CI](https://github.com/axgiroud312-byte/prism-local-browser/issues/28) 的 `53ac883`；默认 `tests/ui` 由Vite提供页面，不构建或打包，报告在 `output/playwright/`。#29/#30的环境与统一窗口功能基线由PR #31精确 `e170099` 保留；旧 **21/21** 为 [历史逐票证据](verification/issue28-30.md)，不是本轮结果，不增加桌面验收计数。
 
 本表关联12项需求、原型与native入口。源码入口不代表完整验收；[本轮逐票矩阵](verification/V1-final.md)明确区分服务回归、真实桌面、本机/独立网络及候选交付。[ACCEPTANCE](ACCEPTANCE.md)为实际结果索引；正式计数仍4/21。

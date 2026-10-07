@@ -385,6 +385,8 @@ parseSnapshot 校验 format、schemaVersion、主要记录字段、Cookie 数组
 
 ### T17 完整恢复执行增量（本地源码，尚未运行验收）
 
+2026-10-07 桌面收口增量：`Backup.DiscardRestore` 的取消受理不等于原 worker 终结或暂存清理完成。原预检仍执行时返回可重试 `PROFILE_BUSY` 并保留原来源；已结束但原私有暂存清理失败时仍保留归属，只允许原 token 的明确清理或等待 worker 结束后的应用 Close 重试。新选文件、迁移回退来源及新预检不能接管未确认的旧暂存。缺 sourceToken 时同一会话不能安全恢复，不猜来源或制造标识；正常退出重开只有在旧进程结束、原暂存目录实核清空后才有恢复依据。`exit0` 本身不证明清理，因为当前桌面 shutdown 不将 Close 错误映射为进程退出码。实际结果见 [回收与迁移收口](verification/desktop-recycle-migration-closeout.md)。
+
 [`受理`](../internal/workspace/restore_accept.go)消费T16预览及原摘要，冻结包/环境/历史/凭据闭包；全局配置维护屏障、正常Stop及持久观测通过后，重新核对基线与精确内核文件。[`worker`](../internal/workspace/restore_worker.go)使用同卷incoming/previous、旧配置副本和[`稳定目录对象`](../internal/backup/switch_windows.go)，持久prepared计划先于首次rename；目录校验和移动只处理已知对象，未知目录保持保护。取消不自动重新打开已停止会话。
 
 [`schema8恢复日志`](../internal/workspace/restore_storage.go)与[`配置事务`](../internal/workspace/restore_commit.go)保持同一app.db，不用包内SQLite覆盖本机库。保留原ID/seed/档案历史，全部历史只做已核对的精确kernel ID映射及hash重算；环境配置revision推进防旧批次ABA，包外记录保留。实际安装目录至少directory-prepared，旧runtime-claimed/legacy-unconfirmed不降级；不导入旧运行控制身份。代理原ref/DPAPI密文保持，不可解密须重输；未变包外共享代理不改修订或当前通道。native v1包仍schema7，导出剔除本机restore_jobs。

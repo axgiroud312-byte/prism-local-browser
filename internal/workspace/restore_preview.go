@@ -21,7 +21,7 @@ import (
 
 func (s *Service) restorePreviewCall(request Request) Result {
 	s.mu.Lock()
-	blocked, migrating := s.recycleTask != nil, s.migrationTask != nil
+	blocked, migrating, scratchPending := s.recycleTask != nil, s.migrationTask != nil, s.restoreScratch != ""
 	s.mu.Unlock()
 	if migrating {
 		return failure("MIGRATION_INCOMPLETE", "迁移维护尚未收尾，请先核对原任务。", true)
@@ -31,6 +31,9 @@ func (s *Service) restorePreviewCall(request Request) Result {
 	}
 	switch request.Method {
 	case "Backup.SelectRestoreSource":
+		if scratchPending {
+			return failure("BACKUP_PREFLIGHT_FAILED", "原预检暂存清理尚未确认，请先重试原清理；未选择或替换来源。", true)
+		}
 		if decode(request.Payload, &struct{}{}) != nil {
 			return failure("VALIDATION_FAILED", "备份只能通过本机文件选择器读取。", false)
 		}
@@ -56,6 +59,9 @@ func (s *Service) restorePreviewCall(request Request) Result {
 		if s.restorePreflight != nil || s.recycleTask != nil || s.migrationTask != nil {
 			return failure("PROFILE_BUSY", "先取消或等待当前只读预检。", true)
 		}
+		if s.restoreScratch != "" {
+			return failure("BACKUP_PREFLIGHT_FAILED", "原预检暂存清理尚未确认，请先重试原清理；未替换来源。", true)
+		}
 		token := id()
 		s.restoreSources = map[string]restoreSource{token: {path: path, expires: time.Now().Add(30 * time.Minute)}}
 		s.restorePreview = nil
@@ -79,10 +85,24 @@ func (s *Service) restorePreviewCall(request Request) Result {
 		s.mu.Lock()
 		defer s.mu.Unlock()
 		if input.SourceToken != "" {
-			delete(s.restoreSources, input.SourceToken)
 			if s.restorePreflight != nil && s.restorePreflight.id == input.SourceToken {
 				s.restorePreflight.cancel()
+				// Cancellation is not worker/resource completion. Preserve the
+				// original token until its worker and deferred scratch cleanup end.
+				return failure("PROFILE_BUSY", "原预检仍在退出与清理，请稍后重试清理原预检；未释放原来源。", true)
 			}
+			if source, exists := s.restoreSources[input.SourceToken]; exists && source.scratch != "" {
+				if err := kernel.RemoveOwnedTree(source.scratch); err != nil {
+					return failure("BACKUP_PREFLIGHT_FAILED", "原预检暂存尚无法清理，请解除占用或修复权限后重试原清理；未释放原来源。", true)
+				}
+				if s.restoreScratch == source.scratch {
+					s.restoreScratch = ""
+				}
+			}
+			if s.restoreScratch != "" {
+				return failure("BACKUP_PREFLIGHT_FAILED", "预检暂存清理尚未确认，不能用其他来源解除；请核对原预检。", true)
+			}
+			delete(s.restoreSources, input.SourceToken)
 		}
 		if s.restorePreview != nil && (s.restorePreview.preview.PreviewID == input.PreviewID || input.SourceToken != "" && s.restorePreview.sourceToken == input.SourceToken) {
 			s.restorePreview = nil
@@ -115,6 +135,19 @@ func (s *Service) restorePreviewCall(request Request) Result {
 	return failure("CAPABILITY_UNSUPPORTED", "没有此恢复预检方法。", false)
 }
 
+// Caller holds s.mu after all original workers have ended during shutdown.
+// Only the exact internally recorded scratch is ours; no scanning/adoption.
+func (s *Service) finishRestorePreflightCleanup() error {
+	if s.restoreScratch != "" {
+		if err := kernel.RemoveOwnedTree(s.restoreScratch); err != nil {
+			return errors.New("original restore preflight scratch cleanup remains unconfirmed; release its file occupation or permissions and retry application close")
+		}
+		s.restoreScratch = ""
+	}
+	s.restoreSources = map[string]restoreSource{}
+	return nil
+}
+
 func (s *Service) previewRestore(token string) (result Result) {
 	s.mu.Lock()
 	source, exists := s.restoreSources[token]
@@ -125,6 +158,10 @@ func (s *Service) previewRestore(token string) (result Result) {
 	if s.restorePreflight != nil || s.recycleTask != nil || s.migrationTask != nil {
 		s.mu.Unlock()
 		return failure("PROFILE_BUSY", "已有只读预检正在进行。", true)
+	}
+	if s.restoreScratch != "" {
+		s.mu.Unlock()
+		return failure("BACKUP_PREFLIGHT_FAILED", "原预检暂存清理尚未确认，请先重试清理原来源；未创建新预检。", true)
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Minute)
 	owner := &restorePreflight{id: token, cancel: cancel}
@@ -141,12 +178,6 @@ func (s *Service) previewRestore(token string) (result Result) {
 		}
 		s.mu.Unlock()
 	}()
-	if s.restoreScratch != "" {
-		if err := kernel.RemoveOwnedTree(s.restoreScratch); err != nil {
-			return failure("BACKUP_PREFLIGHT_FAILED", "上次私有预检暂存尚无法清理，请解除占用/修复权限后重试；未继续占用空间。", true)
-		}
-		s.restoreScratch = ""
-	}
 	file, release, err := backup.FreezeFile(source.path)
 	if err != nil {
 		return preflightFailure(err)
@@ -177,6 +208,10 @@ func (s *Service) previewRestore(token string) (result Result) {
 		if err := kernel.RemoveOwnedTree(directory); err != nil {
 			s.mu.Lock()
 			s.restoreScratch = directory
+			if original, exists := s.restoreSources[token]; exists {
+				original.scratch = directory
+				s.restoreSources[token] = original
+			}
 			s.restorePreview = nil
 			s.mu.Unlock()
 			result = failure("BACKUP_PREFLIGHT_FAILED", "本次私有预检暂存未能清理，当前工作区未修改；请解除占用后重试。", true)

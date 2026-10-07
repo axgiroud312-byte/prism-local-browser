@@ -280,6 +280,7 @@ export default function App({ application }: { application: ApplicationService }
   const profileBusy = nativeMode && (!!drawerNetworkResources || !!drawerRuntime && (["starting", "running", "stopping"].includes(drawerRuntime.state) || !!drawerRuntime.pid || drawerRuntime.resourcesPending || drawerRuntime.needsReconcile || drawerRuntime.persistencePending));
   const previewOpenSequence = useRef(0);
   const fingerprintBusy = useRef(false);
+  const fingerprintRequestSequence = useRef(0);
   const automaticPreviewAttempt = useRef("");
   const [previewError, setPreviewError] = useState("");
   const [dialog, setDialog] = useState<Dialog | null>(null);
@@ -431,6 +432,10 @@ export default function App({ application }: { application: ApplicationService }
     const draft = drawerRef.current;
     if (!draft || draft.previewId !== previewId || saving.current || draft.creationOperationId || draft.creationUnconfirmed) return;
     previewOpenSequence.current++;
+    // Closing invalidates the old read without making a later draft wait for it.
+    fingerprintRequestSequence.current++;
+    fingerprintBusy.current = false;
+    setGenerating(false);
     drawerRef.current = null;
     void application.discardPreview(previewId);
     setDrawer(null);
@@ -703,20 +708,23 @@ export default function App({ application }: { application: ApplicationService }
     if (environmentConfirmationRef.current || !draft || draft.creationOperationId || draft.creationUnconfirmed || fingerprintBusy.current || saving.current || profileBusy) return;
     const target = draft.previewId;
     const inputKey = fingerprintInputKey(draft.environment);
+    const sequence = ++fingerprintRequestSequence.current;
     fingerprintBusy.current = true;
     setGenerating(true);
     setPreviewError("");
     try {
       const result = await application.generateFingerprint({ previewId: target, kernelId: draft.environment.coreId, templateId: draft.environment.fingerprintVersion, overrides: draft.environment, regenerate });
-      if (drawerRef.current?.previewId !== target || fingerprintInputKey(drawerRef.current.environment) !== inputKey) return;
+      if (sequence !== fingerprintRequestSequence.current || drawerRef.current?.previewId !== target || fingerprintInputKey(drawerRef.current.environment) !== inputKey) return;
       if (result.ok) {
         if (automatic && !initialFingerprintHash.current) initialFingerprintHash.current = result.data.fingerprint?.previewProfile.configHash ?? "";
         applyProfilePreview(target, result.data);
         if (regenerate) notify("已换一套指纹草稿；保存才生效，取消保留原身份。");
       } else setPreviewError(result.error.message);
     } catch {
-      if (drawerRef.current?.previewId === target) setPreviewError("指纹预览暂时无法读取，草稿已保留，请重试。");
-    } finally { fingerprintBusy.current = false; setGenerating(false); }
+      if (sequence === fingerprintRequestSequence.current && drawerRef.current?.previewId === target && fingerprintInputKey(drawerRef.current.environment) === inputKey) setPreviewError("指纹预览暂时无法读取，草稿已保留，请重试。");
+    } finally {
+      if (sequence === fingerprintRequestSequence.current) { fingerprintBusy.current = false; setGenerating(false); }
+    }
   }
   const draftFingerprintKey = drawer ? fingerprintInputKey(drawer.environment) : "";
   const selectedKernelRecord = workspace.kernelRecords?.find(record => record.id === drawer?.environment.coreId);
@@ -738,13 +746,18 @@ export default function App({ application }: { application: ApplicationService }
   async function previewProfileRestore(revision: number) {
     if (environmentConfirmationRef.current || !drawer || fingerprintBusy.current || saving.current || profileBusy) return;
     const target = drawer.previewId;
+    const sequence = ++fingerprintRequestSequence.current;
     fingerprintBusy.current = true; setGenerating(true); setFormError("");
     try {
       const result = await application.previewFingerprintRestore(target, revision);
-      if (drawerRef.current?.previewId !== target) return;
+      if (sequence !== fingerprintRequestSequence.current || drawerRef.current?.previewId !== target) return;
       if (result.ok) { applyProfilePreview(target, result.data); notify("旧档案已加载为回滚预览；保存才生效，名称、代理和数据保持不变。"); }
       else setFormError(result.error.message);
-    } finally { fingerprintBusy.current = false; setGenerating(false); }
+    } catch {
+      if (sequence === fingerprintRequestSequence.current && drawerRef.current?.previewId === target) setFormError("档案回滚预览暂时无法读取，草稿已保留，请重试。");
+    } finally {
+      if (sequence === fingerprintRequestSequence.current) { fingerprintBusy.current = false; setGenerating(false); }
+    }
   }
   async function saveEnvironment(openAfterCreate = false) {
     if (environmentConfirmationRef.current || batchBusy.current || saving.current || fingerprintBusy.current || !drawer) return;

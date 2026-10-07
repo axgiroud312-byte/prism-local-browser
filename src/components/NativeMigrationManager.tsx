@@ -205,7 +205,7 @@ export function NativeMigrationManager({ application, workspace, open, onOpenCha
     {cleanupOpen && cleanup && <ProxyKernelModal title="升级前预检清理待核实" width={400} onClose={() => setCleanupOpen(false)} footer={<><button className="button" onClick={() => setCleanupOpen(false)}>仅隐藏，保留待核实</button><button className="button primary" disabled={busy || cleanup.pending || !!application.getPendingRestore?.()} onClick={() => void retryRollbackCleanup()}>重试清理原预检</button></>}>
       <p role="status">原预检清理尚未确认；只重试清理原来源，不会另选备份、重新预检或执行恢复。隐藏或离页仍保留原清理。</p>
       <p>原迁移：<span className="mono">{cleanup.operationId}</span></p>{cleanup.previewId && <p>原预检：<span className="mono">{cleanup.previewId}</span></p>}
-      {cleanup.pending ? <p role="status">正在等待原来源、预检或清理响应；请等待，不会创建新预检。</p> : <p>响应丢失、无效或清理被拒绝都不代表资源已释放。若原来源标识未返回，重试也不会猜测标识或创建替代来源。</p>}
+      {cleanup.pending ? <p role="status">正在等待原来源、预检或清理响应；请等待，不会创建新预检。</p> : <p>响应丢失、无效或清理被拒绝都不代表资源已释放。若原来源标识未返回，重试也不会猜测标识或创建替代来源。当前服务不能通过迁移编号找回丢失的来源标识；若原响应始终未返回，本次会话没有安全恢复入口，将继续阻断。隐藏或重新打开页面不会解除保护。</p>}
       {message && <p role="alert">{message}</p>}
     </ProxyKernelModal>}
     {resultOpen && <ProxyKernelModal title="迁移任务" width={400} onClose={() => setResultOpen(false)} footer={<><button className="button" onClick={() => setResultOpen(false)}>关闭</button>{pending && <button className="button primary" disabled={busy} onClick={() => void prepare()}>核实原迁移请求</button>}</>}>

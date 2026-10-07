@@ -58,6 +58,7 @@ type restoreSource struct {
 	path           string
 	expires        time.Time
 	expectedSHA256 string // host-owned migration backup; never a caller path
+	scratch        string // exact owned preflight directory whose cleanup failed
 }
 type restoreEnvironmentData struct {
 	manifest    backup.Environment

@@ -75,6 +75,7 @@ type Service struct {
 	startQueue         []chan struct{}
 	closeDone          chan struct{}
 	closeError         error
+	restoreCloseError  error
 	closeOnce          sync.Once
 	closeRequested     atomic.Bool
 	closeRetryActive   atomic.Bool
@@ -258,7 +259,10 @@ func (s *Service) CloseContext(ctx context.Context) error {
 	case <-finished:
 		s.mu.Lock()
 		defer s.mu.Unlock()
-		return s.closeError
+		if s.restoreScratch != "" {
+			s.restoreCloseError = s.finishRestorePreflightCleanup()
+		}
+		return errors.Join(s.closeError, s.restoreCloseError)
 	case <-ctx.Done():
 		return errors.New("controlled sessions have not all exited; cleanup continues and its resources are retained")
 	}
@@ -399,6 +403,9 @@ func (s *Service) closeResources(processes []RuntimeProcess, finished chan struc
 	s.flushRestorePersistence()
 	s.flushRecyclePersistence()
 	s.flushMigrationPersistence()
+	// All original preflight workers have ended. A failed owned scratch cleanup
+	// remains visible to Close callers and can be retried without reopening DB.
+	s.restoreCloseError = s.finishRestorePreflightCleanup()
 	proxy.Wipe(s.proxyRequestKey)
 	s.proxyRequestKey = nil
 	s.closeError = s.db.Close()

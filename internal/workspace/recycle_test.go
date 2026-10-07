@@ -5,6 +5,7 @@ package workspace
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -140,6 +141,59 @@ func TestRecycleReopenRestorePreservesIdentityHistoryAndData(t *testing.T) {
 	if err != nil || string(got) != string(oldBytes) {
 		t.Fatal("original data not restored", err)
 	}
+}
+
+func TestRecycleHistoryReadPageKeepsFrozenTargetsAfterRestoreAndReopen(t *testing.T) {
+	s, root := fixture(t, Options{})
+	ids := make([]string, 27)
+	for index := range ids {
+		e, _ := create(t, s, fmt.Sprintf("合成回收历史 %02d", index+1))
+		ids[index] = e.ID
+	}
+	op := runRecycleFixture(t, s, "remove", ids...)
+	if op.State != "completed" {
+		t.Fatal("history fixture was not completely recycled", op.Error)
+	}
+	readHistory := func(service *Service, offset int) RecyclePage {
+		return value[RecyclePage](t, call(service, "Recycle.ReadPage", recyclePageRequest{OperationID: op.ID, Offset: offset, PageSize: 25}))
+	}
+	first, last := readHistory(s, 0), readHistory(s, 25)
+	if first.Total != 27 || len(first.Items) != 25 || len(last.Items) != 2 || first.Operation.ID != op.ID || last.Operation.RecycleReport.Completed != 27 {
+		t.Fatal("ReadPage dropped frozen targets or returned the wrong operation")
+	}
+	all := append(append([]RecycleItem{}, first.Items...), last.Items...)
+	for index, item := range all {
+		if item.EnvironmentID != ids[index] || item.State != "recycled" {
+			t.Fatal("history order or original outcome changed", index, item)
+		}
+	}
+	live := recycleListFixture(t, s)
+	trashIDs := map[string]string{}
+	for _, item := range live.Items {
+		trashIDs[item.EnvironmentID] = item.ID
+	}
+	// Remove history freezes original environment IDs; restore consumes the
+	// live list's trash IDs. Do not mislabel those two different contracts.
+	restored := runRecycleFixture(t, s, "restore", trashIDs[ids[0]], trashIDs[ids[26]])
+	if restored.State != "completed" || recycleListFixture(t, s).Total != 25 {
+		t.Fatal("restore fixture did not change the live recycle list")
+	}
+	if !reflect.DeepEqual(readHistory(s, 0), first) || !reflect.DeepEqual(readHistory(s, 25), last) {
+		t.Fatal("later restore rewrote original frozen history")
+	}
+	if err := s.Close(); err != nil {
+		t.Fatal(err)
+	}
+	reopened, err := Open(root, Options{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer reopened.Close()
+	if !reflect.DeepEqual(readHistory(reopened, 0), first) || !reflect.DeepEqual(readHistory(reopened, 25), last) {
+		t.Fatal("reopen did not preserve exact ReadPage history")
+	}
+	wantError(t, call(reopened, "Recycle.ReadPage", recyclePageRequest{OperationID: op.ID, Offset: 28, PageSize: 25}), "VALIDATION_FAILED")
+	wantError(t, call(reopened, "Recycle.ReadPage", recyclePageRequest{OperationID: op.ID, PreviewID: id(), PageSize: 25}), "VALIDATION_FAILED")
 }
 
 func TestRecycleRejectsBusyMissingDataAndOccupiedRestore(t *testing.T) {
