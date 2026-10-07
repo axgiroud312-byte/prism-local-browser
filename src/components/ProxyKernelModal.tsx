@@ -8,12 +8,14 @@ const layers: HTMLElement[] = [];
 const tabbables = (element: HTMLElement) => [...element.querySelectorAll<HTMLElement>("button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), a[href], summary, [tabindex='0']")].filter(item => !item.closest("[inert], [hidden]") && item.getClientRects().length > 0);
 
 /** Ticket-scoped lifecycle. Parent-managed mode is available to the App layer. */
-export function ProxyKernelModal({ title, onClose, children, footer, width = 620, height, busy = false, className = "", lifecycle = "self", variant = "dialog" }: {
+export function ProxyKernelModal({ title, onClose, children, footer, width = 620, height, busy = false, className = "", lifecycle = "self", variant = "dialog", returnFocus }: {
   title: string; onClose: () => void; children: ReactNode; footer?: ReactNode; width?: number; height?: number;
   busy?: boolean; className?: string; lifecycle?: "self" | "parent"; variant?: "dialog" | "drawer";
+  /** Opt-in replacement chains can retain their original page trigger. */
+  returnFocus?: () => HTMLElement | null;
 }) {
-  const id = useId(), layer = useRef<HTMLDivElement>(null), close = useRef(onClose), blocked = useRef(busy);
-  close.current = onClose; blocked.current = busy;
+  const id = useId(), layer = useRef<HTMLDivElement>(null), close = useRef(onClose), blocked = useRef(busy), returnTarget = useRef(returnFocus);
+  close.current = onClose; blocked.current = busy; returnTarget.current = returnFocus;
   useLayoutEffect(() => {
     if (lifecycle === "parent" || !layer.current) return;
     const element = layer.current;
@@ -52,7 +54,7 @@ export function ProxyKernelModal({ title, onClose, children, footer, width = 620
       releaseScroll();
       // Layout cleanup precedes removal of this portal; restore only after that
       // commit, still respecting a new or remaining higher-priority owner.
-      queueMicrotask(() => restoreModalFocus(trigger));
+      queueMicrotask(() => restoreModalFocus(returnTarget.current ? returnTarget.current() : trigger));
     };
   }, [lifecycle]);
   const frame = <ReferenceModalFrame title={title} titleId={id} width={width} height={height} onClose={onClose} busy={busy} footer={footer} variant={variant} className={`pk35-modal ${className}`}>{children}</ReferenceModalFrame>;
