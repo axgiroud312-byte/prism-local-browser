@@ -1730,7 +1730,9 @@ export default function App({ application }: { application: ApplicationService }
         </EnvironmentConfirmation>}
       </div>}
       {storageIssue && (
-        <div className="overlay modal-overlay workspace-blocker">
+        <div className="overlay modal-overlay workspace-blocker" onMouseDown={event => {
+          if (event.target === event.currentTarget && ownsTopModal(workspaceOverlayRef.current)) event.preventDefault();
+        }}>
           <div
             className="modal"
             ref={workspaceOverlayRef}

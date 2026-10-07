@@ -91,6 +91,7 @@ const restoreState = (page: Page) => page.evaluate(() => (window as unknown as R
 const settleRead = (page: Page, index = 0) => page.evaluate(index => (window as unknown as ReviewWindow).__reviewRecoveryRestore.settleRead(index), index);
 const settleDiscard = (page: Page) => page.evaluate(() => (window as unknown as ReviewWindow).__reviewRecoveryRestore.settleDiscard());
 const status = (page: Page) => page.evaluate(() => (window as unknown as ReviewWindow).__reviewRecoveryRestore.status());
+const restoreOwner = (page: Page) => page.evaluate(() => (window as unknown as ReviewWindow).__reviewRecoveryApplication.getPendingRestoreSource());
 
 async function openSource(page: Page) {
   await openReviewHarness(page, "restore");
@@ -113,7 +114,13 @@ async function expectRecovered(page: Page, phase: "preview" | "page") {
   const dialog = phase === "preview" ? inputDialog(page) : preflightDialog(page);
   await expect(dialog).not.toContainText("正在流式读取");
   await expect(dialog).not.toContainText("正在读取影响清单");
-  await expect(dialog.getByRole("button", { name: phase === "preview" ? "完整校验并预览" : "重新读取影响清单", exact: true })).toBeEnabled();
+  const retryRead = dialog.getByRole("button", { name: phase === "preview" ? "完整校验并预览" : "重新读取影响清单", exact: true });
+  if (phase === "preview") {
+    await expect(retryRead).toBeDisabled();
+    await expect(dialog.getByRole("button", { name: "选择本机备份包", exact: true })).toBeDisabled();
+    await expect(dialog.getByRole("button", { name: "核实原来源", exact: true })).toBeEnabled();
+    await expect(dialog.getByRole("button", { name: "重试取消只读预检", exact: true })).toBeEnabled();
+  } else await expect(retryRead).toBeEnabled();
   await expect(dialog).toContainText("取消未确认");
   await expect(dialog).not.toContainText("迟到旧");
   await expect(dialog).toContainText("synthetic-review-1.prismbackup");
@@ -125,13 +132,14 @@ async function expectReadOnly(page: Page, before: Awaited<ReturnType<typeof rest
 }
 
 for (const phase of ["preview", "page"] as const) for (const outcome of ["unavailable", "refused", "throw"] as const) for (const order of ["cancel-first", "read-first"] as const) {
-  test(`F2 ${phase} ${outcome} ${order} releases invalidated loading, retains context and stays read-only`, async ({ page }) => {
+  test(`F2 ${phase} ${outcome} ${order} retains the original owner until confirmed cleanup and stays read-only`, async ({ page }) => {
     await restoreReviewBridge(page, phase === "preview" ? "Backup.PreviewRestore" : "Backup.ReadRestorePage", outcome);
-    await openSource(page); const before = await restoreState(page);
+    await openSource(page); const before = await restoreState(page), originalOwner = (await restoreOwner(page))!;
     await startHeldRead(page, phase); await cancelHeldRead(page, phase);
     if (order === "cancel-first") { await settleDiscard(page); await expectRecovered(page, phase); await settleRead(page); }
     else { await settleRead(page); await settleDiscard(page); }
     await expectRecovered(page, phase);
+    expect(await restoreOwner(page)).toMatchObject({ requestId: originalOwner.requestId, sourceToken: originalOwner.sourceToken, cleanupRequested: true });
     // Escape is now a safe UI-only exit, not another uncertain native discard.
     const callCount = (await restoreCalls(page)).filter(call => call.method === "Backup.DiscardRestore").length;
     await page.keyboard.press("Escape"); await expect(page.getByRole("dialog")).toHaveCount(0);
@@ -139,34 +147,83 @@ for (const phase of ["preview", "page"] as const) for (const outcome of ["unavai
     await page.getByRole("button", { name: "导入完整备份", exact: true }).click();
     await expectRecovered(page, phase);
     const dialog = phase === "preview" ? inputDialog(page) : preflightDialog(page);
-    await dialog.getByRole("button", { name: phase === "preview" ? "完整校验并预览" : "重新读取影响清单", exact: true }).click();
+    if (phase === "preview") {
+      // Exact owner recovery is read-only. Even a finished server preview
+      // cannot authorize a new target while original cleanup is unconfirmed.
+      await dialog.getByRole("button", { name: "核实原来源", exact: true }).click();
+      await expectRecovered(page, phase);
+      expect((await restoreCalls(page)).filter(call => call.method === "Backup.ReadRestoreSource").at(-1)!.payload).toEqual({ requestId: originalOwner.requestId });
+      expect((await restoreCalls(page)).filter(call => call.method === "Backup.SelectRestoreSource")).toHaveLength(1);
+      expect((await restoreCalls(page)).filter(call => call.method === "Backup.PreviewRestore")).toHaveLength(1);
+      await page.evaluate(() => (window as unknown as ReviewWindow).__reviewRecoveryRestore.setDiscardOutcome("success"));
+      await dialog.getByRole("button", { name: "重试取消只读预检", exact: true }).click();
+      await expect(page.getByRole("dialog")).toHaveCount(0);
+      expect(await restoreOwner(page)).toBeUndefined();
+      expect((await status(page)).tokens).toEqual([]);
+      const discards = (await restoreCalls(page)).filter(call => call.method === "Backup.DiscardRestore");
+      expect(discards).toHaveLength(2);
+      for (const discard of discards) expect(discard.payload).toMatchObject({ requestId: originalOwner.requestId, sourceToken: originalOwner.sourceToken });
+      expect(discards[1].payload).toMatchObject({ previewId: "synthetic-preflight-1" });
+      await page.getByRole("button", { name: "导入完整备份", exact: true }).click();
+      await expect(inputDialog(page)).toContainText("尚未选择文件");
+      await inputDialog(page).getByRole("button", { name: "选择本机备份包", exact: true }).click();
+      const nextOwner = (await restoreOwner(page))!;
+      expect(nextOwner.requestId).not.toBe(originalOwner.requestId);
+      expect(nextOwner.sourceToken).not.toBe(originalOwner.sourceToken);
+      await inputDialog(page).getByRole("button", { name: "完整校验并预览", exact: true }).click();
+      await expect(preflightDialog(page).getByRole("row").filter({ hasText: "工作环境 A" })).toBeVisible();
+      await expect(preflightDialog(page)).not.toContainText("取消未确认");
+      await expect(preflightDialog(page).getByRole("button", { name: "下一步：确认恢复", exact: true })).toBeEnabled();
+      const requests = (await restoreCalls(page)).filter(call => call.method === "Backup.PreviewRestore");
+      expect(requests).toHaveLength(2);
+      expect(requests.map(request => request.payload)).toEqual([{ sourceToken: originalOwner.sourceToken }, { sourceToken: nextOwner.sourceToken }]);
+      await expectReadOnly(page, before);
+      return;
+    }
+    await dialog.getByRole("button", { name: "重新读取影响清单", exact: true }).click();
     await expect(preflightDialog(page).getByRole("row").filter({ hasText: "工作环境 A" })).toBeVisible();
     await expect(preflightDialog(page)).not.toContainText("取消未确认");
     await expect(preflightDialog(page).getByRole("button", { name: "下一步：确认恢复", exact: true })).toBeEnabled();
-    const requests = (await restoreCalls(page)).filter(call => call.method === (phase === "preview" ? "Backup.PreviewRestore" : "Backup.ReadRestorePage"));
+    const requests = (await restoreCalls(page)).filter(call => call.method === "Backup.ReadRestorePage");
     expect(requests).toHaveLength(2);
     expect(requests[1].payload).toEqual(requests[0].payload);
     await expectReadOnly(page, before);
   });
 }
 
-for (const replaceSource of [false, true]) test(`F2 late preview cannot release a newer read or discard its ${replaceSource ? "new" : "retained"} source token`, async ({ page }) => {
+for (const lateAfterCleanup of [false, true]) test(`F2 original preview reply ${lateAfterCleanup ? "after cleanup cannot release a newer source read" : "before cleanup cannot authorize a newer source"}`, async ({ page }) => {
   await restoreReviewBridge(page, "Backup.PreviewRestore"); await openSource(page); const before = await restoreState(page);
+  const originalOwner = (await restoreOwner(page))!;
   await startHeldRead(page, "preview"); await cancelHeldRead(page, "preview"); await settleDiscard(page); await expectRecovered(page, "preview");
-  if (replaceSource) {
-    await inputDialog(page).getByRole("button", { name: "选择本机备份包", exact: true }).click();
-    await expect(inputDialog(page)).toContainText("synthetic-review-2.prismbackup");
+  if (!lateAfterCleanup) {
+    await settleRead(page, 0); await expectRecovered(page, "preview");
+    expect(await restoreOwner(page)).toMatchObject({ requestId: originalOwner.requestId, sourceToken: originalOwner.sourceToken, cleanupRequested: true });
   }
-  const currentToken = (await status(page)).tokens.at(-1)!;
+  expect((await restoreCalls(page)).filter(call => call.method === "Backup.SelectRestoreSource")).toHaveLength(1);
+  expect((await restoreCalls(page)).filter(call => call.method === "Backup.PreviewRestore")).toHaveLength(1);
+  await page.evaluate(() => (window as unknown as ReviewWindow).__reviewRecoveryRestore.setDiscardOutcome("success"));
+  await inputDialog(page).getByRole("button", { name: "重试取消只读预检", exact: true }).click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  expect(await restoreOwner(page)).toBeUndefined();
+  expect((await status(page)).tokens).toEqual([]);
+  for (const request of (await restoreCalls(page)).filter(call => call.method === "Backup.DiscardRestore")) expect(request.payload).toMatchObject({ requestId: originalOwner.requestId, sourceToken: originalOwner.sourceToken });
+  await page.getByRole("button", { name: "导入完整备份", exact: true }).click();
+  await inputDialog(page).getByRole("button", { name: "选择本机备份包", exact: true }).click();
+  await expect(inputDialog(page)).toContainText("synthetic-review-2.prismbackup");
+  const nextOwner = (await restoreOwner(page))!, currentToken = nextOwner.sourceToken!;
+  expect(nextOwner.requestId).not.toBe(originalOwner.requestId);
+  expect(currentToken).not.toBe(originalOwner.sourceToken);
   await page.evaluate(() => (window as unknown as ReviewWindow).__reviewRecoveryRestore.holdRead("Backup.PreviewRestore"));
   await inputDialog(page).getByRole("button", { name: "完整校验并预览", exact: true }).click();
-  await expect.poll(async () => (await status(page)).pendingReads).toBe(2);
-  await settleRead(page, 0);
+  await expect.poll(async () => (await status(page)).pendingReads).toBe(lateAfterCleanup ? 2 : 1);
+  const discardCount = (await restoreCalls(page)).filter(call => call.method === "Backup.DiscardRestore").length;
+  if (lateAfterCleanup) await settleRead(page, 0);
   await expect(inputDialog(page).getByRole("button", { name: "完整校验并预览", exact: true })).toBeDisabled();
   await expect(inputDialog(page)).toContainText("正在流式读取");
-  await expect.poll(async () => (await restoreCalls(page)).filter(call => call.method === "Backup.DiscardRestore" && (call.payload as { previewId: string }).previewId === "synthetic-preflight-1").length).toBe(1);
-  const cleanup = (await restoreCalls(page)).find(call => call.method === "Backup.DiscardRestore" && (call.payload as { previewId: string }).previewId === "synthetic-preflight-1")!;
-  expect(cleanup.payload).toEqual({ previewId: "synthetic-preflight-1", sourceToken: "" });
+  expect((await restoreCalls(page)).filter(call => call.method === "Backup.DiscardRestore")).toHaveLength(discardCount);
+  expect(await restoreOwner(page)).toMatchObject({ requestId: nextOwner.requestId, sourceToken: currentToken, preflightPending: true });
+  await expect(inputDialog(page)).toContainText("synthetic-review-2.prismbackup");
+  await expect(inputDialog(page)).not.toContainText("迟到旧预览");
   expect((await status(page)).tokens).toContain(currentToken);
   await settleRead(page, 1);
   await expect(preflightDialog(page).getByRole("row").filter({ hasText: "工作环境 A" })).toBeVisible();
@@ -175,7 +232,9 @@ for (const replaceSource of [false, true]) test(`F2 late preview cannot release 
   await preflightDialog(page).getByRole("button", { name: "丢弃此预览", exact: true }).click();
   await expect(page.getByRole("dialog")).toHaveCount(0);
   const last = (await restoreCalls(page)).filter(call => call.method === "Backup.DiscardRestore").at(-1)!;
-  expect(last.payload).toEqual({ previewId: "synthetic-preflight-2", sourceToken: currentToken });
+  expect(last.payload).toEqual({ requestId: nextOwner.requestId, previewId: "synthetic-preflight-2", sourceToken: currentToken });
+  expect(await restoreOwner(page)).toBeUndefined();
+  expect((await status(page)).tokens).toEqual([]);
   await expectReadOnly(page, before);
 });
 
@@ -217,13 +276,13 @@ test("F2 closing without a current source never sends a native discard", async (
 });
 
 for (const phase of ["preview", "page"] as const) test(`F2 failed ${phase} recovery keeps cancellation uncertainty and retries only the retained target`, async ({ page }) => {
-  const method: RestoreRead = phase === "preview" ? "Backup.PreviewRestore" : "Backup.ReadRestorePage";
-  await restoreReviewBridge(page, method); await openSource(page); const before = await restoreState(page);
+  const method: RestoreRead = phase === "preview" ? "Backup.ReadRestoreSource" : "Backup.ReadRestorePage";
+  await restoreReviewBridge(page, phase === "preview" ? "Backup.PreviewRestore" : method); await openSource(page); const before = await restoreState(page), originalOwner = (await restoreOwner(page))!;
   await startHeldRead(page, phase); await cancelHeldRead(page, phase); await settleDiscard(page); await expectRecovered(page, phase); await settleRead(page);
   await page.evaluate<void, RestoreRead>(method => (window as unknown as ReviewWindow).__reviewRecoveryRestore.failNextRead(method), method);
   const dialog = phase === "preview" ? inputDialog(page) : preflightDialog(page);
-  await dialog.getByRole("button", { name: phase === "preview" ? "完整校验并预览" : "重新读取影响清单", exact: true }).click();
-  await expect(dialog).toContainText("PREVIEW_EXPIRED");
+  await dialog.getByRole("button", { name: phase === "preview" ? "核实原来源" : "重新读取影响清单", exact: true }).click();
+  await expect(dialog).toContainText(phase === "preview" ? "合成取消未被确认" : "PREVIEW_EXPIRED");
   await expect(dialog).toContainText("取消未确认");
   await expect(dialog).toContainText("synthetic-review-1.prismbackup");
   if (phase === "page") await expect(dialog.getByRole("button", { name: "下一步：确认恢复", exact: true })).toBeDisabled();
@@ -231,7 +290,16 @@ for (const phase of ["preview", "page"] as const) test(`F2 failed ${phase} recov
   await page.evaluate(() => (window as unknown as ReviewWindow).__reviewRecoveryRestore.setDiscardOutcome("success"));
   await dialog.getByRole("button", { name: phase === "preview" ? "重试取消只读预检" : "重试丢弃此预览", exact: true }).click();
   await expect(page.getByRole("dialog")).toHaveCount(0);
-  expect((await restoreCalls(page)).filter(call => call.method === "Backup.DiscardRestore").at(-1)!.payload).toEqual(original.payload);
+  const retried = (await restoreCalls(page)).filter(call => call.method === "Backup.DiscardRestore").at(-1)!;
+  expect(original.payload).toMatchObject({ requestId: originalOwner.requestId, sourceToken: originalOwner.sourceToken });
+  expect(retried.payload).toEqual({ requestId: originalOwner.requestId, previewId: "synthetic-preflight-1", sourceToken: originalOwner.sourceToken });
+  if (phase === "preview") {
+    expect((await restoreCalls(page)).filter(call => call.method === "Backup.ReadRestoreSource").at(-1)!.payload).toEqual({ requestId: originalOwner.requestId });
+    expect((await restoreCalls(page)).filter(call => call.method === "Backup.SelectRestoreSource")).toHaveLength(1);
+    expect((await restoreCalls(page)).filter(call => call.method === "Backup.PreviewRestore")).toHaveLength(1);
+  }
+  expect(await restoreOwner(page)).toBeUndefined();
+  expect((await status(page)).tokens).toEqual([]);
   await expectReadOnly(page, before);
 });
 

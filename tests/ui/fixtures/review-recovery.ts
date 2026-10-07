@@ -1,13 +1,13 @@
 import type { Page } from "@playwright/test";
-import type { ApplicationResult, ApplicationService, NativeRestorePage, NativeRestorePreview, Operation, ProxyCheckReport, WorkspaceView } from "../../../src/application/contract";
+import type { ApplicationResult, ApplicationService, NativeRestorePage, NativeRestorePreview, NativeRestoreSourcePending, NativeRestoreSourceState, Operation, ProxyCheckReport, WorkspaceView } from "../../../src/application/contract";
 import type { NativeBridge, NativeRequest } from "../../../src/application/wails-adapter";
 import { proxyKernelBridge } from "./proxy-kernel";
 import { localPagesNativeBridge } from "./local-pages-native-bridge";
 
-export type RestoreRead = "Backup.PreviewRestore" | "Backup.ReadRestorePage";
+export type RestoreRead = "Backup.PreviewRestore" | "Backup.ReadRestorePage" | "Backup.ReadRestoreSource";
 export type DiscardOutcome = "unavailable" | "refused" | "throw" | "success";
 export interface ProxyReviewData { recordReport?: ProxyCheckReport; operations: Operation[] }
-export interface ReviewApplication { refresh(): Promise<unknown> }
+export interface ReviewApplication { refresh(): Promise<unknown>; getPendingRestoreSource(): NativeRestoreSourcePending | undefined }
 export interface ProxyReviewControl { calls: NativeRequest[]; setData(data: ProxyReviewData): void }
 export interface RestoreReviewControl {
   calls: NativeRequest[];
@@ -63,6 +63,7 @@ export async function restoreReviewBridge(page: Page, phase?: RestoreRead, outco
     const original = desktop.Call;
     const fixture = (window as unknown as { __localPagesFixture: { calls: NativeRequest[]; workspace: WorkspaceView } }).__localPagesFixture;
     const tokens = new Map<string, string>(), previews = new Map<string, string>();
+    const owners = new Map<string, NativeRestoreSourceState>();
     const reads: { resolve(): void; settled: boolean }[] = [];
     let serial = 0, holdNext = phase, failNext: RestoreRead | undefined, discardOutcome = outcome, holdDiscard = true, pendingDiscard: (() => void) | undefined;
     const ok = <T,>(data: T): ApplicationResult<T> => ({ ok: true, mode: "native", data: structuredClone(data) });
@@ -74,8 +75,12 @@ export async function restoreReviewBridge(page: Page, phase?: RestoreRead, outco
       if (!reads.length && result.ok && method === "Backup.PreviewRestore") (result.data as NativeRestorePreview).name = "迟到旧预览.prismbackup";
       return new Promise<ApplicationResult<T>>(resolve => { reads.push({ settled: false, resolve: () => resolve(structuredClone(result)) }); });
     }
-    function discard(previewId: string, sourceToken: string) {
-      fixture.calls.push({ mode: "native", method: "Backup.DiscardRestore", payload: { previewId, sourceToken } });
+    function discard(payload: { requestId?: string; previewId?: string; sourceToken?: string }) {
+      const { requestId, previewId = "", sourceToken = "" } = payload;
+      fixture.calls.push({ mode: "native", method: "Backup.DiscardRestore", payload: structuredClone(payload) });
+      const owner = requestId ? owners.get(requestId) : undefined;
+      if (requestId && !owner) return Promise.resolve(fail("RESTORE_SOURCE_UNCONFIRMED"));
+      if (owner && owner.sourceToken !== sourceToken) return Promise.resolve(fail("VALIDATION_FAILED"));
       return new Promise<ApplicationResult<{ status: "discarded" }>>((resolve, reject) => {
         const finish = () => {
           if (sourceToken && discardOutcome !== "success") {
@@ -85,6 +90,7 @@ export async function restoreReviewBridge(page: Page, phase?: RestoreRead, outco
           }
           if (sourceToken) tokens.delete(sourceToken);
           for (const [id, token] of previews) if (id === previewId || sourceToken && token === sourceToken) previews.delete(id);
+          if (owner) { owner.status = "discarded"; owner.sourceToken = undefined; owner.preview = undefined; owner.preflightRunning = false; owner.cleanupPending = false; }
           resolve(ok({ status: "discarded" as const }));
         };
         if (sourceToken && holdDiscard) { holdDiscard = false; pendingDiscard = finish; } else finish();
@@ -102,20 +108,34 @@ export async function restoreReviewBridge(page: Page, phase?: RestoreRead, outco
         const adapterDiscard = application.discardRestore!.bind(application);
         // Wails invoke deliberately converts bridge throws into error envelopes.
         // Also exercise a rejecting service Promise at the component boundary.
-        application.discardRestore = (previewId, sourceToken) => sourceToken && discardOutcome === "throw" ? discard(previewId, sourceToken) : adapterDiscard(previewId, sourceToken);
+        application.discardRestore = (previewId, sourceToken) => sourceToken && discardOutcome === "throw" ? discard({ previewId, sourceToken }) : adapterDiscard(previewId, sourceToken);
       },
     };
     Object.assign(window, { __reviewRecoveryRestore: control });
     desktop.Call = (async (request: NativeRequest) => {
-      const payload = request.payload as { sourceToken?: string; previewId?: string };
-      if (request.method === "Backup.DiscardRestore") return discard(payload.previewId ?? "", payload.sourceToken ?? "");
-      if (request.method === failNext) { failNext = undefined; fixture.calls.push(structuredClone(request)); return fail("PREVIEW_EXPIRED"); }
+      const payload = request.payload as { requestId?: string; sourceToken?: string; previewId?: string };
+      if (request.method === "Backup.DiscardRestore") return discard(payload);
+      if (request.method === failNext) { failNext = undefined; fixture.calls.push(structuredClone(request)); return fail(request.method === "Backup.ReadRestoreSource" ? "RESTORE_SOURCE_UNCONFIRMED" : "PREVIEW_EXPIRED"); }
+      if (request.method === "Backup.ReadRestoreSource") {
+        fixture.calls.push(structuredClone(request));
+        const owner = owners.get(payload.requestId!);
+        return owner ? ok(owner) : fail("RESTORE_SOURCE_UNCONFIRMED");
+      }
+      if (request.method === "Backup.SelectRestoreSource" && [...owners.values()].some(owner => owner.status === "selected")) {
+        fixture.calls.push(structuredClone(request)); return fail("PROFILE_BUSY");
+      }
       if (request.method === "Backup.PreviewRestore") {
         if (!tokens.has(payload.sourceToken!)) { fixture.calls.push(structuredClone(request)); return fail("PREVIEW_EXPIRED"); }
         const result = await original<NativeRestorePreview>({ ...request, payload: { sourceToken: "synthetic-source" } });
         // Keep the actual UI payload in the existing fixture's request ledger.
         fixture.calls[fixture.calls.length - 1] = structuredClone(request);
-        if (result.ok) { result.data.name = tokens.get(payload.sourceToken!)!; previews.set(result.data.previewId, payload.sourceToken!); }
+        if (result.ok) {
+          result.data.name = tokens.get(payload.sourceToken!)!; previews.set(result.data.previewId, payload.sourceToken!);
+          // The service has finished and retained this preview. gate() delays
+          // only its transport reply, not a running service preflight worker.
+          const owner = [...owners.values()].find(owner => owner.sourceToken === payload.sourceToken);
+          if (owner) owner.preview = structuredClone(result.data);
+        }
         return gate("Backup.PreviewRestore", result);
       }
       if (request.method === "Backup.ReadRestorePage") {
@@ -126,6 +146,7 @@ export async function restoreReviewBridge(page: Page, phase?: RestoreRead, outco
       if (request.method === "Backup.SelectRestoreSource" && result.ok && result.data.status === "selected") {
         const token = `synthetic-review-source-${++serial}`, name = `synthetic-review-${serial}.prismbackup`;
         tokens.set(token, name); result.data.sourceToken = token; result.data.name = name;
+        owners.set(payload.requestId!, { mode: "native", requestId: payload.requestId!, status: "selected", sourceToken: token, name, preflightRunning: false, cleanupPending: false });
       }
       return result;
     }) as NativeBridge;
