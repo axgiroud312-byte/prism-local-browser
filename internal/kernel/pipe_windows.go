@@ -10,8 +10,10 @@ import (
 	"fmt"
 	"os"
 	"runtime"
+	"strings"
 	"sync"
 	"sync/atomic"
+	"syscall"
 	"time"
 	"unsafe"
 
@@ -58,6 +60,21 @@ func startPipeWithBinding(executable string, args []string, sessionID string, bi
 }
 
 func startPipeWithSecurity(executable string, args []string, sessionID string, bindJob func(windows.Handle) error, packageSID *windows.SID) (_ *pipeProcess, resultErr error) {
+	step := "resolve-executable"
+	defer func() {
+		if resultErr != nil {
+			resultErr = &pipeStartFailure{step: step, cause: resultErr}
+		}
+	}()
+	// Packaged launchers can virtualize AppData writes. CSRSS resolves the
+	// executable's side-by-side manifest outside that view, so it must receive
+	// the physical path of the same pinned file, not the redirected logical path.
+	executable, releaseExecutable, err := physicalExecutable(executable)
+	if err != nil {
+		return nil, err
+	}
+	defer releaseExecutable()
+	step = "create-pipes"
 	resourcesTransferred := false
 	childRead, parentWrite, err := os.Pipe()
 	if err != nil {
@@ -77,11 +94,13 @@ func startPipeWithSecurity(executable string, args []string, sessionID string, b
 		}
 	}()
 	handles := []windows.Handle{windows.Handle(childRead.Fd()), windows.Handle(childWrite.Fd())}
+	step = "inherit-pipe-handles"
 	for _, handle := range handles {
 		if err = windows.SetHandleInformation(handle, windows.HANDLE_FLAG_INHERIT, windows.HANDLE_FLAG_INHERIT); err != nil {
 			return nil, err
 		}
 	}
+	step = "create-job"
 	job, err := createManagedJob(sessionID)
 	if err != nil {
 		return nil, err
@@ -93,10 +112,12 @@ func startPipeWithSecurity(executable string, args []string, sessionID string, b
 	}()
 	limits := windows.JOBOBJECT_EXTENDED_LIMIT_INFORMATION{}
 	limits.BasicLimitInformation.LimitFlags = windows.JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE
+	step = "set-job-limits"
 	if _, err = windows.SetInformationJobObject(job, windows.JobObjectExtendedLimitInformation, uintptr(unsafe.Pointer(&limits)), uint32(unsafe.Sizeof(limits))); err != nil {
 		return nil, err
 	}
 	if bindJob != nil {
+		step = "bind-job"
 		if err = bindJob(job); err != nil {
 			return nil, err
 		}
@@ -105,34 +126,43 @@ func startPipeWithSecurity(executable string, args []string, sessionID string, b
 	if packageSID != nil {
 		count++
 	}
+	step = "create-process-attributes"
 	attributes, err := windows.NewProcThreadAttributeList(count)
 	if err != nil {
 		return nil, err
 	}
 	defer attributes.Delete()
+	step = "set-handle-list"
 	if err = attributes.Update(windows.PROC_THREAD_ATTRIBUTE_HANDLE_LIST, unsafe.Pointer(&handles[0]), uintptr(len(handles))*unsafe.Sizeof(handles[0])); err != nil {
 		return nil, err
 	}
 	// PROC_THREAD_ATTRIBUTE_JOB_LIST = ProcThreadAttributeValue(13, false,true,false).
 	// Atomic assignment at CreateProcess prevents a child escaping before assignment.
+	step = "set-job-list"
 	if err = attributes.Update(0x0002000D, unsafe.Pointer(&job), unsafe.Sizeof(job)); err != nil {
 		return nil, err
 	}
 	capabilities := networkSecurityCapabilities{SID: packageSID}
 	if packageSID != nil {
+		step = "set-security-capabilities"
 		if err = attributes.Update(0x00020009, unsafe.Pointer(&capabilities), unsafe.Sizeof(capabilities)); err != nil {
 			return nil, err
 		}
 	}
 	args = append([]string{executable}, args...)
 	args = append(args, "--remote-debugging-pipe", fmt.Sprintf("--remote-debugging-io-pipes=%d,%d", uint32(handles[0]), uint32(handles[1])))
+	step = "encode-command"
 	command, err := windows.UTF16PtrFromString(windows.ComposeCommandLine(args))
 	if err != nil {
 		return nil, err
 	}
-	image, _ := windows.UTF16PtrFromString(executable)
+	image, err := windows.UTF16PtrFromString(executable)
+	if err != nil {
+		return nil, err
+	}
 	si := windows.StartupInfoEx{StartupInfo: windows.StartupInfo{Cb: uint32(unsafe.Sizeof(windows.StartupInfoEx{}))}, ProcThreadAttributeList: attributes.List()}
 	var info windows.ProcessInformation
+	step = "create-process"
 	err = windows.CreateProcess(image, command, nil, nil, true, windows.EXTENDED_STARTUPINFO_PRESENT|windows.CREATE_UNICODE_ENVIRONMENT|windows.CREATE_NO_WINDOW, nil, nil, &si.StartupInfo, &info)
 	runtime.KeepAlive(capabilities)
 	runtime.KeepAlive(packageSID)
@@ -147,11 +177,72 @@ func startPipeWithSecurity(executable string, args []string, sessionID string, b
 	resourcesTransferred = true
 	go p.readLoop()
 	var created, exit, kernelTime, userTime windows.Filetime
+	step = "read-creation-time"
 	if err = windows.GetProcessTimes(info.Process, &created, &exit, &kernelTime, &userTime); err != nil {
 		return p, problem("PROCESS_IDENTITY_UNAVAILABLE", "creation-time-unavailable", "进程已创建，但实际创建时间无法读取；仅清理本次Job，未释放仍占用的目录。")
 	}
 	p.createdAt = time.Unix(0, created.Nanoseconds()).UTC().Format(time.RFC3339Nano)
 	return p, nil
+}
+
+func physicalExecutable(path string) (string, func(), error) {
+	wide, err := windows.UTF16PtrFromString(path)
+	if err != nil {
+		return "", nil, err
+	}
+	handle, err := windows.CreateFile(wide, windows.GENERIC_READ, windows.FILE_SHARE_READ, nil, windows.OPEN_EXISTING, windows.FILE_FLAG_OPEN_REPARSE_POINT, 0)
+	if err != nil {
+		return "", nil, err
+	}
+	release := func() { windows.CloseHandle(handle) }
+	var info windows.ByHandleFileInformation
+	if err = windows.GetFileInformationByHandle(handle, &info); err != nil {
+		release()
+		return "", nil, err
+	}
+	if info.FileAttributes&(windows.FILE_ATTRIBUTE_REPARSE_POINT|windows.FILE_ATTRIBUTE_DIRECTORY) != 0 || info.NumberOfLinks != 1 {
+		release()
+		return "", nil, problem("PATH_OUTSIDE_ROOT", "unsafe-executable", "内核程序文件无法安全核对，未启动。")
+	}
+	buffer := make([]uint16, 32768)
+	n, err := windows.GetFinalPathNameByHandle(handle, &buffer[0], uint32(len(buffer)), 0)
+	if err != nil || n == 0 || n >= uint32(len(buffer)) {
+		release()
+		if err == nil {
+			err = errors.New("executable physical path unavailable")
+		}
+		return "", nil, err
+	}
+	resolved := windows.UTF16ToString(buffer[:n])
+	if strings.HasPrefix(resolved, `\\?\UNC\`) {
+		resolved = `\\` + strings.TrimPrefix(resolved, `\\?\UNC\`)
+	} else {
+		resolved = strings.TrimPrefix(resolved, `\\?\`)
+	}
+	return resolved, release, nil
+}
+
+type pipeStartFailure struct {
+	step  string
+	cause error
+}
+
+func (e *pipeStartFailure) Error() string { return fmt.Sprintf("kernel start/%s: %v", e.step, e.cause) }
+func (e *pipeStartFailure) Unwrap() error { return e.cause }
+
+func probeStartFailure(err error) error {
+	reason := "diagnostic-start-failed"
+	message := "内核诊断进程无法启动；未关闭沙箱或尝试其他内核。"
+	var stage *pipeStartFailure
+	if errors.As(err, &stage) {
+		reason += "-" + stage.step
+	}
+	var code syscall.Errno
+	if errors.As(err, &code) {
+		reason += fmt.Sprintf("-win32-%d", uint32(code))
+		message = fmt.Sprintf("内核诊断进程无法启动（Windows错误%d）；未关闭沙箱或尝试其他内核。", uint32(code))
+	}
+	return problem("PROCESS_START_FAILED", reason, message)
 }
 func (p *pipeProcess) close() {
 	p.closeOnce.Do(func() {

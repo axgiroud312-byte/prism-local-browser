@@ -2,6 +2,8 @@
 
 本项目选择 [fingerprint-chromium](https://github.com/adryfish/fingerprint-chromium/blob/main/README-ZH.md) 作为 Windows 桌面版的内核方向。本文定义配置生成、内核管理、独立环境启动和代理接入的实现边界，供后续桌面后端开发使用。
 
+2026-10-08 用户要求内置148：新的直接运行包在程序旁 `bundled/` 随附精确148.0.7778.215官方ZIP及许可材料，首次打开离线准备，核验后供新建环境选择；这不是将前端版本号标成已安装。使用下文固定归档摘要并进行真实内核探测。已登记精确构建复用，初始默认不覆盖用户选择或旧环境引用；缺失/损坏不换版本。源码仓库不提交内核二进制，打包入口为 `scripts/desktop.ps1 -Action build -Bundle148 -PreviewRevision 15`；实际结果见[内置148记录](verification/bundled-kernel-148.md)。
+
 **网页原型与native能力分别记录。** T04已正式验收；148/150、正式代理会话、故障恢复、三存储隔离、Cookie及完整恢复/迁移已有本机结果，详见[集中验收](verification/V1-final.md)。独立远端全路径、人工UI及其他Windows/内核组合仍待验证，不因诊断/参数/构建通过自动完成。原型GPU、摘要与启动状态仍为演示，不标成实测。
 
 核实日期：2026-09-30。Ant-Browser 仅作为架构参考，本项目不复制其源码；旧比特浏览器材料仅用于理解交互与字段关系，不作为本项目内核、算法或资源池来源。

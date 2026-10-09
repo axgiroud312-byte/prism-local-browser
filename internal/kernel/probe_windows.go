@@ -169,7 +169,7 @@ func probeOneArguments(ctx context.Context, executable, staging, url string, see
 		if p != nil {
 			p.close()
 		}
-		return Observation{}, problem("PROCESS_START_FAILED", "diagnostic-start-failed", "隔离诊断进程无法启动；未关闭沙箱或尝试其他内核。")
+		return Observation{}, probeStartFailure(err)
 	}
 	defer p.close()
 	stop := context.AfterFunc(ctx, p.close)

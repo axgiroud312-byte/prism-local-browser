@@ -14,6 +14,6 @@
     "productName": "Prism Browser",
     "productVersion": "0.3.0",
     "copyright": "MIT; third-party components retain their licenses",
-    "comments": "Development preview; browser kernel not included"
+    "comments": "Development preview; optional verified fingerprint-chromium bundle"
   }
 }

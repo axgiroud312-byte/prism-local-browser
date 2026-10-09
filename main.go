@@ -148,10 +148,23 @@ func runDesktop() (exitCode int) {
 	if applicationChannel == "v1-candidate" {
 		label = "首版候选"
 	}
+	var bundledError error
+	if service != nil {
+		if executable, err := os.Executable(); err == nil {
+			ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
+			bundledError = service.PrepareBundledKernel(ctx, filepath.Join(filepath.Dir(executable), "bundled", workspace.BundledKernelArchive))
+			cancel()
+		}
+	}
 	err = wails.Run(&options.App{
 		Title: "棱镜浏览器 · " + label + " " + applicationVersion, Width: 1440, Height: 1000, MinWidth: 720, MinHeight: 600,
 		AssetServer: &assetserver.Options{Assets: assets}, Bind: []interface{}{app},
-		OnStartup:          func(ctx context.Context) { desktopContext = ctx },
+		OnStartup: func(ctx context.Context) { desktopContext = ctx },
+		OnDomReady: func(ctx context.Context) {
+			if bundledError != nil {
+				_, _ = wailsruntime.MessageDialog(ctx, wailsruntime.MessageDialogOptions{Type: wailsruntime.WarningDialog, Title: "148内核准备未完成", Message: bundledError.Error() + "\n\n可在内核管理中查看结果，已有环境和数据保留。"})
+			}
+		},
 		OnBeforeClose:      shutdown.BeforeClose,
 		Windows:            &windows.Options{WebviewUserDataPath: filepath.Join(root, "workbench-webview"), WindowClassName: "PrismBrowserWorkspace"},
 		SingleInstanceLock: &options.SingleInstanceLock{UniqueId: "cadb5081-585a-4e92-89c7-40c8ace49dc1"},

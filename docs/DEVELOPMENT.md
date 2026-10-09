@@ -244,6 +244,8 @@ T02 已实现的原生 RPC 为 `Workspace.Read`、`Environment.Preview`、`Previ
 
 T04 增量接口为 `Kernel.SelectArchive`（系统文件选择器→当前会话token，不接任意路径）、`Kernel.Install`（来源/精确版本/预期摘要/token/可信确认/requestId→受理操作）、`Kernel.List`、`Kernel.Verify` 与 `Kernel.Delete`（后两者接精确kernelId/requestId→受理操作）。Windows内核维护单任务并发仅作资源/维护保护，不限制安装数量。下载/解包/真实探测在worker中运行，`Operation.Read/Cancel`可查询/取消；页面以持久服务状态为准，重开不自动重装或换版本。
 
+2026-10-08 内置148增量：桌面host的 `PrepareBundledKernel` 只接程序目录随附归档，不增加接受任意路径的RPC。复用既有精确版本/归档摘要的已核验记录，核对原文件；没有记录时通过原 `Kernel.Install` worker和持久操作完成摘要、PE、真实pipe探测及发布，启动窗口前等待终态。只在默认为 `kernel-pending` 时沿原 `Kernel.SetDefault` 合同设置初始构建。恢复/回收/迁移维护优先，准备失败保持原数据并显示说明；损坏的已登记构建标不可用，不能静默创建替代ID。
+
 SQLite schema v2 事务新增 `kernel_evidence`，保存来源、tag、源码commit或null、架构、归档/主程序/完整文件清单摘要、内部相对位置及带adapter/能力版本和会话时间的真实报告。v1迁移保留既有ID/seed/配置和pending引用；同一证据不允许UPDATE。新安装采用同卷暂存/边界检查/摘要与PE/CDP验证，再分配新ID发布，登记内核与完成操作同一事务提交；失败清理本次资源，持久日志支持重开时清理已分配的未提交暂存/发布目录，不触碰无关目录。重新核验不把损坏字节重算成可信摘要；被当前或历史档案引用的构建不能直接移除。正常环境启动和批量任务恢复仍分别留T06/T13。
 
 ### T05 固定档案增量（已实现，完整验收待补）

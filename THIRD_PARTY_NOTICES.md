@@ -111,6 +111,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ## 外部浏览器内核来源
 
+**2026-10-08 新的直接运行桌面包：** 用户要求内置148，新 `build/bin/bundled/` 随附未修改的官方148.0.7778.215 ZIP，摘要为下文固定值；程序首次打开经原安装和真实探测合同登记。随包保留该tag的 `LICENSE.fingerprint-chromium.txt`、Chromium该版本的 `LICENSE.chromium.txt`，以及由精确主程序（SHA-256 `1867319e56bcabbc4681d8575c002106ce7b61b5290dc5eb34a37676805f6915`）实际 `chrome://credits` 导出的完整 `CHROMIUM-CREDITS.html`。归档资源不删改；本项目MIT不覆盖这些组件。下文“两版不随候选分发”描述历史候选，旧NSIS安装包不因本次直接运行包增量改变。
+
 产品指定使用 [adryfish/fingerprint-chromium](https://github.com/adryfish/fingerprint-chromium)。148.0.7778.215归档SHA为`9ef3f471b7a6641b4224532522b29141ce3746e27d55788d88e2fd951f362579`；150.0.7871.186在10月5日已获取，实算SHA为`4d549c326e51ebbabf562fd365eb5380d9d4a81200da2c60f075c688d9a77e03`并真实迁移验证。**两版均不随首版候选重新分发。** 用户明确选择官方精确ZIP或可信本地ZIP，保留原包资源/组件；版本许可范围不能从148文本推导为150全部组件已获再分发许可。
 
 如后续下载、修改或再分发内核，应检查所选具体版本的来源、许可证、Chromium 组件及第三方通知，并随分发材料保留要求的声明。不得以本仓库使用 MIT 为由认定整个内核、所有组件或相关品牌也适用 MIT。内核版本与许可审查应和构建产物一起记录。

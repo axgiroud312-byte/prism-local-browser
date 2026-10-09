@@ -2,6 +2,10 @@
 
 # 需求到实现的追踪表
 
+**2026-10-08 内置148增量：** CORE-001 由 [`PrepareBundledKernel`](../internal/workspace/bundled_kernel.go)、桌面启动和 [`bundle-kernel148.ps1`](../scripts/bundle-kernel148.ps1) 接入随附精确148归档，沿原安装/探测/操作日志和默认合同准备。初次默认、重开复用、显式默认保持及错误归档拒绝分别检查；不更换旧环境身份，不扩大正式计数。实际桌面结果见[内置148记录](verification/bundled-kernel-148.md)。
+
+同轮修复CORE-001/ENV-003启动路径：MSIX宿主下Windows清单解析不沿AppData虚拟视图查找，`startPipeWithSecurity` 从已固定文件句柄解析实际路径，保持同一文件、私有pipe和原沙箱。原失败目录真实148探针3次通过，preview15首次安装完成、窗口可选148且重开未重复安装；不是更换内核或修改目录权限。
+
 2026-10-07 合并增量：UX-001 只在最上层工作区阻断遮罩的空白区域阻止鼠标默认失焦，保留合法 Tab 与窗口返回目标；全局 `focusout` 微任务方案造成的回归已撤回。BKP-001 的普通恢复来源检查更新为原请求 `requestId` 的准确选择/丢弃契约，取消结果未知时保持原来源锁定，可靠清理后才允许继续。原 CI 失败与本轮检查见[合并记录](ACCEPTANCE.md#pr-38-合并检查2026-10-07)。这项 UI 增量不包含在下面已构建的 preview10 中，不改变其源码身份或正式桌面计数。
 
 **最新追踪（2026-10-07；0.3.0-preview.10 / `95a600f`）：** CORE-001/ENV-003/PRX-001 已以新真实桌面程序核对同一精确 148 的直连与两个代理三开、代理运行期间直连关开、Clash 环境关开且其他环境原 PID 不变；旧共享 ACL 引起的本机多开 GPU 崩溃触发条件已修复。新会话按 Ant-Browser 标准共享内核，不使用额外 AppContainer、共享 ACL 修改或每会话内核副本，约 425 MiB 副本方案未交付。PRX-001/ENV-003 的受控代理故障只停止目标、不回退直连，故障前检 `no-process-created` 及恢复后原 ID/seed/profile 重试通过。UX-001 两次正常退出 `exit0`，自有 Chrome、未闭合网络会话及未释放资源均为 0；重启 204 项配置身份不变，原代理环境真实页面数据读回及 SQLite 完整性核对通过。见[148 多开修复](verification/desktop-148-isolation-fix.md)。

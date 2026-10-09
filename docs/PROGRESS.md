@@ -1,5 +1,11 @@
 # Goal 当前执行位置
 
+## 当前：内置148远程同步（2026-10-09）
+
+按用户“全部同步”要求，将0.3.0-preview.15内置148准备、Windows14001启动路径修复及文档保存到[源码同步分支](https://github.com/axgiroud312-byte/prism-local-browser/tree/codex/bundled-kernel-148-sync)，从已合并PR #38的远程main继续。现有已实测主程序与精确148归档、许可和来源清单提供于[下载页](https://github.com/axgiroud312-byte/prism-local-browser/releases/tag/v0.3.0-preview.15)。同步前5/5定向Go检查、文档链接与3份PowerShell语法检查通过；摘要及公开文件范围已核对。详细来源与实际边界见[内置148记录](verification/bundled-kernel-148.md)，正式4/21保持。
+
+## 历史：preview10共享内核多开
+
 最新：**0.3.0-preview.10 / `95a600f`** 的 148 共享内核多开修复已完成限定真实桌面验证。直连与两个代理三开、代理运行时直连关闭重开、Clash 环境关开且其他环境原 PID 不变均通过；受控 `62300` 故障只停止目标、不回退直连，故障前检 `no-process-created`，恢复后原 ID/seed/profile 重试成功。两次正常退出均为 `exit0`，自有 Chrome、未闭合网络会话、未释放资源均为 0；重启后 204 项原配置身份不变，原代理环境真实页面数据读回与 SQLite 完整性核对通过。程序入口为 `build/bin/prism-browser.exe`，来源、哈希及逐项证据见[148 多开修复](verification/desktop-148-isolation-fix.md)。
 
 按用户要求采用 Ant-Browser 标准共享内核，已消除旧共享 ACL 引起的本机 148 多开 GPU 崩溃触发条件；取消额外 AppContainer/共享 ACL 操作，约 425 MiB 每会话副本方案未交付。正式 **4/21** 保持，150/跨版本迁移本轮不适用；真实自然指纹等待/迟到回复等未证条件仍保留，不宣布原 21 项整体验收完成。用户取消 1:1，旧失败和来源保留如下。
