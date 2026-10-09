@@ -2,6 +2,10 @@
 
 面向 Windows 本机多环境管理的桌面底座、独立前端原型及产品开发文档。
 
+**远程同步入口（2026-10-09）：** [内置148源码分支](https://github.com/axgiroud312-byte/prism-local-browser/tree/codex/bundled-kernel-148-sync) · [0.3.0-preview.15 下载页](https://github.com/axgiroud312-byte/prism-local-browser/releases/tag/v0.3.0-preview.15)。下载 Windows x64 ZIP，完整解压后打开 `prism-browser.exe`；同目录保留 `bundled/` 与许可材料。下载页附 SHA-256 和来源清单，使用已经验收的现有程序，详情见[内置148记录](docs/verification/bundled-kernel-148.md)。
+
+**当前本机开发入口（2026-10-08）：** `build/bin/prism-browser.exe`，**0.3.0-preview.15**。按用户要求随程序提供 fingerprint-chromium **148.0.7778.215**；首次打开使用随附归档自动核验、安装并设为初始默认，新建环境直接可选，无需手工下载或填写摘要。移动程序时保留同目录 `bundled/` 及许可通知。已有精确构建复用，用户设置的默认选择和旧环境内核引用保持。代码基于 `311a47f` 加本次本地增量；实际检查见[内置148记录](docs/verification/bundled-kernel-148.md)。旧安装器与下方验收记录保留原来源。
+
 **2026-10-07：用户取消1:1要求，本轮交付了新 Windows 桌面程序，但桌面可用性收口尚未完成。** `build/bin/prism-browser.exe` 为 **0.3.0-preview.8**，构建源码 `e349eeadaa92a83ce60d97ec2ef5b309fdf68d92`。本轮真实新程序验证了启动/正常退出/重开、148 环境和持久数据、真实批次部分失败后续做、Clash 本机 `7897` 代理的 HTTPS 访问、回收恢复与备份数据恢复等限定流程；preview7 与 preview8 的证据分别记录。**150 内核在普通打开和迁移试用时真实崩溃，根因尚未确认**；桌面在途取消、连续等待/迟到回复及丢失来源后的可靠恢复仍有缺口。通过、不适用和阻塞分别见 [桌面验收表](docs/verification/desktop-closeout.md)，程序来源和启动方式见 [桌面交付记录](docs/verification/desktop-release-closeout.md)。停止扩展视觉截图、参考恢复和图库审计；旧失败不改写成通过。正式计数仍 **4/21**，六票 OPEN、PR #38 草稿及原分支依赖保留。
 
 ## 历史界面与桌面阶段记录（保留原结果与来源）

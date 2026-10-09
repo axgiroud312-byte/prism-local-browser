@@ -1,6 +1,8 @@
 # 棱镜浏览器使用指南
 
-**当前桌面入口（2026-10-07）：** 运行仓库内 `build/bin/prism-browser.exe`，版本 **0.3.0-preview.10**，源码 `95a600f`；不需要启动 Vite。程序来源、SHA-256 及实际验证见[148 多开修复](verification/desktop-148-isolation-fix.md)。当前只使用 **148.0.7778.215**，150 与跨版本迁移不适用；旧失败保留，不算通过。
+**下载当前程序：** 在 [0.3.0-preview.15 下载页](https://github.com/axgiroud312-byte/prism-local-browser/releases/tag/v0.3.0-preview.15) 下载 Windows x64 ZIP，完整解压到一个文件夹后双击 `prism-browser.exe`。保留同目录的 `bundled/` 和许可文件；该包为未签名开发预览，下载页提供 SHA-256 与来源清单。
+
+**当前桌面入口（2026-10-08）：** 运行仓库内 `build/bin/prism-browser.exe`，版本 **0.3.0-preview.15**，基于 `311a47f` 加本次本地内置内核增量；不需要启动 Vite。程序随附 **148.0.7778.215**，首次打开自动准备，后续复用已经核验的构建。无需手工下载或输入摘要；移动程序时保留同目录 `bundled/`。实际检查见[内置148记录](verification/bundled-kernel-148.md)，历史多开结果见[148 多开修复](verification/desktop-148-isolation-fix.md)。150 与跨版本迁移不适用；旧失败保留。
 
 1. 打开新程序，在环境列表选择已有环境后点“打开”，或点“新建环境”并选择已核验的 148 内核、直连或绑定代理。
 2. 代理检查失败时修复代理，再打开**同一个环境**；不用再次创建，不切为直连。普通编辑、关闭和重开保留原 seed、内核与数据目录。
@@ -26,7 +28,7 @@
 
 ## 1 安装、升级与数据位置
 
-Windows 10/11 x64需WebView2，它只承载工作台；真实环境用另行安装的fingerprint-chromium。候选未签名，核对对应release清单与SHA256SUMS后再决定运行，不关闭安全功能。本机实跑仅覆盖Home build26200及148/150，不推导所有Windows组合已获支持。
+Windows 10/11 x64需WebView2，它只承载工作台；真实环境使用程序随附并核验安装的fingerprint-chromium148，其他构建仍可按精确来源另行安装。候选未签名，核对对应release清单与SHA256SUMS后再决定运行，不关闭安全功能。本机实跑仅覆盖Home build26200及148/150，不推导所有Windows组合已获支持。
 
 工作区默认位于 `%LOCALAPPDATA%/PrismBrowser/`，配置为 `app.db`，浏览数据各自独立。正常关闭后升级；卸载默认保留工作区。只有明确选择并再次确认删除全部数据才永久删除。详细步骤见[安装说明](INSTALLATION.md)。
 
